@@ -20,13 +20,8 @@
     <ClInclude Include="CudaImageProccessing\Vec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="CudaImageProccessing\cudaKernals.cu">
-      <Filter>Source Files</Filter>
-    </CudaCompile>
-    <CudaCompile Include="CudaImageProccessing\CudaUtilities.cu">
-      <Filter>Source Files</Filter>
-    </CudaCompile>
+    <ClInclude Include="CudaImageProccessing\CudaImageBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

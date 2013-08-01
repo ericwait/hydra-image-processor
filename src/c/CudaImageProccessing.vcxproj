@@ -19,13 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CudaImageProccessing\CudaImageBuffer.h" />
     <ClInclude Include="CudaImageProccessing\cudaKernals.h" />
     <ClInclude Include="CudaImageProccessing\CudaUtilities.h" />
     <ClInclude Include="CudaImageProccessing\Vec.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="CudaImageProccessing\cudaKernals.cu" />
-    <CudaCompile Include="CudaImageProccessing\CudaUtilities.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{385B5E1B-A569-4527-A8F4-C8A8B7D03531}</ProjectGuid>
@@ -145,8 +142,8 @@ copy $(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\*.lib 
       <AdditionalLibraryDirectories>$(CUDA_PATH)lib\x64\</AdditionalLibraryDirectories>
     </CudaLink>
     <PreBuildEvent>
-      <Command>echo del /Q /F $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\*
-del /Q /F $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\*</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -206,8 +203,8 @@ copy $(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\*.lib 
       <AdditionalLibraryDirectories>$(CUDA_PATH)lib\x64\</AdditionalLibraryDirectories>
     </CudaLink>
     <PreBuildEvent>
-      <Command>echo del /Q /F $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\*
-del /Q /F $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\*</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
