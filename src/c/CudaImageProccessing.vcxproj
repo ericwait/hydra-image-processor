@@ -19,10 +19,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CudaImageProccessing\CHelpers.h" />
     <ClInclude Include="CudaImageProccessing\CudaImageBuffer.h" />
     <ClInclude Include="CudaImageProccessing\cudaKernals.h" />
     <ClInclude Include="CudaImageProccessing\CudaUtilities.h" />
+    <ClInclude Include="CudaImageProccessing\Defines.h" />
     <ClInclude Include="CudaImageProccessing\Vec.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="CudaImageProccessing\main.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{385B5E1B-A569-4527-A8F4-C8A8B7D03531}</ProjectGuid>

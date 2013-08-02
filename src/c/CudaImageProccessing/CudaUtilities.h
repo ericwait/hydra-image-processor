@@ -1,11 +1,8 @@
-#ifndef CUDA_UTILITIES_H
-#define CUDA_UTILITIES_H
+#pragma once
 
 #include "Vec.h"
 #include "cuda_runtime.h"
 #include <stdio.h>
-
-#define NUM_BINS 255
 
 static void HandleError( cudaError_t err, const char *file, int line ) 
 {
@@ -97,7 +94,7 @@ void calcBlockThread(const Vec<int>& dims, const cudaDeviceProp &prop, dim3 &blo
 			} 
 			else
 			{
-				int dim = sqrt((float)prop.maxThreadsPerBlock);
+				int dim = (int)sqrt((double)prop.maxThreadsPerBlock*prop.maxThreadsPerBlock);
 				threads.x = dim;
 				threads.y = dim;
 				threads.z = 1;
@@ -159,4 +156,3 @@ struct Lock
 		atomicExch(mutex,0);
 	}
 };
-#endif

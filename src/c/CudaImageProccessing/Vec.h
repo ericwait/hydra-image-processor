@@ -1,5 +1,6 @@
-#ifndef VEC_H
-#define VEC_H
+#pragma once
+
+#include "Defines.h"
 
 template<typename T>
 class Vec
@@ -64,8 +65,6 @@ public:
 
 	double EuclideanDistanceTo(Vec<T> other)
 	{
-		return sqrt(SQR((double)x-other.x)+SQR((double)y-other.y)+SQR((double)z-other.z));
+		return sqrt((double)(SQR(x-other.x) + SQR(y-other.y) + SQR(z-other.z)));
 	}
 };
-
-#endif

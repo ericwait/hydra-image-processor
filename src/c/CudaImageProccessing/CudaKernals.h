@@ -1,10 +1,14 @@
-#ifndef CUDA_KERNALS_H
-#define CUDA_KERNALS_H
+#pragma once
 
+#include "Defines.h"
 #include "Vec.h"
+#include "CHelpers.h"
+#include "cuda_runtime.h"
+
+__constant__ float kernal[MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM];
 
 template<typename ImagePixelType>
-__global__ void meanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, int kernalDiameter)
+__global__ void meanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, Vec<int> kernalDims)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -12,30 +16,34 @@ __global__ void meanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Ve
 
 	if (x<imageDims.x && y<imageDims.y && z<imageDims.z)
 	{
-		int kernalRadius = kernalDiameter/2;
 		double val = 0;
-		int xMin = max(0,x-kernalRadius);
-		int xMax = min(imageDims.x,x+kernalRadius);
-		int yMin = max(0,y-kernalRadius);
-		int yMax = min(imageDims.y,y+kernalRadius);
-		int zMin = max(0,z-kernalRadius);
-		int zMax = min(imageDims.z,z+kernalRadius);
-
-		for (int i=xMin; i<xMax; ++i)
+		int halfKwidth = kernalDims.x/2;
+		int halfKheight = kernalDims.y/2;
+		int halfKdepth = kernalDims.z/2;
+		int iIm=-halfKwidth, iKer=0;
+		for (; iIm<halfKwidth; ++iIm, ++iKer)
 		{
-			for (int j=yMin; j<yMax; ++j)
+			int imXcoor = min(max(x+iIm,0),imageDims.x-1);
+			int jIm=-halfKheight, jKer=0;
+			for (; jIm<halfKheight; ++jIm, ++jKer)
 			{
-				for (int k=zMin; k<zMax; ++k)
-					val += imageIn[i+j*imageDims.x+k*imageDims.y*imageDims.x];
+				int imYcoor = min(max(y+jIm,0),imageDims.y-1);
+				int kIm=-halfKdepth, kKer=0;
+				for (; kIm<halfKdepth; ++kIm, ++kKer)
+				{
+					int imZcoor = min(max(z+kIm,0),imageDims.z-1);
+					val += imageIn[imXcoor + imYcoor*imageDims.x + imZcoor*imageDims.y*imageDims.x];
+				}
 			}
 		}
 
-		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = min(val/((xMax-xMin)*(yMax-yMin)*(zMax-zMin)),255.0f);
+		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = val/(kernalDims.x*kernalDims.y*kernalDims.z);
 	}
 }
 
-template<typename ImagePixelType1, typename ImagePixelType2, typename FactorType>
-__global__ void multiplyImage(ImagePixelType1* imageIn, ImagePixelType2* imageOut, Vec<int> imageDims, FactorType factor)
+template<typename ImagePixelType, typename FactorType>
+__global__ void multiplyImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, FactorType factor,
+	ImagePixelType minValue, ImagePixelType maxValue)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -43,20 +51,8 @@ __global__ void multiplyImage(ImagePixelType1* imageIn, ImagePixelType2* imageOu
 
 	if (x<imageDims.x && y<imageDims.y && z<imageDims.z)
 	{
-		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = factor * imageIn[x+y*imageDims.x+z*imageDims.y*imageDims.x];
-	}
-}
-
-template<typename ImagePixelType1, typename ImagePixelType2, typename FactorType>
-__global__ void normalizeImage(ImagePixelType1* imageIn, ImagePixelType2* imageOut, Vec<int> imageDims, FactorType factor)
-{
-	int x = threadIdx.x + blockIdx.x * blockDim.x;
-	int y = threadIdx.y + blockIdx.y * blockDim.y;
-	int z = threadIdx.z + blockIdx.z * blockDim.z;
-
-	if (x<imageDims.x && y<imageDims.y && z<imageDims.z)
-	{
-		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = max((FactorType)0,factor * imageIn[x+y*imageDims.x+z*imageDims.y*imageDims.x]);
+		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = min(maxValue,max(minValue,
+			factor * imageIn[x+y*imageDims.x+z*imageDims.y*imageDims.x]));
 	}
 }
 
@@ -138,26 +134,21 @@ __global__ void medianFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, 
 	}
 }
 
-template<typename ImagePixelType1, typename ImagePixelType2, typename KernalType>
-__global__ void multAddFilter(ImagePixelType1* imageIn, ImagePixelType2* imageOut, Vec<int> imageDims, KernalType* kernal,
-	Vec<int> kernalDims)
+template<typename ImagePixelType1, typename ImagePixelType2>
+__global__ void multAddFilter(ImagePixelType1* imageIn, ImagePixelType2* imageOut, Vec<int> imageDims, Vec<int> kernalDims)
 {
-	extern __shared__ KernalType ker[];
-	for (int i=0; i<kernalDims.x*kernalDims.y*kernalDims.z; ++i)
-		ker[i] = kernal[i];
-
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
 	int z = threadIdx.z + blockIdx.z * blockDim.z;
 
 	if (x<imageDims.x && y<imageDims.y && z<imageDims.z)
 	{
-		KernalType val = 0;
+		double val = 0;
 		int halfKwidth = kernalDims.x/2;
 		int halfKheight = kernalDims.y/2;
 		int halfKdepth = kernalDims.z/2;
 		int iIm=-halfKwidth, iKer=0;
-		KernalType kernFactor = 0;
+		double kernFactor = 0;
 		for (; iIm<halfKwidth; ++iIm, ++iKer)
 		{
 			int imXcoor = min(max(x+iIm,0),imageDims.x-1);
@@ -180,9 +171,8 @@ __global__ void multAddFilter(ImagePixelType1* imageIn, ImagePixelType2* imageOu
 	}
 }
 
-template<typename ImagePixelType, typename KernalType>
-__global__ void minFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, KernalType* kernal,
-	Vec<int> kernalDims)
+template<typename ImagePixelType>
+__global__ void minFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, Vec<int> kernalDims)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -220,8 +210,7 @@ __global__ void minFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec
 }
 
 template<typename ImagePixelType, typename KernalType>
-__global__ void maxFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, KernalType* kernal,
-	Vec<int> kernalDims)
+__global__ void maxFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, Vec<int> kernalDims)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -281,7 +270,8 @@ __global__ void histogramCreate(ImagePixelType* imageIn, unsigned int* histogram
 
 __global__ void normalizeHistogram(unsigned int* histogram, double* normHistogram, Vec<int> imageDims)
 {
-	normHistogram[blockIdx.x] = (double)(histogram[blockIdx.x]) / (imageDims.x*imageDims.y*imageDims.z);
+	int x = blockIdx.x;
+	normHistogram[x] = (double)(histogram[x]) / (imageDims.x*imageDims.y*imageDims.z);
 }
 
 template<typename ImagePixelType, typename ThresholdType>
@@ -458,7 +448,7 @@ __global__ void findMinMax(ImagePixelType* arrayIn, ImagePixelType* minArrayOut,
 
 template<typename ImagePixelType, typename ThresholdType>
 __global__ void polyTransferFuncImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, ThresholdType a,
-	ThresholdType b, ThresholdType c, ThresholdType maxPixelValue)
+	ThresholdType b, ThresholdType c, ThresholdType maxPixelValue, ThresholdType minPixelValue)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -466,14 +456,14 @@ __global__ void polyTransferFuncImage(ImagePixelType* imageIn, ImagePixelType* i
 
 	if (x<imageDims.x && y<imageDims.y && z<imageDims.z)
 	{
-		ThresholdType pixVal = imageIn[x+y*imageDims.x+z*imageDims.y*imageDims.x] / maxPixelValue;
-		ThresholdType multiplier = a*pixVal*pixVal + b*pixVal + c;
+		double pixVal = (double)imageIn[x+y*imageDims.x+z*imageDims.y*imageDims.x] / maxPixelValue;
+		double multiplier = a*pixVal*pixVal + b*pixVal + c;
 		if (multiplier<0)
 			multiplier = 0;
 		if (multiplier>1)
 			multiplier = 1;
 
-		ImagePixelType newPixelVal = multiplier * maxPixelValue;
+		ImagePixelType newPixelVal = min(maxPixelValue,max(minPixelValue,multiplier * maxPixelValue));
 
 		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = newPixelVal;
 	}
@@ -599,7 +589,7 @@ __global__ void reduceArray(T* arrayIn, T* arrayOut, unsigned int n)
 }
 
 template<typename ImagePixelType>
-__global__ void ruduceImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageInDims, unsigned int reductionAmount)
+__global__ void ruduceImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageInDims, Vec<int> reductions)
 {
 	unsigned int x = threadIdx.x + blockIdx.x * blockDim.x;
 	unsigned int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -608,13 +598,13 @@ __global__ void ruduceImage(ImagePixelType* imageIn, ImagePixelType* imageOut, V
 
 	if (x<imageOutDims.x && y<imageOutDims.y && z<imageOutDims.z)
 	{
-		ImagePixelType val = 0;
-		unsigned int xMin = x*reduction;
-		unsigned int xMax = min(x*reduction+reduction,imageInDims.x);
-		unsigned int yMin = y*reduction;
-		unsigned int yMax = min(y*reduction+reduction,imageInDims.y);
-		unsigned int zMin = z*(reduction/2);
-		unsigned int zMax = min(z*(reduction/2)+(reduction/2),imageInDims.z);
+		double val = 0;
+		unsigned int xMin = x*reductions.x;
+		unsigned int xMax = min(x*reductions.x+reductions.x,imageInDims.x);
+		unsigned int yMin = y*reductions.y;
+		unsigned int yMax = min(y*reductions.y+reductions.y,imageInDims.y);
+		unsigned int zMin = z*reductions.z;
+		unsigned int zMax = min(z*reductions.z+reductions.z,imageInDims.z);
 
 		for (unsigned int i=xMin; i<xMax; ++i)
 		{
@@ -626,13 +616,12 @@ __global__ void ruduceImage(ImagePixelType* imageIn, ImagePixelType* imageOut, V
 			}
 		}
 
-		imageOut[x+y*imageOutDims.x+z*imageOutDims.y*imageOutDims.x] = 
-			(double)val/((xMax-xMin)*(yMax-yMin)*(zMax-zMin));
+		imageOut[x+y*imageOutDims.x+z*imageOutDims.y*imageOutDims.x] = val/((xMax-xMin)*(yMax-yMin)*(zMax-zMin));
 	}
 }
 
 template<typename ImagePixelType>
-__global__ void maximumIntensityProjection(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageInDims)
+__global__ void maximumIntensityProjection(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -652,4 +641,3 @@ __global__ void maximumIntensityProjection(ImagePixelType* imageIn, ImagePixelTy
 		imageOut[x+y*imageDims.x] = maxVal;
 	}
 }
-#endif

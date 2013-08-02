@@ -25,3 +25,4 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 src/c/Intermediate/*
 src/c/Output/*
+src/c/ipch/*
