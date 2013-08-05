@@ -90,6 +90,50 @@ public:
 		HANDLE_ERROR(cudaMemcpy(image,imageBuffers[currentBuffer],sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyDeviceToHost));
 	}
 
+		/*
+	 *	Returns a host pointer to the histogram data
+	 *	This is destroyed when this' destructor is called
+	 *	Will call the needed histogram creation methods if not all ready
+	 */
+	unsigned int* retrieveHistogram(int& returnSize)
+	{
+		if (histogramDevice==NULL)
+			createHistogram();
+
+		HANDLE_ERROR(cudaMemcpy(histogramHost,histogramDevice,sizeof(unsigned int)*NUM_BINS,cudaMemcpyDeviceToHost));
+		returnSize = NUM_BINS;
+
+		return histogramHost;
+	}
+	
+	/*
+	 *	Returns a host pointer to the normalized histogram data
+	 *	This is destroyed when this' destructor is called
+	 *	Will call the needed histogram creation methods if not all ready
+	 */
+	double* retrieveNormalizedHistogram(int& returnSize)
+	{
+		if (normalizedHistogramDevice==NULL)
+			normalizeHistogram();
+
+		HANDLE_ERROR(cudaMemcpy(normalizedHistogramHost,normalizedHistogramDevice,sizeof(double)*NUM_BINS,cudaMemcpyDeviceToHost));
+		returnSize = NUM_BINS;
+
+		return normalizedHistogramHost;
+	}
+
+	ImagePixelType* retrieveReducedImage(Vec<int>& reducedDims)
+	{
+		reducedDims = this->reducedDims;
+
+		if (reducedImageDevice!=NULL)
+		{
+			HANDLE_ERROR(cudaMemcpy(reducedImageHost,reducedImageDevice,sizeof(ImagePixelType)*reducedDims.product(),cudaMemcpyDeviceToHost));
+		}
+
+		return reducedImageHost;
+	}
+
 	Vec<int> getDimension() const {return imageDims;}
 	int getDevice() const {return device;}
 
@@ -105,7 +149,8 @@ public:
 	 */
 	void addImageTo(const CudaImageBuffer* image, double factor)
 	{
-		addTwoImagesWithFactor<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims,factor);
+		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims,factor);
+		incrementBufferNumber();
 	}
 
 	/*
@@ -116,7 +161,8 @@ public:
 	template<typename ThresholdType>
 	void applyPolyTransformation(ThresholdType a, ThresholdType b, ThresholdType c, ImagePixelType minValue, ImagePixelType maxValue)
 	{
-		polyTransferFuncImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,a,b,c,maxValue,minValue);
+		cudaPolyTransferFuncImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,a,b,c,maxValue,minValue);
+		incrementBufferNumber();
 	}
 
 	/*
@@ -132,7 +178,7 @@ public:
 		HANDLE_ERROR(cudaMalloc((void**)&maxValuesDevice,sizeof(double)*(blocks.x+1)/2));
 		HANDLE_ERROR(cudaMalloc((void**)&minValuesDevice,sizeof(double)*(blocks.x+1)/2));
 
-		findMinMax<<<blocks.x,threads.x,2*sizeof(double)*threads.x>>>(getNextBuffer(),minValuesDevice,maxValuesDevice,
+		cudaFindMinMax<<<blocks.x,threads.x,2*sizeof(double)*threads.x>>>(getCurrentBuffer(),minValuesDevice,maxValuesDevice,
 			imageDims.product());
 
 		HANDLE_ERROR(cudaMemcpy(maxValuesHost,maxValuesDevice,sizeof(double)*(blocks.x)/2,cudaMemcpyDeviceToHost));
@@ -157,6 +203,14 @@ public:
 	*/
 	void createHistogram()
 	{
+		histogramHost = new unsigned int[NUM_BINS];
+		HANDLE_ERROR(cudaMalloc((void**)&histogramDevice,NUM_BINS*sizeof(unsigned int)));
+
+		memset(histogramHost,0,NUM_BINS*sizeof(unsigned int));
+		HANDLE_ERROR(cudaMemset(histogramDevice,0,NUM_BINS*sizeof(unsigned int)));
+
+		cudaHistogramCreate<<<deviceProp.multiProcessorCount*2,NUM_BINS,sizeof(unsigned int)*NUM_BINS>>>
+			(getCurrentBuffer(),histogramDevice,imageDims);
 	}
 
 	/*
@@ -168,9 +222,12 @@ public:
 
 	/*
 	 *	Sets each pixel to the max value of its neighborhood
+	 *	Dilates structures
 	 */ 
-	void maxFilter(int neighborhood)
+	void maxFilter(Vec<int> neighborhood)
 	{
+		cudaMaxFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+		incrementBufferNumber();
 	}
 
 	/*
@@ -178,24 +235,37 @@ public:
 	 */
 	void maximumIntensityProjection()
 	{
+		cudaMaximumIntensityProjection<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims);
+		incrementBufferNumber();
 	}
 
 	/*
 	 *	Filters image where each pixel is the mean of its neighborhood 
 	 */
-	void meanFilter(int neighborhood)
+	void meanFilter(Vec<int> neighborhood)
 	{
+		cudaMeanFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+		incrementBufferNumber();
 	}
 
 	/*
 	 *	Filters image where each pixel is the median of its neighborhood
 	 */
-	void medianFilter();
+	void medianFilter(Vec<int> neighborhood)
+	{
+		cudaMedianFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+		incrementBufferNumber();
+	}
 
 	/*
 	 *	Sets each pixel to the min value of its neighborhood
+	 *	Erodes structures
 	 */ 
-	void minFilter();
+	void minFilter(Vec<int> neighborhood)
+	{
+		cudaMinFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+		incrementBufferNumber();
+	}
 
 	/*
 	 *	Sets each pixel by multiplying by the orignal value and clamping
@@ -204,6 +274,8 @@ public:
 	template<typename FactorType>
 	void multiplyImage(FactorType factor, ImagePixelType minValue, ImagePixelType maxValue)
 	{
+		cudaMultiplyImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,factor,minValue,maxValue);
+		incrementBufferNumber();
 	}
 
 	/*
@@ -211,7 +283,15 @@ public:
 	 *	Will generate the original histogram if one doesn't already exist
 	 *	Use retrieveNormalizedHistogram() to get a host pointer
 	 */
-	void normalizeHistogram();
+	void normalizeHistogram()
+	{
+		if(histogramDevice==NULL)
+			createHistogram();
+
+		normalizedHistogramHost = new double[NUM_BINS];
+		HANDLE_ERROR(cudaMalloc((void**)&normalizedHistogramDevice,NUM_BINS*sizeof(double)));
+		cudaNormalizeHistogram<<<NUM_BINS,1>>>(histogramDevice,normalizedHistogramDevice,imageDims);
+	}
 
 	/*
 	 *	Calculates the total sum of the buffer's data
@@ -224,25 +304,16 @@ public:
 	/*
 	 *	Will reduce the size of the image by the factors passed in
 	 */
-	void reduceImage(Vec<int> reductions)
+	void reduceImage(Vec<double> reductions)
 	{
+		reducedDims = Vec<int>(
+			imageDims.x/reductions.x,
+			imageDims.y/reductions.y,
+			imageDims.z/reductions.z);
 
+		cudaRuduceImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,reducedDims,reductions);
+		incrementBufferNumber();
 	}
-	
-	/*
-	 *	Returns a host pointer to the histogram data
-	 *	This is destroyed when this' destructor is called
-	 */
-	void retrieveHistogram()
-	{
-
-	}
-	
-	/*
-	 *	Returns a host pointer to the normalized histogram data
-	 *	This is destroyed when this' destructor is called
-	 */
-	void retrieveNormalizedHistogram();
 
 	/*
 	 *	This creates a image with values of 0 where the pixels fall below
@@ -252,9 +323,11 @@ public:
 	 *	multiplyImage routine to turn the 1 values to the max values of
 	 *	the type
 	 */
-	void thresholdFilter()
+	template<typename ThresholdType>
+	void thresholdFilter(ThresholdType threshold)
 	{
-
+		cudaThresholdImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,threshold);
+		incrementBufferNumber();
 	}
 
 // End Cuda Operators
@@ -292,30 +365,40 @@ private:
 		ImagePixelType* inImage = bufferIn.getCurrentBuffer();
 
 		if (inImage!=NULL)
-			HANDLE_ERROR(cudaMemcpy(imageBuffers[currentBuffer],inImage,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyHostToHost));
+			HANDLE_ERROR(cudaMemcpy(imageBuffers[currentBuffer],inImage,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyDeviceToDevice));
+
+		if (bufferIn.reducedImageHost!=NULL)
+			memcpy(reducedImageHost,bufferIn.reducedImageHost,sizeof(ImagePixelType)*reducedDims.product());
+
+		if (bufferIn.reducedImageDevice!=NULL)
+			HANDLE_ERROR(cudaMemcpy(reducedImageDevice,bufferIn.reducedImageDevice,sizeof(ImagePixelType)*reducedDims.product(),cudaMemcpyDeviceToDevice));
 
 		if (bufferIn.histogramHost!=NULL)
 			memcpy(histogramHost,bufferIn.histogramHost,sizeof(unsigned int)*imageDims.product());
 
 		if (bufferIn.histogramDevice!=NULL)
-			HANDLE_ERROR(cudaMemcpy(histogramDevice,bufferIn.histogramDevice,sizeof(unsigned int)*NUM_BINS,cudaMemcpyHostToHost));
+			HANDLE_ERROR(cudaMemcpy(histogramDevice,bufferIn.histogramDevice,sizeof(unsigned int)*NUM_BINS,cudaMemcpyDeviceToDevice));
 
 		if (bufferIn.normalizedHistogramHost!=NULL)
 			memcpy(normalizedHistogramHost,bufferIn.normalizedHistogramHost,sizeof(double)*imageDims.product());
 
 		if (bufferIn.normalizedHistogramDevice!=NULL)
-			HANDLE_ERROR(cudaMemcpy(normalizedHistogramDevice,bufferIn.normalizedHistogramDevice,sizeof(double)*NUM_BINS,cudaMemcpyHostToHost));
+			HANDLE_ERROR(cudaMemcpy(normalizedHistogramDevice,bufferIn.normalizedHistogramDevice,sizeof(double)*NUM_BINS,cudaMemcpyDeviceToDevice));
 	}
 
 	void defaults()
 	{
 		imageDims = Vec<int>(-1,-1,-1);
+		reducedDims = Vec<int>(-1,-1,-1);
 		device = -1;
 		currentBuffer = -1;
 		for (int i=0; i<NUM_BUFFERS; ++i)
 		{
 			imageBuffers[i] = NULL;
 		}
+
+		reducedImageHost = NULL;
+		reducedImageDevice = NULL;
 		histogramHost = NULL;
 		histogramDevice = NULL;
 		normalizedHistogramHost = NULL;
@@ -327,33 +410,29 @@ private:
 		for (int i=0; i<NUM_BUFFERS; ++i)
 		{
 			if (imageBuffers[i]!=NULL)
-			{
 				HANDLE_ERROR(cudaFree(imageBuffers[0]));
-				imageBuffers[i] = NULL;
-			}
 		}
+
+		if (reducedImageHost!=NULL)
+			delete[] reducedImageHost;
+
+		if (reducedImageDevice!=NULL)
+			HANDLE_ERROR(cudaFree(reducedImageDevice));
 
 		if (histogramHost!=NULL)
-		{
 			delete[] histogramHost;
-		}
 
 		if (histogramDevice!=NULL)
-		{
 			HANDLE_ERROR(cudaFree(histogramDevice));
-			histogramDevice = NULL;
-		}
 
 		if (normalizedHistogramHost!=NULL)
-		{
 			delete[] normalizedHistogramHost;
-		}
 
 		if (normalizedHistogramDevice!=NULL)
-		{
 			HANDLE_ERROR(cudaFree(normalizedHistogramDevice));
-			normalizedHistogramDevice = NULL;
-		}
+
+
+		defaults();
 	}
 
 	ImagePixelType* getCurrentBuffer() const 
@@ -382,11 +461,14 @@ private:
 	}
 
 	Vec<int> imageDims;
+	Vec<int> reducedDims;
 	int device;
 	cudaDeviceProp deviceProp;
 	dim3 blocks, threads;
 	char currentBuffer;
 	ImagePixelType* imageBuffers[NUM_BUFFERS];
+	ImagePixelType* reducedImageHost;
+	ImagePixelType* reducedImageDevice;
 	unsigned int* histogramHost;
 	unsigned int* histogramDevice;
 	double* normalizedHistogramHost;
