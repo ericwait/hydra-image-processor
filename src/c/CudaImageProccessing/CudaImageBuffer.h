@@ -136,6 +136,12 @@ public:
 
 	Vec<int> getDimension() const {return imageDims;}
 	int getDevice() const {return device;}
+	void getROI(Vec<int> startPos, Vec<int> newSize)
+	{
+		// TODO: stub
+// 		cudaGetROI<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,startPos,newSize);
+// 		incrementBufferNumber();
+	}
 
 // End Setters / Getters
 
@@ -345,6 +351,8 @@ private:
 
 	void MemoryAllocation()
 	{
+		assert(sizeof(ImagePixelType)*imageDims.product()*NUM_BUFFERS < deviceProp.totalGlobalMem*.6);
+
 		for (int i=0; i<NUM_BUFFERS; ++i)
 		{
 			HANDLE_ERROR(cudaMalloc((void**)&imageBuffers[i],sizeof(ImagePixelType)*imageDims.product()));
