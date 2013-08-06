@@ -492,7 +492,10 @@ __global__ void cudaGetCoordinates(ImagePixelType* imageIn, Vec<int>* coordinate
 	}
 }
 
-__global__ void cudaFillCoordinates(Vec<int>* coordinatesIn, Vec<int>* coordinatesOut, Vec<int> imageDims, int overDimension);
+__global__ void cudaFillCoordinates(Vec<int>* coordinatesIn, Vec<int>* coordinatesOut, Vec<int> imageDims, int overDimension)
+{
+	;
+}
 
 template<typename T>
 __global__ void cudaReduceArray(T* arrayIn, T* arrayOut, unsigned int n)
@@ -638,5 +641,21 @@ __global__ void cudaMaximumIntensityProjection(ImagePixelType* imageIn, ImagePix
 		}
 
 		imageOut[x+y*imageDims.x] = maxVal;
+	}
+}
+
+template<typename ImagePixelType>
+__global__ void cudaGetROI(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, Vec<int> startPos, Vec<int> newSize)
+{
+	int x = threadIdx.x + blockIdx.x * blockDim.x;
+	int y = threadIdx.y	+ blockIdx.y * blockDim.y;
+	int z = threadIdx.z + blockIdx.z * blockDim.z;
+
+	if (   x>=startPos.x && x<imageDims.x && x<startPos.x+newSize.x
+		&& y>=startPos.y && y<imageDims.y && y<startPos.y+newSize.y
+		&& z>=startPos.z && z<imageDims.z && z<startPos.z+newSize.z)
+	{
+		unsigned int outIndex = (x-startPos.x)+(y-startPos.y)*newSize.x+(z-startPos.z)*newSize.y*newSize.x;
+		imageOut[outIndex] = imageIn[x+y*imageDims.x+z*imageDims.y*imageDims.x];
 	}
 }
