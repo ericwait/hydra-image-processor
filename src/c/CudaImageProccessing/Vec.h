@@ -82,8 +82,7 @@ public:
 	}
 
 	// Returns the linear memory map if this is the dimensions and the passed in Vec is the coordinate
-	template<typename K>
-	size_t linearAddressAt(Vec<K> coordinate) const
+	size_t linearAddressAt(Vec<T> coordinate) const
 	{
 		return x + y*coordinate.x + z*coordinate.y*coordinate.x;
 	}
