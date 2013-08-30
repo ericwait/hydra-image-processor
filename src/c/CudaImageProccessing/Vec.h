@@ -58,13 +58,50 @@ public:
 		return *this;
 	}
 
+	// Are all the values less then the passed in values
+	bool operator< (const Vec<T> inVec)
+	{
+		return x<inVec.x && y<inVec.y && z<inVec.z;
+	}
+
+	// Are all the values greater then the passed in values
+	bool operator> (const Vec<T> inVec)
+	{
+		return x>inVec.x && y>inVec.y && z>inVec.z;
+	}
+
+	bool operator== (const Vec<T> inVec)
+	{
+		return x==inVec.x && y==inVec.y && z==inVec.z;
+	}
+
+	// Returns the product of x*y*z
 	size_t product() const
 	{
 		return x*y*z;
 	}
 
+	// Returns the linear memory map if this is the dimensions and the passed in Vec is the coordinate
+	template<typename K>
+	size_t linearAddressAt(Vec<K> coordinate) const
+	{
+		return x + y*coordinate.x + z*coordinate.y*coordinate.x;
+	}
+
 	double EuclideanDistanceTo(Vec<T> other)
 	{
 		return sqrt((double)(SQR(x-other.x) + SQR(y-other.y) + SQR(z-other.z)));
+	}
+
+	// Returns the max value of x,y,z
+	T maxValue() const
+	{
+		return (x>y) ? ((x>z)?(x):(z)) : ((y>z)?(y):(z));
+	}
+
+	// Returns the min value of x,y,z
+	T minValue() const
+	{
+		return (x<y) ? ((x<z)?(x):(z)) : ((y<z)?(y):(z));
 	}
 };
