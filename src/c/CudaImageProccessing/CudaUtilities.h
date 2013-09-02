@@ -136,23 +136,31 @@ struct Lock
 
 	Lock()
 	{
+#if __CUDA_ARCH__ >= 200
 		int state = 0;
 		HANDLE_ERROR(cudaMalloc((void**)&mutex,sizeof(int)));
 		HANDLE_ERROR(cudaMemcpy(mutex,&state,sizeof(int),cudaMemcpyHostToDevice));
+#endif
 	}
 
 	~Lock()
 	{
+#if __CUDA_ARCH__ >= 200
 		cudaFree(mutex);
+#endif
 	}
 
 	__device__ void lock()
 	{
+#if __CUDA_ARCH__ >= 200
 		while(atomicCAS(mutex,0,1) != 0);
+#endif
 	}
 
 	__device__ void unlock()
 	{
+#if __CUDA_ARCH__ >= 200
 		atomicExch(mutex,0);
+#endif
 	}
 };
