@@ -13,7 +13,7 @@ public:
 // Constructor / Destructor
 //////////////////////////////////////////////////////////////////////////
 
-	CudaImageBuffer(Vec<int> dims, int device=0)
+	CudaImageBuffer(Vec<unsigned int> dims, int device=0)
 	{
 		defaults();
 
@@ -24,11 +24,11 @@ public:
 		MemoryAllocation();
 	}
 
-	CudaImageBuffer(int x, int y, int z, int device=0)
+	CudaImageBuffer(unsigned int x, unsigned int y, unsigned int z, int device=0)
 	{
 		defaults();
 
-		imageDims = Vec<int>(x,y,z);
+		imageDims = Vec<unsigned int>(x,y,z);
 		this->device = device;
 
 		deviceSetup();
@@ -39,7 +39,7 @@ public:
 	{
 		defaults();
 
-		imageDims = Vec<int>(n,1,1);
+		imageDims = Vec<unsigned int>(n,1,1);
 		this->device = device;
 
 		deviceSetup();
@@ -65,6 +65,7 @@ public:
 
 		clean();
 		copy(bufferIn);
+		return this;
 	}
 
 // End Copy Constructors
@@ -122,7 +123,7 @@ public:
 		return normalizedHistogramHost;
 	}
 
-	ImagePixelType* retrieveReducedImage(Vec<int>& reducedDims)
+	ImagePixelType* retrieveReducedImage(Vec<unsigned int>& reducedDims)
 	{
 		reducedDims = this->reducedDims;
 
@@ -134,7 +135,7 @@ public:
 		return reducedImageHost;
 	}
 
-	Vec<int> getDimension() const {return imageDims;}
+	Vec<unsigned int> getDimension() const {return imageDims;}
 	int getDevice() const {return device;}
 	void getROI(Vec<int> startPos, Vec<int> newSize)
 	{
@@ -312,10 +313,10 @@ public:
 	 */
 	void reduceImage(Vec<double> reductions)
 	{
-		reducedDims = Vec<int>(
-			imageDims.x/reductions.x,
-			imageDims.y/reductions.y,
-			imageDims.z/reductions.z);
+		reducedDims = Vec<unsigned int>(
+			(unsigned int)(imageDims.x/reductions.x),
+			(unsigned int)(imageDims.y/reductions.y),
+			(unsigned int)(imageDims.z/reductions.z));
 
 		cudaRuduceImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,reducedDims,reductions);
 		incrementBufferNumber();
@@ -396,8 +397,8 @@ private:
 
 	void defaults()
 	{
-		imageDims = Vec<int>(-1,-1,-1);
-		reducedDims = Vec<int>(-1,-1,-1);
+		imageDims = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
+		reducedDims = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
 		device = -1;
 		currentBuffer = -1;
 		for (int i=0; i<NUM_BUFFERS; ++i)
@@ -468,8 +469,8 @@ private:
 			currentBuffer = 0;
 	}
 
-	Vec<int> imageDims;
-	Vec<int> reducedDims;
+	Vec<unsigned int> imageDims;
+	Vec<unsigned int> reducedDims;
 	int device;
 	cudaDeviceProp deviceProp;
 	dim3 blocks, threads;

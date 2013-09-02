@@ -56,13 +56,13 @@ inline int _ConvertSMVer2Cores(int major, int minor)
 }
 // end of GPU Architecture definitions
 
-void calcBlockThread(const Vec<int>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads)
+void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads)
 {
 	if (dims.z==1)
 	{
 		if (dims.y==1)
 		{
-			if (dims.x<prop.maxThreadsPerBlock)
+			if (dims.x<(unsigned int)prop.maxThreadsPerBlock)
 			{
 				threads.x = dims.x;
 				threads.y = 1;
@@ -83,7 +83,7 @@ void calcBlockThread(const Vec<int>& dims, const cudaDeviceProp &prop, dim3 &blo
 		}
 		else
 		{
-			if (dims.x*dims.y<prop.maxThreadsPerBlock)
+			if (dims.x*dims.y<(unsigned int)prop.maxThreadsPerBlock)
 			{
 				threads.x = dims.x;
 				threads.y = dims.y;
@@ -106,7 +106,7 @@ void calcBlockThread(const Vec<int>& dims, const cudaDeviceProp &prop, dim3 &blo
 	}
 	else
 	{
-		if(dims.x*dims.y*dims.z < prop.maxThreadsPerBlock)
+		if(dims.x*dims.y*dims.z < (unsigned int)prop.maxThreadsPerBlock)
 		{
 			blocks.x = 1;
 			blocks.y = 1;

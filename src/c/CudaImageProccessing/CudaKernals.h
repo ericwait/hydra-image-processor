@@ -8,7 +8,7 @@
 __constant__ float kernal[MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM];
 
 template<typename ImagePixelType>
-__global__ void cudaMeanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, Vec<int> kernalDims)
+__global__ void cudaMeanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<int> kernalDims)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -42,7 +42,7 @@ __global__ void cudaMeanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut
 }
 
 template<typename ImagePixelType, typename FactorType>
-__global__ void cudaMultiplyImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, FactorType factor,
+__global__ void cudaMultiplyImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageDims, FactorType factor,
 	ImagePixelType minValue, ImagePixelType maxValue)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -58,7 +58,7 @@ __global__ void cudaMultiplyImage(ImagePixelType* imageIn, ImagePixelType* image
 
 template<typename ImagePixelType1, typename ImagePixelType2, typename ImagePixelType3, typename FactorType>
 __global__ void cudaAddTwoImagesWithFactor(ImagePixelType1* imageIn1, ImagePixelType2* imageIn2, ImagePixelType3* imageOut,
-	Vec<int> imageDims, FactorType factor)
+	Vec<unsigned int> imageDims, FactorType factor)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -99,7 +99,7 @@ __device__ ImagePixelType cudaFindMedian(ImagePixelType* vals, int numVals)
 }
 
 template<typename ImagePixelType>
-__global__ void cudaMedianFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, Vec<int> kernalDims)
+__global__ void cudaMedianFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<int> kernalDims)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -135,7 +135,7 @@ __global__ void cudaMedianFilter(ImagePixelType* imageIn, ImagePixelType* imageO
 }
 
 template<typename ImagePixelType1, typename ImagePixelType2>
-__global__ void cudaMultAddFilter(ImagePixelType1* imageIn, ImagePixelType2* imageOut, Vec<int> imageDims, Vec<int> kernalDims)
+__global__ void cudaMultAddFilter(ImagePixelType1* imageIn, ImagePixelType2* imageOut, Vec<unsigned int> imageDims, Vec<int> kernalDims)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -172,7 +172,7 @@ __global__ void cudaMultAddFilter(ImagePixelType1* imageIn, ImagePixelType2* ima
 }
 
 template<typename ImagePixelType>
-__global__ void cudaMinFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, Vec<int> kernalDims)
+__global__ void cudaMinFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<int> kernalDims)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -210,7 +210,7 @@ __global__ void cudaMinFilter(ImagePixelType* imageIn, ImagePixelType* imageOut,
 }
 
 template<typename ImagePixelType>
-__global__ void cudaMaxFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, Vec<int> kernalDims)
+__global__ void cudaMaxFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<int> kernalDims)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -248,7 +248,7 @@ __global__ void cudaMaxFilter(ImagePixelType* imageIn, ImagePixelType* imageOut,
 }
 
 template<typename ImagePixelType>
-__global__ void cudaHistogramCreate(ImagePixelType* imageIn, unsigned int* histogram, Vec<int> imageDims)
+__global__ void cudaHistogramCreate(ImagePixelType* imageIn, unsigned int* histogram, Vec<unsigned int> imageDims)
 {
 	//This code is modified from that of Sanders - Cuda by Example
 	__shared__ unsigned int tempHisto[NUM_BINS];
@@ -268,14 +268,14 @@ __global__ void cudaHistogramCreate(ImagePixelType* imageIn, unsigned int* histo
 	atomicAdd(&(histogram[threadIdx.x]), tempHisto[threadIdx.x]);
 }
 
-__global__ void cudaNormalizeHistogram(unsigned int* histogram, double* normHistogram, Vec<int> imageDims)
+__global__ void cudaNormalizeHistogram(unsigned int* histogram, double* normHistogram, Vec<unsigned int> imageDims)
 {
 	int x = blockIdx.x;
 	normHistogram[x] = (double)(histogram[x]) / (imageDims.x*imageDims.y*imageDims.z);
 }
 
 template<typename ImagePixelType, typename ThresholdType>
-__global__ void cudaThresholdImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, ThresholdType threshold)
+__global__ void cudaThresholdImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageDims, ThresholdType threshold)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -447,7 +447,7 @@ __global__ void cudaFindMinMax(ImagePixelType* arrayIn, ImagePixelType* minArray
 }
 
 template<typename ImagePixelType, typename ThresholdType>
-__global__ void cudaPolyTransferFuncImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, ThresholdType a,
+__global__ void cudaPolyTransferFuncImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageDims, ThresholdType a,
 	ThresholdType b, ThresholdType c, ThresholdType maxPixelValue, ThresholdType minPixelValue)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -470,7 +470,7 @@ __global__ void cudaPolyTransferFuncImage(ImagePixelType* imageIn, ImagePixelTyp
 }
 
 template<typename ImagePixelType, typename ThresholdType>
-__global__ void cudaGetCoordinates(ImagePixelType* imageIn, Vec<int>* coordinatesOut, Vec<int> imageDims, ThresholdType threshold)
+__global__ void cudaGetCoordinates(ImagePixelType* imageIn, Vec<int>* coordinatesOut, Vec<unsigned int> imageDims, ThresholdType threshold)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -492,7 +492,7 @@ __global__ void cudaGetCoordinates(ImagePixelType* imageIn, Vec<int>* coordinate
 	}
 }
 
-__global__ void cudaFillCoordinates(Vec<int>* coordinatesIn, Vec<int>* coordinatesOut, Vec<int> imageDims, int overDimension)
+__global__ void cudaFillCoordinates(Vec<int>* coordinatesIn, Vec<int>* coordinatesOut, Vec<unsigned int> imageDims, int overDimension)
 {
 	;
 }
@@ -592,7 +592,7 @@ __global__ void cudaReduceArray(T* arrayIn, T* arrayOut, unsigned int n)
 }
 
 template<typename ImagePixelType>
-__global__ void cudaRuduceImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageInDims, Vec<int> imageOutDims, Vec<double> reductions)
+__global__ void cudaRuduceImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageInDims, Vec<unsigned int> imageOutDims, Vec<double> reductions)
 {
 	unsigned int x = threadIdx.x + blockIdx.x * blockDim.x;
 	unsigned int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -623,7 +623,7 @@ __global__ void cudaRuduceImage(ImagePixelType* imageIn, ImagePixelType* imageOu
 }
 
 template<typename ImagePixelType>
-__global__ void cudaMaximumIntensityProjection(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims)
+__global__ void cudaMaximumIntensityProjection(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageDims)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -645,7 +645,7 @@ __global__ void cudaMaximumIntensityProjection(ImagePixelType* imageIn, ImagePix
 }
 
 template<typename ImagePixelType>
-__global__ void cudaGetROI(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<int> imageDims, Vec<int> startPos, Vec<int> newSize)
+__global__ void cudaGetROI(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<int> startPos, Vec<int> newSize)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y	+ blockIdx.y * blockDim.y;
