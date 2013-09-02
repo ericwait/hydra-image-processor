@@ -37,9 +37,9 @@ double* createCircleKernal(int rad, Vec<int>& kernalDims)
 
 double* createGaussianKernal(Vec<double> sigma, Vec<int>& kernalDims)
 {
-	kernalDims.x = 3*sigma.x;
-	kernalDims.y = 3*sigma.y;
-	kernalDims.z = 3*sigma.z;
+	kernalDims.x = (int)(3*sigma.x);
+	kernalDims.y = (int)(3*sigma.y);
+	kernalDims.z = (int)(3*sigma.z);
 
 	kernalDims.x = kernalDims.x%2==0 ? kernalDims.x+1 : kernalDims.x;
 	kernalDims.y = kernalDims.y%2==0 ? kernalDims.y+1 : kernalDims.y;

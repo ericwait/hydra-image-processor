@@ -76,7 +76,7 @@ void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, 
 				threads.x = prop.maxThreadsPerBlock;
 				threads.y = 1;
 				threads.z = 1;
-				blocks.x = ceil((float)dims.x/prop.maxThreadsPerBlock);
+				blocks.x = (int)ceil((float)dims.x/prop.maxThreadsPerBlock);
 				blocks.y = 1;
 				blocks.z = 1;
 			}
@@ -98,8 +98,8 @@ void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, 
 				threads.x = dim;
 				threads.y = dim;
 				threads.z = 1;
-				blocks.x = ceil((float)dims.x/dim);
-				blocks.y = ceil((float)dims.y/dim);
+				blocks.x = (int)ceil((float)dims.x/dim);
+				blocks.y = (int)ceil((float)dims.y/dim);
 				blocks.z = 1;
 			}
 		}
