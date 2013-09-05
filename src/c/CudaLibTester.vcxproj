@@ -19,33 +19,41 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="main.cu" />
+    <ClInclude Include="Common\CHelpers.h" />
+    <ClInclude Include="Common\Defines.h" />
+    <ClInclude Include="Common\Vec.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Common\CHelpers.h" />
-    <None Include="Common\CudaImageBuffer.h" />
-    <None Include="Common\CudaKernals.h" />
-    <None Include="Common\CudaUtilities.h" />
-    <None Include="Common\Defines.h" />
-    <None Include="Common\Vec.h" />
+    <ClInclude Include="Common\CudaImageBuffer.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="Common\CudaKernals.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="Common\CudaUtilities.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="main.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{385B5E1B-A569-4527-A8F4-C8A8B7D03531}</ProjectGuid>
-    <RootNamespace>CudaImageProccessing</RootNamespace>
+    <ProjectGuid>{6B92E36C-E848-4592-AD0C-A8951E6F92CA}</ProjectGuid>
+    <RootNamespace>CudaLibTester</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
@@ -58,49 +66,56 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 5.0.props" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 5.5.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\</OutDir>
-    <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\$(Configuration)_$(PlatformName)\</IntDir>
-    <IncludePath>$(CUDA_PATH)include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)Common;$(CUDA_PATH)include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
     <OutDir>$(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\$(Configuration)_$(PlatformName)\</IntDir>
-    <IncludePath>$(CUDA_PATH)include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\</OutDir>
-    <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\$(Configuration)_$(PlatformName)\</IntDir>
-    <IncludePath>$(CUDA_PATH)include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)Common;$(CUDA_PATH)include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
     <OutDir>$(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\$(Configuration)_$(PlatformName)\</IntDir>
-    <IncludePath>$(Solution)Common;$(CUDA_PATH)include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
+copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -112,46 +127,17 @@
 copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <CudaCompile>
-      <CodeGeneration>compute_20,sm_20;compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
+      <Include>
+      </Include>
     </CudaCompile>
-    <CudaLink>
-      <AdditionalLibraryDirectories>$(CUDA_PATH)lib\x32\</AdditionalLibraryDirectories>
-    </CudaLink>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
-    </ClCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-    <PostBuildEvent>
-      <Command>echo copy "$(CudaToolkitBinDir)\cudart64*.dll" "$(OutDir)"
-copy "$(CudaToolkitBinDir)\cudart64*.dll" "$(OutDir)"
-echo copy $(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\*.dll $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\.
-xcopy /T /I /Y $(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\*.dll $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\.
-copy $(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\*.dll $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\.
-echo copy $(SolutionDir)CudaImageProccessing\*.h $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\.
-copy $(SolutionDir)CudaImageProccessing\*.h $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\.
-echo copy $(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\*.lib $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\.
-copy $(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\*.lib $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\.</Command>
-    </PostBuildEvent>
     <CudaCompile>
-      <CodeGeneration>compute_20,sm_20;compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
       <TargetMachinePlatform>64</TargetMachinePlatform>
-      <Keep>true</Keep>
-      <PtxAsOptionV>true</PtxAsOptionV>
+      <CodeGeneration>compute_20,sm_20;compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
+      <Keep>false</Keep>
     </CudaCompile>
     <CudaLink>
       <AdditionalLibraryDirectories>$(CUDA_PATH)lib\x64\</AdditionalLibraryDirectories>
     </CudaLink>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -159,6 +145,27 @@ copy $(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\*.lib 
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
+copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -172,54 +179,20 @@ copy $(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\*.lib 
 copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <CudaCompile>
-      <CodeGeneration>compute_20,sm_20;compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
+      <Include>
+      </Include>
     </CudaCompile>
-    <CudaLink>
-      <AdditionalLibraryDirectories>$(CUDA_PATH)lib\x64\</AdditionalLibraryDirectories>
-    </CudaLink>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-    </ClCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-    <PostBuildEvent>
-      <Command>echo copy "$(CudaToolkitBinDir)\cudart64*.dll" "$(OutDir)"
-copy "$(CudaToolkitBinDir)\cudart64*.dll" "$(OutDir)"
-echo copy $(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\*.dll $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\.
-xcopy /T /I /Y $(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\*.dll $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\.
-copy $(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\*.dll $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\.
-echo copy $(SolutionDir)CudaImageProccessing\*.h $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\.
-copy $(SolutionDir)CudaImageProccessing\*.h $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\.
-echo copy $(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\*.lib $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\.
-copy $(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\*.lib $(SolutionDir)..\..\bin\$(Configuration)_$(PlatformName)\.</Command>
-    </PostBuildEvent>
     <CudaCompile>
-      <CodeGeneration>compute_20,sm_20;compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
-      <Keep>true</Keep>
       <TargetMachinePlatform>64</TargetMachinePlatform>
-      <PtxAsOptionV>false</PtxAsOptionV>
-      <CInterleavedPTX>false</CInterleavedPTX>
+      <CodeGeneration>compute_20,sm_20;compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
+      <Keep>false</Keep>
     </CudaCompile>
     <CudaLink>
       <AdditionalLibraryDirectories>$(CUDA_PATH)lib\x64\</AdditionalLibraryDirectories>
     </CudaLink>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 5.0.targets" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 5.5.targets" />
   </ImportGroup>
 </Project>

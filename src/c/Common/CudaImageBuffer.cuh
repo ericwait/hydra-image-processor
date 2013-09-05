@@ -2,8 +2,9 @@
 
 #include "defines.h"
 #include "Vec.h"
-#include "CudaKernals.h"
-#include "CudaUtilities.h"
+#include "CudaKernals.cuh"
+#include "CudaUtilities.cuh"
+#include "assert.h"
 
 template<typename ImagePixelType>
 class CudaImageBuffer
@@ -21,7 +22,7 @@ public:
 		this->device = device;
 
 		deviceSetup();
-		MemoryAllocation();
+		memoryAllocation();
 	}
 
 	CudaImageBuffer(unsigned int x, unsigned int y, unsigned int z, int device=0)
@@ -32,7 +33,7 @@ public:
 		this->device = device;
 
 		deviceSetup();
-		MemoryAllocation();
+		memoryAllocation();
 	}
 
 	CudaImageBuffer(int n, int device=0)
@@ -43,7 +44,7 @@ public:
 		this->device = device;
 
 		deviceSetup();
-		MemoryAllocation();
+		memoryAllocation();
 	}
 
 	~CudaImageBuffer()
@@ -65,7 +66,7 @@ public:
 
 		clean();
 		copy(bufferIn);
-		return this;
+		return *this;
 	}
 
 // End Copy Constructors
@@ -74,7 +75,7 @@ public:
 // Setters / Getters
 //////////////////////////////////////////////////////////////////////////
 
-	void loadImage(ImagePixelType* image)
+	void loadImage(const ImagePixelType* image)
 	{
 		incrementBufferNumber();
 		HANDLE_ERROR(cudaMemcpy(imageBuffers[currentBuffer],image,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyHostToDevice));
@@ -88,10 +89,10 @@ public:
 			return;
 		}
 
-		HANDLE_ERROR(cudaMemcpy(image,imageBuffers[currentBuffer],sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyDeviceToHost));
+		HANDLE_ERROR(cudaMemcpy((void*)imageOut,imageBuffers[currentBuffer],sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyDeviceToHost));
 	}
 
-		/*
+	/*
 	 *	Returns a host pointer to the histogram data
 	 *	This is destroyed when this' destructor is called
 	 *	Will call the needed histogram creation methods if not all ready
@@ -137,11 +138,9 @@ public:
 
 	Vec<unsigned int> getDimension() const {return imageDims;}
 	int getDevice() const {return device;}
-	void getROI(Vec<int> startPos, Vec<int> newSize)
+	void getROIimage()
 	{
 		// TODO: stub
-// 		cudaGetROI<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,startPos,newSize);
-// 		incrementBufferNumber();
 	}
 
 // End Setters / Getters
@@ -151,10 +150,20 @@ public:
 //////////////////////////////////////////////////////////////////////////
 
 	/*
+	 *	Add a constant to all pixel values
+	 */
+	template<typename T>
+	void addConstant(T additive)
+	{
+		cudaAddFactor<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,additive);
+		incrementBufferNumber();
+	}
+
+	/*
 	 *	Adds this image to the passed in one.  You can apply a factor
 	 *	which is multiplied to the passed in image prior to adding
 	 */
-	void addImageTo(const CudaImageBuffer* image, double factor)
+	void addImageWith(const CudaImageBuffer* image, double factor)
 	{
 		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims,factor);
 		incrementBufferNumber();
@@ -177,10 +186,10 @@ public:
 	 */ 
 	void calculateMinMax(ImagePixelType& minValue, ImagePixelType& maxValue)
 	{
-		double* maxValuesHost = new double[(blocks.x+1)/2];
-		double* minValuesHost = new double[(blocks.x+1)/2];
-		double* maxValuesDevice;
-		double* minValuesDevice;
+		ImagePixelType* maxValuesHost = new ImagePixelType[(blocks.x+1)/2];
+		ImagePixelType* minValuesHost = new ImagePixelType[(blocks.x+1)/2];
+		ImagePixelType* maxValuesDevice;
+		ImagePixelType* minValuesDevice;
 		
 		HANDLE_ERROR(cudaMalloc((void**)&maxValuesDevice,sizeof(double)*(blocks.x+1)/2));
 		HANDLE_ERROR(cudaMalloc((void**)&minValuesDevice,sizeof(double)*(blocks.x+1)/2));
@@ -239,11 +248,20 @@ public:
 
 	/*
 	 *	produce an image that is the maximum value in z for each (x,y)
+	 *	***THIS REDUCES THE BUFFER SIZE***
+	 *	Images that are copied out of the buffer will have a z size of 1
 	 */
 	void maximumIntensityProjection()
 	{
-		cudaMaximumIntensityProjection<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims);
+		ImagePixelType* mipImage;
+		HANDLE_ERROR(cudaMalloc((void**)&mipImage,sizeof(ImagePixelType)*imageDims.x*imageDims.y));
+		cudaMaximumIntensityProjection<<<blocks,threads>>>(getCurrentBuffer(),mipImage,imageDims);
+		
+		imageDims.z = 1;
+		reduceMemory();
 		incrementBufferNumber();
+
+		HANDLE_ERROR(cudaMemcpy(getCurrentBuffer(),mipImage,imageDims.product(),cudaMemcpyDeviceToDevice));
 	}
 
 	/*
@@ -286,6 +304,15 @@ public:
 	}
 
 	/*
+	 *	Multiplies this image to the passed in one.
+	 */
+	void multiplyImageWith(const CudaImageBuffer* image)
+	{
+		cudaMultiplyTwoImages<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims);
+		incrementBufferNumber();
+	}
+
+	/*
 	 *	Takes a histogram that is on the card and normalizes it
 	 *	Will generate the original histogram if one doesn't already exist
 	 *	Use retrieveNormalizedHistogram() to get a host pointer
@@ -301,11 +328,37 @@ public:
 	}
 
 	/*
+	 *	Raise each pixel to a power
+	 */
+	template<typename PowerType>
+	void pow(PowerType p)
+	{
+		cudaPow<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,p);
+		incrementBufferNumber();
+	}
+
+	/*
 	 *	Calculates the total sum of the buffer's data
 	 */
 	template<typename Sumtype>
-	void reduceArray(Sumtype& sum)
+	void sumArray(Sumtype& sum)
 	{
+		dim3 localBlocks, localThreads;
+		double* deviceSum;
+		double* hostSum;
+		calcBlockThread(Vec<unsigned int>(imageDims.product(),1,1),deviceProp,localBlocks,localThreads);
+
+		HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*threads.x));
+		cudaSumArray<<<localBlocks,localThreads,sizeof(double)*threads.x>>>(getCurrentBuffer(),deviceSum,imageDims.product());
+		
+		hostSum = new double[threads.x];
+		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*threads.x,cudaMemcpyDeviceToHost));
+
+		sum = 0;
+		for (int i=0; i<threads.x; ++i)
+		{
+			sum += hostSum[i];
+		}
 	}
 
 	/*
@@ -350,9 +403,25 @@ private:
 		calcBlockThread(imageDims,deviceProp,blocks,threads);
 	}
 
-	void MemoryAllocation()
+	void memoryAllocation()
 	{
 		assert(sizeof(ImagePixelType)*imageDims.product()*NUM_BUFFERS < deviceProp.totalGlobalMem*.6);
+
+		for (int i=0; i<NUM_BUFFERS; ++i)
+		{
+			HANDLE_ERROR(cudaMalloc((void**)&imageBuffers[i],sizeof(ImagePixelType)*imageDims.product()));
+		}
+
+		currentBuffer = -1;
+	}
+
+	void reduceMemory()
+	{
+		for (int i=0; i<NUM_BUFFERS; ++i)
+		{
+			if (imageBuffers[i]!=NULL)
+				HANDLE_ERROR(cudaFree(imageBuffers[0]));
+		}
 
 		for (int i=0; i<NUM_BUFFERS; ++i)
 		{
@@ -368,7 +437,7 @@ private:
 		device = bufferIn.getDevice();
 
 		defaults();
-		MemoryAllocation();
+		memoryAllocation();
 
 		currentBuffer = 0;
 		ImagePixelType* inImage = bufferIn.getCurrentBuffer();
@@ -469,8 +538,12 @@ private:
 			currentBuffer = 0;
 	}
 
+	//This is the original size of the loaded images and the size of the buffers
 	Vec<unsigned int> imageDims;
+
+	//This is the dimensions of the reduced image buffer
 	Vec<unsigned int> reducedDims;
+
 	int device;
 	cudaDeviceProp deviceProp;
 	dim3 blocks, threads;

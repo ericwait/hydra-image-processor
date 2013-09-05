@@ -11,28 +11,28 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CudaImageProccessing\cudaKernals.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CudaImageProccessing\CudaUtilities.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CudaImageProccessing\Vec.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CudaImageProccessing\CudaImageBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CudaImageProccessing\CHelpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CudaImageProccessing\Defines.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="CudaImageProccessing\main.cu">
+    <CudaCompile Include="main.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Common\CudaKernals.h">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Common\CudaUtilities.h">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Common\CudaImageBuffer.h">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Common\Defines.h">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Common\Vec.h">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Common\CHelpers.h">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

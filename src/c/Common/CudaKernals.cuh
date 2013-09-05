@@ -23,15 +23,15 @@ __global__ void cudaMeanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut
 		int iIm=-halfKwidth, iKer=0;
 		for (; iIm<halfKwidth; ++iIm, ++iKer)
 		{
-			int imXcoor = min(max(x+iIm,0),imageDims.x-1);
+			int imXcoor = MIN(MAX(x+iIm,0),imageDims.x-1);
 			int jIm=-halfKheight, jKer=0;
 			for (; jIm<halfKheight; ++jIm, ++jKer)
 			{
-				int imYcoor = min(max(y+jIm,0),imageDims.y-1);
+				int imYcoor = MIN(MAX(y+jIm,0),imageDims.y-1);
 				int kIm=-halfKdepth, kKer=0;
 				for (; kIm<halfKdepth; ++kIm, ++kKer)
 				{
-					int imZcoor = min(max(z+kIm,0),imageDims.z-1);
+					int imZcoor = MIN(MAX(z+kIm,0),imageDims.z-1);
 					val += imageIn[imXcoor + imYcoor*imageDims.x + imZcoor*imageDims.y*imageDims.x];
 				}
 			}
@@ -51,14 +51,14 @@ __global__ void cudaMultiplyImage(ImagePixelType* imageIn, ImagePixelType* image
 
 	if (x<imageDims.x && y<imageDims.y && z<imageDims.z)
 	{
-		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = min(maxValue,max(minValue,
+		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = MIN(maxValue,MAX(minValue,
 			factor * imageIn[x+y*imageDims.x+z*imageDims.y*imageDims.x]));
 	}
 }
 
-template<typename ImagePixelType1, typename ImagePixelType2, typename ImagePixelType3, typename FactorType>
+template<typename ImagePixelType1, typename ImagePixelType2, typename ImagePixelType3>//, typename FactorType>
 __global__ void cudaAddTwoImagesWithFactor(ImagePixelType1* imageIn1, ImagePixelType2* imageIn2, ImagePixelType3* imageOut,
-	Vec<unsigned int> imageDims, FactorType factor)
+	Vec<unsigned int> imageDims, double factor)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -67,7 +67,35 @@ __global__ void cudaAddTwoImagesWithFactor(ImagePixelType1* imageIn1, ImagePixel
 	if (x<imageDims.x && y<imageDims.y && z<imageDims.z)
 	{
 		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = 
-			imageIn1[x+y*imageDims.x+z*imageDims.y*imageDims.x] - factor*imageIn2[x+y*imageDims.x+z*imageDims.y*imageDims.x];
+			imageIn1[x+y*imageDims.x+z*imageDims.y*imageDims.x] + factor*imageIn2[x+y*imageDims.x+z*imageDims.y*imageDims.x];
+	}
+}
+
+template<typename ImagePixelType1, typename ImagePixelType2, typename ImagePixelType3>
+__global__ void cudaMultiplyTwoImages(ImagePixelType1* imageIn1, ImagePixelType2* imageIn2, ImagePixelType3* imageOut,
+	Vec<unsigned int> imageDims)
+{
+	int x = threadIdx.x + blockIdx.x * blockDim.x;
+	int y = threadIdx.y + blockIdx.y * blockDim.y;
+	int z = threadIdx.z + blockIdx.z * blockDim.z;
+
+	if (x<imageDims.x && y<imageDims.y && z<imageDims.z)
+	{
+		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = 
+			imageIn1[x+y*imageDims.x+z*imageDims.y*imageDims.x] * imageIn2[x+y*imageDims.x+z*imageDims.y*imageDims.x];
+	}
+}
+
+ template<typename ImagePixelType, typename FactorType>
+ __global__ void cudaAddFactor(ImagePixelType* imageIn1, ImagePixelType* imageOut, Vec<unsigned int> imageDims, FactorType factor)
+{
+	int x = threadIdx.x + blockIdx.x * blockDim.x;
+	int y = threadIdx.y + blockIdx.y * blockDim.y;
+	int z = threadIdx.z + blockIdx.z * blockDim.z;
+
+	if (x<imageDims.x && y<imageDims.y && z<imageDims.z)
+	{
+		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = imageIn1[x+y*imageDims.x+z*imageDims.y*imageDims.x] + factor;
 	}
 }
 
@@ -114,22 +142,22 @@ __global__ void cudaMedianFilter(ImagePixelType* imageIn, ImagePixelType* imageO
 		int iIm=-halfKwidth, iKer=0;
 		for (; iIm<halfKwidth; ++iIm, ++iKer)
 		{
-			int imXcoor = min(max(x+iIm,0),imageDims.x-1);
+			int imXcoor = MIN(MAX(x+iIm,0),imageDims.x-1);
 			int jIm=-halfKheight, jKer=0;
 			for (; jIm<halfKheight; ++jIm, ++jKer)
 			{
-				int imYcoor = min(max(y+jIm,0),imageDims.y-1);
+				int imYcoor = MIN(MAX(y+jIm,0),imageDims.y-1);
 				int kIm=-halfKdepth, kKer=0;
 				for (; kIm<halfKdepth; ++kIm, ++kKer)
 				{
-					int imZcoor = min(max(z+kIm,0),imageDims.z-1);
+					int imZcoor = MIN(MAX(z+kIm,0),imageDims.z-1);
 					vals[iKer+jKer*kernalDims.y+kKer*kernalDims.y*kernalDims.x] = 
 						imageIn[imXcoor + imYcoor*imageDims.x + imZcoor*imageDims.y*imageDims.x];
 				}
 			}
 		}
 
-		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = findMedian(vals,kernalDims.x*kernalDims.y*kernalDims.z);
+		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = cudaFindMedian(vals,kernalDims.x*kernalDims.y*kernalDims.z);
 		delete vals;
 	}
 }
@@ -151,15 +179,15 @@ __global__ void cudaMultAddFilter(ImagePixelType1* imageIn, ImagePixelType2* ima
 		double kernFactor = 0;
 		for (; iIm<halfKwidth; ++iIm, ++iKer)
 		{
-			int imXcoor = min(max(x+iIm,0),imageDims.x-1);
+			int imXcoor = MIN(MAX(x+iIm,0),imageDims.x-1);
 			int jIm=-halfKheight, jKer=0;
 			for (; jIm<halfKheight; ++jIm, ++jKer)
 			{
-				int imYcoor = min(max(y+jIm,0),imageDims.y-1);
+				int imYcoor = MIN(MAX(y+jIm,0),imageDims.y-1);
 				int kIm=-halfKdepth, kKer=0;
 				for (; kIm<halfKdepth; ++kIm, ++kKer)
 				{
-					int imZcoor = min(max(z+kIm,0),imageDims.z-1);
+					int imZcoor = MIN(MAX(z+kIm,0),imageDims.z-1);
 					kernFactor += kernal[iKer+jKer*kernalDims.x+kKer*kernalDims.y*kernalDims.x];
 					val += imageIn[imXcoor + imYcoor*imageDims.x + imZcoor*imageDims.y*imageDims.x] * 
 						kernal[iKer+jKer*kernalDims.x+kKer*kernalDims.y*kernalDims.x];
@@ -187,18 +215,18 @@ __global__ void cudaMinFilter(ImagePixelType* imageIn, ImagePixelType* imageOut,
 		int iIm=-halfKwidth, iKer=0;
 		for (; iIm<halfKwidth; ++iIm, ++iKer)
 		{
-			int imXcoor = min(max(x+iIm,0),imageDims.x-1);
+			int imXcoor = MIN(MAX(x+iIm,0),imageDims.x-1);
 			int jIm=-halfKheight, jKer=0;
 			for (; jIm<halfKheight; ++jIm, ++jKer)
 			{
-				int imYcoor = min(max(y+jIm,0),imageDims.y-1);
+				int imYcoor = MIN(MAX(y+jIm,0),imageDims.y-1);
 				int kIm=-halfKdepth, kKer=0;
 				for (; kIm<halfKdepth; ++kIm, ++kKer)
 				{
-					int imZcoor = min(max(z+kIm,0),imageDims.z-1);
+					int imZcoor = MIN(MAX(z+kIm,0),imageDims.z-1);
 					if(kernal[iKer+jKer*kernalDims.x+kKer*kernalDims.y*kernalDims.x]>0)
 					{
-						minVal = min((float)minVal, imageIn[imXcoor + imYcoor*imageDims.x + imZcoor*imageDims.y*imageDims.x]*
+						minVal = MIN((float)minVal, imageIn[imXcoor + imYcoor*imageDims.x + imZcoor*imageDims.y*imageDims.x]*
 							kernal[iKer+jKer*kernalDims.x+kKer*kernalDims.y*kernalDims.x]);
 					}
 				}
@@ -225,18 +253,18 @@ __global__ void cudaMaxFilter(ImagePixelType* imageIn, ImagePixelType* imageOut,
 		int iIm=-halfKwidth, iKer=0;
 		for (; iIm<halfKwidth; ++iIm, ++iKer)
 		{
-			int imXcoor = min(max(x+iIm,0),imageDims.x-1);
+			int imXcoor = MIN(MAX(x+iIm,0),imageDims.x-1);
 			int jIm=-halfKheight, jKer=0;
 			for (; jIm<halfKheight; ++jIm, ++jKer)
 			{
-				int imYcoor = min(max(y+jIm,0),imageDims.y-1);
+				int imYcoor = MIN(MAX(y+jIm,0),imageDims.y-1);
 				int kIm=-halfKdepth, kKer=0;
 				for (; kIm<halfKdepth; ++kIm, ++kKer)
 				{
-					int imZcoor = min(max(z+kIm,0),imageDims.z-1);
+					int imZcoor = MIN(MAX(z+kIm,0),imageDims.z-1);
 					if(kernal[iKer+jKer*kernalDims.x+kKer*kernalDims.y*kernalDims.x]>0)
 					{
-						maxVal = max((float)maxVal, imageIn[imXcoor + imYcoor*imageDims.x + imZcoor*imageDims.y*imageDims.x]*
+						maxVal = MAX((float)maxVal, imageIn[imXcoor + imYcoor*imageDims.x + imZcoor*imageDims.y*imageDims.x]*
 							kernal[iKer+jKer*kernalDims.x+kKer*kernalDims.y*kernalDims.x]);
 					}
 				}
@@ -266,6 +294,27 @@ __global__ void cudaHistogramCreate(ImagePixelType* imageIn, unsigned int* histo
 
 	__syncthreads();
 	atomicAdd(&(histogram[threadIdx.x]), tempHisto[threadIdx.x]);
+}
+
+template<typename ImagePixelType>
+__global__ void cudaHistogramCreateROI(ImagePixelType* imageIn, unsigned int* histogram, Vec<unsigned int> starts, Vec<unsigned int> sizes)
+{
+// 	//This code is modified from that of Sanders - Cuda by Example
+// 	__shared__ unsigned int tempHisto[NUM_BINS];
+// 	tempHisto[threadIdx.x] = 0;
+// 	__syncthreads();
+// 
+// 	int i = threadIdx.x + blockIdx.x * blockDim.x;
+// 	int stride = blockDim.x * gridDim.x;
+// 
+// 	while (i < imageDims.x*imageDims.y*imageDims.z)
+// 	{
+// 		atomicAdd(&(tempHisto[imageIn[i]]), 1);
+// 		i += stride;
+// 	}
+// 
+// 	__syncthreads();
+// 	atomicAdd(&(histogram[threadIdx.x]), tempHisto[threadIdx.x]);
 }
 
 __global__ void cudaNormalizeHistogram(unsigned int* histogram, double* normHistogram, Vec<unsigned int> imageDims)
@@ -447,8 +496,8 @@ __global__ void cudaFindMinMax(ImagePixelType* arrayIn, ImagePixelType* minArray
 }
 
 template<typename ImagePixelType, typename ThresholdType>
-__global__ void cudaPolyTransferFuncImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageDims, ThresholdType a,
-	ThresholdType b, ThresholdType c, ThresholdType maxPixelValue, ThresholdType minPixelValue)
+__global__ void cudaPolyTransferFuncImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageDims,
+	ThresholdType a, ThresholdType b, ThresholdType c, ImagePixelType maxPixelValue, ImagePixelType minPixelValue)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -463,42 +512,14 @@ __global__ void cudaPolyTransferFuncImage(ImagePixelType* imageIn, ImagePixelTyp
 		if (multiplier>1)
 			multiplier = 1;
 
-		ImagePixelType newPixelVal = min(maxPixelValue,max(minPixelValue,multiplier * maxPixelValue));
+		ImagePixelType newPixelVal = MIN((double)maxPixelValue,MAX((double)minPixelValue,multiplier * maxPixelValue));
 
 		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = newPixelVal;
 	}
 }
 
-template<typename ImagePixelType, typename ThresholdType>
-__global__ void cudaGetCoordinates(ImagePixelType* imageIn, Vec<int>* coordinatesOut, Vec<unsigned int> imageDims, ThresholdType threshold)
-{
-	int x = threadIdx.x + blockIdx.x * blockDim.x;
-	int y = threadIdx.y + blockIdx.y * blockDim.y;
-	int z = threadIdx.z + blockIdx.z * blockDim.z;
-
-	if (x<imageDims.x && y<imageDims.y && z<imageDims.z)
-	{
-		Vec<int> coord;
-		if (imageIn[x+y*imageDims.x+z*imageDims.y*imageDims.x]>threshold)
-		{
-			coord = Vec<int>(x,y,z);
-		}
-		else
-		{
-			coord = Vec<int>(-1,-1,-1);
-		}
-
-		coordinatesOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = coord;
-	}
-}
-
-__global__ void cudaFillCoordinates(Vec<int>* coordinatesIn, Vec<int>* coordinatesOut, Vec<unsigned int> imageDims, int overDimension)
-{
-	;
-}
-
 template<typename T>
-__global__ void cudaReduceArray(T* arrayIn, T* arrayOut, unsigned int n)
+__global__ void cudaSumArray(T* arrayIn, double* arrayOut, unsigned int n)
 
 {
 	//This algorithm was used from a this website:
@@ -602,11 +623,11 @@ __global__ void cudaRuduceImage(ImagePixelType* imageIn, ImagePixelType* imageOu
 	{
 		double val = 0;
 		unsigned int xMin = x*reductions.x;
-		unsigned int xMax = min(x*reductions.x+reductions.x,(double)imageInDims.x);
+		unsigned int xMax = MIN(x*reductions.x+reductions.x,(double)imageInDims.x);
 		unsigned int yMin = y*reductions.y;
-		unsigned int yMax = min(y*reductions.y+reductions.y,(double)imageInDims.y);
+		unsigned int yMax = MIN(y*reductions.y+reductions.y,(double)imageInDims.y);
 		unsigned int zMin = z*reductions.z;
-		unsigned int zMax = min(z*reductions.z+reductions.z,(double)imageInDims.z);
+		unsigned int zMax = MIN(z*reductions.z+reductions.z,(double)imageInDims.z);
 
 		for (unsigned int i=xMin; i<xMax; ++i)
 		{
@@ -657,5 +678,18 @@ __global__ void cudaGetROI(ImagePixelType* imageIn, ImagePixelType* imageOut, Ve
 	{
 		unsigned int outIndex = (x-startPos.x)+(y-startPos.y)*newSize.x+(z-startPos.z)*newSize.y*newSize.x;
 		imageOut[outIndex] = imageIn[x+y*imageDims.x+z*imageDims.y*imageDims.x];
+	}
+}
+
+template<typename ImagePixelType, typename PowerType>
+__global__ void cudaPow(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageDims, PowerType p)
+{
+	int x = threadIdx.x + blockIdx.x * blockDim.x;
+	int y = threadIdx.y + blockIdx.y * blockDim.y;
+	int z = threadIdx.z + blockIdx.z * blockDim.z;
+
+	if (x<imageDims.x && y<imageDims.y && z<imageDims.z)
+	{
+		imageOut[x+y*imageDims.x+z*imageDims.y*imageDims.x] = pow(imageIn[x+y*imageDims.x+z*imageDims.y*imageDims.x],p);
 	}
 }
