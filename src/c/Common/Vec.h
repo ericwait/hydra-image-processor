@@ -49,14 +49,14 @@ public:
 		return outVec;
 	}
 
-	Vec<T>& operator= (const Vec<T> inVec)
-	{
-		x = inVec.x;
-		y = inVec.y;
-		z = inVec.z;
-
-		return *this;
-	}
+// 	Vec<T>& operator= (const Vec<T> inVec)
+// 	{
+// 		x = inVec.x;
+// 		y = inVec.y;
+// 		z = inVec.z;
+// 
+// 		return *this;
+// 	}
 
 	// Are all the values less then the passed in values
 	bool operator< (const Vec<T> inVec)
@@ -64,10 +64,20 @@ public:
 		return x<inVec.x && y<inVec.y && z<inVec.z;
 	}
 
+	bool operator<= (const Vec<T> inVec)
+	{
+		return x<=inVec.x && y<=inVec.y && z<=inVec.z;
+	}
+
 	// Are all the values greater then the passed in values
 	bool operator> (const Vec<T> inVec)
 	{
 		return x>inVec.x && y>inVec.y && z>inVec.z;
+	}
+
+	bool operator>= (const Vec<T> inVec)
+	{
+		return x>=inVec.x && y>=inVec.y && z>=inVec.z;
 	}
 
 	bool operator== (const Vec<T> inVec)
