@@ -54,7 +54,7 @@ public:
 	// 		x = inVec.x;
 	// 		y = inVec.y;
 	// 		z = inVec.z;
-	// 
+
 	// 		return *this;
 	// 	}
 
