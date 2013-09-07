@@ -346,16 +346,16 @@ public:
 		dim3 localBlocks, localThreads;
 		double* deviceSum;
 		double* hostSum;
-		calcBlockThread(Vec<unsigned int>(imageDims.product(),1,1),deviceProp,localBlocks,localThreads);
+		calcBlockThread(Vec<unsigned int>((unsigned int)imageDims.product(),1,1),deviceProp,localBlocks,localThreads);
 
-		HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*threads.x));
-		cudaSumArray<<<localBlocks,localThreads,sizeof(double)*threads.x>>>(getCurrentBuffer(),deviceSum,imageDims.product());
+		HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*localThreads.x));
+		cudaSumArray<<<localBlocks,localThreads,sizeof(double)*localThreads.x>>>(getCurrentBuffer(),deviceSum,(unsigned int)imageDims.product());
 		
-		hostSum = new double[threads.x];
-		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*threads.x,cudaMemcpyDeviceToHost));
+		hostSum = new double[localThreads.x];
+		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*localThreads.x,cudaMemcpyDeviceToHost));
 
 		sum = 0;
-		for (int i=0; i<threads.x; ++i)
+		for (unsigned int i=0; i<localThreads.x; ++i)
 		{
 			sum += hostSum[i];
 		}
@@ -420,7 +420,7 @@ private:
 		for (int i=0; i<NUM_BUFFERS; ++i)
 		{
 			if (imageBuffers[i]!=NULL)
-				HANDLE_ERROR(cudaFree(imageBuffers[0]));
+				HANDLE_ERROR(cudaFree(imageBuffers[i]));
 		}
 
 		for (int i=0; i<NUM_BUFFERS; ++i)
@@ -433,10 +433,11 @@ private:
 
 	void copy(const CudaImageBuffer<ImagePixelType>& bufferIn)
 	{
+		defaults();
+
 		imageDims = bufferIn.getDimension();
 		device = bufferIn.getDevice();
 
-		defaults();
 		memoryAllocation();
 
 		currentBuffer = 0;
@@ -488,7 +489,7 @@ private:
 		for (int i=0; i<NUM_BUFFERS; ++i)
 		{
 			if (imageBuffers[i]!=NULL)
-				HANDLE_ERROR(cudaFree(imageBuffers[0]));
+				HANDLE_ERROR(cudaFree(imageBuffers[i]));
 		}
 
 		if (reducedImageHost!=NULL)
