@@ -81,7 +81,7 @@ public:
 		HANDLE_ERROR(cudaMemcpy(imageBuffers[currentBuffer],image,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyHostToDevice));
 	}
 
-	void retrieveImage(ImagePixelType& imageOut)
+	void retrieveImage(ImagePixelType* imageOut)
 	{
 		if (currentBuffer<0 || currentBuffer>NUM_BUFFERS)
 		{
@@ -138,9 +138,41 @@ public:
 
 	Vec<unsigned int> getDimension() const {return imageDims;}
 	int getDevice() const {return device;}
-	void getROIimage()
+	size_t getBufferSize() {return bufferSize;}
+
+	/*
+	 *	This will replace this' cuda image buffer with the region of interest
+	 *	from the passed in buffer.
+	 *	****ENSURE that this' original size is big enough to accommodates the
+	 *	the new buffer size.  Does not do error checking thus far.
+	 */
+	void copyROI(const CudaImageBuffer<ImagePixelType>& bufferIn, Vec<unsigned int> starts, Vec<unsigned int> sizes)
 	{
-		// TODO: stub
+		assert(sizes.product()<=bufferSize);
+
+		imageDims = sizes;
+		device = bufferIn.getDevice();
+		currentBuffer = 0;
+		bufferIn.getRoi(getCurrentBuffer(),starts,sizes);
+		calcBlockThread(imageDims,deviceProp,blocks,threads);
+	}
+
+	void copyImage(const CudaImageBuffer<ImagePixelType>& bufferIn)
+	{
+		assert(bufferIn.getDimension().product()<=bufferSize);
+
+		imageDims = bufferIn.getDimension();
+		device = bufferIn.getDevice();
+		calcBlockThread(imageDims,deviceProp,blocks,threads);
+
+		currentBuffer = 0;
+		HANDLE_ERROR(cudaMemcpy(getCurrentBuffer(),bufferIn.getCudaBuffer(),sizeof(ImagePixelType)*imageDims.product(),
+			cudaMemcpyDeviceToDevice));
+	}
+
+	const ImagePixelType* getCudaBuffer() const
+	{
+		return getCurrentBuffer();
 	}
 
 // End Setters / Getters
@@ -248,20 +280,14 @@ public:
 
 	/*
 	 *	produce an image that is the maximum value in z for each (x,y)
-	 *	***THIS REDUCES THE BUFFER SIZE***
 	 *	Images that are copied out of the buffer will have a z size of 1
 	 */
 	void maximumIntensityProjection()
 	{
-		ImagePixelType* mipImage;
-		HANDLE_ERROR(cudaMalloc((void**)&mipImage,sizeof(ImagePixelType)*imageDims.x*imageDims.y));
-		cudaMaximumIntensityProjection<<<blocks,threads>>>(getCurrentBuffer(),mipImage,imageDims);
-		
+		cudaMaximumIntensityProjection<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims);
 		imageDims.z = 1;
-		reduceMemory();
+		calcBlockThread(imageDims,deviceProp,blocks,threads);
 		incrementBufferNumber();
-
-		HANDLE_ERROR(cudaMemcpy(getCurrentBuffer(),mipImage,imageDims.product(),cudaMemcpyDeviceToDevice));
 	}
 
 	/*
@@ -293,7 +319,7 @@ public:
 	}
 
 	/*
-	 *	Sets each pixel by multiplying by the orignal value and clamping
+	 *	Sets each pixel by multiplying by the original value and clamping
 	 *	between minValue and maxValue
 	 */
 	template<typename FactorType>
@@ -348,14 +374,16 @@ public:
 		double* hostSum;
 		calcBlockThread(Vec<unsigned int>((unsigned int)imageDims.product(),1,1),deviceProp,localBlocks,localThreads);
 
+		localBlocks.x = (localBlocks.x+1) / 2;
+
 		HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*localThreads.x));
 		cudaSumArray<<<localBlocks,localThreads,sizeof(double)*localThreads.x>>>(getCurrentBuffer(),deviceSum,(unsigned int)imageDims.product());
 		
 		hostSum = new double[localThreads.x];
-		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*localThreads.x,cudaMemcpyDeviceToHost));
+		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*localBlocks.x,cudaMemcpyDeviceToHost));
 
 		sum = 0;
-		for (unsigned int i=0; i<localThreads.x; ++i)
+		for (unsigned int i=0; i<localBlocks.x; ++i)
 		{
 			sum += hostSum[i];
 		}
@@ -413,6 +441,7 @@ private:
 		}
 
 		currentBuffer = -1;
+		bufferSize = imageDims.product();
 	}
 
 	void reduceMemory()
@@ -431,6 +460,11 @@ private:
 		currentBuffer = -1;
 	}
 
+	void getRoi(ImagePixelType* roi, Vec<unsigned int> starts, Vec<unsigned int> sizes) const
+	{
+		cudaGetROI<<<blocks,threads>>>(getCurrentBuffer(),roi,imageDims,starts,sizes);
+	}
+
 	void copy(const CudaImageBuffer<ImagePixelType>& bufferIn)
 	{
 		defaults();
@@ -439,6 +473,8 @@ private:
 		device = bufferIn.getDevice();
 
 		memoryAllocation();
+
+		calcBlockThread(imageDims,deviceProp,blocks,threads);
 
 		currentBuffer = 0;
 		ImagePixelType* inImage = bufferIn.getCurrentBuffer();
@@ -510,7 +546,6 @@ private:
 		if (normalizedHistogramDevice!=NULL)
 			HANDLE_ERROR(cudaFree(normalizedHistogramDevice));
 
-
 		defaults();
 	}
 
@@ -538,6 +573,9 @@ private:
 		if (currentBuffer>=NUM_BUFFERS)
 			currentBuffer = 0;
 	}
+
+	//This is the maximum size that the current buffer can handle 
+	size_t bufferSize;
 
 	//This is the original size of the loaded images and the size of the buffers
 	Vec<unsigned int> imageDims;

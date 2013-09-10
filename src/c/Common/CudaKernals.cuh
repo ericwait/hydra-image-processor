@@ -666,7 +666,8 @@ __global__ void cudaMaximumIntensityProjection(ImagePixelType* imageIn, ImagePix
 }
 
 template<typename ImagePixelType>
-__global__ void cudaGetROI(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<int> startPos, Vec<int> newSize)
+__global__ void cudaGetROI(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> startPos,
+	Vec<unsigned int> newSize)
 {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y	+ blockIdx.y * blockDim.y;

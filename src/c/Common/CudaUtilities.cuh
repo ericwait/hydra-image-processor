@@ -6,9 +6,9 @@
 
 static void HandleError( cudaError_t err, const char *file, int line ) 
 {
+	char* errorMessage = new char[255];
 	if (err != cudaSuccess) 
 	{
-		char* errorMessage = new char[255];
 		sprintf(errorMessage, "%s in %s at line %d\n", cudaGetErrorString( err ),	file, line );
 		throw(errorMessage);
 	}
