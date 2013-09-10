@@ -2,7 +2,7 @@
 
 #include "Defines.h"
 
-template<typename T>
+	template<typename T>
 class Vec
 {
 public:
@@ -49,14 +49,14 @@ public:
 		return outVec;
 	}
 
-	Vec<T>& operator= (const Vec<T> inVec)
-	{
-		x = inVec.x;
-		y = inVec.y;
-		z = inVec.z;
-
-		return *this;
-	}
+	// 	Vec<T>& operator= (const Vec<T> inVec)
+	// 	{
+	// 		x = inVec.x;
+	// 		y = inVec.y;
+	// 		z = inVec.z;
+	// 
+	// 		return *this;
+	// 	}
 
 	// Are all the values less then the passed in values
 	bool operator< (const Vec<T> inVec)
@@ -64,10 +64,20 @@ public:
 		return x<inVec.x && y<inVec.y && z<inVec.z;
 	}
 
+	bool operator<= (const Vec<T> inVec)
+	{
+		return x<=inVec.x && y<=inVec.y && z<=inVec.z;
+	}
+
 	// Are all the values greater then the passed in values
 	bool operator> (const Vec<T> inVec)
 	{
 		return x>inVec.x && y>inVec.y && z>inVec.z;
+	}
+
+	bool operator>= (const Vec<T> inVec)
+	{
+		return x>=inVec.x && y>=inVec.y && z>=inVec.z;
 	}
 
 	bool operator== (const Vec<T> inVec)
@@ -84,7 +94,7 @@ public:
 	// Returns the linear memory map if this is the dimensions and the passed in Vec is the coordinate
 	size_t linearAddressAt(Vec<T> coordinate) const
 	{
-		return x + y*coordinate.x + z*coordinate.y*coordinate.x;
+		return coordinate.x + coordinate.y*x + coordinate.z*y*x;
 	}
 
 	double EuclideanDistanceTo(Vec<T> other)
