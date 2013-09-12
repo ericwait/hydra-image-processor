@@ -1,7 +1,9 @@
 #pragma once
 
 #include "defines.h"
+#define DEVICE_VEC
 #include "Vec.h"
+#undef DEVICE_VEC
 #include "CudaKernals.cuh"
 #include "CudaUtilities.cuh"
 #include "assert.h"
@@ -255,6 +257,9 @@ public:
 			if (minValue > minValuesHost[i])
 				minValue = minValuesHost[i];
 		}
+
+		delete[] maxValuesHost;
+		delete[] minValuesHost;
 	}
 
 	/*
@@ -411,27 +416,24 @@ public:
 	template<typename Sumtype>
 	void sumArray(Sumtype& sum)
 	{
-		dim3 localBlocks, localThreads;
-		double* deviceSum;
-		double* hostSum;
-		calcBlockThread(Vec<unsigned int>((unsigned int)imageDims.product(),1,1),deviceProp,localBlocks,localThreads);
+		calcBlockThread(Vec<unsigned int>(imageDims.product(),1,1),deviceProp,sumBlocks,sumThreads);
+		sumBlocks.x = (sumBlocks.x+1) / 2;
 
-		localBlocks.x = (localBlocks.x+1) / 2;
+		cudaSumArray<<<sumBlocks,sumThreads,sizeof(double)*sumThreads.x>>>(getCurrentBuffer(),deviceSum,(unsigned int)imageDims.product());
 #ifdef _DEBUG
 		gpuErrchk( cudaPeekAtLastError() );
 #endif // _DEBUG
 
-		HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*localThreads.x));
-		cudaSumArray<<<localBlocks,localThreads,sizeof(double)*localThreads.x>>>(getCurrentBuffer(),deviceSum,(unsigned int)imageDims.product());
-		
-		hostSum = new double[localThreads.x];
-		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*localBlocks.x,cudaMemcpyDeviceToHost));
+		hostSum = new double[sumBlocks.x];
+		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*sumBlocks.x,cudaMemcpyDeviceToHost));
 
 		sum = 0;
-		for (unsigned int i=0; i<localBlocks.x; ++i)
+		for (unsigned int i=0; i<sumBlocks.x; ++i)
 		{
 			sum += hostSum[i];
 		}
+
+		delete[] hostSum;
 	}
 
 	/*
@@ -493,6 +495,12 @@ private:
 
 		currentBuffer = -1;
 		bufferSize = imageDims.product();
+
+		calcBlockThread(Vec<unsigned int>((unsigned int)imageDims.product(),1,1),deviceProp,sumBlocks,sumThreads);
+
+		sumBlocks.x = (sumBlocks.x+1) / 2;
+
+		HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*sumBlocks.x));
 	}
 
 	void reduceMemory()
@@ -645,4 +653,7 @@ private:
 	unsigned int* histogramDevice;
 	double* normalizedHistogramHost;
 	double* normalizedHistogramDevice;
+	dim3 sumBlocks, sumThreads;
+	double* deviceSum;
+	double* hostSum;
 };
