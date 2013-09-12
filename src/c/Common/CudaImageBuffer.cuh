@@ -12,9 +12,9 @@ template<typename ImagePixelType>
 class CudaImageBuffer
 {
 public:
-//////////////////////////////////////////////////////////////////////////
-// Constructor / Destructor
-//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	// Constructor / Destructor
+	//////////////////////////////////////////////////////////////////////////
 
 	CudaImageBuffer(Vec<unsigned int> dims, int device=0)
 	{
@@ -54,11 +54,11 @@ public:
 		clean();
 	}
 
-// End Constructor / Destructor
+	// End Constructor / Destructor
 
-//////////////////////////////////////////////////////////////////////////
-// Copy Constructors
-//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	// Copy Constructors
+	//////////////////////////////////////////////////////////////////////////
 
 	CudaImageBuffer (const CudaImageBuffer<ImagePixelType>& bufferIn){copy(bufferIn);}
 	CudaImageBuffer& operator=(const CudaImageBuffer<ImagePixelType>& bufferIn)
@@ -71,11 +71,11 @@ public:
 		return *this;
 	}
 
-// End Copy Constructors
+	// End Copy Constructors
 
-//////////////////////////////////////////////////////////////////////////
-// Setters / Getters
-//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	// Setters / Getters
+	//////////////////////////////////////////////////////////////////////////
 
 	void loadImage(const ImagePixelType* image)
 	{
@@ -95,10 +95,10 @@ public:
 	}
 
 	/*
-	 *	Returns a host pointer to the histogram data
-	 *	This is destroyed when this' destructor is called
-	 *	Will call the needed histogram creation methods if not all ready
-	 */
+	*	Returns a host pointer to the histogram data
+	*	This is destroyed when this' destructor is called
+	*	Will call the needed histogram creation methods if not all ready
+	*/
 	unsigned int* retrieveHistogram(int& returnSize)
 	{
 		if (histogramDevice==NULL)
@@ -109,12 +109,12 @@ public:
 
 		return histogramHost;
 	}
-	
+
 	/*
-	 *	Returns a host pointer to the normalized histogram data
-	 *	This is destroyed when this' destructor is called
-	 *	Will call the needed histogram creation methods if not all ready
-	 */
+	*	Returns a host pointer to the normalized histogram data
+	*	This is destroyed when this' destructor is called
+	*	Will call the needed histogram creation methods if not all ready
+	*/
 	double* retrieveNormalizedHistogram(int& returnSize)
 	{
 		if (normalizedHistogramDevice==NULL)
@@ -143,11 +143,11 @@ public:
 	size_t getBufferSize() {return bufferSize;}
 
 	/*
-	 *	This will replace this' cuda image buffer with the region of interest
-	 *	from the passed in buffer.
-	 *	****ENSURE that this' original size is big enough to accommodates the
-	 *	the new buffer size.  Does not do error checking thus far.
-	 */
+	*	This will replace this' cuda image buffer with the region of interest
+	*	from the passed in buffer.
+	*	****ENSURE that this' original size is big enough to accommodates the
+	*	the new buffer size.  Does not do error checking thus far.
+	*/
 	void copyROI(const CudaImageBuffer<ImagePixelType>& bufferIn, Vec<unsigned int> starts, Vec<unsigned int> sizes)
 	{
 		assert(sizes.product()<=bufferSize);
@@ -177,15 +177,15 @@ public:
 		return getCurrentBuffer();
 	}
 
-// End Setters / Getters
+	// End Setters / Getters
 
-//////////////////////////////////////////////////////////////////////////
-// Cuda Operators (Alphabetical order)
-//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	// Cuda Operators (Alphabetical order)
+	//////////////////////////////////////////////////////////////////////////
 
 	/*
-	 *	Add a constant to all pixel values
-	 */
+	*	Add a constant to all pixel values
+	*/
 	template<typename T>
 	void addConstant(T additive)
 	{
@@ -197,9 +197,9 @@ public:
 	}
 
 	/*
-	 *	Adds this image to the passed in one.  You can apply a factor
-	 *	which is multiplied to the passed in image prior to adding
-	 */
+	*	Adds this image to the passed in one.  You can apply a factor
+	*	which is multiplied to the passed in image prior to adding
+	*/
 	void addImageWith(const CudaImageBuffer* image, double factor)
 	{
 		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims,factor);
@@ -210,10 +210,10 @@ public:
 	}
 
 	/*
-	 *	New pixel values will be a*x^2 + b*x + c where x is the original
-	 *	pixel value.  This new value will be clamped between the min and
-	 *	max values.
-	 */
+	*	New pixel values will be a*x^2 + b*x + c where x is the original
+	*	pixel value.  This new value will be clamped between the min and
+	*	max values.
+	*/
 	template<typename ThresholdType>
 	void applyPolyTransformation(ThresholdType a, ThresholdType b, ThresholdType c, ImagePixelType minValue, ImagePixelType maxValue)
 	{
@@ -225,15 +225,15 @@ public:
 	}
 
 	/*
-	 *	This will find the min and max values of the image
-	 */ 
+	*	This will find the min and max values of the image
+	*/ 
 	void calculateMinMax(ImagePixelType& minValue, ImagePixelType& maxValue)
 	{
 		ImagePixelType* maxValuesHost = new ImagePixelType[(blocks.x+1)/2];
 		ImagePixelType* minValuesHost = new ImagePixelType[(blocks.x+1)/2];
 		ImagePixelType* maxValuesDevice;
 		ImagePixelType* minValuesDevice;
-		
+
 		HANDLE_ERROR(cudaMalloc((void**)&maxValuesDevice,sizeof(double)*(blocks.x+1)/2));
 		HANDLE_ERROR(cudaMalloc((void**)&minValuesDevice,sizeof(double)*(blocks.x+1)/2));
 
@@ -282,16 +282,16 @@ public:
 	}
 
 	/*
-	 *	Will smooth the image using the given sigmas for each dimension
-	 */ 
+	*	Will smooth the image using the given sigmas for each dimension
+	*/ 
 	void gaussianFilter(Vec<double> sigmas)
 	{
 	}
 
 	/*
-	 *	Sets each pixel to the max value of its neighborhood
-	 *	Dilates structures
-	 */ 
+	*	Sets each pixel to the max value of its neighborhood
+	*	Dilates structures
+	*/ 
 	void maxFilter(Vec<int> neighborhood)
 	{
 		cudaMaxFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
@@ -302,9 +302,9 @@ public:
 	}
 
 	/*
-	 *	produce an image that is the maximum value in z for each (x,y)
-	 *	Images that are copied out of the buffer will have a z size of 1
-	 */
+	*	produce an image that is the maximum value in z for each (x,y)
+	*	Images that are copied out of the buffer will have a z size of 1
+	*/
 	void maximumIntensityProjection()
 	{
 		cudaMaximumIntensityProjection<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims);
@@ -317,8 +317,8 @@ public:
 	}
 
 	/*
-	 *	Filters image where each pixel is the mean of its neighborhood 
-	 */
+	*	Filters image where each pixel is the mean of its neighborhood 
+	*/
 	void meanFilter(Vec<int> neighborhood)
 	{
 		cudaMeanFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
@@ -329,8 +329,8 @@ public:
 	}
 
 	/*
-	 *	Filters image where each pixel is the median of its neighborhood
-	 */
+	*	Filters image where each pixel is the median of its neighborhood
+	*/
 	void medianFilter(Vec<int> neighborhood)
 	{
 		cudaMedianFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
@@ -341,9 +341,9 @@ public:
 	}
 
 	/*
-	 *	Sets each pixel to the min value of its neighborhood
-	 *	Erodes structures
-	 */ 
+	*	Sets each pixel to the min value of its neighborhood
+	*	Erodes structures
+	*/ 
 	void minFilter(Vec<int> neighborhood)
 	{
 		cudaMinFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
@@ -354,9 +354,9 @@ public:
 	}
 
 	/*
-	 *	Sets each pixel by multiplying by the original value and clamping
-	 *	between minValue and maxValue
-	 */
+	*	Sets each pixel by multiplying by the original value and clamping
+	*	between minValue and maxValue
+	*/
 	template<typename FactorType>
 	void multiplyImage(FactorType factor, ImagePixelType minValue, ImagePixelType maxValue)
 	{
@@ -368,8 +368,8 @@ public:
 	}
 
 	/*
-	 *	Multiplies this image to the passed in one.
-	 */
+	*	Multiplies this image to the passed in one.
+	*/
 	void multiplyImageWith(const CudaImageBuffer* image)
 	{
 		cudaMultiplyTwoImages<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims);
@@ -380,10 +380,10 @@ public:
 	}
 
 	/*
-	 *	Takes a histogram that is on the card and normalizes it
-	 *	Will generate the original histogram if one doesn't already exist
-	 *	Use retrieveNormalizedHistogram() to get a host pointer
-	 */
+	*	Takes a histogram that is on the card and normalizes it
+	*	Will generate the original histogram if one doesn't already exist
+	*	Use retrieveNormalizedHistogram() to get a host pointer
+	*/
 	void normalizeHistogram()
 	{
 		if(histogramDevice==NULL)
@@ -398,8 +398,8 @@ public:
 	}
 
 	/*
-	 *	Raise each pixel to a power
-	 */
+	*	Raise each pixel to a power
+	*/
 	template<typename PowerType>
 	void pow(PowerType p)
 	{
@@ -411,8 +411,8 @@ public:
 	}
 
 	/*
-	 *	Calculates the total sum of the buffer's data
-	 */
+	*	Calculates the total sum of the buffer's data
+	*/
 	template<typename Sumtype>
 	void sumArray(Sumtype& sum)
 	{
@@ -437,8 +437,8 @@ public:
 	}
 
 	/*
-	 *	Will reduce the size of the image by the factors passed in
-	 */
+	*	Will reduce the size of the image by the factors passed in
+	*/
 	void reduceImage(Vec<double> reductions)
 	{
 		reducedDims = Vec<unsigned int>(
@@ -454,13 +454,13 @@ public:
 	}
 
 	/*
-	 *	This creates a image with values of 0 where the pixels fall below
-	 *	the threshold and 1 where equal or greater than the threshold
-	 *	
-	 *	If you want a viewable image after this, you may want to use the
-	 *	multiplyImage routine to turn the 1 values to the max values of
-	 *	the type
-	 */
+	*	This creates a image with values of 0 where the pixels fall below
+	*	the threshold and 1 where equal or greater than the threshold
+	*	
+	*	If you want a viewable image after this, you may want to use the
+	*	multiplyImage routine to turn the 1 values to the max values of
+	*	the type
+	*/
 	template<typename ThresholdType>
 	void thresholdFilter(ThresholdType threshold)
 	{
@@ -471,7 +471,7 @@ public:
 		incrementBufferNumber();
 	}
 
-// End Cuda Operators
+	// End Cuda Operators
 
 
 private:
