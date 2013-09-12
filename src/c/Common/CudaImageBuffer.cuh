@@ -188,6 +188,9 @@ public:
 	void addConstant(T additive)
 	{
 		cudaAddFactor<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,additive);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -198,6 +201,9 @@ public:
 	void addImageWith(const CudaImageBuffer* image, double factor)
 	{
 		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims,factor);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -210,6 +216,9 @@ public:
 	void applyPolyTransformation(ThresholdType a, ThresholdType b, ThresholdType c, ImagePixelType minValue, ImagePixelType maxValue)
 	{
 		cudaPolyTransferFuncImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,a,b,c,maxValue,minValue);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -228,6 +237,9 @@ public:
 
 		cudaFindMinMax<<<blocks.x,threads.x,2*sizeof(double)*threads.x>>>(getCurrentBuffer(),minValuesDevice,maxValuesDevice,
 			imageDims.product());
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 
 		HANDLE_ERROR(cudaMemcpy(maxValuesHost,maxValuesDevice,sizeof(double)*(blocks.x)/2,cudaMemcpyDeviceToHost));
 		HANDLE_ERROR(cudaMemcpy(minValuesHost,minValuesDevice,sizeof(double)*(blocks.x)/2,cudaMemcpyDeviceToHost));
@@ -259,6 +271,9 @@ public:
 
 		cudaHistogramCreate<<<deviceProp.multiProcessorCount*2,NUM_BINS,sizeof(unsigned int)*NUM_BINS>>>
 			(getCurrentBuffer(),histogramDevice,imageDims);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 	}
 
 	/*
@@ -275,6 +290,9 @@ public:
 	void maxFilter(Vec<int> neighborhood)
 	{
 		cudaMaxFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -285,6 +303,9 @@ public:
 	void maximumIntensityProjection()
 	{
 		cudaMaximumIntensityProjection<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 		imageDims.z = 1;
 		calcBlockThread(imageDims,deviceProp,blocks,threads);
 		incrementBufferNumber();
@@ -296,6 +317,9 @@ public:
 	void meanFilter(Vec<int> neighborhood)
 	{
 		cudaMeanFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -305,6 +329,9 @@ public:
 	void medianFilter(Vec<int> neighborhood)
 	{
 		cudaMedianFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -315,6 +342,9 @@ public:
 	void minFilter(Vec<int> neighborhood)
 	{
 		cudaMinFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -326,6 +356,9 @@ public:
 	void multiplyImage(FactorType factor, ImagePixelType minValue, ImagePixelType maxValue)
 	{
 		cudaMultiplyImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,factor,minValue,maxValue);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -335,6 +368,9 @@ public:
 	void multiplyImageWith(const CudaImageBuffer* image)
 	{
 		cudaMultiplyTwoImages<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -351,6 +387,9 @@ public:
 		normalizedHistogramHost = new double[NUM_BINS];
 		HANDLE_ERROR(cudaMalloc((void**)&normalizedHistogramDevice,NUM_BINS*sizeof(double)));
 		cudaNormalizeHistogram<<<NUM_BINS,1>>>(histogramDevice,normalizedHistogramDevice,imageDims);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 	}
 
 	/*
@@ -360,6 +399,9 @@ public:
 	void pow(PowerType p)
 	{
 		cudaPow<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,p);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -375,6 +417,9 @@ public:
 		calcBlockThread(Vec<unsigned int>((unsigned int)imageDims.product(),1,1),deviceProp,localBlocks,localThreads);
 
 		localBlocks.x = (localBlocks.x+1) / 2;
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 
 		HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*localThreads.x));
 		cudaSumArray<<<localBlocks,localThreads,sizeof(double)*localThreads.x>>>(getCurrentBuffer(),deviceSum,(unsigned int)imageDims.product());
@@ -400,6 +445,9 @@ public:
 			(unsigned int)(imageDims.z/reductions.z));
 
 		cudaRuduceImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,reducedDims,reductions);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -415,6 +463,9 @@ public:
 	void thresholdFilter(ThresholdType threshold)
 	{
 		cudaThresholdImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,threshold);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 		incrementBufferNumber();
 	}
 

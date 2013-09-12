@@ -56,6 +56,15 @@ inline int _ConvertSMVer2Cores(int major, int minor)
 }
 // end of GPU Architecture definitions
 
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, char *file, int line, bool abort=true)
+{
+	if (code != cudaSuccess) 
+	{
+		fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+	}
+}
+
 void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads)
 {
 	if (dims.z==1)
