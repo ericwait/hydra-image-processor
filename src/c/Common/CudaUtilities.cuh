@@ -1,5 +1,6 @@
 #pragma once
 
+#define DEVICE_VEC
 #include "Vec.h"
 #include "cuda_runtime.h"
 #include <stdio.h>
@@ -12,6 +13,7 @@ static void HandleError( cudaError_t err, const char *file, int line )
 		sprintf(errorMessage, "%s in %s at line %d\n", cudaGetErrorString( err ),	file, line );
 		throw(errorMessage);
 	}
+	//delete[] errorMessage;
 }
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
@@ -103,7 +105,7 @@ void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, 
 			} 
 			else
 			{
-				int dim = (int)sqrt((double)prop.maxThreadsPerBlock*prop.maxThreadsPerBlock);
+				int dim = (int)sqrt((double)prop.maxThreadsPerBlock);
 				threads.x = dim;
 				threads.y = dim;
 				threads.z = 1;
