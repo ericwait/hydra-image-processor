@@ -416,7 +416,7 @@ public:
 	template<typename Sumtype>
 	void sumArray(Sumtype& sum)
 	{
-		calcBlockThread(Vec<unsigned int>(imageDims.product(),1,1),deviceProp,sumBlocks,sumThreads);
+		calcBlockThread(Vec<unsigned int>((unsigned int)imageDims.product(),1,1),deviceProp,sumBlocks,sumThreads);
 		sumBlocks.x = (sumBlocks.x+1) / 2;
 
 		cudaSumArray<<<sumBlocks,sumThreads,sizeof(double)*sumThreads.x>>>(getCurrentBuffer(),deviceSum,(unsigned int)imageDims.product());
