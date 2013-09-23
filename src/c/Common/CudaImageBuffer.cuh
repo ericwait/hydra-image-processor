@@ -79,19 +79,31 @@ public:
 
 	void loadImage(const ImagePixelType* image)
 	{
+		calcBlockThread(imageDims,deviceProp,blocks,threads);
 		incrementBufferNumber();
 		HANDLE_ERROR(cudaMemcpy(imageBuffers[currentBuffer],image,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyHostToDevice));
 	}
 
-	void retrieveImage(ImagePixelType* imageOut)
+	/*
+	 *	This will use the pointer that has been passed in to fill.  
+	 *	Ensure that it is big enough to hold the current buffer.
+	 *
+	 *  If no pointer is provided, then new heap memory will be allocated
+	 *  and a pointer to this memory returned.
+	 *  
+	 *  Clean-up of each of these are your responsibility
+	 */
+	ImagePixelType* retrieveImage(ImagePixelType* imageOut=NULL)
 	{
 		if (currentBuffer<0 || currentBuffer>NUM_BUFFERS)
 		{
-			imageOut = NULL;
-			return;
+			return NULL;
 		}
+		if (imageOut==NULL)
+			imageOut = new ImagePixelType[imageDims.product()];
 
 		HANDLE_ERROR(cudaMemcpy((void*)imageOut,imageBuffers[currentBuffer],sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyDeviceToHost));
+		return imageOut;
 	}
 
 	/*
@@ -202,7 +214,11 @@ public:
 	*/
 	void addImageWith(const CudaImageBuffer* image, double factor)
 	{
-		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims,factor);
+		calcBlockThread(imageDims,deviceProp,blocks,threads);
+		ImagePixelType mn = std::numeric_limits<ImagePixelType>::min();
+		ImagePixelType mx = std::numeric_limits<ImagePixelType>::max();
+		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),
+			imageDims,factor,mn,mx);
 #ifdef _DEBUG
 		gpuErrchk( cudaPeekAtLastError() );
 #endif // _DEBUG
