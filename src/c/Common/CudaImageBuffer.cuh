@@ -483,6 +483,16 @@ public:
 		incrementBufferNumber();
 	}
 
+	void unmix(CudaImageBuffer* image)
+	{
+		cudaUnmixing<<<blocks,threads>>>(getCurrentBuffer(),image->getCudaBuffer(),getNextBuffer(),image->getNextBuffer(),imageDims);
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
+		incrementBufferNumber();
+		image->incrementBufferNumber();
+	}
+
 	// End Cuda Operators
 
 

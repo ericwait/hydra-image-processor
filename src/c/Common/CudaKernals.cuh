@@ -754,3 +754,39 @@ __global__ void cudaPow(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<u
 	if (coordinate<imageDims)
 		imageOut[imageDims.linearAddressAt(coordinate)] = pow(imageIn[imageDims.linearAddressAt(coordinate)],p);
 }
+
+template<typename ImagePixelType>
+__global__ void cudaUnmixing(const ImagePixelType* imageIn1, const ImagePixelType* imageIn2, ImagePixelType* imageOut1, ImagePixelType* imageOut2,
+	Vec<unsigned int> hostImageDims)
+{
+	DeviceVec<unsigned int> imageDims = hostImageDims;
+	DeviceVec<unsigned int> coordinate;
+	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
+	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
+	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
+
+	if (coordinate<imageDims)
+	{
+		if (max(imageIn1[imageDims.linearAddressAt(coordinate)],imageIn2[imageDims.linearAddressAt(coordinate)])==
+			imageIn1[imageDims.linearAddressAt(coordinate)])
+		{
+			imageOut1[imageDims.linearAddressAt(coordinate)] = imageIn1[imageDims.linearAddressAt(coordinate)];
+
+			imageOut2[imageDims.linearAddressAt(coordinate)] = 
+				max(0, imageIn2[imageDims.linearAddressAt(coordinate)] - imageIn1[imageDims.linearAddressAt(coordinate)]);
+		}
+		else if (max(imageIn1[imageDims.linearAddressAt(coordinate)],imageIn2[imageDims.linearAddressAt(coordinate)])==
+			imageIn2[imageDims.linearAddressAt(coordinate)])
+		{
+			imageOut1[imageDims.linearAddressAt(coordinate)] = 
+				max(0, imageIn1[imageDims.linearAddressAt(coordinate)] - imageIn2[imageDims.linearAddressAt(coordinate)]);
+
+			imageOut2[imageDims.linearAddressAt(coordinate)] = imageIn2[imageDims.linearAddressAt(coordinate)];
+		}
+		else
+		{
+			imageOut1[imageDims.linearAddressAt(coordinate)] = imageIn1[imageDims.linearAddressAt(coordinate)];
+			imageOut2[imageDims.linearAddressAt(coordinate)] = imageIn2[imageDims.linearAddressAt(coordinate)];
+		}
+	}
+}
