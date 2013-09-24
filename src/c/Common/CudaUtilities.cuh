@@ -74,11 +74,12 @@ void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, 
 	{
 		if (dims.y==1)
 		{
-			if (dims.x<(unsigned int)prop.maxThreadsPerBlock)
+			if (dims.x<prop.maxThreadsPerBlock)
 			{
 				threads.x = dims.x;
 				threads.y = 1;
 				threads.z = 1;
+
 				blocks.x = 1;
 				blocks.y = 1;
 				blocks.z = 1;
@@ -88,6 +89,7 @@ void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, 
 				threads.x = prop.maxThreadsPerBlock;
 				threads.y = 1;
 				threads.z = 1;
+
 				blocks.x = (int)ceil((float)dims.x/prop.maxThreadsPerBlock);
 				blocks.y = 1;
 				blocks.z = 1;
@@ -95,11 +97,12 @@ void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, 
 		}
 		else
 		{
-			if (dims.x*dims.y<(unsigned int)prop.maxThreadsPerBlock)
+			if (dims.x*dims.y<prop.maxThreadsPerBlock)
 			{
 				threads.x = dims.x;
 				threads.y = dims.y;
 				threads.z = 1;
+
 				blocks.x = 1;
 				blocks.y = 1;
 				blocks.z = 1;
@@ -107,9 +110,11 @@ void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, 
 			else
 			{
 				int dim = (int)sqrt((double)prop.maxThreadsPerBlock);
+
 				threads.x = dim;
 				threads.y = dim;
 				threads.z = 1;
+
 				blocks.x = (int)ceil((float)dims.x/dim);
 				blocks.y = (int)ceil((float)dims.y/dim);
 				blocks.z = 1;
@@ -118,19 +123,21 @@ void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, 
 	}
 	else
 	{
-		if(dims.x*dims.y*dims.z < (unsigned int)prop.maxThreadsPerBlock)
+		if(dims.x*dims.y*dims.z < prop.maxThreadsPerBlock)
 		{
-			blocks.x = 1;
-			blocks.y = 1;
-			blocks.z = 1;
 			threads.x = dims.x;
 			threads.y = dims.y;
 			threads.z = dims.z;
+
+			blocks.x = 1;
+			blocks.y = 1;
+			blocks.z = 1;
 		}
 		else
 		{
 			int dim = (int)pow((float)prop.maxThreadsPerBlock,1/3.0f);
 			int extra = (prop.maxThreadsPerBlock-dim*dim*dim)/(dim*dim);
+
 			threads.x = dim + extra;
 			threads.y = dim;
 			threads.z = dim;
