@@ -79,7 +79,7 @@ public:
 
 	void loadImage(const ImagePixelType* image)
 	{
-		calcBlockThread(imageDims,deviceProp,blocks,threads);
+		updateBlockThread();
 		incrementBufferNumber();
 		HANDLE_ERROR(cudaMemcpy(imageBuffers[currentBuffer],image,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyHostToDevice));
 	}
@@ -168,7 +168,7 @@ public:
 		device = bufferIn.getDevice();
 		currentBuffer = 0;
 		bufferIn.getRoi(getCurrentBuffer(),starts,sizes);
-		calcBlockThread(imageDims,deviceProp,blocks,threads);
+		updateBlockThread();
 	}
 
 	void copyImage(const CudaImageBuffer<ImagePixelType>& bufferIn)
@@ -177,7 +177,7 @@ public:
 
 		imageDims = bufferIn.getDimension();
 		device = bufferIn.getDevice();
-		calcBlockThread(imageDims,deviceProp,blocks,threads);
+		updateBlockThread();
 
 		currentBuffer = 0;
 		HANDLE_ERROR(cudaMemcpy(getCurrentBuffer(),bufferIn.getCudaBuffer(),sizeof(ImagePixelType)*imageDims.product(),
@@ -214,7 +214,6 @@ public:
 	*/
 	void addImageWith(const CudaImageBuffer* image, double factor)
 	{
-		calcBlockThread(imageDims,deviceProp,blocks,threads);
 		ImagePixelType mn = std::numeric_limits<ImagePixelType>::min();
 		ImagePixelType mx = std::numeric_limits<ImagePixelType>::max();
 		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),
@@ -328,7 +327,7 @@ public:
 		gpuErrchk( cudaPeekAtLastError() );
 #endif // _DEBUG
 		imageDims.z = 1;
-		calcBlockThread(imageDims,deviceProp,blocks,threads);
+		updateBlockThread();
 		incrementBufferNumber();
 	}
 
@@ -432,9 +431,6 @@ public:
 	template<typename Sumtype>
 	void sumArray(Sumtype& sum)
 	{
-		calcBlockThread(Vec<unsigned int>((unsigned int)imageDims.product(),1,1),deviceProp,sumBlocks,sumThreads);
-		sumBlocks.x = (sumBlocks.x+1) / 2;
-
 		cudaSumArray<<<sumBlocks,sumThreads,sizeof(double)*sumThreads.x>>>(getCurrentBuffer(),deviceSum,(unsigned int)imageDims.product());
 #ifdef _DEBUG
 		gpuErrchk( cudaPeekAtLastError() );
@@ -493,11 +489,17 @@ public:
 private:
 	CudaImageBuffer();
 
+	void updateBlockThread()
+	{
+		calcBlockThread(imageDims,deviceProp,blocks,threads);
+		calcBlockThread(Vec<unsigned int>((unsigned int)imageDims.product(),1,1),deviceProp,sumBlocks,sumThreads);
+	}
+
 	void deviceSetup() 
 	{
 		HANDLE_ERROR(cudaSetDevice(device));
 		HANDLE_ERROR(cudaGetDeviceProperties(&deviceProp,device));
-		calcBlockThread(imageDims,deviceProp,blocks,threads);
+		updateBlockThread();
 	}
 
 	void memoryAllocation()
@@ -512,7 +514,7 @@ private:
 		currentBuffer = -1;
 		bufferSize = imageDims.product();
 
-		calcBlockThread(Vec<unsigned int>((unsigned int)imageDims.product(),1,1),deviceProp,sumBlocks,sumThreads);
+		updateBlockThread();
 
 		sumBlocks.x = (sumBlocks.x+1) / 2;
 
@@ -547,9 +549,8 @@ private:
 		imageDims = bufferIn.getDimension();
 		device = bufferIn.getDevice();
 
+		deviceSetup();
 		memoryAllocation();
-
-		calcBlockThread(imageDims,deviceProp,blocks,threads);
 
 		currentBuffer = 0;
 		ImagePixelType* inImage = bufferIn.getCurrentBuffer();
