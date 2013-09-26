@@ -429,24 +429,33 @@ public:
 	/*
 	*	Calculates the total sum of the buffer's data
 	*/
-	template<typename Sumtype>
-	void sumArray(Sumtype& sum)
+	template<typename SumType>
+	void sumArray(SumType& sum)
 	{
-		cudaSumArray<<<sumBlocks,sumThreads,sizeof(double)*sumThreads.x>>>(getCurrentBuffer(),deviceSum,(unsigned int)imageDims.product());
-#ifdef _DEBUG
-		gpuErrchk( cudaPeekAtLastError() );
-#endif // _DEBUG
+		if (sizeSum<sumBlocks.x)
+		{
+			if (hostSum!=NULL)
+				delete[] hostSum;
+			if (deviceSum!=NULL)
+				HANDLE_ERROR(cudaFree(deviceSum));
 
-		hostSum = new double[sumBlocks.x];
-		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*sumBlocks.x,cudaMemcpyDeviceToHost));
+			hostSum = new SumType[sumBlocks.x*2];
+			HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(SumType)*sumBlocks.x*2));
+			sizeSum = sumBlocks.x*2;
+		}
+
+		cudaSumArray<<<sumBlocks,sumThreads,sizeof(SumType)*sumThreads.x>>>(getCurrentBuffer(),(SumType*)deviceSum,imageDims.product());
+		#ifdef _DEBUG
+				gpuErrchk( cudaPeekAtLastError() );
+		#endif // _DEBUG sizeof(double)*sumBlocks.x
+		
+		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(SumType)*sumBlocks.x,cudaMemcpyDeviceToHost));
 
 		sum = 0;
 		for (unsigned int i=0; i<sumBlocks.x; ++i)
 		{
-			sum += hostSum[i];
+			sum += ((SumType*)hostSum)[i];
 		}
-
-		delete[] hostSum;
 	}
 
 	/*

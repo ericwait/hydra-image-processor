@@ -567,15 +567,15 @@ __global__ void cudaPolyTransferFuncImage(ImagePixelType* imageIn, ImagePixelTyp
 	}
 }
 
-template<typename T>
-__global__ void cudaSumArray(T* arrayIn, double* arrayOut, unsigned int n)
+template<typename DataType, typename SumType>
+__global__ void cudaSumArray(DataType* arrayIn, SumType* arrayOut, unsigned int n)
 
 {
 	//This algorithm was used from a this website:
 	// http://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_website/projects/reduction/doc/reduction.pdf
 	// accessed 4/28/2013
 
-	extern __shared__ T sdata[];
+	extern __shared__ SumType sdata[];
 
 	unsigned int tid = threadIdx.x;
 	unsigned int i = blockIdx.x*blockDim.x*2 + tid;
@@ -584,10 +584,10 @@ __global__ void cudaSumArray(T* arrayIn, double* arrayOut, unsigned int n)
 
 	while (i<n)
 	{
-		sdata[tid] = arrayIn[i];
+		sdata[tid] = (SumType)arrayIn[i];
 
 		if (i+blockDim.x<n)
-			sdata[tid] += arrayIn[i+blockDim.x];
+			sdata[tid] += (SumType)arrayIn[i+blockDim.x];
 
 		i += gridSize;
 	}
