@@ -774,21 +774,21 @@ __global__ void cudaUnmixing(const ImagePixelType* imageIn1, const ImagePixelTyp
 		{
 			imageOut1[imageDims.linearAddressAt(coordinate)] = imageIn1[imageDims.linearAddressAt(coordinate)];
 
-			imageOut2[imageDims.linearAddressAt(coordinate)] = 
-				max(0, imageIn2[imageDims.linearAddressAt(coordinate)] - imageIn1[imageDims.linearAddressAt(coordinate)]);
+			imageOut2[imageDims.linearAddressAt(coordinate)] = 0;
+				//max(0, imageIn2[imageDims.linearAddressAt(coordinate)] - imageIn1[imageDims.linearAddressAt(coordinate)]);
 		}
 		else if (max(imageIn1[imageDims.linearAddressAt(coordinate)],imageIn2[imageDims.linearAddressAt(coordinate)])==
 			imageIn2[imageDims.linearAddressAt(coordinate)])
 		{
-			imageOut1[imageDims.linearAddressAt(coordinate)] = 
-				max(0, imageIn1[imageDims.linearAddressAt(coordinate)] - imageIn2[imageDims.linearAddressAt(coordinate)]);
+			imageOut1[imageDims.linearAddressAt(coordinate)] = 0;
+				//max(0, imageIn1[imageDims.linearAddressAt(coordinate)] - imageIn2[imageDims.linearAddressAt(coordinate)]);
 
 			imageOut2[imageDims.linearAddressAt(coordinate)] = imageIn2[imageDims.linearAddressAt(coordinate)];
 		}
 		else
 		{
-			imageOut1[imageDims.linearAddressAt(coordinate)] = imageIn1[imageDims.linearAddressAt(coordinate)];
-			imageOut2[imageDims.linearAddressAt(coordinate)] = imageIn2[imageDims.linearAddressAt(coordinate)];
+			imageOut1[imageDims.linearAddressAt(coordinate)] = 255;//imageIn1[imageDims.linearAddressAt(coordinate)];
+			imageOut2[imageDims.linearAddressAt(coordinate)] = 255;//imageIn2[imageDims.linearAddressAt(coordinate)];
 		}
 	}
 }
