@@ -14,7 +14,7 @@ static void HandleError( cudaError_t err, const char *file, int line )
 		fprintf(stderr,"%s\n",errorMessage);
 		throw(errorMessage);
 	}
-	//delete[] errorMessage;
+	delete[] errorMessage;
 }
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
@@ -74,7 +74,7 @@ void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, 
 	{
 		if (dims.y==1)
 		{
-			if (dims.x<prop.maxThreadsPerBlock)
+			if ((int)dims.x<prop.maxThreadsPerBlock)
 			{
 				threads.x = dims.x;
 				threads.y = 1;
@@ -97,7 +97,7 @@ void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, 
 		}
 		else
 		{
-			if (dims.x*dims.y<prop.maxThreadsPerBlock)
+			if ((int)(dims.x*dims.y)<prop.maxThreadsPerBlock)
 			{
 				threads.x = dims.x;
 				threads.y = dims.y;
@@ -123,7 +123,7 @@ void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, 
 	}
 	else
 	{
-		if(dims.x*dims.y*dims.z < prop.maxThreadsPerBlock)
+		if((int)(dims.x*dims.y*dims.z)<prop.maxThreadsPerBlock)
 		{
 			threads.x = dims.x;
 			threads.y = dims.y;
