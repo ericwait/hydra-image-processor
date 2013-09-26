@@ -201,7 +201,9 @@ public:
 	template<typename T>
 	void addConstant(T additive)
 	{
-		cudaAddFactor<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,additive);
+		ImagePixelType mn = std::numeric_limits<ImagePixelType>::min();
+		ImagePixelType mx = std::numeric_limits<ImagePixelType>::max();
+		cudaAddFactor<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,additive,mn,mx);
 #ifdef _DEBUG
 		gpuErrchk( cudaPeekAtLastError() );
 #endif // _DEBUG

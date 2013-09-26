@@ -105,7 +105,8 @@ __global__ void cudaMultiplyTwoImages(ImagePixelType1* imageIn1, ImagePixelType2
 }
 
  template<typename ImagePixelType, typename FactorType>
- __global__ void cudaAddFactor(ImagePixelType* imageIn1, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims, FactorType factor)
+ __global__ void cudaAddFactor(ImagePixelType* imageIn1, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims, FactorType factor,
+	 ImagePixelType minValue, ImagePixelType maxValue)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -115,7 +116,8 @@ __global__ void cudaMultiplyTwoImages(ImagePixelType1* imageIn1, ImagePixelType2
 
 	if (coordinate<imageDims)
 	{
-		imageOut[imageDims.linearAddressAt(coordinate)] = imageIn1[imageDims.linearAddressAt(coordinate)] + factor;
+		ImagePixelType outValue = imageIn1[imageDims.linearAddressAt(coordinate)] + factor;
+		imageOut[imageDims.linearAddressAt(coordinate)] = min(maxValue,max(minValue,outValue));
 	}
 }
 
