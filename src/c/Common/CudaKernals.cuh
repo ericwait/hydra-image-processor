@@ -754,7 +754,7 @@ __global__ void cudaPow(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<u
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
 	if (coordinate<imageDims)
-		imageOut[imageDims.linearAddressAt(coordinate)] = pow(imageIn[imageDims.linearAddressAt(coordinate)],p);
+		imageOut[imageDims.linearAddressAt(coordinate)] = pow((double)imageIn[imageDims.linearAddressAt(coordinate)],p);
 }
 
 template<typename ImagePixelType>

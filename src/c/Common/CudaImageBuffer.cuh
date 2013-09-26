@@ -417,8 +417,7 @@ public:
 	/*
 	*	Raise each pixel to a power
 	*/
-	template<typename PowerType>
-	void pow(PowerType p)
+	void pow(int p)
 	{
 		cudaPow<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,p);
 #ifdef _DEBUG
