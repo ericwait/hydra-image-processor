@@ -549,7 +549,7 @@ __global__ void cudaFindMinMax(ImagePixelType* arrayIn, ImagePixelType* minArray
 
 template<typename ImagePixelType, typename ThresholdType>
 __global__ void cudaPolyTransferFuncImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims,
-	ThresholdType a, ThresholdType b, ThresholdType c, ImagePixelType maxPixelValue, ImagePixelType minPixelValue)
+	ThresholdType a, ThresholdType b, ThresholdType c, ImagePixelType minPixelValue, ImagePixelType maxPixelValue)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
