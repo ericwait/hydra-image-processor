@@ -201,9 +201,7 @@ public:
 	template<typename T>
 	void addConstant(T additive)
 	{
-		ImagePixelType mn = std::numeric_limits<ImagePixelType>::min();
-		ImagePixelType mx = std::numeric_limits<ImagePixelType>::max();
-		cudaAddFactor<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,additive,mn,mx);
+		cudaAddFactor<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,additive,minPixel,maxPixel);
 #ifdef _DEBUG
 		gpuErrchk( cudaPeekAtLastError() );
 #endif // _DEBUG
@@ -216,10 +214,8 @@ public:
 	*/
 	void addImageWith(const CudaImageBuffer* image, double factor)
 	{
-		ImagePixelType mn = std::numeric_limits<ImagePixelType>::min();
-		ImagePixelType mx = std::numeric_limits<ImagePixelType>::max();
 		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),
-			imageDims,factor,mn,mx);
+			imageDims,factor,minPixel,maxPixel);
 #ifdef _DEBUG
 		gpuErrchk( cudaPeekAtLastError() );
 #endif // _DEBUG
@@ -234,7 +230,7 @@ public:
 	template<typename ThresholdType>
 	void applyPolyTransformation(ThresholdType a, ThresholdType b, ThresholdType c, ImagePixelType minValue, ImagePixelType maxValue)
 	{
-		cudaPolyTransferFuncImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,a,b,c,maxValue,minValue);
+		cudaPolyTransferFuncImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,a,b,c,minValue,maxValue);
 #ifdef _DEBUG
 		gpuErrchk( cudaPeekAtLastError() );
 #endif // _DEBUG
@@ -375,7 +371,7 @@ public:
 	*	between minValue and maxValue
 	*/
 	template<typename FactorType>
-	void multiplyImage(FactorType factor, ImagePixelType minValue, ImagePixelType maxValue)
+	void multiplyImage(FactorType factor)
 	{
 		cudaMultiplyImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,factor,minValue,maxValue);
 #ifdef _DEBUG
@@ -492,14 +488,14 @@ public:
 		incrementBufferNumber();
 	}
 
-	void unmix(CudaImageBuffer* image)
+	void unmix(const CudaImageBuffer* image, Vec<unsigned int> neighborhood)
 	{
-		cudaUnmixing<<<blocks,threads>>>(getCurrentBuffer(),image->getCudaBuffer(),getNextBuffer(),image->getNextBuffer(),imageDims);
+		cudaUnmixing<<<blocks,threads>>>(getCurrentBuffer(),image->getCudaBuffer(),getNextBuffer(),
+			imageDims,neighborhood,minPixel,maxPixel);
 #ifdef _DEBUG
 		gpuErrchk( cudaPeekAtLastError() );
 #endif // _DEBUG
 		incrementBufferNumber();
-		image->incrementBufferNumber();
 	}
 
 	// End Cuda Operators
@@ -538,6 +534,8 @@ private:
 		sumBlocks.x = (sumBlocks.x+1) / 2;
 
 		HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*sumBlocks.x));
+		minPixel = std::numeric_limits<ImagePixelType>::min();
+		maxPixel = std::numeric_limits<ImagePixelType>::max();
 	}
 
 	void reduceMemory()
@@ -685,6 +683,8 @@ private:
 	ImagePixelType* imageBuffers[NUM_BUFFERS];
 	ImagePixelType* reducedImageHost;
 	ImagePixelType* reducedImageDevice;
+	ImagePixelType minPixel;
+	ImagePixelType maxPixel;
 	unsigned int* histogramHost;
 	unsigned int* histogramDevice;
 	double* normalizedHistogramHost;
