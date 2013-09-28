@@ -27,6 +27,7 @@ __global__ void cudaMeanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut
 		int halfKdepth = kernalDims.z/2;
 		int iIm=-halfKwidth, iKer=0;
 		DeviceVec<unsigned int> curCoord; 
+		int kernalVolume = 0;
 		for (; iIm<halfKwidth; ++iIm, ++iKer)
 		{
 			curCoord.x = min(max(coordinate.x+iIm,0),imageDims.x-1);
@@ -39,11 +40,12 @@ __global__ void cudaMeanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut
 				{
 					curCoord.z = min(max(coordinate.z+kIm,0),imageDims.z-1);
 					val += imageIn[imageDims.linearAddressAt(curCoord)];
+					++kernalVolume;
 				}
 			}
 		}
 
-		imageOut[imageDims.linearAddressAt(coordinate)] = val/(kernalDims.x*kernalDims.y*kernalDims.z);
+		imageOut[imageDims.linearAddressAt(coordinate)] = val/kernalVolume;
 	}
 }
 
@@ -167,6 +169,7 @@ __global__ void cudaMedianFilter(ImagePixelType* imageIn, ImagePixelType* imageO
 		int halfKdepth = kernalDims.z/2;
 		int iIm=-halfKwidth, iKer=0;
 		DeviceVec<unsigned int> curCoord; 
+		int kernalVolume = 0;
 		for (; iIm<halfKwidth; ++iIm, ++iKer)
 		{
 			curCoord.x = min(max(coordinate.x+iIm,0),imageDims.x-1);
@@ -180,11 +183,13 @@ __global__ void cudaMedianFilter(ImagePixelType* imageIn, ImagePixelType* imageO
 					curCoord.z = min(max(coordinate.z+kIm,0),imageDims.z-1);
 					vals[iKer+jKer*kernalDims.y+kKer*kernalDims.y*kernalDims.x] = 
 						imageIn[imageDims.linearAddressAt(curCoord)];
+					vals[kernalVolume] = imageIn[imageDims.linearAddressAt(curCoord)];
+					++kernalVolume;
 				}
 			}
 		}
 
-		imageOut[imageDims.linearAddressAt(coordinate)] = cudaFindMedian(vals,kernalDims.x*kernalDims.y*kernalDims.z);
+		imageOut[imageDims.linearAddressAt(coordinate)] = cudaFindMedian(vals,kernalVolume);
 		delete vals;
 	}
 }
