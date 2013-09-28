@@ -8,6 +8,8 @@
 #include "CudaUtilities.cuh"
 #include "assert.h"
 
+const Vec<unsigned int> unset = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
+
 template<typename ImagePixelType>
 class CudaImageBuffer
 {
@@ -297,7 +299,7 @@ public:
 	/*
 	*	Will smooth the image using the given sigmas for each dimension
 	*/ 
-	void gaussianFilter(Vec<double> sigmas)
+	void gaussianFilter(Vec<float> sigmas)
 	{
 	}
 
@@ -596,8 +598,10 @@ private:
 
 	void defaults()
 	{
-		imageDims = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
-		reducedDims = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
+		imageDims = unset;
+		reducedDims = unset;
+		gausDims = unset;
+		gausKernalSigmas  = Vec<float>(0.0f,0.0f,0.0f);
 		device = -1;
 		currentBuffer = -1;
 		for (int i=0; i<NUM_BUFFERS; ++i)
@@ -638,6 +642,12 @@ private:
 
 		if (normalizedHistogramDevice!=NULL)
 			HANDLE_ERROR(cudaFree(normalizedHistogramDevice));
+
+		if (hostGausKernal!=NULL)
+			delete[] hostGausKernal;
+
+		if (deviceGausKernal!=NULL)
+			HANDLE_ERROR(cudaFree(deviceGausKernal));
 
 		defaults();
 	}
@@ -693,4 +703,8 @@ private:
 	double* deviceSum;
 	double* hostSum;
 	int sizeSum;
+	Vec<unsigned int> gausDims;
+	Vec<float> gausKernalSigmas;
+	float* hostGausKernal;
+	float* deviceGausKernal;
 };
