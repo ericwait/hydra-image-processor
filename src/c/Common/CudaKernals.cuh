@@ -763,8 +763,8 @@ __global__ void cudaPow(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<u
 }
 
 template<typename ImagePixelType>
-__global__ void cudaUnmixing(const ImagePixelType* imageIn1, const ImagePixelType* imageIn2, ImagePixelType* imageOut1, ImagePixelType* imageOut2,
-	Vec<unsigned int> hostImageDims)
+__global__ void cudaUnmixing(const ImagePixelType* imageIn1, const ImagePixelType* imageIn2, ImagePixelType* imageOut1,
+	Vec<unsigned int> hostImageDims, Vec<unsigned int> kernalDims, ImagePixelType minPixelValue, ImagePixelType maxPixelValue)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -774,26 +774,45 @@ __global__ void cudaUnmixing(const ImagePixelType* imageIn1, const ImagePixelTyp
 
 	if (coordinate<imageDims)
 	{
-		if (max(imageIn1[imageDims.linearAddressAt(coordinate)],imageIn2[imageDims.linearAddressAt(coordinate)])==
-			imageIn1[imageDims.linearAddressAt(coordinate)])
+		double meanIm1 = 0;
+		double meanIm2 = 0;
+		int halfKwidth = kernalDims.x/2;
+		int halfKheight = kernalDims.y/2;
+		int halfKdepth = kernalDims.z/2;
+		int iIm=-halfKwidth, iKer=0;
+		DeviceVec<unsigned int> curCoord;
+		int kernalVolume = 0;
+		for (; iIm<halfKwidth; ++iIm, ++iKer)
+		{
+			curCoord.x = min(max(coordinate.x+iIm,0),imageDims.x-1);
+			int jIm=-halfKheight, jKer=0;
+			for (; jIm<halfKheight; ++jIm, ++jKer)
+			{
+				curCoord.y = min(max(coordinate.y+jIm,0),imageDims.y-1);
+				int kIm=-halfKdepth, kKer=0;
+				for (; kIm<halfKdepth; ++kIm, ++kKer)
+				{
+					curCoord.z = min(max(coordinate.z+kIm,0),imageDims.z-1);
+					meanIm1 += imageIn1[imageDims.linearAddressAt(curCoord)];
+					meanIm2 += imageIn2[imageDims.linearAddressAt(curCoord)];
+					++kernalVolume;
+				}
+			}
+		}
+
+		meanIm1 /= kernalVolume;
+		meanIm2 /= kernalVolume;
+
+		if (meanIm1 < meanIm2)
+		{
+			imageOut1[imageDims.linearAddressAt(coordinate)] = 
+				MIN(maxPixelValue,
+				MAX(imageIn1[imageDims.linearAddressAt(coordinate)]-imageIn2[imageDims.linearAddressAt(coordinate)]
+				,minPixelValue));
+		}
+		else 
 		{
 			imageOut1[imageDims.linearAddressAt(coordinate)] = imageIn1[imageDims.linearAddressAt(coordinate)];
-
-			imageOut2[imageDims.linearAddressAt(coordinate)] = 0;
-				//max(0, imageIn2[imageDims.linearAddressAt(coordinate)] - imageIn1[imageDims.linearAddressAt(coordinate)]);
-		}
-		else if (max(imageIn1[imageDims.linearAddressAt(coordinate)],imageIn2[imageDims.linearAddressAt(coordinate)])==
-			imageIn2[imageDims.linearAddressAt(coordinate)])
-		{
-			imageOut1[imageDims.linearAddressAt(coordinate)] = 0;
-				//max(0, imageIn1[imageDims.linearAddressAt(coordinate)] - imageIn2[imageDims.linearAddressAt(coordinate)]);
-
-			imageOut2[imageDims.linearAddressAt(coordinate)] = imageIn2[imageDims.linearAddressAt(coordinate)];
-		}
-		else
-		{
-			imageOut1[imageDims.linearAddressAt(coordinate)] = 255;//imageIn1[imageDims.linearAddressAt(coordinate)];
-			imageOut2[imageDims.linearAddressAt(coordinate)] = 255;//imageIn2[imageDims.linearAddressAt(coordinate)];
-		}
+		}	
 	}
 }
