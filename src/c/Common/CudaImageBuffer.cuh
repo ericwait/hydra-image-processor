@@ -83,18 +83,9 @@ public:
 	{
 		updateBlockThread();
 		incrementBufferNumber();
-		HANDLE_ERROR(cudaMemcpy(imageBuffers[currentBuffer],image,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyHostToDevice));
+		HANDLE_ERROR(cudaMemcpy((void*)getCurrentBuffer(),image,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyHostToDevice));
 	}
-
-	/*
-	 *	This will use the pointer that has been passed in to fill.  
-	 *	Ensure that it is big enough to hold the current buffer.
-	 *
-	 *  If no pointer is provided, then new heap memory will be allocated
-	 *  and a pointer to this memory returned.
-	 *  
-	 *  Clean-up of each of these are your responsibility
-	 */
+	
 	ImagePixelType* retrieveImage(ImagePixelType* imageOut=NULL)
 	{
 		if (currentBuffer<0 || currentBuffer>NUM_BUFFERS)
@@ -104,7 +95,7 @@ public:
 		if (imageOut==NULL)
 			imageOut = new ImagePixelType[imageDims.product()];
 
-		HANDLE_ERROR(cudaMemcpy((void*)imageOut,imageBuffers[currentBuffer],sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyDeviceToHost));
+		HANDLE_ERROR(cudaMemcpy(imageOut,getCurrentBuffer(),sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyDeviceToHost));
 		return imageOut;
 	}
 
