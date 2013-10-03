@@ -32,15 +32,15 @@ __global__ void cudaMeanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut
 		kernalMidIdx.z = kernalDims.z/2;
 
 		//find if the kernal will go off the edge of the image
-		curCoordIm.x = (unsigned int)MAX(0,(int)coordinate.x-(int)kernalMidIdx.x);
+		curCoordIm.x = (unsigned int)max(0,(int)coordinate.x-(int)kernalMidIdx.x);
 		curCoordKrn.x = ((int)coordinate.x-(int)kernalMidIdx.x>=0) ? (0) : (kernalMidIdx.x-coordinate.x);		
 		for (; curCoordIm.x<imageDims.x && curCoordKrn.x<kernalDims.x; ++curCoordIm.x, ++curCoordKrn.x)
 		{
-			curCoordIm.y = (unsigned int)MAX(0,(int)coordinate.y-(int)kernalMidIdx.y);
+			curCoordIm.y = (unsigned int)max(0,(int)coordinate.y-(int)kernalMidIdx.y);
 			curCoordKrn.y = ((int)coordinate.y-(int)kernalMidIdx.y>=0) ? (0) : (kernalMidIdx.y-coordinate.y);
 			for (; curCoordIm.y<imageDims.y && curCoordKrn.y<kernalDims.y; ++curCoordIm.y, ++curCoordKrn.y)
 			{
-				curCoordIm.z = (unsigned int) MAX(0,(int)coordinate.z-(int)kernalMidIdx.z);
+				curCoordIm.z = (unsigned int) max(0,(int)coordinate.z-(int)kernalMidIdx.z);
 				curCoordKrn.z = ((int)coordinate.z-(int)kernalMidIdx.z>=0) ? (0) : (kernalMidIdx.z-coordinate.z);
 				for (; curCoordIm.z<imageDims.z && curCoordKrn.z<kernalDims.z; ++curCoordIm.z, ++curCoordKrn.z)
 				{
@@ -179,15 +179,15 @@ __global__ void cudaMedianFilter(ImagePixelType* imageIn, ImagePixelType* imageO
 		kernalMidIdx.z = kernalDims.z/2;
 
 		//find if the kernal will go off the edge of the image
-		curCoordIm.x = (unsigned int)MAX(0,(int)coordinate.x-(int)kernalMidIdx.x);
+		curCoordIm.x = (unsigned int)max(0,(int)coordinate.x-(int)kernalMidIdx.x);
 		curCoordKrn.x = ((int)coordinate.x-(int)kernalMidIdx.x>=0) ? (0) : (kernalMidIdx.x-coordinate.x);		
 		for (; curCoordIm.x<imageDims.x && curCoordKrn.x<kernalDims.x; ++curCoordIm.x, ++curCoordKrn.x)
 		{
-			curCoordIm.y = (unsigned int)MAX(0,(int)coordinate.y-(int)kernalMidIdx.y);
+			curCoordIm.y = (unsigned int)max(0,(int)coordinate.y-(int)kernalMidIdx.y);
 			curCoordKrn.y = ((int)coordinate.y-(int)kernalMidIdx.y>=0) ? (0) : (kernalMidIdx.y-coordinate.y);
 			for (; curCoordIm.y<imageDims.y && curCoordKrn.y<kernalDims.y; ++curCoordIm.y, ++curCoordKrn.y)
 			{
-				curCoordIm.z = (unsigned int) MAX(0,(int)coordinate.z-(int)kernalMidIdx.z);
+				curCoordIm.z = (unsigned int) max(0,(int)coordinate.z-(int)kernalMidIdx.z);
 				curCoordKrn.z = ((int)coordinate.z-(int)kernalMidIdx.z>=0) ? (0) : (kernalMidIdx.z-coordinate.z);
 				for (; curCoordIm.z<imageDims.z && curCoordKrn.z<kernalDims.z; ++curCoordIm.z, ++curCoordKrn.z)
 				{
@@ -228,15 +228,15 @@ __global__ void cudaMultAddFilter(ImagePixelType1* imageIn, ImagePixelType2* ima
 		kernalMidIdx.z = kernalDims.z/2;
 
 		//find if the kernal will go off the edge of the image
-		curCoordIm.x = (unsigned int)MAX(0,(int)coordinate.x-(int)kernalMidIdx.x);
+		curCoordIm.x = (unsigned int)max(0,(int)coordinate.x-(int)kernalMidIdx.x);
 		curCoordKrn.x = ((int)coordinate.x-(int)kernalMidIdx.x>=0) ? (0) : (kernalMidIdx.x-coordinate.x);		
 		for (; curCoordIm.x<imageDims.x && curCoordKrn.x<kernalDims.x; ++curCoordIm.x, ++curCoordKrn.x)
 		{
-			curCoordIm.y = (unsigned int)MAX(0,(int)coordinate.y-(int)kernalMidIdx.y);
+			curCoordIm.y = (unsigned int)max(0,(int)coordinate.y-(int)kernalMidIdx.y);
 			curCoordKrn.y = ((int)coordinate.y-(int)kernalMidIdx.y>=0) ? (0) : (kernalMidIdx.y-coordinate.y);
 			for (; curCoordIm.y<imageDims.y && curCoordKrn.y<kernalDims.y; ++curCoordIm.y, ++curCoordKrn.y)
 			{
-				curCoordIm.z = (unsigned int) MAX(0,(int)coordinate.z-(int)kernalMidIdx.z);
+				curCoordIm.z = (unsigned int) max(0,(int)coordinate.z-(int)kernalMidIdx.z);
 				curCoordKrn.z = ((int)coordinate.z-(int)kernalMidIdx.z>=0) ? (0) : (kernalMidIdx.z-coordinate.z);
 				for (; curCoordIm.z<imageDims.z && curCoordKrn.z<kernalDims.z; ++curCoordIm.z, ++curCoordKrn.z)
 				{
@@ -274,15 +274,15 @@ __global__ void cudaMinFilter(ImagePixelType* imageIn, ImagePixelType* imageOut,
 		kernalMidIdx.z = kernalDims.z/2;
 
 		//find if the kernal will go off the edge of the image
-		curCoordIm.x = (unsigned int)MAX(0,(int)coordinate.x-(int)kernalMidIdx.x);
+		curCoordIm.x = (unsigned int)max(0,(int)coordinate.x-(int)kernalMidIdx.x);
 		curCoordKrn.x = ((int)coordinate.x-(int)kernalMidIdx.x>=0) ? (0) : (kernalMidIdx.x-coordinate.x);		
 		for (; curCoordIm.x<imageDims.x && curCoordKrn.x<kernalDims.x; ++curCoordIm.x, ++curCoordKrn.x)
 		{
-			curCoordIm.y = (unsigned int)MAX(0,(int)coordinate.y-(int)kernalMidIdx.y);
+			curCoordIm.y = (unsigned int)max(0,(int)coordinate.y-(int)kernalMidIdx.y);
 			curCoordKrn.y = ((int)coordinate.y-(int)kernalMidIdx.y>=0) ? (0) : (kernalMidIdx.y-coordinate.y);
 			for (; curCoordIm.y<imageDims.y && curCoordKrn.y<kernalDims.y; ++curCoordIm.y, ++curCoordKrn.y)
 			{
-				curCoordIm.z = (unsigned int) MAX(0,(int)coordinate.z-(int)kernalMidIdx.z);
+				curCoordIm.z = (unsigned int) max(0,(int)coordinate.z-(int)kernalMidIdx.z);
 				curCoordKrn.z = ((int)coordinate.z-(int)kernalMidIdx.z>=0) ? (0) : (kernalMidIdx.z-coordinate.z);
 				for (; curCoordIm.z<imageDims.z && curCoordKrn.z<kernalDims.z; ++curCoordIm.z, ++curCoordKrn.z)
 				{
@@ -322,21 +322,21 @@ __global__ void cudaMaxFilter(ImagePixelType* imageIn, ImagePixelType* imageOut,
 		kernalMidIdx.z = kernalDims.z/2;
 
 		//find if the kernal will go off the edge of the image
-		curCoordIm.x = (unsigned int)MAX(0,(int)coordinate.x-(int)kernalMidIdx.x);
+		curCoordIm.x = (unsigned int)max(0,(int)coordinate.x-(int)kernalMidIdx.x);
 		curCoordKrn.x = ((int)coordinate.x-(int)kernalMidIdx.x>=0) ? (0) : (kernalMidIdx.x-coordinate.x);		
 		for (; curCoordIm.x<imageDims.x && curCoordKrn.x<kernalDims.x; ++curCoordIm.x, ++curCoordKrn.x)
 		{
-			curCoordIm.y = (unsigned int)MAX(0,(int)coordinate.y-(int)kernalMidIdx.y);
+			curCoordIm.y = (unsigned int)max(0,(int)coordinate.y-(int)kernalMidIdx.y);
 			curCoordKrn.y = ((int)coordinate.y-(int)kernalMidIdx.y>=0) ? (0) : (kernalMidIdx.y-coordinate.y);
 			for (; curCoordIm.y<imageDims.y && curCoordKrn.y<kernalDims.y; ++curCoordIm.y, ++curCoordKrn.y)
 			{
-				curCoordIm.z = (unsigned int) MAX(0,(int)coordinate.z-(int)kernalMidIdx.z);
+				curCoordIm.z = (unsigned int) max(0,(int)coordinate.z-(int)kernalMidIdx.z);
 				curCoordKrn.z = ((int)coordinate.z-(int)kernalMidIdx.z>=0) ? (0) : (kernalMidIdx.z-coordinate.z);
 				for (; curCoordIm.z<imageDims.z && curCoordKrn.z<kernalDims.z; ++curCoordIm.z, ++curCoordKrn.z)
 				{
 					if(cudaConstKernal[kernalDims.linearAddressAt(curCoordKrn)]>0)
 					{
-						maxVal = MAX((float)maxVal, imageIn[imageDims.linearAddressAt(curCoordIm)]*
+						maxVal = max((float)maxVal, imageIn[imageDims.linearAddressAt(curCoordIm)]*
 							cudaConstKernal[kernalDims.linearAddressAt(curCoordKrn)]);
 					}
 				}
@@ -811,15 +811,15 @@ __global__ void cudaUnmixing(const ImagePixelType* imageIn1, const ImagePixelTyp
 		kernalMidIdx.z = kernalDims.z/2;
 
 		//find if the kernal will go off the edge of the image
-		curCoordIm.x = (unsigned int)MAX(0,(int)coordinate.x-(int)kernalMidIdx.x);
+		curCoordIm.x = (unsigned int)max(0,(int)coordinate.x-(int)kernalMidIdx.x);
 		curCoordKrn.x = ((int)coordinate.x-(int)kernalMidIdx.x>=0) ? (0) : (kernalMidIdx.x-coordinate.x);		
 		for (; curCoordIm.x<imageDims.x && curCoordKrn.x<kernalDims.x; ++curCoordIm.x, ++curCoordKrn.x)
 		{
-			curCoordIm.y = (unsigned int)MAX(0,(int)coordinate.y-(int)kernalMidIdx.y);
+			curCoordIm.y = (unsigned int)max(0,(int)coordinate.y-(int)kernalMidIdx.y);
 			curCoordKrn.y = ((int)coordinate.y-(int)kernalMidIdx.y>=0) ? (0) : (kernalMidIdx.y-coordinate.y);
 			for (; curCoordIm.y<imageDims.y && curCoordKrn.y<kernalDims.y; ++curCoordIm.y, ++curCoordKrn.y)
 			{
-				curCoordIm.z = (unsigned int) MAX(0,(int)coordinate.z-(int)kernalMidIdx.z);
+				curCoordIm.z = (unsigned int) max(0,(int)coordinate.z-(int)kernalMidIdx.z);
 				curCoordKrn.z = ((int)coordinate.z-(int)kernalMidIdx.z>=0) ? (0) : (kernalMidIdx.z-coordinate.z);
 				for (; curCoordIm.z<imageDims.z && curCoordKrn.z<kernalDims.z; ++curCoordIm.z, ++curCoordKrn.z)
 				{
@@ -836,8 +836,8 @@ __global__ void cudaUnmixing(const ImagePixelType* imageIn1, const ImagePixelTyp
 		if (meanIm1 < meanIm2)
 		{
 			imageOut1[imageDims.linearAddressAt(coordinate)] = 
-				MIN(maxPixelValue,
-				MAX(imageIn1[imageDims.linearAddressAt(coordinate)]-imageIn2[imageDims.linearAddressAt(coordinate)]
+				min(maxPixelValue,
+				max(imageIn1[imageDims.linearAddressAt(coordinate)]-imageIn2[imageDims.linearAddressAt(coordinate)]
 				,minPixelValue));
 		}
 		else 
