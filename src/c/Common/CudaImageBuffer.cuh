@@ -649,6 +649,7 @@ private:
 		normalizedHistogramHost = NULL;
 		normalizedHistogramDevice = NULL;
 		iterations = Vec<int>(0,0,0);
+		reservedBuffer = -1;
 	}
 
 	void clean() 
@@ -691,15 +692,39 @@ private:
 	ImagePixelType* getNextBuffer()
 	{
 		int nextIndex = currentBuffer +1;
+		if (nextIndex==reservedBuffer)
+			++nextIndex;
+
 		if (nextIndex>=NUM_BUFFERS)
 			nextIndex = 0;
 
 		return imageBuffers[nextIndex];
 	}
 
+	ImagePixelType* getReservedBuffer()
+	{
+		if (reservedBuffer<0)
+			return NULL;
+
+		return imageBuffers[reservedBuffer];
+	}
+
+	void reserveCurrentBuffer()
+	{
+		reservedBuffer = currentBuffer;
+	}
+
+	void releaseReservedBuffer()
+	{
+		reservedBuffer = -1;
+	}
+
 	void incrementBufferNumber()
 	{
 		++currentBuffer;
+
+		if (currentBuffer==reservedBuffer)
+			++currentBuffer;
 
 		if (currentBuffer>=NUM_BUFFERS)
 			currentBuffer = 0;
@@ -735,7 +760,7 @@ private:
 	Vec<int> iterations;
 	Vec<float> gausKernalSigmas;
 	float hostKernal[MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM];
-	//float* deviceKernal;
+	int reservedBuffer;
 };
 // 
 // template<typename ImagePixelType>
