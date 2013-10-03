@@ -8,6 +8,7 @@
 #include "cuda_runtime.h"
 
 __constant__ float kernal[MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM];
+__constant__ float cudaConstKernal[MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM];
 
 template<typename ImagePixelType>
 __global__ void cudaMeanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims, Vec<int> hostKernalDims)
@@ -196,10 +197,9 @@ __global__ void cudaMedianFilter(ImagePixelType* imageIn, ImagePixelType* imageO
 
 template<typename ImagePixelType1, typename ImagePixelType2>
 __global__ void cudaMultAddFilter(ImagePixelType1* imageIn, ImagePixelType2* imageOut, Vec<unsigned int> hostImageDims,
-	Vec<int> hostKernalDims)
+	Vec<unsigned int> hostKernalDims, int kernalOffset=0)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
-	DeviceVec<int> kernalDims = hostKernalDims;
 	DeviceVec<unsigned int> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -207,27 +207,33 @@ __global__ void cudaMultAddFilter(ImagePixelType1* imageIn, ImagePixelType2* ima
 
 	if (coordinate<imageDims)
 	{
+		DeviceVec<unsigned int> kernalDims = hostKernalDims;
+		DeviceVec<unsigned int> kernalMidIdx;
+		DeviceVec<unsigned int> curCoordIm; 
+		DeviceVec<unsigned int> curCoordKrn;
 		double val = 0;
 		double kernFactor = 0;
-		int halfKwidth = kernalDims.x/2;
-		int halfKheight = kernalDims.y/2;
-		int halfKdepth = kernalDims.z/2;
-		int iIm=-halfKwidth, iKer=0;
-		DeviceVec<unsigned int> curCoord; 
-		for (; iIm<halfKwidth; ++iIm, ++iKer)
+
+		kernalMidIdx.x = kernalDims.x/2;
+		kernalMidIdx.y = kernalDims.y/2;
+		kernalMidIdx.z = kernalDims.z/2;
+
+		//find if the kernal will go off the edge of the image
+		curCoordIm.x = (unsigned int)MAX(0,(int)coordinate.x-(int)kernalMidIdx.x);
+		curCoordKrn.x = ((int)coordinate.x-(int)kernalMidIdx.x>=0) ? (0) : (kernalMidIdx.x-coordinate.x);		
+		for (; curCoordIm.x<imageDims.x && curCoordKrn.x<kernalDims.x; ++curCoordIm.x, ++curCoordKrn.x)
 		{
-			curCoord.x = min(max(coordinate.x+iIm,0),imageDims.x-1);
-			int jIm=-halfKheight, jKer=0;
-			for (; jIm<halfKheight; ++jIm, ++jKer)
+			curCoordIm.y = (unsigned int)MAX(0,(int)coordinate.y-(int)kernalMidIdx.y);
+			curCoordKrn.y = ((int)coordinate.y-(int)kernalMidIdx.y>=0) ? (0) : (kernalMidIdx.y-coordinate.y);
+			for (; curCoordIm.y<imageDims.y && curCoordKrn.y<kernalDims.y; ++curCoordIm.y, ++curCoordKrn.y)
 			{
-				curCoord.y = min(max(coordinate.y+jIm,0),imageDims.y-1);
-				int kIm=-halfKdepth, kKer=0;
-				for (; kIm<halfKdepth; ++kIm, ++kKer)
+				curCoordIm.z = (unsigned int) MAX(0,(int)coordinate.z-(int)kernalMidIdx.z);
+				curCoordKrn.z = ((int)coordinate.z-(int)kernalMidIdx.z>=0) ? (0) : (kernalMidIdx.z-coordinate.z);
+				for (; curCoordIm.z<imageDims.z && curCoordKrn.z<kernalDims.z; ++curCoordIm.z, ++curCoordKrn.z)
 				{
-					curCoord.z = min(max(coordinate.z+kIm,0),imageDims.z-1);
-					kernFactor += kernal[iKer+jKer*kernalDims.x+kKer*kernalDims.y*kernalDims.x];
-					val += imageIn[imageDims.linearAddressAt(coordinate)] * 
-						kernal[iKer+jKer*kernalDims.x+kKer*kernalDims.y*kernalDims.x];
+					size_t kernIdx = kernalDims.linearAddressAt(curCoordKrn)+kernalOffset;
+					kernFactor += cudaConstKernal[kernIdx];
+					val += imageIn[imageDims.linearAddressAt(curCoordIm)] * cudaConstKernal[kernIdx];
 				}
 			}
 		}

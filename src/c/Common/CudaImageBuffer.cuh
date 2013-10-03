@@ -292,6 +292,48 @@ public:
 	*/ 
 	void gaussianFilter(Vec<float> sigmas)
 	{
+		if (constKernalDims==unset || sigmas!=gausKernalSigmas)
+		{
+			gausKernalSigmas = sigmas;
+			constKernalDims = createGaussianKernal(sigmas,hostKernal,iterations);
+			HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernal,hostKernal,sizeof(float)*(constKernalDims.x+constKernalDims.y+constKernalDims.z)));
+		}
+
+		for (int x=0; x<iterations.x; ++x)
+		{
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(constKernalDims.x,1,1));
+			incrementBufferNumber();
+		}
+		cudaThreadSynchronize();
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
+
+		for (int y=0; y<iterations.y; ++y)
+		{
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,constKernalDims.y,1),
+				constKernalDims.x);
+			incrementBufferNumber();
+		}
+		cudaThreadSynchronize();
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
+
+		for (int x=0; x<iterations.x; ++x)
+		{
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,1,constKernalDims.z),
+				constKernalDims.x+constKernalDims.y);
+			incrementBufferNumber();
+		}
+		cudaThreadSynchronize();
+#ifdef _DEBUG
+			gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
+// 			incrementBufferNumber();
+// 			printf("%d,",i);
+		
+/*		printf("\n");*/
 	}
 
 	/*
@@ -512,7 +554,7 @@ private:
 
 	void memoryAllocation()
 	{
-		assert(sizeof(ImagePixelType)*imageDims.product()*NUM_BUFFERS < deviceProp.totalGlobalMem*.6);
+		assert(sizeof(ImagePixelType)*imageDims.product()*NUM_BUFFERS < deviceProp.totalGlobalMem*.7);
 
 		for (int i=0; i<NUM_BUFFERS; ++i)
 		{
@@ -591,7 +633,7 @@ private:
 	{
 		imageDims = unset;
 		reducedDims = unset;
-		gausDims = unset;
+		constKernalDims = unset;
 		gausKernalSigmas  = Vec<float>(0.0f,0.0f,0.0f);
 		device = -1;
 		currentBuffer = -1;
@@ -606,6 +648,7 @@ private:
 		histogramDevice = NULL;
 		normalizedHistogramHost = NULL;
 		normalizedHistogramDevice = NULL;
+		iterations = Vec<int>(0,0,0);
 	}
 
 	void clean() 
@@ -633,12 +676,6 @@ private:
 
 		if (normalizedHistogramDevice!=NULL)
 			HANDLE_ERROR(cudaFree(normalizedHistogramDevice));
-
-		if (hostGausKernal!=NULL)
-			delete[] hostGausKernal;
-
-		if (deviceGausKernal!=NULL)
-			HANDLE_ERROR(cudaFree(deviceGausKernal));
 
 		defaults();
 	}
@@ -680,7 +717,7 @@ private:
 	int device;
 	cudaDeviceProp deviceProp;
 	dim3 blocks, threads;
-	char currentBuffer;
+	int currentBuffer;
 	ImagePixelType* imageBuffers[NUM_BUFFERS];
 	ImagePixelType* reducedImageHost;
 	ImagePixelType* reducedImageDevice;
@@ -694,8 +731,18 @@ private:
 	double* deviceSum;
 	double* hostSum;
 	int sizeSum;
-	Vec<unsigned int> gausDims;
+	Vec<unsigned int> constKernalDims;
+	Vec<int> iterations;
 	Vec<float> gausKernalSigmas;
-	float* hostGausKernal;
-	float* deviceGausKernal;
+	float hostKernal[MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM];
+	//float* deviceKernal;
 };
+// 
+// template<typename ImagePixelType>
+// Vec<float> CudaImageBuffer<ImagePixelType>::gausKernalSigmas  = Vec<float>(0.0f,0.0f,0.0f);
+// 
+// template<typename ImagePixelType>
+// Vec<unsigned int> CudaImageBuffer<ImagePixelType>::constKernalDims = unset;
+// 
+// template<typename ImagePixelType>
+// float CudaImageBuffer<ImagePixelType>::hostKernal[MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM];
