@@ -195,9 +195,9 @@ public:
 	void addConstant(T additive)
 	{
 		cudaAddFactor<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,additive,minPixel,maxPixel);
-#ifdef _DEBUG
-		gpuErrchk( cudaPeekAtLastError() );
-#endif // _DEBUG
+		#ifdef _DEBUG
+				gpuErrchk( cudaPeekAtLastError() );
+		#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -209,9 +209,9 @@ public:
 	{
 		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),
 			imageDims,factor,minPixel,maxPixel);
-#ifdef _DEBUG
-		gpuErrchk( cudaPeekAtLastError() );
-#endif // _DEBUG
+		#ifdef _DEBUG
+				gpuErrchk( cudaPeekAtLastError() );
+		#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -224,9 +224,9 @@ public:
 	void applyPolyTransformation(ThresholdType a, ThresholdType b, ThresholdType c, ImagePixelType minValue, ImagePixelType maxValue)
 	{
 		cudaPolyTransferFuncImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,a,b,c,minValue,maxValue);
-#ifdef _DEBUG
-		gpuErrchk( cudaPeekAtLastError() );
-#endif // _DEBUG
+		#ifdef _DEBUG
+				gpuErrchk( cudaPeekAtLastError() );
+		#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -245,9 +245,9 @@ public:
 
 		cudaFindMinMax<<<blocks.x,threads.x,2*sizeof(double)*threads.x>>>(getCurrentBuffer(),minValuesDevice,maxValuesDevice,
 			imageDims.product());
-#ifdef _DEBUG
-		gpuErrchk( cudaPeekAtLastError() );
-#endif // _DEBUG
+		#ifdef _DEBUG
+				gpuErrchk( cudaPeekAtLastError() );
+		#endif // _DEBUG
 
 		HANDLE_ERROR(cudaMemcpy(maxValuesHost,maxValuesDevice,sizeof(double)*(blocks.x)/2,cudaMemcpyDeviceToHost));
 		HANDLE_ERROR(cudaMemcpy(minValuesHost,minValuesDevice,sizeof(double)*(blocks.x)/2,cudaMemcpyDeviceToHost));
@@ -282,9 +282,9 @@ public:
 
 		cudaHistogramCreate<<<deviceProp.multiProcessorCount*2,NUM_BINS,sizeof(unsigned int)*NUM_BINS>>>
 			(getCurrentBuffer(),histogramDevice,imageDims);
-#ifdef _DEBUG
-		gpuErrchk( cudaPeekAtLastError() );
-#endif // _DEBUG
+		#ifdef _DEBUG
+				gpuErrchk( cudaPeekAtLastError() );
+		#endif // _DEBUG
 	}
 
 	/*
@@ -305,9 +305,9 @@ public:
 			incrementBufferNumber();
 		}
 		cudaThreadSynchronize();
-#ifdef _DEBUG
-		gpuErrchk( cudaPeekAtLastError() );
-#endif // _DEBUG
+		#ifdef _DEBUG
+				gpuErrchk( cudaPeekAtLastError() );
+		#endif // _DEBUG
 
 		for (int y=0; y<iterations.y; ++y)
 		{
@@ -499,9 +499,9 @@ public:
 			(unsigned int)(imageDims.z/reductions.z));
 
 		cudaRuduceImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,reducedDims,reductions);
-#ifdef _DEBUG
-		gpuErrchk( cudaPeekAtLastError() );
-#endif // _DEBUG
+		#ifdef _DEBUG
+				gpuErrchk( cudaPeekAtLastError() );
+		#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -517,9 +517,9 @@ public:
 	void thresholdFilter(ThresholdType threshold)
 	{
 		cudaThresholdImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,threshold);
-#ifdef _DEBUG
-		gpuErrchk( cudaPeekAtLastError() );
-#endif // _DEBUG
+		#ifdef _DEBUG
+				gpuErrchk( cudaPeekAtLastError() );
+		#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
@@ -527,9 +527,9 @@ public:
 	{
 		cudaUnmixing<<<blocks,threads>>>(getCurrentBuffer(),image->getCudaBuffer(),getNextBuffer(),
 			imageDims,neighborhood,minPixel,maxPixel);
-#ifdef _DEBUG
-		gpuErrchk( cudaPeekAtLastError() );
-#endif // _DEBUG
+		#ifdef _DEBUG
+				gpuErrchk( cudaPeekAtLastError() );
+		#endif // _DEBUG
 		incrementBufferNumber();
 	}
 
