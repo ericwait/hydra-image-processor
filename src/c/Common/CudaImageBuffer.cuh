@@ -269,6 +269,32 @@ public:
 	}
 
 	/*
+	 *	Contrast Enhancement will run the Michel High Pass Filter and then a mean filter
+	 *	Pass in the sigmas that will be used for the Gaussian filter to subtract off and the mean neighborhood dimensions
+	 */
+	void contrastEnhancement(Vec<float> sigmas, Vec<unsigned int> meanNeighborhood)
+	{
+		reserveCurrentBuffer();
+
+		gaussianFilter(sigmas);
+		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getReservedBuffer(),getCurrentBuffer(),getNextBuffer(),imageDims,
+			-1.0,minPixel,maxPixel);
+
+		#ifdef _DEBUG
+				gpuErrchk( cudaPeekAtLastError() );
+		#endif // _DEBUG
+
+		releaseReservedBuffer();
+		incrementBufferNumber();
+
+		cudaMeanFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,meanNeighborhood);
+		#ifdef _DEBUG
+				gpuErrchk( cudaPeekAtLastError() );
+		#endif // _DEBUG
+		incrementBufferNumber();
+	}
+
+	/*
 	*	Creates Histogram on the card using the #define NUM_BINS
 	*	Use retrieveHistogram to get the results off the card
 	*/

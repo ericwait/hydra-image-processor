@@ -83,11 +83,10 @@ __global__ void cudaAddTwoImagesWithFactor(ImagePixelType1* imageIn1, ImagePixel
 
 	if (coordinate<imageDims)
 	{
-		double outValue = 
-			imageIn1[imageDims.linearAddressAt(coordinate)] + factor*imageIn2[imageDims.linearAddressAt(coordinate)];
+		double subtractor = factor*(double)imageIn2[imageDims.linearAddressAt(coordinate)];
+		ImagePixelType3 outValue = (double)imageIn1[imageDims.linearAddressAt(coordinate)] + subtractor;
 
 		imageOut[imageDims.linearAddressAt(coordinate)] = min(maxValue,max(minValue,outValue));
-			
 	}
 }
 
