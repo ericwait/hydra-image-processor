@@ -260,7 +260,7 @@ public:
 	 *	Contrast Enhancement will run the Michel High Pass Filter and then a mean filter
 	 *	Pass in the sigmas that will be used for the Gaussian filter to subtract off and the mean neighborhood dimensions
 	 */
-	void contrastEnhancement(Vec<float> sigmas, Vec<unsigned int> meanNeighborhood)
+	void contrastEnhancement(Vec<float> sigmas, Vec<unsigned int> medianNeighborhood)
 	{
 		reserveCurrentBuffer();
 
@@ -271,8 +271,7 @@ public:
 		releaseReservedBuffer();
 		incrementBufferNumber();
 
-		cudaMeanFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,meanNeighborhood);
-		incrementBufferNumber();
+		medianFilter(medianNeighborhood);
 	}
 
 	/*
@@ -362,9 +361,29 @@ public:
 	/*
 	*	Filters image where each pixel is the median of its neighborhood
 	*/
-	void medianFilter(Vec<int> neighborhood)
+	void medianFilter(Vec<unsigned int> neighborhood)
 	{
-		cudaMedianFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+		static dim3 localBlocks = blocks;
+		static dim3 localThreads = threads;
+		int sharedMemorySize = neighborhood.product()*localThreads.x*localThreads.y*localThreads.z;
+		if (sizeof(ImagePixelType)*sharedMemorySize>deviceProp.sharedMemPerBlock)
+		{
+			float maxThreads = deviceProp.sharedMemPerBlock/(sizeof(ImagePixelType)*neighborhood.product());
+			unsigned int threadDim = (unsigned int)std::pow<float>(maxThreads,1/3.0f);
+			localThreads.x = threadDim;
+			localThreads.y = threadDim;
+			localThreads.z = threadDim;
+
+			localBlocks.x = (unsigned int)ceil((float)imageDims.x/localThreads.x);
+			localBlocks.y = (unsigned int)ceil((float)imageDims.y/localThreads.y);
+			localBlocks.z = (unsigned int)ceil((float)imageDims.z/localThreads.z);
+
+			sharedMemorySize = neighborhood.product()*localThreads.x*localThreads.y*localThreads.z;
+		}
+
+		cudaMedianFilter<<<localBlocks,localThreads,sizeof(ImagePixelType)*sharedMemorySize>>>(getCurrentBuffer(),getNextBuffer(),
+			imageDims,neighborhood);
+
 		incrementBufferNumber();
 	}
 
