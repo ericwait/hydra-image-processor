@@ -136,7 +136,7 @@ void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, 
 		else
 		{
 			int dim = (int)pow((float)prop.maxThreadsPerBlock,1/3.0f);
-			int extra = (prop.maxThreadsPerBlock-dim*dim*dim)/(dim*dim);
+			float extra = (float)(prop.maxThreadsPerBlock-dim*dim*dim)/(dim*dim);
 
 			threads.x = dim + extra;
 			threads.y = dim;
