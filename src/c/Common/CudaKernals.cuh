@@ -10,7 +10,8 @@
 __constant__ float cudaConstKernal[MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM];
 
 template<typename ImagePixelType>
-__global__ void cudaMeanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims, Vec<unsigned int> hostKernalDims)
+__global__ void cudaMeanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims,
+							   Vec<unsigned int> hostKernalDims)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -127,51 +128,79 @@ __global__ void cudaMultiplyTwoImages(ImagePixelType1* imageIn1, ImagePixelType2
 	}
 }
 
+ template <typename ImagePixelType>
+ __device__ ImagePixelType* SubDivide(ImagePixelType* pB, ImagePixelType* pE)
+ {
+	 ImagePixelType* pPivot = --pE;
+	 const ImagePixelType pivot = *pPivot;
+
+	 while (pB < pE)
+	 {
+		 if (*pB > pivot)
+		 {
+			 --pE;
+			 ImagePixelType temp = *pB;
+			 *pB = *pE;
+			 *pE = temp;
+		 } else
+			 ++pB;
+	 }
+
+	 ImagePixelType temp = *pPivot;
+	 *pPivot = *pE;
+	 *pE = temp;
+
+	 return pE;
+ }
+
+ template <typename ImagePixelType>
+ __device__ void SelectElement(ImagePixelType* pB, ImagePixelType* pE, size_t k)
+ {
+	 while (true)
+	 {
+		 ImagePixelType* pPivot = SubDivide(pB, pE);
+		 size_t n = pPivot - pB;
+
+		 if (n == k)
+			 break;
+
+		 if (n > k)
+			 pE = pPivot;
+		 else
+		 {
+			 pB = pPivot + 1;
+			 k -= (n + 1);
+		 }
+	 }
+ }
+
 template<typename ImagePixelType>
 __device__ ImagePixelType cudaFindMedian(ImagePixelType* vals, int numVals)
 {
-	//TODO: this algo could use some improvement
-	int minIndex;
-	ImagePixelType minValue;
-	ImagePixelType tempValue;
-	for (int i=0; i<=numVals/2; ++i)
-	{
-		minIndex = i;
-		minValue = vals[i];
-		for (int j=i+1; j<numVals; ++j)
-		{
-			if (vals[j]<minValue)
-			{
-				minIndex = j;
-				minValue = vals[j];
-			}
-			tempValue = vals[i];
-			vals[i] = vals[minIndex];
-			vals[minIndex] = tempValue;
-		}
-	}
-	//return vals[numVals/2];
-	return vals[0];
+	SelectElement(vals,vals+numVals, numVals/2);
+	return vals[numVals/2];
 }
 
 template<typename ImagePixelType>
-__global__ void cudaMedianFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims,
-	Vec<unsigned int> hostKernalDims)
+__global__ void cudaMedianFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims, 
+								 Vec<unsigned int> hostKernalDims)
 {
+	extern __shared__ ImagePixelType vals[];
 	DeviceVec<unsigned int> imageDims = hostImageDims;
+	DeviceVec<unsigned int> kernalDims = hostKernalDims;
 	DeviceVec<unsigned int> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
+	int offset = threadIdx.x + threadIdx.y*blockDim.x + threadIdx.z*blockDim.y*blockDim.x;
+	offset *=  kernalDims.product();
 
 	if (coordinate<imageDims)
 	{
 		int kernalVolume = 0;
-		DeviceVec<unsigned int> kernalDims = hostKernalDims;
 		DeviceVec<unsigned int> kernalMidIdx;
 		DeviceVec<unsigned int> curCoordIm; 
 		DeviceVec<unsigned int> curCoordKrn;
-		ImagePixelType* vals = new ImagePixelType[kernalDims.x*kernalDims.y*kernalDims.z];
 
 		kernalMidIdx.x = kernalDims.x/2;
 		kernalMidIdx.y = kernalDims.y/2;
@@ -190,15 +219,14 @@ __global__ void cudaMedianFilter(ImagePixelType* imageIn, ImagePixelType* imageO
 				curCoordKrn.z = ((int)coordinate.z-(int)kernalMidIdx.z>=0) ? (0) : (kernalMidIdx.z-coordinate.z);
 				for (; curCoordIm.z<imageDims.z && curCoordKrn.z<kernalDims.z; ++curCoordIm.z, ++curCoordKrn.z)
 				{
-					vals[kernalDims.linearAddressAt(curCoordKrn)] = imageIn[imageDims.linearAddressAt(curCoordIm)];
-					vals[kernalVolume] = imageIn[imageDims.linearAddressAt(curCoordIm)];
+					vals[kernalVolume+offset] = imageIn[imageDims.linearAddressAt(curCoordIm)];
 					++kernalVolume;
 				}
 			}
 		}
 
-		imageOut[imageDims.linearAddressAt(coordinate)] = cudaFindMedian(vals,kernalVolume);
-		delete vals;
+		imageOut[imageDims.linearAddressAt(coordinate)] = cudaFindMedian(vals+offset,kernalVolume);
+		__syncthreads();
 	}
 }
 
