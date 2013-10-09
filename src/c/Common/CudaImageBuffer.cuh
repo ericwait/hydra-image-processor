@@ -321,17 +321,13 @@ public:
 				constKernalDims.x+constKernalDims.y);
 			incrementBufferNumber();
 		}
-// 			incrementBufferNumber();
-// 			printf("%d,",i);
-		
-/*		printf("\n");*/
 	}
 
 	/*
 	*	Sets each pixel to the max value of its neighborhood
 	*	Dilates structures
 	*/ 
-	void maxFilter(Vec<int> neighborhood)
+	void maxFilter(Vec<unsigned int> neighborhood)
 	{
 		cudaMaxFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
 		incrementBufferNumber();
@@ -352,7 +348,7 @@ public:
 	/*
 	*	Filters image where each pixel is the mean of its neighborhood 
 	*/
-	void meanFilter(Vec<int> neighborhood)
+	void meanFilter(Vec<unsigned int> neighborhood)
 	{
 		cudaMeanFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
 		incrementBufferNumber();
@@ -391,7 +387,7 @@ public:
 	*	Sets each pixel to the min value of its neighborhood
 	*	Erodes structures
 	*/ 
-	void minFilter(Vec<int> neighborhood)
+	void minFilter(Vec<unsigned int> neighborhood)
 	{
 		cudaMinFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
 		incrementBufferNumber();
