@@ -178,6 +178,9 @@ public:
 		return getCurrentBuffer();
 	}
 
+	size_t getMemoryUsed() {return memoryUsage;}
+	size_t getGlobalMemoryAvailable() {return deviceProp.totalGlobalMem;}
+
 	// End Setters / Getters
 
 	//////////////////////////////////////////////////////////////////////////
@@ -222,24 +225,19 @@ public:
 	*/ 
 	void calculateMinMax(ImagePixelType& minValue, ImagePixelType& maxValue)
 	{
-		ImagePixelType* maxValuesHost = new ImagePixelType[(blocks.x+1)/2];
-		ImagePixelType* minValuesHost = new ImagePixelType[(blocks.x+1)/2];
-		ImagePixelType* maxValuesDevice;
-		ImagePixelType* minValuesDevice;
+		double* maxValuesHost = new double[(blocks.x+1)/2];
+		double* minValuesHost = new double[(blocks.x+1)/2];
 
-		HANDLE_ERROR(cudaMalloc((void**)&maxValuesDevice,sizeof(double)*(blocks.x+1)/2));
-		HANDLE_ERROR(cudaMalloc((void**)&minValuesDevice,sizeof(double)*(blocks.x+1)/2));
-
-		cudaFindMinMax<<<blocks.x,threads.x,2*sizeof(double)*threads.x>>>(getCurrentBuffer(),minValuesDevice,maxValuesDevice,
+		cudaFindMinMax<<<sumBlocks,sumThreads,2*sizeof(double)*sumThreads.x>>>(getCurrentBuffer(),minValuesDevice,deviceSum,
 			imageDims.product());
 
-		HANDLE_ERROR(cudaMemcpy(maxValuesHost,maxValuesDevice,sizeof(double)*(blocks.x)/2,cudaMemcpyDeviceToHost));
-		HANDLE_ERROR(cudaMemcpy(minValuesHost,minValuesDevice,sizeof(double)*(blocks.x)/2,cudaMemcpyDeviceToHost));
+		HANDLE_ERROR(cudaMemcpy(maxValuesHost,deviceSum,sizeof(double)*sumBlocks.x,cudaMemcpyDeviceToHost));
+		HANDLE_ERROR(cudaMemcpy(minValuesHost,minValuesDevice,sizeof(double)*sumBlocks.x,cudaMemcpyDeviceToHost));
 
 		maxValue = maxValuesHost[0];
 		minValue = minValuesHost[0];
 
-		for (int i=0; i<blocks.x/2; ++i)
+		for (int i=1; i<sumBlocks.x; ++i)
 		{
 			if (maxValue < maxValuesHost[i])
 				maxValue = maxValuesHost[i];
@@ -260,12 +258,12 @@ public:
 	{
 		reserveCurrentBuffer();
 
-		gaussianFilter(sigmas);
+ 		gaussianFilter(sigmas);
 		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getReservedBuffer(),getCurrentBuffer(),getNextBuffer(),imageDims,
 			-1.0,minPixel,maxPixel);
 
-		releaseReservedBuffer();
 		incrementBufferNumber();
+		releaseReservedBuffer();
 
 		medianFilter(medianNeighborhood);
 	}
@@ -276,9 +274,6 @@ public:
 	*/
 	void createHistogram()
 	{
-		histogramHost = new unsigned int[NUM_BINS];
-		HANDLE_ERROR(cudaMalloc((void**)&histogramDevice,NUM_BINS*sizeof(unsigned int)));
-
 		memset(histogramHost,0,NUM_BINS*sizeof(unsigned int));
 		HANDLE_ERROR(cudaMemset(histogramDevice,0,NUM_BINS*sizeof(unsigned int)));
 
@@ -360,7 +355,7 @@ public:
 		int sharedMemorySize = neighborhood.product()*localThreads.x*localThreads.y*localThreads.z;
 		if (sizeof(ImagePixelType)*sharedMemorySize>deviceProp.sharedMemPerBlock)
 		{
-			float maxThreads = deviceProp.sharedMemPerBlock/(sizeof(ImagePixelType)*neighborhood.product());
+			float maxThreads = (float)deviceProp.sharedMemPerBlock/(sizeof(ImagePixelType)*neighborhood.product());
 			unsigned int threadDim = (unsigned int)pow(maxThreads,1/3.0f);
 			localThreads.x = threadDim;
 			localThreads.y = threadDim;
@@ -436,20 +431,7 @@ public:
 	*/
 	void sumArray(double& sum)
 	{
-		if (sizeSum<sumBlocks.x)
-		{
-			if (hostSum!=NULL)
-				delete[] hostSum;
-			if (deviceSum!=NULL)
-				HANDLE_ERROR(cudaFree(deviceSum));
-
-			hostSum = new double[sumBlocks.x*2];
-			HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*sumBlocks.x*2));
-			sizeSum = sumBlocks.x*2;
-		}
-
-		cudaSumArray<<<sumBlocks,sumThreads,sizeof(double)*sumThreads.x>>>(getCurrentBuffer(),(double*)deviceSum,imageDims.product());
-		
+		cudaSumArray<<<sumBlocks,sumThreads,sizeof(double)*sumThreads.x>>>(getCurrentBuffer(),deviceSum,imageDims.product());		
 		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*sumBlocks.x,cudaMemcpyDeviceToHost));
 
 		sum = 0;
@@ -505,6 +487,7 @@ private:
 	{
 		calcBlockThread(imageDims,deviceProp,blocks,threads);
 		calcBlockThread(Vec<unsigned int>((unsigned int)imageDims.product(),1,1),deviceProp,sumBlocks,sumThreads);
+		sumBlocks.x = (sumBlocks.x+1) / 2;
 	}
 
 	void deviceSetup() 
@@ -521,6 +504,7 @@ private:
 		for (int i=0; i<NUM_BUFFERS; ++i)
 		{
 			HANDLE_ERROR(cudaMalloc((void**)&imageBuffers[i],sizeof(ImagePixelType)*imageDims.product()));
+			memoryUsage += sizeof(ImagePixelType)*imageDims.product();
 		}
 
 		currentBuffer = -1;
@@ -528,27 +512,24 @@ private:
 
 		updateBlockThread();
 
-		sumBlocks.x = (sumBlocks.x+1) / 2;
-
+		sizeSum = sumBlocks.x;
 		HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*sumBlocks.x));
+		memoryUsage += sizeof(double)*sumBlocks.x;
+		hostSum = new double[sumBlocks.x];
+
+		HANDLE_ERROR(cudaMalloc((void**)&minValuesDevice,sizeof(double)*sumBlocks.x));
+		memoryUsage += sizeof(double)*sumBlocks.x;
+
+		histogramHost = new unsigned int[NUM_BINS];
+		HANDLE_ERROR(cudaMalloc((void**)&histogramDevice,NUM_BINS*sizeof(unsigned int)));
+		memoryUsage += NUM_BINS*sizeof(unsigned int);
+
+		normalizedHistogramHost = new double[NUM_BINS];
+		HANDLE_ERROR(cudaMalloc((void**)&normalizedHistogramDevice,NUM_BINS*sizeof(double)));
+		memoryUsage += NUM_BINS*sizeof(double);
+
 		minPixel = std::numeric_limits<ImagePixelType>::min();
 		maxPixel = std::numeric_limits<ImagePixelType>::max();
-	}
-
-	void reduceMemory()
-	{
-		for (int i=0; i<NUM_BUFFERS; ++i)
-		{
-			if (imageBuffers[i]!=NULL)
-				HANDLE_ERROR(cudaFree(imageBuffers[i]));
-		}
-
-		for (int i=0; i<NUM_BUFFERS; ++i)
-		{
-			HANDLE_ERROR(cudaMalloc((void**)&imageBuffers[i],sizeof(ImagePixelType)*imageDims.product()));
-		}
-
-		currentBuffer = -1;
 	}
 
 	void getRoi(ImagePixelType* roi, Vec<unsigned int> starts, Vec<unsigned int> sizes) const
@@ -610,8 +591,12 @@ private:
 		histogramDevice = NULL;
 		normalizedHistogramHost = NULL;
 		normalizedHistogramDevice = NULL;
-		iterations = Vec<int>(0,0,0);
+		deviceSum = NULL;
+		minValuesDevice = NULL;
+		hostSum = NULL;
+		gaussIterations = Vec<int>(0,0,0);
 		reservedBuffer = -1;
+		memoryUsage = 0;
 	}
 
 	void clean() 
@@ -640,6 +625,17 @@ private:
 		if (normalizedHistogramDevice!=NULL)
 			HANDLE_ERROR(cudaFree(normalizedHistogramDevice));
 
+		if (deviceSum!=NULL)
+			HANDLE_ERROR(cudaFree(deviceSum));
+
+		if (hostSum!=NULL)
+			delete[] hostSum;
+
+		if (minValuesDevice!=NULL)
+			HANDLE_ERROR(cudaFree(minValuesDevice));
+
+		memset(hostKernal,0,sizeof(float)*MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM);
+
 		defaults();
 	}
 
@@ -653,14 +649,19 @@ private:
 
 	ImagePixelType* getNextBuffer()
 	{
-		int nextIndex = currentBuffer +1;
-		if (nextIndex==reservedBuffer)
+		return imageBuffers[getNextBufferNum()];
+	}
+
+	int getNextBufferNum()
+	{
+		int nextIndex = currentBuffer;
+		do 
+		{
 			++nextIndex;
-
-		if (nextIndex>=NUM_BUFFERS)
-			nextIndex = 0;
-
-		return imageBuffers[nextIndex];
+			if (nextIndex>=NUM_BUFFERS)
+				nextIndex = 0;
+		} while (nextIndex==reservedBuffer);
+		return nextIndex;
 	}
 
 	ImagePixelType* getReservedBuffer()
@@ -688,13 +689,7 @@ private:
 				gpuErrchk( cudaPeekAtLastError() );
 		#endif // _DEBUG
 
-		++currentBuffer;
-
-		if (currentBuffer==reservedBuffer)
-			++currentBuffer;
-
-		if (currentBuffer>=NUM_BUFFERS)
-			currentBuffer = 0;
+		currentBuffer = getNextBufferNum();
 	}
 
 	//This is the maximum size that the current buffer can handle 
@@ -710,9 +705,11 @@ private:
 	cudaDeviceProp deviceProp;
 	dim3 blocks, threads;
 	int currentBuffer;
+	size_t memoryUsage;
 	ImagePixelType* imageBuffers[NUM_BUFFERS];
 	ImagePixelType* reducedImageHost;
 	ImagePixelType* reducedImageDevice;
+	double* minValuesDevice;
 	ImagePixelType minPixel;
 	ImagePixelType maxPixel;
 	unsigned int* histogramHost;
@@ -724,7 +721,7 @@ private:
 	double* hostSum;
 	int sizeSum;
 	Vec<unsigned int> constKernalDims;
-	Vec<int> iterations;
+	Vec<int> gaussIterations;
 	Vec<float> gausKernalSigmas;
 	float hostKernal[MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM];
 	int reservedBuffer;

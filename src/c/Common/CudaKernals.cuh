@@ -444,11 +444,11 @@ __global__ void cudaThresholdImage(ImagePixelType* imageIn, ImagePixelType* imag
 }
 
 template<typename ImagePixelType>
-__global__ void cudaFindMinMax(ImagePixelType* arrayIn, ImagePixelType* minArrayOut, ImagePixelType* maxArrayOut, unsigned int n)
+__global__ void cudaFindMinMax(ImagePixelType* arrayIn, double* minArrayOut, double* maxArrayOut, unsigned int n)
 
 {
-	extern __shared__ float maxData[];
-	extern __shared__ float minData[];
+	extern __shared__ double maxData[];
+	extern __shared__ double minData[];
 
 	unsigned int tid = threadIdx.x;
 	unsigned int i = blockIdx.x*blockDim.x*2 + tid;
