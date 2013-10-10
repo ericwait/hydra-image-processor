@@ -81,8 +81,8 @@ public:
 
 	void loadImage(const ImagePixelType* image)
 	{
-		updateBlockThread();
-		incrementBufferNumber();
+		currentBuffer = 0;
+		reservedBuffer = -1;
 		HANDLE_ERROR(cudaMemcpy((void*)getCurrentBuffer(),image,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyHostToDevice));
 	}
 	
