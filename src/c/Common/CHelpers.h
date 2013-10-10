@@ -49,7 +49,7 @@ Vec<unsigned int> createGaussianKernal(Vec<float> sigma, KernalType* kernal, int
 		minIterations.z = (int)ceil(9.0f*SQR(sigma.z)/SQR(MAX_KERNAL_DIM));
 
 		iterations = minIterations.maxValue();
-		sigma = sigma/sqrt(iterations);
+		sigma = sigma/sqrt((float)iterations);
 	}
 
 	kernalDims.x = (unsigned int)(3*sigma.x);
@@ -104,9 +104,9 @@ Vec<unsigned int> createGaussianKernal(Vec<float> sigma, KernalType* kernal, Vec
 		iterations.z = (int)ceil(9.0f*SQR(sigma.z)/SQR(MAX_KERNAL_DIM));
 
 		//TODO: Optimize iterations per dim
-		sigma.x = (float)(sigma.x/sqrt(iterations.x));
-		sigma.y = (float)(sigma.y/sqrt(iterations.y));
-		sigma.z = (float)(sigma.z/sqrt(iterations.z));
+		sigma.x = (float)(sigma.x/sqrt((float)iterations.x));
+		sigma.y = (float)(sigma.y/sqrt((float)iterations.y));
+		sigma.z = (float)(sigma.z/sqrt((float)iterations.z));
 	}
 
 	kernalDims.x = (unsigned int)(3*sigma.x);
