@@ -8,8 +8,6 @@
 #include "CudaUtilities.cuh"
 #include "assert.h"
 
-const Vec<unsigned int> unset = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
-
 template<typename ImagePixelType>
 class CudaImageBuffer
 {
@@ -21,10 +19,9 @@ public:
 	CudaImageBuffer(Vec<unsigned int> dims, int device=0)
 	{
 		defaults();
-
 		this->imageDims = dims;
 		this->device = device;
-
+		UNSET = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
 		deviceSetup();
 		memoryAllocation();
 	}
@@ -32,10 +29,9 @@ public:
 	CudaImageBuffer(unsigned int x, unsigned int y, unsigned int z, int device=0)
 	{
 		defaults();
-
 		imageDims = Vec<unsigned int>(x,y,z);
 		this->device = device;
-
+		UNSET = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
 		deviceSetup();
 		memoryAllocation();
 	}
@@ -43,10 +39,10 @@ public:
 	CudaImageBuffer(int n, int device=0)
 	{
 		defaults();
-
 		imageDims = Vec<unsigned int>(n,1,1);
 		this->device = device;
 
+		UNSET = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
 		deviceSetup();
 		memoryAllocation();
 	}
@@ -295,27 +291,27 @@ public:
 	*/ 
 	void gaussianFilter(Vec<float> sigmas)
 	{
-		if (constKernalDims==unset || sigmas!=gausKernalSigmas)
+		if (constKernalDims==UNSET || sigmas!=gausKernalSigmas)
 		{
 			gausKernalSigmas = sigmas;
-			constKernalDims = createGaussianKernal(sigmas,hostKernal,iterations);
+			constKernalDims = createGaussianKernal(sigmas,hostKernal,gaussIterations);
 			HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernal,hostKernal,sizeof(float)*(constKernalDims.x+constKernalDims.y+constKernalDims.z)));
 		}
 
-		for (int x=0; x<iterations.x; ++x)
+		for (int x=0; x<gaussIterations.x; ++x)
 		{
 			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(constKernalDims.x,1,1));
 			incrementBufferNumber();
 		}
 
-		for (int y=0; y<iterations.y; ++y)
+		for (int y=0; y<gaussIterations.y; ++y)
 		{
 			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,constKernalDims.y,1),
 				constKernalDims.x);
 			incrementBufferNumber();
 		}
 
-		for (int x=0; x<iterations.x; ++x)
+		for (int x=0; x<gaussIterations.x; ++x)
 		{
 			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,1,constKernalDims.z),
 				constKernalDims.x+constKernalDims.y);
@@ -365,7 +361,7 @@ public:
 		if (sizeof(ImagePixelType)*sharedMemorySize>deviceProp.sharedMemPerBlock)
 		{
 			float maxThreads = deviceProp.sharedMemPerBlock/(sizeof(ImagePixelType)*neighborhood.product());
-			unsigned int threadDim = (unsigned int)std::pow<float>(maxThreads,1/3.0f);
+			unsigned int threadDim = (unsigned int)pow(maxThreads,1/3.0f);
 			localThreads.x = threadDim;
 			localThreads.y = threadDim;
 			localThreads.z = threadDim;
@@ -423,15 +419,13 @@ public:
 		if(histogramDevice==NULL)
 			createHistogram();
 
-		normalizedHistogramHost = new double[NUM_BINS];
-		HANDLE_ERROR(cudaMalloc((void**)&normalizedHistogramDevice,NUM_BINS*sizeof(double)));
 		cudaNormalizeHistogram<<<NUM_BINS,1>>>(histogramDevice,normalizedHistogramDevice,imageDims);
 	}
 
 	/*
 	*	Raise each pixel to a power
 	*/
-	void pow(int p)
+	void imagePow(int p)
 	{
 		cudaPow<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,p);
 		incrementBufferNumber();
@@ -599,9 +593,9 @@ private:
 
 	void defaults()
 	{
-		imageDims = unset;
-		reducedDims = unset;
-		constKernalDims = unset;
+		imageDims = UNSET;
+		reducedDims = UNSET;
+		constKernalDims = UNSET;
 		gausKernalSigmas  = Vec<float>(0.0f,0.0f,0.0f);
 		device = -1;
 		currentBuffer = -1;
@@ -734,13 +728,5 @@ private:
 	Vec<float> gausKernalSigmas;
 	float hostKernal[MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM];
 	int reservedBuffer;
+	Vec<unsigned int> UNSET;
 };
-// 
-// template<typename ImagePixelType>
-// Vec<float> CudaImageBuffer<ImagePixelType>::gausKernalSigmas  = Vec<float>(0.0f,0.0f,0.0f);
-// 
-// template<typename ImagePixelType>
-// Vec<unsigned int> CudaImageBuffer<ImagePixelType>::constKernalDims = unset;
-// 
-// template<typename ImagePixelType>
-// float CudaImageBuffer<ImagePixelType>::hostKernal[MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM];
