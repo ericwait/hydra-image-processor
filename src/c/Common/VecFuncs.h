@@ -60,8 +60,11 @@ DEVICE_PREFIX bool operator!= (const EXTERN_TYPE<T>& inVec)
 }
 
 // Returns the linear memory map if this is the dimensions and the passed in Vec is the coordinate
-DEVICE_PREFIX size_t linearAddressAt(const EXTERN_TYPE<T>& coordinate) const
+DEVICE_PREFIX size_t linearAddressAt(const EXTERN_TYPE<T>& coordinate, bool columnMajor=false) const
 {
+	if (columnMajor)
+		return coordinate.y + coordinate.x*y + coordinate.z*x*y;
+
 	return coordinate.x + coordinate.y*x + coordinate.z*y*x;
 }
 

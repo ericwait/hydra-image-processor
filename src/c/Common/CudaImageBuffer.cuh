@@ -16,9 +16,10 @@ public:
 	// Constructor / Destructor
 	//////////////////////////////////////////////////////////////////////////
 
-	CudaImageBuffer(Vec<unsigned int> dims, int device=0)
+	CudaImageBuffer(Vec<unsigned int> dims, bool columnMajor=false, int device=0)
 	{
 		defaults();
+		isColumnMajor = columnMajor;
 		this->imageDims = dims;
 		this->device = device;
 		UNSET = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
@@ -26,9 +27,10 @@ public:
 		memoryAllocation();
 	}
 
-	CudaImageBuffer(unsigned int x, unsigned int y, unsigned int z, int device=0)
+	CudaImageBuffer(unsigned int x, unsigned int y, unsigned int z, bool columnMajor=false, int device=0)
 	{
 		defaults();
+		isColumnMajor = columnMajor;
 		imageDims = Vec<unsigned int>(x,y,z);
 		this->device = device;
 		UNSET = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
@@ -36,9 +38,10 @@ public:
 		memoryAllocation();
 	}
 
-	CudaImageBuffer(int n, int device=0)
+	CudaImageBuffer(int n, bool columnMajor=false, int device=0)
 	{
 		defaults();
+		isColumnMajor = columnMajor;
 		imageDims = Vec<unsigned int>(n,1,1);
 		this->device = device;
 
@@ -193,7 +196,7 @@ public:
 	template<typename T>
 	void addConstant(T additive)
 	{
-		cudaAddFactor<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,additive,minPixel,maxPixel);
+		cudaAddFactor<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,additive,minPixel,maxPixel,isColumnMajor);
 		incrementBufferNumber();
 	}
 
@@ -204,7 +207,7 @@ public:
 	void addImageWith(const CudaImageBuffer* image, double factor)
 	{
 		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),
-			imageDims,factor,minPixel,maxPixel);
+			imageDims,factor,minPixel,maxPixel,isColumnMajor);
 		incrementBufferNumber();
 	}
 
@@ -216,7 +219,7 @@ public:
 	template<typename ThresholdType>
 	void applyPolyTransformation(ThresholdType a, ThresholdType b, ThresholdType c, ImagePixelType minValue, ImagePixelType maxValue)
 	{
-		cudaPolyTransferFuncImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,a,b,c,minValue,maxValue);
+		cudaPolyTransferFuncImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,a,b,c,minValue,maxValue,isColumnMajor);
 		incrementBufferNumber();
 	}
 
@@ -260,7 +263,7 @@ public:
 
  		gaussianFilter(sigmas);
 		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getReservedBuffer(),getCurrentBuffer(),getNextBuffer(),imageDims,
-			-1.0,minPixel,maxPixel);
+			-1.0,minPixel,maxPixel,isColumnMajor);
 
 		incrementBufferNumber();
 		releaseReservedBuffer();
@@ -295,21 +298,22 @@ public:
 
 		for (int x=0; x<gaussIterations.x; ++x)
 		{
-			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(constKernalDims.x,1,1));
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(constKernalDims.x,1,1),
+				isColumnMajor);
 			incrementBufferNumber();
 		}
 
 		for (int y=0; y<gaussIterations.y; ++y)
 		{
 			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,constKernalDims.y,1),
-				constKernalDims.x);
+				constKernalDims.x,isColumnMajor);
 			incrementBufferNumber();
 		}
 
 		for (int x=0; x<gaussIterations.x; ++x)
 		{
 			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,1,constKernalDims.z),
-				constKernalDims.x+constKernalDims.y);
+				constKernalDims.x+constKernalDims.y,isColumnMajor);
 			incrementBufferNumber();
 		}
 	}
@@ -320,7 +324,7 @@ public:
 	*/ 
 	void maxFilter(Vec<unsigned int> neighborhood)
 	{
-		cudaMaxFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+		cudaMaxFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood,isColumnMajor);
 		incrementBufferNumber();
 	}
 
@@ -330,7 +334,7 @@ public:
 	*/
 	void maximumIntensityProjection()
 	{
-		cudaMaximumIntensityProjection<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims);
+		cudaMaximumIntensityProjection<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,isColumnMajor);
 		imageDims.z = 1;
 		updateBlockThread();
 		incrementBufferNumber();
@@ -341,7 +345,7 @@ public:
 	*/
 	void meanFilter(Vec<unsigned int> neighborhood)
 	{
-		cudaMeanFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+		cudaMeanFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood,isColumnMajor);
 		incrementBufferNumber();
 	}
 
@@ -369,7 +373,7 @@ public:
 		}
 
 		cudaMedianFilter<<<localBlocks,localThreads,sizeof(ImagePixelType)*sharedMemorySize>>>(getCurrentBuffer(),getNextBuffer(),
-			imageDims,neighborhood);
+			imageDims,neighborhood,isColumnMajor);
 
 		incrementBufferNumber();
 	}
@@ -380,7 +384,7 @@ public:
 	*/ 
 	void minFilter(Vec<unsigned int> neighborhood)
 	{
-		cudaMinFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+		cudaMinFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood,isColumnMajor);
 		incrementBufferNumber();
 	}
 
@@ -391,7 +395,7 @@ public:
 	template<typename FactorType>
 	void multiplyImage(FactorType factor)
 	{
-		cudaMultiplyImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,factor,minValue,maxValue);
+		cudaMultiplyImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,factor,minValue,maxValue,isColumnMajor);
 		incrementBufferNumber();
 	}
 
@@ -400,7 +404,7 @@ public:
 	*/
 	void multiplyImageWith(const CudaImageBuffer* image)
 	{
-		cudaMultiplyTwoImages<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims);
+		cudaMultiplyTwoImages<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims,isColumnMajor);
 		incrementBufferNumber();
 	}
 
@@ -422,7 +426,7 @@ public:
 	*/
 	void imagePow(int p)
 	{
-		cudaPow<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,p);
+		cudaPow<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,p,isColumnMajor);
 		incrementBufferNumber();
 	}
 
@@ -451,7 +455,7 @@ public:
 			(unsigned int)(imageDims.y/reductions.y),
 			(unsigned int)(imageDims.z/reductions.z));
 
-		cudaRuduceImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,reducedDims,reductions);
+		cudaRuduceImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,reducedDims,reductions,isColumnMajor);
 		incrementBufferNumber();
 	}
 
@@ -466,7 +470,7 @@ public:
 	template<typename ThresholdType>
 	void thresholdFilter(ThresholdType threshold)
 	{
-		cudaThresholdImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,threshold);
+		cudaThresholdImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,threshold,isColumnMajor);
 		incrementBufferNumber();
 	}
 
@@ -478,7 +482,6 @@ public:
 	}
 
 	// End Cuda Operators
-
 
 private:
 	CudaImageBuffer();
@@ -597,6 +600,7 @@ private:
 		gaussIterations = Vec<int>(0,0,0);
 		reservedBuffer = -1;
 		memoryUsage = 0;
+		isColumnMajor = false;
 	}
 
 	void clean() 
@@ -726,4 +730,5 @@ private:
 	float hostKernal[MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM];
 	int reservedBuffer;
 	Vec<unsigned int> UNSET;
+	bool isColumnMajor;
 };
