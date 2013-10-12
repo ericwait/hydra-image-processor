@@ -395,7 +395,7 @@ public:
 	template<typename FactorType>
 	void multiplyImage(FactorType factor)
 	{
-		cudaMultiplyImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,factor,minValue,maxValue,isColumnMajor);
+		cudaMultiplyImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,factor,minPixel,maxPixel,isColumnMajor);
 		incrementBufferNumber();
 	}
 

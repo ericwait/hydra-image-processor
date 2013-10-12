@@ -55,8 +55,8 @@ __global__ void cudaMeanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut
 	}
 }
 
-template<typename ImagePixelType, typename FactorType>
-__global__ void cudaMultiplyImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims, FactorType factor,
+template<typename ImagePixelType>
+__global__ void cudaMultiplyImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims, double factor,
 	ImagePixelType minValue, ImagePixelType maxValue, bool isColumnMajor=false)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
@@ -68,7 +68,7 @@ __global__ void cudaMultiplyImage(ImagePixelType* imageIn, ImagePixelType* image
 	if (coordinate<imageDims)
 	{
 		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = 
-			min(maxValue,max(minValue, factor*imageIn[imageDims.linearAddressAt(coordinate,isColumnMajor)]));
+			min((double)maxValue,max((double)minValue, factor*imageIn[imageDims.linearAddressAt(coordinate,isColumnMajor)]));
 	}
 }
 
@@ -111,8 +111,8 @@ __global__ void cudaMultiplyTwoImages(ImagePixelType1* imageIn1, ImagePixelType2
 	}
 }
 
- template<typename ImagePixelType, typename FactorType>
- __global__ void cudaAddFactor(ImagePixelType* imageIn1, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims, FactorType factor,
+ template<typename ImagePixelType>
+ __global__ void cudaAddFactor(ImagePixelType* imageIn1, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims, double factor,
 	 ImagePixelType minValue, ImagePixelType maxValue, bool isColumnMajor=false)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
@@ -123,8 +123,8 @@ __global__ void cudaMultiplyTwoImages(ImagePixelType1* imageIn1, ImagePixelType2
 
 	if (coordinate<imageDims)
 	{
-		FactorType outValue = imageIn1[imageDims.linearAddressAt(coordinate,isColumnMajor)] + factor;
-		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = min(maxValue,max(minValue,outValue));
+		double outValue = imageIn1[imageDims.linearAddressAt(coordinate,isColumnMajor)] + factor;
+		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = min((double)maxValue,max((double)minValue,outValue));
 	}
 }
 
@@ -599,9 +599,9 @@ __global__ void cudaFindMinMax(ImagePixelType* arrayIn, double* minArrayOut, dou
 	}
 }
 
-template<typename ImagePixelType, typename ThresholdType>
+template<typename ImagePixelType>
 __global__ void cudaPolyTransferFuncImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims,
-	ThresholdType a, ThresholdType b, ThresholdType c, ImagePixelType minPixelValue, ImagePixelType maxPixelValue, bool isColumnMajor=false)
+	double a, double b, double c, ImagePixelType minPixelValue, ImagePixelType maxPixelValue, bool isColumnMajor=false)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -618,7 +618,7 @@ __global__ void cudaPolyTransferFuncImage(ImagePixelType* imageIn, ImagePixelTyp
 		if (multiplier>1)
 			multiplier = 1;
 
-		ImagePixelType newPixelVal = min(maxPixelValue,max(minPixelValue, multiplier*maxPixelValue));
+		ImagePixelType newPixelVal = min((double)maxPixelValue,max((double)minPixelValue, multiplier*maxPixelValue));
 
 		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = newPixelVal;
 	}

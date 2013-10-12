@@ -18,6 +18,43 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CudaMex\AddConstant.cpp" />
+    <ClCompile Include="CudaMex\AddImageWith.cpp" />
+    <ClCompile Include="CudaMex\ApplyPolyTransformation.cpp" />
+    <ClCompile Include="CudaMex\CalculateMinMax.cpp" />
+    <ClCompile Include="CudaMex\ContrastEnhancement.cpp" />
+    <ClCompile Include="CudaMex\CudaMex.cpp" />
+    <ClCompile Include="CudaMex\GaussianFilter.cpp" />
+    <ClCompile Include="CudaMex\ImagePow.cpp" />
+    <ClCompile Include="CudaMex\MaxFilter.cpp" />
+    <ClCompile Include="CudaMex\MaximumIntensityProjection.cpp" />
+    <ClCompile Include="CudaMex\MeanFilter.cpp" />
+    <ClCompile Include="CudaMex\MedianFilter.cpp" />
+    <ClCompile Include="CudaMex\MexCommand.cpp" />
+    <ClCompile Include="CudaMex\MinFilter.cpp" />
+    <ClCompile Include="CudaMex\MultiplyImage.cpp" />
+    <ClCompile Include="CudaMex\MultiplyImageWith.cpp" />
+    <ClCompile Include="CudaMex\ReduceImage.cpp" />
+    <ClCompile Include="CudaMex\SumArray.cpp" />
+    <ClCompile Include="CudaMex\ThresholdFilter.cpp" />
+    <ClCompile Include="CudaMex\Unmix.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="CudaMex\Process.cu" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Common\CudaImageBuffer.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="Common\Vec.h" />
+    <ClInclude Include="Common\VecFuncs.h" />
+    <ClInclude Include="CudaMex\MexCommand.h" />
+    <None Include="CudaMex\CudaMex.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CudaMex\Process.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DF033EF0-D4AC-41CD-900B-5BFE8099BED4}</ProjectGuid>
     <RootNamespace>CudaMex</RootNamespace>
@@ -63,12 +100,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(CUDA_PATH)include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
+    <IncludePath>$(CUDA_PATH)\include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
     <OutDir>$(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\$(Configuration)_$(PlatformName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(CUDA_PATH)include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
+    <IncludePath>$(CUDA_PATH)\include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
     <OutDir>$(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\$(Configuration)_$(PlatformName)\</IntDir>
   </PropertyGroup>
@@ -85,20 +122,21 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(MATLAB_DIR)\extern\include;$(SolutionDir)Common;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MATLAB_DIR)\extern\include;$(SolutionDir)CudaMex;$(SolutionDir)Common;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(MATLAB_DIR)\extern\lib\win64\microsoft;$(CUDA_PATH)lib\x64\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MATLAB_DIR)\extern\lib\win64\microsoft;$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>cudart.lib;libmx.lib;libmex.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>$(SolutionDir)CudaMex\CudaMex.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>echo copy" $(OutDir)CudaMex.dll" "$(ProjectDir)"
-copy "$(OutDir)CudaMex.dll" "$(ProjectDir)"
+      <Command>echo copy" $(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)"
+copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)"
 echo copy "$(OutDir)CudaMex.pdb" "$(ProjectDir)"
 copy "$(OutDir)CudaMex.pdb" "$(ProjectDir)"
-echo move "$(ProjectDir)CudaMex.dll" "$(ProjectDir)CudaMex.mexw64"
-move "$(ProjectDir)CudaMex.dll" "$(ProjectDir)CudaMex.mexw64"
+echo move "$(OutDir)CudaMex.dll" "$(ProjectDir)CudaMex.mexw64"
+move "$(OutDir)CudaMex.dll" "$(ProjectDir)CudaMex.mexw64"
 echo copy "$(ProjectDir)CudaMex.mexw64" "$(ProjectDir)..\MATLAB\."
 copy "$(ProjectDir)CudaMex.mexw64" "$(ProjectDir)..\MATLAB\."
 echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\MATLAB\."
@@ -107,6 +145,9 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\MATLAB\."</Command>
     <CudaLink>
       <AdditionalLibraryDirectories>$(CUDA_PATH)lib\x64</AdditionalLibraryDirectories>
     </CudaLink>
+    <CudaCompile>
+      <CodeGeneration>compute_20,sm_20;compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
+    </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -127,22 +168,23 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\MATLAB\."</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(MATLAB_DIR)\extern\include;$(SolutionDir)Common;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MATLAB_DIR)\extern\include;$(SolutionDir)CudaMex;$(SolutionDir)Common;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(MATLAB_DIR)\extern\lib\win64\microsoft;$(CUDA_PATH)lib\x64\;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MATLAB_DIR)\extern\lib\win64\microsoft;$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>cudart.lib;libmx.lib;libmex.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>$(SolutionDir)CudaMex\CudaMex.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>echo copy" $(OutDir)CudaMex.dll" "$(ProjectDir)"
-copy "$(OutDir)CudaMex.dll" "$(ProjectDir)"
+      <Command>echo copy" $(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)"
+copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)"
 echo copy "$(OutDir)CudaMex.pdb" "$(ProjectDir)"
 copy "$(OutDir)CudaMex.pdb" "$(ProjectDir)"
-echo move "$(ProjectDir)CudaMex.dll" "$(ProjectDir)CudaMex.mexw64"
-move "$(ProjectDir)CudaMex.dll" "$(ProjectDir)CudaMex.mexw64"
+echo move "$(OutDir)CudaMex.dll" "$(ProjectDir)CudaMex.mexw64"
+move "$(OutDir)CudaMex.dll" "$(ProjectDir)CudaMex.mexw64"
 echo copy "$(ProjectDir)CudaMex.mexw64" "$(ProjectDir)..\MATLAB\."
 copy "$(ProjectDir)CudaMex.mexw64" "$(ProjectDir)..\MATLAB\."
 echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\MATLAB\."
@@ -151,25 +193,10 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\MATLAB\."</Command>
     <CudaLink>
       <AdditionalLibraryDirectories>$(CUDA_PATH)lib\x64</AdditionalLibraryDirectories>
     </CudaLink>
-  </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="Common\CHelpers.h" />
-    <ClInclude Include="Common\CudaImageBuffer.h" />
-    <ClInclude Include="Common\CudaKernals.h" />
-    <ClInclude Include="Common\CudaUtilities.h" />
-    <ClInclude Include="Common\Defines.h" />
-    <ClInclude Include="Common\Vec.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="CudaMex.def" />
-    <CudaCompile Include="CudaWrapper.cu">
-      <FileType>Document</FileType>
+    <CudaCompile>
+      <CodeGeneration>compute_20,sm_20;compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
     </CudaCompile>
-    <None Include="CudaWrapper.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="CudaMex.cpp" />
-  </ItemGroup>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 5.5.targets" />

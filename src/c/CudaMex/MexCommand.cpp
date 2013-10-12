@@ -1,0 +1,89 @@
+#include "MexCommand.h"
+#include "Vec.h"
+#include "Process.h"
+
+std::map<std::string,MexCommand*> MexCommand::commandList;
+
+MexCommand::~MexCommand(){}
+
+void MexCommand::init()
+{
+	//TODO Put every class here!
+	REGISTER_COMMAND(AddConstant);
+	REGISTER_COMMAND(AddImageWith);
+	REGISTER_COMMAND(ApplyPolyTransformation);
+	REGISTER_COMMAND(CalculateMinMax);
+	REGISTER_COMMAND(ContrastEnhancement);
+	REGISTER_COMMAND(GaussianFilter);
+	REGISTER_COMMAND(ImagePow);
+	REGISTER_COMMAND(MaxFilter);
+	REGISTER_COMMAND(MaximumIntensityProjection);
+	REGISTER_COMMAND(MeanFilter);
+	REGISTER_COMMAND(MedianFilter);
+	REGISTER_COMMAND(MinFilter);
+	REGISTER_COMMAND(MultiplyImage);
+	REGISTER_COMMAND(MultiplyImageWith);
+	REGISTER_COMMAND(ReduceImage);
+	REGISTER_COMMAND(SumArray);
+	REGISTER_COMMAND(ThresholdFilter);
+	REGISTER_COMMAND(Unmix);
+}
+
+MexCommand* MexCommand::getCommand(std::string cmd)
+{
+	if (commandList.count(cmd)!=0)
+		return commandList[cmd];
+
+	return NULL;
+}
+
+std::string MexCommand::printUsageList()
+{
+	std::string list = "";
+	std::map<std::string,MexCommand*>::iterator it = commandList.begin();
+
+	for (; it!=commandList.end(); ++it)
+	{
+		list += it->second->printUsage();
+		list += "\n";
+	}
+	
+	return list;
+}
+
+void MexCommand::cleanUp()
+{
+	std::map<std::string,MexCommand*>::iterator it = commandList.begin();
+
+	for (; it!=commandList.end(); ++it)
+		delete it->second;
+
+	commandList.clear();
+}
+
+void MexCommand::addCommand(const std::string commandText, MexCommand* commandObject)
+{
+	commandList.insert(std::pair<std::string,MexCommand*>(commandText,commandObject));
+}
+
+void MexCommand::setupImagePointers( const mxArray* imageIn, MexImagePixelType** image, Vec<unsigned int>* imageDims, mxArray** argOut/*=NULL*/,
+									MexImagePixelType** imageOut/*=NULL*/ )
+{
+	int numDims = mxGetNumberOfDimensions(imageIn);
+	const mwSize* DIMS = mxGetDimensions(imageIn);
+
+	*image = (MexImagePixelType*)mxGetData(imageIn);
+
+	if (argOut!=NULL && imageOut!=NULL)
+	{
+		*argOut = mxCreateNumericArray(numDims,DIMS,mxUINT8_CLASS,mxREAL);
+		*imageOut = (MexImagePixelType*)mxGetData(*argOut);
+	}
+
+	imageDims->x = DIMS[1];
+	imageDims->y = DIMS[0];
+	if (numDims==3)
+		imageDims->z = DIMS[2];
+	else
+		imageDims->z = 1;
+}
