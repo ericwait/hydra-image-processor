@@ -27,16 +27,16 @@ std::string ContrastEnhancement::check( int nlhs, mxArray* plhs[], int nrhs, con
 	if (!mxIsUint8(prhs[0]))
 		return "Image has to be formated as a uint8!";
 
-	int numDims = mxGetNumberOfDimensions(prhs[0]);
+	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
 	if (numDims>3 || numDims<2)
 		return "Image can only be either 2D or 3D!";
 
-	numDims = mxGetNumberOfDimensions(prhs[1]);
-	if (numDims!=3 || !mxIsDouble(prhs[1]))
+	size_t numEl= mxGetNumberOfElements(prhs[1]);
+	if (numEl!=3 || !mxIsDouble(prhs[1]))
 		return "Sigmas has to be an array of three doubles!";
 
-	numDims = mxGetNumberOfDimensions(prhs[2]);
-	if (numDims!=3 || !mxIsDouble(prhs[2]))
+	numEl = mxGetNumberOfElements(prhs[2]);
+	if (numEl!=3 || !mxIsDouble(prhs[2]))
 		return "Median neighborhood has to be an array of three doubles!";
 
 	return "";

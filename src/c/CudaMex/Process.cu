@@ -34,7 +34,7 @@ void applyPolyTransformation( const MexImagePixelType* image, MexImagePixelType*
 	cudaBuffer.retrieveImage(imageOut);
 }
 
-void calculateMinMax(MexImagePixelType* image, Vec<unsigned int> imageDims, MexImagePixelType& minValue, MexImagePixelType& maxValue)
+void calculateMinMax(const MexImagePixelType* image, Vec<unsigned int> imageDims, double& minValue, double& maxValue)
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
 	cudaBuffer.loadImage(image);
@@ -42,7 +42,7 @@ void calculateMinMax(MexImagePixelType* image, Vec<unsigned int> imageDims, MexI
 	cudaBuffer.calculateMinMax(minValue,maxValue);
 }
 
-void contrastEnhancement(MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<float> sigmas,
+void contrastEnhancement(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<float> sigmas,
 									   Vec<unsigned int> medianNeighborhood)
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
@@ -145,7 +145,7 @@ void imagePow( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<
 	cudaBuffer.retrieveImage(imageOut);
 }
 
-double sumArray(MexImagePixelType* image, Vec<unsigned int> imageDims)
+double sumArray(const MexImagePixelType* image, Vec<unsigned int> imageDims)
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
 	cudaBuffer.loadImage(image);

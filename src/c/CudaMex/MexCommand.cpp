@@ -69,7 +69,7 @@ void MexCommand::addCommand(const std::string commandText, MexCommand* commandOb
 void MexCommand::setupImagePointers( const mxArray* imageIn, MexImagePixelType** image, Vec<unsigned int>* imageDims, mxArray** argOut/*=NULL*/,
 									MexImagePixelType** imageOut/*=NULL*/ )
 {
-	int numDims = mxGetNumberOfDimensions(imageIn);
+	size_t numDims = mxGetNumberOfDimensions(imageIn);
 	const mwSize* DIMS = mxGetDimensions(imageIn);
 
 	*image = (MexImagePixelType*)mxGetData(imageIn);
@@ -80,10 +80,10 @@ void MexCommand::setupImagePointers( const mxArray* imageIn, MexImagePixelType**
 		*imageOut = (MexImagePixelType*)mxGetData(*argOut);
 	}
 
-	imageDims->x = DIMS[1];
-	imageDims->y = DIMS[0];
+	imageDims->x = (unsigned int)DIMS[1];
+	imageDims->y = (unsigned int)DIMS[0];
 	if (numDims==3)
-		imageDims->z = DIMS[2];
+		imageDims->z = (unsigned int)DIMS[2];
 	else
 		imageDims->z = 1;
 }

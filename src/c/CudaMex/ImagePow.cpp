@@ -22,7 +22,7 @@ std::string ImagePow::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray*
 	if (!mxIsUint8(prhs[0]))
 		return "Image has to be formated as a uint8!";
 
-	int numDims = mxGetNumberOfDimensions(prhs[0]);
+	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
 	if (numDims>3 || numDims<2)
 		return "Image can only be either 2D or 3D!";
 

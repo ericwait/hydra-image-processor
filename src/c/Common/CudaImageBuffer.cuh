@@ -226,7 +226,8 @@ public:
 	/*
 	*	This will find the min and max values of the image
 	*/ 
-	void calculateMinMax(ImagePixelType& minValue, ImagePixelType& maxValue)
+	template<typename rtnValueType>
+	void calculateMinMax(rtnValueType& minValue, rtnValueType& maxValue)
 	{
 		double* maxValuesHost = new double[(blocks.x+1)/2];
 		double* minValuesHost = new double[(blocks.x+1)/2];
@@ -240,7 +241,7 @@ public:
 		maxValue = maxValuesHost[0];
 		minValue = minValuesHost[0];
 
-		for (int i=1; i<sumBlocks.x; ++i)
+		for (unsigned int i=1; i<sumBlocks.x; ++i)
 		{
 			if (maxValue < maxValuesHost[i])
 				maxValue = maxValuesHost[i];

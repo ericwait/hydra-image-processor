@@ -139,7 +139,7 @@ public:
 	virtual std::string printUsage();
 };
 
-class MinFilter
+class MinFilter : MexCommand
 {
 public:
 	MinFilter(){}
@@ -150,7 +150,7 @@ public:
 	virtual std::string printUsage();
 };
 
-class MultiplyImage
+class MultiplyImage : MexCommand
 {
 public:
 	MultiplyImage(){}
@@ -161,7 +161,7 @@ public:
 	virtual std::string printUsage();
 };
 
-class MultiplyImageWith
+class MultiplyImageWith : MexCommand
 {
 public:
 	MultiplyImageWith(){}
@@ -183,7 +183,7 @@ public:
 	virtual std::string printUsage();
 };
 
-class SumArray
+class SumArray : MexCommand
 {
 public:
 	SumArray(){}
@@ -194,7 +194,7 @@ public:
 	virtual std::string printUsage();
 };
 
-class ReduceImage
+class ReduceImage : MexCommand
 {
 public:
 	ReduceImage(){}
@@ -205,7 +205,7 @@ public:
 	virtual std::string printUsage();
 };
 
-class ThresholdFilter
+class ThresholdFilter : MexCommand
 {
 public:
 	ThresholdFilter(){}
