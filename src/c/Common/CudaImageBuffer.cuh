@@ -78,8 +78,21 @@ public:
 	// Setters / Getters
 	//////////////////////////////////////////////////////////////////////////
 
-	void loadImage(const ImagePixelType* image)
+	void loadImage(const ImagePixelType* image, Vec<unsigned int> imageInDims)
 	{
+		if (imageInDims.product()>bufferSize)
+		{
+			bool wasColumnMajor = isColumnMajor;
+			int device = this->device;
+			clean();
+			isColumnMajor = wasColumnMajor;
+			this->device = device;
+			imageDims = imageInDims;
+			deviceSetup();
+			memoryAllocation();
+		}
+
+		imageDims = imageInDims;
 		currentBuffer = 0;
 		reservedBuffer = -1;
 		HANDLE_ERROR(cudaMemcpy((void*)getCurrentBuffer(),image,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyHostToDevice));
