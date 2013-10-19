@@ -423,6 +423,75 @@ public:
 	}
 
 	/*
+	 *	This will calculate the normalized covariance between the two images A and B
+	 *	returns (sum over all{(A-mu(A)) X (B-mu(B))}) / (sigma(A)Xsigma(B)
+	 *	The images buffers will not change the original data 
+	 */
+	double normalizedCovariance(CudaImageBuffer* otherImage)
+	{
+		ImagePixelType* aOrg = this->retrieveImage();
+		ImagePixelType* bOrg = otherImage->retrieveImage();
+
+		double aSum1 = 0.0;
+		double bSum1 = 0.0;
+
+		this->sumArray(aSum1);
+		otherImage->sumArray(bSum1);
+
+		double aMean = aSum1/this->imageDims.product();
+		double bMean = bSum1/otherImage->getDimension().product();
+
+		this->addConstant(-aMean);
+		otherImage->addConstant(-bMean);
+
+		double aMidSum;
+		double bMidSum;
+
+		if (imageDims.z>1)
+		{
+			this->sumArray(aMidSum);
+			otherImage->sumArray(bMidSum);
+		}
+
+		this->reserveCurrentBuffer();
+		otherImage->reserveCurrentBuffer();
+
+		this->imagePow(2);
+		otherImage->imagePow(2);
+
+		double aSum2 = 0.0;
+		double bSum2 = 0.0;
+		this->sumArray(aSum2);
+		otherImage->sumArray(bSum2);
+
+		double aSigma = sqrt(aSum2/this->getDimension().product());
+		double bSigma = sqrt(bSum2/otherImage->getDimension().product());
+
+		this->currentBuffer = this->reservedBuffer;
+		otherImage->currentBuffer = otherImage->reservedBuffer;
+
+		this->releaseReservedBuffer();
+		otherImage->releaseReservedBuffer();
+
+		cudaMultiplyTwoImages<<<blocks,threads>>>(this->getCurrentBuffer(),otherImage->getCurrentBuffer(),this->getNextBuffer(),
+			this->imageDims,this->isColumnMajor);
+		this->incrementBufferNumber();
+
+		double multSum = 0.0;
+		this->sumArray(multSum);
+
+		this->loadImage(aOrg,this->getDimension());
+		otherImage->loadImage(bOrg,otherImage->getDimension());
+
+		delete[] aOrg;
+		delete[] bOrg;
+
+		double rtn = multSum/(aSigma*bSigma) / this->getDimension().product();
+
+		return rtn;
+	}
+
+	/*
 	*	Takes a histogram that is on the card and normalizes it
 	*	Will generate the original histogram if one doesn't already exist
 	*	Use retrieveNormalizedHistogram() to get a host pointer
