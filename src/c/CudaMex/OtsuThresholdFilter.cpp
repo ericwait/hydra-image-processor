@@ -1,0 +1,39 @@
+#include "MexCommand.h"
+
+void OtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+{
+	Vec<unsigned int> imageDims;
+	MexImagePixelType* imageIn, * imageOut;
+	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+	double alpha = mxGetScalar(prhs[1]);
+
+	otsuThresholdFilter(imageIn,imageOut,imageDims,alpha);
+}
+
+std::string OtsuThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+{
+	if (nrhs!=1 || nrhs!=2)
+		return "Incorrect number of inputs!";
+
+	if (nlhs!=1)
+		return "Requires one output!";
+
+	if (!mxIsUint8(prhs[0]))
+		return "Image has to be formated as a uint8!";
+
+	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
+	if (numDims>3 || numDims<2)
+		return "Image can only be either 2D or 3D!";
+
+	if (nrhs==2)
+		if (!mxIsDouble(prhs[1]))
+			return "Alpha needs to be a single double!";
+
+	return "";
+}
+
+std::string OtsuThresholdFilter::printUsage()
+{
+	return "imageOut = CudaMex('OtsuThresholdFilter',imageIn[,alpha])";
+}

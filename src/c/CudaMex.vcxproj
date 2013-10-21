@@ -26,6 +26,7 @@
     <ClCompile Include="CudaMex\ContrastEnhancement.cpp" />
     <ClCompile Include="CudaMex\CudaMex.cpp" />
     <ClCompile Include="CudaMex\GaussianFilter.cpp" />
+    <ClCompile Include="CudaMex\Histogram.cpp" />
     <ClCompile Include="CudaMex\ImagePow.cpp" />
     <ClCompile Include="CudaMex\MaxFilter.cpp" />
     <ClCompile Include="CudaMex\MaximumIntensityProjection.cpp" />
@@ -35,6 +36,10 @@
     <ClCompile Include="CudaMex\MinFilter.cpp" />
     <ClCompile Include="CudaMex\MultiplyImage.cpp" />
     <ClCompile Include="CudaMex\MultiplyImageWith.cpp" />
+    <ClCompile Include="CudaMex\NormalizedCovariance.cpp" />
+    <ClCompile Include="CudaMex\NormalizedHistogram.cpp" />
+    <ClCompile Include="CudaMex\OtsuThesholdValue.cpp" />
+    <ClCompile Include="CudaMex\OtsuThresholdFilter.cpp" />
     <ClCompile Include="CudaMex\ReduceImage.cpp" />
     <ClCompile Include="CudaMex\SumArray.cpp" />
     <ClCompile Include="CudaMex\ThresholdFilter.cpp" />
@@ -44,6 +49,7 @@
     <CudaCompile Include="CudaMex\Process.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Common\CHelpers.h" />
     <ClInclude Include="Common\CudaImageBuffer.cuh">
       <FileType>Document</FileType>
     </ClInclude>

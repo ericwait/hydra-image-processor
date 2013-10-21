@@ -4,7 +4,7 @@
 void addConstant(const MexImagePixelType* image,  MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double additive)
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	cudaBuffer.addConstant(additive);
 
@@ -16,18 +16,18 @@ void addImageWith(const MexImagePixelType* image1, const MexImagePixelType* imag
 {
 	CudaImageBuffer<unsigned char> cudaBuffer1(imageDims,true);
 	CudaImageBuffer<unsigned char> cudaBuffer2(imageDims,true);
-	cudaBuffer1.loadImage(image1);
-	cudaBuffer2.loadImage(image2);
+	cudaBuffer1.loadImage(image1,imageDims);
+	cudaBuffer2.loadImage(image2,imageDims);
 
 	cudaBuffer1.addImageWith(&cudaBuffer2,factor);
 
-	unsigned char* outImage = cudaBuffer1.retrieveImage();
+	cudaBuffer1.retrieveImage(imageOut);
 }
 
 void applyPolyTransformation( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double a, double b, double c, MexImagePixelType minValue, MexImagePixelType maxValue )
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	cudaBuffer.applyPolyTransformation(a,b,c,minValue,maxValue);
 
@@ -37,7 +37,7 @@ void applyPolyTransformation( const MexImagePixelType* image, MexImagePixelType*
 void calculateMinMax(const MexImagePixelType* image, Vec<unsigned int> imageDims, double& minValue, double& maxValue)
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	cudaBuffer.calculateMinMax(minValue,maxValue);
 }
@@ -46,7 +46,7 @@ void contrastEnhancement(const MexImagePixelType* image, MexImagePixelType* imag
 									   Vec<unsigned int> medianNeighborhood)
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	cudaBuffer.contrastEnhancement(sigmas,medianNeighborhood);
 
@@ -56,17 +56,23 @@ void contrastEnhancement(const MexImagePixelType* image, MexImagePixelType* imag
 void gaussianFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<float> sigmas )
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	cudaBuffer.gaussianFilter(sigmas);
 
 	cudaBuffer.retrieveImage(imageOut);
 }
 
+size_t getGlobalMemoryAvailable()
+{
+	CudaImageBuffer<unsigned char> cudaBuffer(1);
+	return cudaBuffer.getGlobalMemoryAvailable();
+}
+
 void maxFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood )
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	cudaBuffer.maxFilter(neighborhood);
 
@@ -76,7 +82,7 @@ void maxFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec
 void maximumIntensityProjection( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims )
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	cudaBuffer.maximumIntensityProjection();
 
@@ -86,7 +92,7 @@ void maximumIntensityProjection( const MexImagePixelType* image, MexImagePixelTy
 void meanFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood )
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	cudaBuffer.meanFilter(neighborhood);
 
@@ -96,7 +102,7 @@ void meanFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Ve
 void medianFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood )
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	cudaBuffer.medianFilter(neighborhood);
 
@@ -106,7 +112,7 @@ void medianFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, 
 void minFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood )
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	cudaBuffer.minFilter(neighborhood);
 
@@ -116,7 +122,7 @@ void minFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec
 void multiplyImage( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double factor )
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	cudaBuffer.multiplyImage(factor);
 
@@ -127,18 +133,46 @@ void multiplyImageWith( const MexImagePixelType* image1, const MexImagePixelType
 {
 	CudaImageBuffer<unsigned char> cudaBuffer1(imageDims,true);
 	CudaImageBuffer<unsigned char> cudaBuffer2(imageDims,true);
-	cudaBuffer1.loadImage(image1);
-	cudaBuffer2.loadImage(image2);
+	cudaBuffer1.loadImage(image1,imageDims);
+	cudaBuffer2.loadImage(image2,imageDims);
 
 	cudaBuffer1.multiplyImageWith(&cudaBuffer2);
 
-	unsigned char* outImage = cudaBuffer1.retrieveImage();
+	cudaBuffer1.retrieveImage(imageOut);
+}
+
+double normalizedCovariance(const MexImagePixelType* image1, const MexImagePixelType* image2, Vec<unsigned int> imageDims)
+{
+	CudaImageBuffer<unsigned char> cudaBuffer1(imageDims,true);
+	CudaImageBuffer<unsigned char> cudaBuffer2(imageDims,true);
+	cudaBuffer1.loadImage(image1,imageDims);
+	cudaBuffer2.loadImage(image2,imageDims);
+
+	return cudaBuffer1.normalizedCovariance(&cudaBuffer2);
+}
+
+void otsuThresholdFilter(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double alpha)
+{
+	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
+	cudaBuffer.loadImage(image,imageDims);
+
+	cudaBuffer.otsuThresholdFilter((float)alpha);
+
+	cudaBuffer.retrieveImage(imageOut);
+}
+
+MexImagePixelType otsuThesholdValue(const MexImagePixelType* image, Vec<unsigned int> imageDims)
+{
+	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
+	cudaBuffer.loadImage(image,imageDims);
+
+	return cudaBuffer.otsuThresholdValue();
 }
 
 void imagePow( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, int p )
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	cudaBuffer.imagePow(p);
 
@@ -148,7 +182,7 @@ void imagePow( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<
 double sumArray(const MexImagePixelType* image, Vec<unsigned int> imageDims)
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	double sum;
 	cudaBuffer.sumArray(sum);
@@ -158,7 +192,7 @@ double sumArray(const MexImagePixelType* image, Vec<unsigned int> imageDims)
 MexImagePixelType* reduceImage( const MexImagePixelType* image, Vec<unsigned int>& imageDims, Vec<double> reductions )
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	cudaBuffer.reduceImage(reductions);
 
@@ -166,10 +200,26 @@ MexImagePixelType* reduceImage( const MexImagePixelType* image, Vec<unsigned int
 	return cudaBuffer.retrieveImage();
 }
 
+unsigned int* retrieveHistogram(const MexImagePixelType* image, Vec<unsigned int>& imageDims, int& returnSize)
+{
+	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
+	cudaBuffer.loadImage(image,imageDims);
+
+	return cudaBuffer.retrieveHistogram(returnSize);
+}
+
+double* retrieveNormalizedHistogram(const MexImagePixelType* image, Vec<unsigned int>& imageDims, int& returnSize)
+{
+	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
+	cudaBuffer.loadImage(image,imageDims);
+
+	return cudaBuffer.retrieveNormalizedHistogram(returnSize);
+}
+
 void thresholdFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double threshold )
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
-	cudaBuffer.loadImage(image);
+	cudaBuffer.loadImage(image,imageDims);
 
 	cudaBuffer.thresholdFilter(threshold);
 
@@ -180,8 +230,8 @@ void unmix( const MexImagePixelType* image1, const MexImagePixelType* image2, Me
 {
 	CudaImageBuffer<unsigned char> cudaBuffer1(imageDims,true);
 	CudaImageBuffer<unsigned char> cudaBuffer2(imageDims,true);
-	cudaBuffer1.loadImage(image1);
-	cudaBuffer2.loadImage(image2);
+	cudaBuffer1.loadImage(image1,imageDims);
+	cudaBuffer2.loadImage(image2,imageDims);
 
 	cudaBuffer1.unmix(&cudaBuffer2,neighborhood);
 

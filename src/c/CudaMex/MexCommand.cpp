@@ -15,6 +15,7 @@ void MexCommand::init()
 	REGISTER_COMMAND(CalculateMinMax);
 	REGISTER_COMMAND(ContrastEnhancement);
 	REGISTER_COMMAND(GaussianFilter);
+	REGISTER_COMMAND(Histogram);
 	REGISTER_COMMAND(ImagePow);
 	REGISTER_COMMAND(MaxFilter);
 	REGISTER_COMMAND(MaximumIntensityProjection);
@@ -23,6 +24,10 @@ void MexCommand::init()
 	REGISTER_COMMAND(MinFilter);
 	REGISTER_COMMAND(MultiplyImage);
 	REGISTER_COMMAND(MultiplyImageWith);
+	REGISTER_COMMAND(NormalizedCovariance);
+	REGISTER_COMMAND(NormalizedHistogram);
+	REGISTER_COMMAND(OtsuThresholdFilter);
+	REGISTER_COMMAND(OtsuThesholdValue);
 	REGISTER_COMMAND(ReduceImage);
 	REGISTER_COMMAND(SumArray);
 	REGISTER_COMMAND(ThresholdFilter);

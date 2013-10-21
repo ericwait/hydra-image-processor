@@ -426,7 +426,7 @@ __global__ void cudaNormalizeHistogram(unsigned int* histogram, double* normHist
 
 template<typename ImagePixelType, typename ThresholdType>
 __global__ void cudaThresholdImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims,
-	ThresholdType threshold, bool isColumnMajor=false)
+	ThresholdType threshold, ImagePixelType minValue, ImagePixelType maxValue, bool isColumnMajor=false)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -437,9 +437,9 @@ __global__ void cudaThresholdImage(ImagePixelType* imageIn, ImagePixelType* imag
 	if (coordinate<imageDims)
 	{
 		if (imageIn[imageDims.linearAddressAt(coordinate,isColumnMajor)]>=threshold)
-			imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = 1;
+			imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = maxValue;
 		else
-			imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = 0;
+			imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = minValue;
 	}
 }
 

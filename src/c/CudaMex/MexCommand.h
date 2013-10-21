@@ -95,6 +95,17 @@ public:
 	virtual std::string printUsage();
 };
 
+class Histogram : MexCommand
+{
+public:
+	Histogram(){}
+	~Histogram(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+};
+
 class MaxFilter : MexCommand
 {
 public:
@@ -166,6 +177,50 @@ class MultiplyImageWith : MexCommand
 public:
 	MultiplyImageWith(){}
 	virtual ~MultiplyImageWith(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+};
+
+class NormalizedCovariance : MexCommand
+{
+public:
+	NormalizedCovariance(){}
+	~NormalizedCovariance(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+};
+
+class NormalizedHistogram : MexCommand
+{
+public:
+	NormalizedHistogram(){}
+	~NormalizedHistogram(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+};
+
+class OtsuThresholdFilter : MexCommand
+{
+public:
+	OtsuThresholdFilter(){}
+	~OtsuThresholdFilter(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+};
+
+class OtsuThesholdValue : MexCommand
+{
+public:
+	OtsuThesholdValue(){}
+	~OtsuThesholdValue(){}
 
 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);

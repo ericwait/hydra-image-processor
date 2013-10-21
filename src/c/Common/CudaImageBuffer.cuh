@@ -6,6 +6,7 @@
 #undef DEVICE_VEC
 #include "CudaKernals.cuh"
 #include "CudaUtilities.cuh"
+#include "CHelpers.h"
 #include "assert.h"
 
 template<typename ImagePixelType>
@@ -98,6 +99,12 @@ public:
 		HANDLE_ERROR(cudaMemcpy((void*)getCurrentBuffer(),image,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyHostToDevice));
 	}
 	
+	ImagePixelType otsuThresholdValue()
+	{
+		int temp;//TODO
+		return calcOtsuThreshold(retrieveNormalizedHistogram(temp),NUM_BINS);
+	}
+
 	ImagePixelType* retrieveImage(ImagePixelType* imageOut=NULL)
 	{
 		if (currentBuffer<0 || currentBuffer>NUM_BUFFERS)
@@ -504,6 +511,12 @@ public:
 		cudaNormalizeHistogram<<<NUM_BINS,1>>>(histogramDevice,normalizedHistogramDevice,imageDims);
 	}
 
+	void otsuThresholdFilter(float alpha=1.0f)
+	{
+		ImagePixelType thresh = otsuThresholdValue();
+		thresholdFilter(thresh*alpha);
+	}
+
 	/*
 	*	Raise each pixel to a power
 	*/
@@ -553,7 +566,7 @@ public:
 	template<typename ThresholdType>
 	void thresholdFilter(ThresholdType threshold)
 	{
-		cudaThresholdImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,threshold,isColumnMajor);
+		cudaThresholdImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,threshold,minPixel,maxPixel,isColumnMajor);
 		incrementBufferNumber();
 	}
 
