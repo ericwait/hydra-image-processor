@@ -371,7 +371,7 @@ public:
 			incrementBufferNumber();
 		}
 
-		for (int x=0; x<gaussIterations.x; ++x)
+		for (int z=0; z<gaussIterations.z; ++z)
 		{
 			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,1,constKernalDims.z),
 				constKernalDims.x+constKernalDims.y,isColumnMajor);
@@ -383,8 +383,13 @@ public:
 	*	Sets each pixel to the max value of its neighborhood
 	*	Dilates structures
 	*/ 
-	void maxFilter(Vec<unsigned int> neighborhood)
+	void maxFilter(Vec<unsigned int> neighborhood, double* kernel=NULL, bool columnMajor=false)
 	{
+		if (kernel==NULL)
+			constKernelOnes();
+		else
+			setConstKernel(kernel,neighborhood,columnMajor);
+
 		cudaMaxFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood,isColumnMajor);
 		incrementBufferNumber();
 	}
@@ -443,8 +448,13 @@ public:
 	*	Sets each pixel to the min value of its neighborhood
 	*	Erodes structures
 	*/ 
-	void minFilter(Vec<unsigned int> neighborhood)
+	void minFilter(Vec<unsigned int> neighborhood, double* kernel=NULL, bool columnMajor=false)
 	{
+		if (kernel==NULL)
+			constKernelOnes();
+		else
+			setConstKernel(kernel,neighborhood,columnMajor);
+
 		cudaMinFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood,isColumnMajor);
 		incrementBufferNumber();
 	}
@@ -713,6 +723,37 @@ private:
 
 		if (bufferIn.normalizedHistogramDevice!=NULL)
 			HANDLE_ERROR(cudaMemcpy(normalizedHistogramDevice,bufferIn.normalizedHistogramDevice,sizeof(double)*NUM_BINS,cudaMemcpyDeviceToDevice));
+	}
+
+	void constKernelOnes()
+	{
+		memset(hostKernel,1,sizeof(float)*MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM);
+		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel,hostKernel,sizeof(float)*MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM));
+	}
+
+	void constKernelZeros()
+	{
+		memset(hostKernel,1,sizeof(float)*MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM);
+		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel,hostKernel,sizeof(float)*MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM));
+	}
+
+	void setConstKernel(double* kernel, Vec<unsigned int> kernelDims, bool columnMajor)
+	{
+		memset(hostKernel,0,sizeof(float)*MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM);
+		
+		Vec<unsigned int> coordinate(0,0,0);
+		for (; coordinate.x<kernelDims.x; ++coordinate.x)
+		{
+			coordinate.y = 0;
+			for (; coordinate.y<kernelDims.y; ++coordinate.y)
+			{
+				coordinate.z = 0;
+				for (; coordinate.z<kernelDims.z; ++coordinate.z)
+				{
+					hostKernel[kernelDims.linearAddressAt(coordinate,false)] = (float)kernel[kernelDims.linearAddressAt(coordinate,columnMajor)];
+				}
+			}
+		}
 	}
 
 	void defaults()
