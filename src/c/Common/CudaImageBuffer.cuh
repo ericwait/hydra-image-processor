@@ -174,7 +174,17 @@ public:
 	*/
 	void copyROI(const CudaImageBuffer<ImagePixelType>& bufferIn, Vec<unsigned int> starts, Vec<unsigned int> sizes)
 	{
-		assert(sizes.product()<=bufferSize);
+		if (sizes.product()>bufferSize)
+		{
+			bool wasColumnMajor = isColumnMajor;
+			int device = this->device;
+			clean();
+			isColumnMajor = wasColumnMajor;
+			this->device = device;
+			imageDims = bufferIn.getDimension();
+			deviceSetup();
+			memoryAllocation();
+		}
 
 		imageDims = sizes;
 		device = bufferIn.getDevice();
@@ -185,7 +195,17 @@ public:
 
 	void copyImage(const CudaImageBuffer<ImagePixelType>& bufferIn)
 	{
-		assert(bufferIn.getDimension().product()<=bufferSize);
+		if (bufferIn.getDimension().product()>bufferSize)
+		{
+			bool wasColumnMajor = isColumnMajor;
+			int device = this->device;
+			clean();
+			isColumnMajor = wasColumnMajor;
+			this->device = device;
+			imageDims = bufferIn.getDimension();
+			deviceSetup();
+			memoryAllocation();
+		}
 
 		imageDims = bufferIn.getDimension();
 		device = bufferIn.getDevice();
