@@ -6,14 +6,16 @@ void OtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mx
 	MexImagePixelType* imageIn, * imageOut;
 	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-	double alpha = mxGetScalar(prhs[1]);
+	double alpha = 1.0;
+	if (nrhs==2)
+	 alpha = mxGetScalar(prhs[1]);
 
 	otsuThresholdFilter(imageIn,imageOut,imageDims,alpha);
 }
 
 std::string OtsuThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	if (nrhs!=1 || nrhs!=2)
+	if (nrhs!=1 && nrhs!=2)
 		return "Incorrect number of inputs!";
 
 	if (nlhs!=1)

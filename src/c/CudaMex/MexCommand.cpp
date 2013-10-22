@@ -17,11 +17,15 @@ void MexCommand::init()
 	REGISTER_COMMAND(GaussianFilter);
 	REGISTER_COMMAND(Histogram);
 	REGISTER_COMMAND(ImagePow);
-	REGISTER_COMMAND(MaxFilter);
+	REGISTER_COMMAND(MaxFilterCircle);
+	REGISTER_COMMAND(MaxFilterKernel);
+	REGISTER_COMMAND(MaxFilterNeighborHood);
 	REGISTER_COMMAND(MaximumIntensityProjection);
 	REGISTER_COMMAND(MeanFilter);
 	REGISTER_COMMAND(MedianFilter);
-	REGISTER_COMMAND(MinFilter);
+	REGISTER_COMMAND(MinFilterCircle);
+	REGISTER_COMMAND(MinFilterKernel);
+	REGISTER_COMMAND(MinFilterNeighborhood);
 	REGISTER_COMMAND(MultiplyImage);
 	REGISTER_COMMAND(MultiplyImageWith);
 	REGISTER_COMMAND(NormalizedCovariance);

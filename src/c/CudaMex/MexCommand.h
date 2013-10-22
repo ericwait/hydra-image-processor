@@ -99,18 +99,40 @@ class Histogram : MexCommand
 {
 public:
 	Histogram(){}
-	~Histogram(){}
+	virtual ~Histogram(){}
 
 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string printUsage();
 };
 
-class MaxFilter : MexCommand
+class MaxFilterCircle : MexCommand
 {
 public:
-	MaxFilter(){}
-	virtual ~MaxFilter(){}
+	MaxFilterCircle(){}
+	virtual ~MaxFilterCircle(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+};
+
+class MaxFilterKernel : MexCommand
+{
+public:
+	MaxFilterKernel(){}
+	virtual ~MaxFilterKernel(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+};
+
+class MaxFilterNeighborHood : MexCommand
+{
+public:
+	MaxFilterNeighborHood(){}
+	virtual ~MaxFilterNeighborHood(){}
 
 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
@@ -150,11 +172,33 @@ public:
 	virtual std::string printUsage();
 };
 
-class MinFilter : MexCommand
+class MinFilterCircle : MexCommand
 {
 public:
-	MinFilter(){}
-	virtual ~MinFilter(){}
+	MinFilterCircle(){}
+	virtual ~MinFilterCircle(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+};
+
+class MinFilterKernel : MexCommand
+{
+public:
+	MinFilterKernel(){}
+	virtual ~MinFilterKernel(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+};
+
+class MinFilterNeighborhood : MexCommand
+{
+public:
+	MinFilterNeighborhood(){}
+	virtual ~MinFilterNeighborhood(){}
 
 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
@@ -187,7 +231,7 @@ class NormalizedCovariance : MexCommand
 {
 public:
 	NormalizedCovariance(){}
-	~NormalizedCovariance(){}
+	virtual ~NormalizedCovariance(){}
 
 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
@@ -198,7 +242,7 @@ class NormalizedHistogram : MexCommand
 {
 public:
 	NormalizedHistogram(){}
-	~NormalizedHistogram(){}
+	virtual ~NormalizedHistogram(){}
 
 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
@@ -209,7 +253,7 @@ class OtsuThresholdFilter : MexCommand
 {
 public:
 	OtsuThresholdFilter(){}
-	~OtsuThresholdFilter(){}
+	virtual ~OtsuThresholdFilter(){}
 
 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
@@ -220,7 +264,7 @@ class OtsuThesholdValue : MexCommand
 {
 public:
 	OtsuThesholdValue(){}
-	~OtsuThesholdValue(){}
+	virtual ~OtsuThesholdValue(){}
 
 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);

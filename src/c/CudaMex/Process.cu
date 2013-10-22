@@ -69,12 +69,13 @@ size_t getGlobalMemoryAvailable()
 	return cudaBuffer.getGlobalMemoryAvailable();
 }
 
-void maxFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood )
+void maxFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
+			   double* kernel/*=NULL*/)
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
 	cudaBuffer.loadImage(image,imageDims);
 
-	cudaBuffer.maxFilter(neighborhood);
+	cudaBuffer.maxFilter(neighborhood,kernel,true);
 
 	cudaBuffer.retrieveImage(imageOut);
 }
@@ -109,12 +110,13 @@ void medianFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, 
 	cudaBuffer.retrieveImage(imageOut);
 }
 
-void minFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood )
+void minFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
+			   double* kernel/*=NULL*/)
 {
 	CudaImageBuffer<unsigned char> cudaBuffer(imageDims,true);
 	cudaBuffer.loadImage(image,imageDims);
 
-	cudaBuffer.minFilter(neighborhood);
+	cudaBuffer.minFilter(neighborhood,kernel,true);
 
 	cudaBuffer.retrieveImage(imageOut);
 }
