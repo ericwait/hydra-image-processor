@@ -92,6 +92,13 @@ public:
 			deviceSetup();
 			memoryAllocation();
 		}
+		else
+		{
+			isCurrentHistogramHost = false;
+			isCurrentHistogramDevice = false;
+			isCurrentNormHistogramHost = false;
+			isCurrentNormHistogramDevice = false;
+		}
 
 		imageDims = imageInDims;
 		currentBuffer = 0;
@@ -125,10 +132,14 @@ public:
 	*/
 	unsigned int* retrieveHistogram(int& returnSize)
 	{
-		if (histogramDevice==NULL)
+		if (!isCurrentNormHistogramHost)
+		{
 			createHistogram();
 
-		HANDLE_ERROR(cudaMemcpy(histogramHost,histogramDevice,sizeof(unsigned int)*NUM_BINS,cudaMemcpyDeviceToHost));
+			HANDLE_ERROR(cudaMemcpy(histogramHost,histogramDevice,sizeof(unsigned int)*NUM_BINS,cudaMemcpyDeviceToHost));
+			isCurrentHistogramHost = true;
+		}
+
 		returnSize = NUM_BINS;
 
 		return histogramHost;
@@ -141,10 +152,14 @@ public:
 	*/
 	double* retrieveNormalizedHistogram(int& returnSize)
 	{
-		if (normalizedHistogramDevice==NULL)
+		if (!isCurrentNormHistogramHost)
+		{
 			normalizeHistogram();
 
-		HANDLE_ERROR(cudaMemcpy(normalizedHistogramHost,normalizedHistogramDevice,sizeof(double)*NUM_BINS,cudaMemcpyDeviceToHost));
+			HANDLE_ERROR(cudaMemcpy(normalizedHistogramHost,normalizedHistogramDevice,sizeof(double)*NUM_BINS,cudaMemcpyDeviceToHost));
+			isCurrentNormHistogramHost = true;
+		}
+
 		returnSize = NUM_BINS;
 
 		return normalizedHistogramHost;
@@ -318,11 +333,16 @@ public:
 	*/
 	void createHistogram()
 	{
+		if (isCurrentHistogramDevice)
+			return;
+
 		memset(histogramHost,0,NUM_BINS*sizeof(unsigned int));
 		HANDLE_ERROR(cudaMemset(histogramDevice,0,NUM_BINS*sizeof(unsigned int)));
 
 		cudaHistogramCreate<<<deviceProp.multiProcessorCount*2,NUM_BINS,sizeof(unsigned int)*NUM_BINS>>>
 			(getCurrentBuffer(),histogramDevice,imageDims);
+
+		isCurrentHistogramDevice = true;
 	}
 
 	/*
@@ -525,10 +545,14 @@ public:
 	*/
 	void normalizeHistogram()
 	{
-		if(histogramDevice==NULL)
+		if (isCurrentNormHistogramDevice)
+			return;
+
+		if(!isCurrentHistogramDevice)
 			createHistogram();
 
 		cudaNormalizeHistogram<<<NUM_BINS,1>>>(histogramDevice,normalizedHistogramDevice,imageDims);
+		isCurrentNormHistogramDevice = true;
 	}
 
 	void otsuThresholdFilter(float alpha=1.0f)
@@ -710,6 +734,10 @@ private:
 		histogramDevice = NULL;
 		normalizedHistogramHost = NULL;
 		normalizedHistogramDevice = NULL;
+		isCurrentHistogramHost = false;
+		isCurrentHistogramDevice = false;
+		isCurrentNormHistogramHost = false;
+		isCurrentNormHistogramDevice = false;
 		deviceSum = NULL;
 		minValuesDevice = NULL;
 		hostSum = NULL;
