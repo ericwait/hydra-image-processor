@@ -39,9 +39,6 @@
     <ClCompile Include="CudaMex\GaussianFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MaxFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CudaMex\MaximumIntensityProjection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -49,9 +46,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CudaMex\MedianFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CudaMex\MinFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CudaMex\MultiplyImage.cpp">
@@ -90,15 +84,45 @@
     <ClCompile Include="CudaMex\OtsuThesholdValue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CudaMex\MaxFilterKernal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CudaMex\MinFilterKernal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CudaMex\MaxFilterCircle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CudaMex\MinFilterCircle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CudaMex\MaxFilterNeighborHood.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CudaMex\MinFilterNeighborhood.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\CHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="CudaMex\Process.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Common\CudaUtilities.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="CudaMex\CudaMex.def">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Common\CudaKernels.cuh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Common\CudaUtilities.cuh">
+      <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Common\CHelpers.cpp" />
     <ClCompile Include="CudaMex\AddConstant.cpp" />
     <ClCompile Include="CudaMex\AddImageWith.cpp" />
     <ClCompile Include="CudaMex\ApplyPolyTransformation.cpp" />
@@ -28,12 +29,16 @@
     <ClCompile Include="CudaMex\GaussianFilter.cpp" />
     <ClCompile Include="CudaMex\Histogram.cpp" />
     <ClCompile Include="CudaMex\ImagePow.cpp" />
-    <ClCompile Include="CudaMex\MaxFilter.cpp" />
+    <ClCompile Include="CudaMex\MaxFilterNeighborHood.cpp" />
+    <ClCompile Include="CudaMex\MaxFilterCircle.cpp" />
+    <ClCompile Include="CudaMex\MaxFilterKernal.cpp" />
     <ClCompile Include="CudaMex\MaximumIntensityProjection.cpp" />
     <ClCompile Include="CudaMex\MeanFilter.cpp" />
     <ClCompile Include="CudaMex\MedianFilter.cpp" />
     <ClCompile Include="CudaMex\MexCommand.cpp" />
-    <ClCompile Include="CudaMex\MinFilter.cpp" />
+    <ClCompile Include="CudaMex\MinFilterNeighborhood.cpp" />
+    <ClCompile Include="CudaMex\MinFilterCircle.cpp" />
+    <ClCompile Include="CudaMex\MinFilterKernal.cpp" />
     <ClCompile Include="CudaMex\MultiplyImage.cpp" />
     <ClCompile Include="CudaMex\MultiplyImageWith.cpp" />
     <ClCompile Include="CudaMex\NormalizedCovariance.cpp" />
@@ -46,6 +51,7 @@
     <ClCompile Include="CudaMex\Unmix.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="Common\CudaUtilities.cu" />
     <CudaCompile Include="CudaMex\Process.cu" />
   </ItemGroup>
   <ItemGroup>
@@ -56,6 +62,12 @@
     <ClInclude Include="Common\Vec.h" />
     <ClInclude Include="Common\VecFuncs.h" />
     <ClInclude Include="CudaMex\MexCommand.h" />
+    <ClInclude Include="Common\CudaKernels.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="Common\CudaUtilities.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
     <None Include="CudaMex\CudaMex.def" />
   </ItemGroup>
   <ItemGroup>
@@ -194,7 +206,11 @@ move "$(OutDir)CudaMex.dll" "$(ProjectDir)CudaMex.mexw64"
 echo copy "$(ProjectDir)CudaMex.mexw64" "$(ProjectDir)..\MATLAB\."
 copy "$(ProjectDir)CudaMex.mexw64" "$(ProjectDir)..\MATLAB\."
 echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\MATLAB\."
-copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\MATLAB\."</Command>
+copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\MATLAB\."
+echo copy "$(ProjectDir)CudaMex.mexw64" "$(ProjectDir)..\..\bin\."
+copy "$(ProjectDir)CudaMex.mexw64" "$(ProjectDir)..\..\bin\."
+echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\..\bin\."
+copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\..\bin\."</Command>
     </PostBuildEvent>
     <CudaLink>
       <AdditionalLibraryDirectories>$(CUDA_PATH)lib\x64</AdditionalLibraryDirectories>
