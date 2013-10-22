@@ -4,10 +4,10 @@
 #define DEVICE_VEC
 #include "Vec.h"
 #undef DEVICE_VEC
-#include "CudaKernals.cuh"
+#include "CudaKernels.cuh"
 #include "CudaUtilities.cuh"
-#include "CHelpers.h"
 #include "assert.h"
+#include <limits>
 
 template<typename ImagePixelType>
 class CudaImageBuffer
@@ -350,31 +350,32 @@ public:
 	*/ 
 	void gaussianFilter(Vec<float> sigmas)
 	{
-		if (constKernalDims==UNSET || sigmas!=gausKernalSigmas)
+		if (constKernelDims==UNSET || sigmas!=gausKernelSigmas)
 		{
-			gausKernalSigmas = sigmas;
-			constKernalDims = createGaussianKernal(sigmas,hostKernal,gaussIterations);
-			HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernal,hostKernal,sizeof(float)*(constKernalDims.x+constKernalDims.y+constKernalDims.z)));
+			constKernelZeros();
+			gausKernelSigmas = sigmas;
+			constKernelDims = createGaussianKernel(gausKernelSigmas,hostKernel,gaussIterations);
+			HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel,hostKernel,sizeof(float)*(constKernelDims.x+constKernelDims.y+constKernelDims.z)));
 		}
 
 		for (int x=0; x<gaussIterations.x; ++x)
 		{
-			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(constKernalDims.x,1,1),
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(constKernelDims.x,1,1),
 				isColumnMajor);
 			incrementBufferNumber();
 		}
 
 		for (int y=0; y<gaussIterations.y; ++y)
 		{
-			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,constKernalDims.y,1),
-				constKernalDims.x,isColumnMajor);
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,constKernelDims.y,1),
+				constKernelDims.x,isColumnMajor);
 			incrementBufferNumber();
 		}
 
 		for (int z=0; z<gaussIterations.z; ++z)
 		{
-			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,1,constKernalDims.z),
-				constKernalDims.x+constKernalDims.y,isColumnMajor);
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,1,constKernelDims.z),
+				constKernelDims.x+constKernelDims.y,isColumnMajor);
 			incrementBufferNumber();
 		}
 	}
@@ -760,8 +761,8 @@ private:
 	{
 		imageDims = UNSET;
 		reducedDims = UNSET;
-		constKernalDims = UNSET;
-		gausKernalSigmas  = Vec<float>(0.0f,0.0f,0.0f);
+		constKernelDims = UNSET;
+		gausKernelSigmas  = Vec<float>(0.0f,0.0f,0.0f);
 		device = -1;
 		currentBuffer = -1;
 		for (int i=0; i<NUM_BUFFERS; ++i)
@@ -823,7 +824,7 @@ private:
 		if (minValuesDevice!=NULL)
 			HANDLE_ERROR(cudaFree(minValuesDevice));
 
-		memset(hostKernal,0,sizeof(float)*MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM);
+		memset(hostKernel,0,sizeof(float)*MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM);
 
 		defaults();
 	}
@@ -905,14 +906,15 @@ private:
 	unsigned int* histogramDevice;
 	double* normalizedHistogramHost;
 	double* normalizedHistogramDevice;
+	bool isCurrentHistogramHost, isCurrentHistogramDevice, isCurrentNormHistogramHost, isCurrentNormHistogramDevice;
 	dim3 sumBlocks, sumThreads;
 	double* deviceSum;
 	double* hostSum;
 	int sizeSum;
-	Vec<unsigned int> constKernalDims;
+	Vec<unsigned int> constKernelDims;
 	Vec<int> gaussIterations;
-	Vec<float> gausKernalSigmas;
-	float hostKernal[MAX_KERNAL_DIM*MAX_KERNAL_DIM*MAX_KERNAL_DIM];
+	Vec<float> gausKernelSigmas;
+	float hostKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
 	int reservedBuffer;
 	Vec<unsigned int> UNSET;
 	bool isColumnMajor;
