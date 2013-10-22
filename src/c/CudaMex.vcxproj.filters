@@ -118,12 +118,6 @@
     <None Include="CudaMex\CudaMex.def">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Common\CudaKernels.cuh">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="Common\CudaUtilities.cuh">
-      <Filter>Header Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CudaMex\Process.h">
@@ -143,6 +137,12 @@
     </ClInclude>
     <ClInclude Include="Common\CHelpers.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaKernels.cuh">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaUtilities.cuh">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

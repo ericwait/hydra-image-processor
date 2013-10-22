@@ -1,5 +1,6 @@
 #include "Process.h"
 #include "CudaImageBuffer.cuh"
+#include "CHelpers.h"
 
 void addConstant(const MexImagePixelType* image,  MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double additive)
 {
