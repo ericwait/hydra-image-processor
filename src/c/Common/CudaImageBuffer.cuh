@@ -755,6 +755,7 @@ private:
 				}
 			}
 		}
+		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel,hostKernel,sizeof(float)*kernelDims.product()));
 	}
 
 	void defaults()
