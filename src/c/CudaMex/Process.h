@@ -3,6 +3,7 @@
 
 typedef unsigned char MexImagePixelType;
 
+void clear();
 void addConstant(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double additive);
 void addImageWith(const MexImagePixelType* image1, const MexImagePixelType* image2, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double factor);
 void applyPolyTransformation(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double a, double b, double c, MexImagePixelType minValue, MexImagePixelType maxValue);

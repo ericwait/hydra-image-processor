@@ -62,6 +62,7 @@ std::string MexCommand::printUsageList()
 
 void MexCommand::cleanUp()
 {
+	clear();
 	std::map<std::string,MexCommand*>::iterator it = commandList.begin();
 
 	for (; it!=commandList.end(); ++it)
