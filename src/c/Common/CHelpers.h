@@ -5,5 +5,3 @@
 #include <complex>
 
 double* createCircleKernel(int rad, Vec<unsigned int>& kernelDims);
-
-int calcOtsuThreshold(const double* normHistogram, int numBins);
