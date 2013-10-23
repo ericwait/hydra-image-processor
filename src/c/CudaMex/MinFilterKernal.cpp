@@ -49,5 +49,5 @@ std::string MinFilterKernel::check( int nlhs, mxArray* plhs[], int nrhs, const m
 
 std::string MinFilterKernel::printUsage()
 {
-	return "imageOut = CudaMex('MinFilterNeighborhood',imageIn,kernel)";
+	return "imageOut = CudaMex('MinFilterKernel',imageIn,kernel)";
 }

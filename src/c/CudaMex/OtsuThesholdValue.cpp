@@ -18,7 +18,7 @@ std::string OtsuThesholdValue::check( int nlhs, mxArray* plhs[], int nrhs, const
 	if (nrhs!=1)
 		return "Incorrect number of inputs!";
 
-	if (nlhs!=2)
+	if (nlhs!=1)
 		return "Requires one output!";
 
 	if (!mxIsUint8(prhs[0]))

@@ -47,5 +47,5 @@ std::string MaxFilterKernel::check( int nlhs, mxArray* plhs[], int nrhs, const m
 
 std::string MaxFilterKernel::printUsage()
 {
-		return "imageOut = CudaMex('MaxFilterNeighborHood',imageIn,kernal)";
+		return "imageOut = CudaMex('MaxFilterKernel',imageIn,kernel)";
 }

@@ -138,11 +138,11 @@
     <ClInclude Include="Common\CHelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Common\CudaKernels.cuh">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common\CudaUtilities.cuh">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaKernels.cuh">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

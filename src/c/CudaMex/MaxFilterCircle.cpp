@@ -36,5 +36,5 @@ std::string MaxFilterCircle::check( int nlhs, mxArray* plhs[], int nrhs, const m
 
 std::string MaxFilterCircle::printUsage()
 {
-	return "imageOut = CudaMex('MaxFilterNeighborhood',imageIn,radius)";
+	return "imageOut = CudaMex('MaxFilterCircle',imageIn,radius)";
 }

@@ -36,5 +36,5 @@ std::string MinFilterCircle::check( int nlhs, mxArray* plhs[], int nrhs, const m
 
 std::string MinFilterCircle::printUsage()
 {
-	return "imageOut = CudaMex('MinFilterNeighborhood',imageIn,radius)";
+	return "imageOut = CudaMex('MinFilterCircle',imageIn,radius)";
 }
