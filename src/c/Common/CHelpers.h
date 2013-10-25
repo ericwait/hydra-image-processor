@@ -4,4 +4,4 @@
 #include <memory.h>
 #include <complex>
 
-double* createCircleKernel(int rad, Vec<unsigned int>& kernelDims);
+double* createEllipsoidKernel(Vec<unsigned int> radii, Vec<unsigned int>& kernelDims);

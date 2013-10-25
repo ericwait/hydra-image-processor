@@ -17,6 +17,7 @@ void MexCommand::init()
 	REGISTER_COMMAND(GaussianFilter);
 	REGISTER_COMMAND(Histogram);
 	REGISTER_COMMAND(ImagePow);
+	REGISTER_COMMAND(Mask);
 	REGISTER_COMMAND(MaxFilterCircle);
 	REGISTER_COMMAND(MaxFilterKernel);
 	REGISTER_COMMAND(MaxFilterNeighborHood);
@@ -26,6 +27,8 @@ void MexCommand::init()
 	REGISTER_COMMAND(MinFilterCircle);
 	REGISTER_COMMAND(MinFilterKernel);
 	REGISTER_COMMAND(MinFilterNeighborhood);
+	REGISTER_COMMAND(MorphClosure);
+	REGISTER_COMMAND(MorphOpening);
 	REGISTER_COMMAND(MultiplyImage);
 	REGISTER_COMMAND(MultiplyImageWith);
 	REGISTER_COMMAND(NormalizedCovariance);

@@ -1,9 +1,10 @@
 #include "MexCommand.h"
+#include "Process.h"
 #include "CHelpers.h"
 
-void MinFilterCircle::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MorphOpening::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-		Vec<unsigned int> imageDims;
+	Vec<unsigned int> imageDims;
 	MexImagePixelType* imageIn, * imageOut;
 	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
@@ -12,10 +13,10 @@ void MinFilterCircle::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	Vec<unsigned int> radii((unsigned int)radiiD[0],(unsigned int)radiiD[1],(unsigned int)radiiD[2]);
 	Vec<unsigned int> kernDims;
 	double* circleKernel = createEllipsoidKernel(radii,kernDims);
-	minFilter(imageIn,imageOut,imageDims,kernDims,circleKernel);
+	morphOpening(imageIn,imageOut,imageDims,kernDims,circleKernel);
 }
 
-std::string MinFilterCircle::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MorphOpening::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	if (nrhs!=2)
 		return "Incorrect number of inputs!";
@@ -37,7 +38,7 @@ std::string MinFilterCircle::check( int nlhs, mxArray* plhs[], int nrhs, const m
 	return "";
 }
 
-std::string MinFilterCircle::printUsage()
+std::string MorphOpening::printUsage()
 {
-	return "imageOut = CudaMex('MinFilterCircle',imageIn,[radiusX,radiusY,radiusZ])";
+	return "imageOut = CudaMex('MorphOpening',imageIn,[radiusX,radiusY,radiusZ])";
 }

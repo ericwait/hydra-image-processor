@@ -381,6 +381,17 @@ public:
 	}
 
 	/*
+	 *	Mask will mask out the pixels of this buffer given an image and a threshold.
+	 *	The threshold it to allow the input image to be gray scale instead of logical.
+	 *	This buffer will get zeroed out where the imageMask is less than or equal to the threshold.
+	 */
+	void mask(const CudaImageBuffer* imageMask, ImagePixelType threshold)
+	{
+		cudaMask<<<blocks,threads>>>(getCurrentBuffer(),imageMask->getCudaBuffer(),getNextBuffer(),imageDims,threshold,isColumnMajor);
+		incrementBufferNumber();
+	}
+
+	/*
 	*	Sets each pixel to the max value of its neighborhood
 	*	Dilates structures
 	*/ 
@@ -458,6 +469,18 @@ public:
 
 		cudaMinFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood,isColumnMajor);
 		incrementBufferNumber();
+	}
+
+	void morphClosure(Vec<unsigned int> neighborhood, double* kernel=NULL, bool columnMajor=false)
+	{
+		maxFilter(neighborhood,kernel,columnMajor);
+		minFilter(neighborhood,kernel,columnMajor);
+	}
+
+	void morphOpening(Vec<unsigned int> neighborhood, double* kernel=NULL, bool columnMajor=false)
+	{
+		minFilter(neighborhood,kernel,columnMajor);
+		maxFilter(neighborhood,kernel,columnMajor);
 	}
 
 	/*

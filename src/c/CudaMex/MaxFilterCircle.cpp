@@ -7,9 +7,11 @@ void MaxFilterCircle::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	MexImagePixelType* imageIn, * imageOut;
 	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-	double radius = mxGetScalar(prhs[1]);
+	double* radiiD = (double*)mxGetData(prhs[1]);
+
+	Vec<unsigned int> radii((unsigned int)radiiD[0],(unsigned int)radiiD[1],(unsigned int)radiiD[2]);
 	Vec<unsigned int> kernDims;
-	double* circleKernel = createCircleKernel((int)radius,kernDims);
+	double* circleKernel = createEllipsoidKernel(radii,kernDims);
 	maxFilter(imageIn,imageOut,imageDims,kernDims,circleKernel);
 }
 
@@ -28,13 +30,14 @@ std::string MaxFilterCircle::check( int nlhs, mxArray* plhs[], int nrhs, const m
 	if (imgNumDims>3 || imgNumDims<2)
 		return "Image can only be either 2D or 3D!";
 
-	if (!mxIsDouble(prhs[1]))
-		return "Radius needs to be a single double!";
+	size_t numEl = mxGetNumberOfElements(prhs[1]);
+	if (numEl!=3 || !mxIsDouble(prhs[1]))
+		return "Radii must be an array of three doubles!";
 
 	return "";
 }
 
 std::string MaxFilterCircle::printUsage()
 {
-	return "imageOut = CudaMex('MaxFilterCircle',imageIn,radius)";
+	return "imageOut = CudaMex('MaxFilterCircle',imageIn,[radiusX,radiusY,radiusZ])";
 }

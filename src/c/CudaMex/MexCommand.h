@@ -106,6 +106,17 @@ public:
 	virtual std::string printUsage();
 };
 
+class Mask :MexCommand
+{
+public:
+	Mask(){}
+	virtual ~Mask(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+};
+
 class MaxFilterCircle : MexCommand
 {
 public:
@@ -199,6 +210,28 @@ class MinFilterNeighborhood : MexCommand
 public:
 	MinFilterNeighborhood(){}
 	virtual ~MinFilterNeighborhood(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+};
+
+class MorphClosure : MexCommand
+{
+public:
+	MorphClosure(){}
+	virtual ~MorphClosure(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+};
+
+class MorphOpening : MexCommand
+{
+public:
+	MorphOpening(){}
+	virtual ~MorphOpening(){}
 
 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);

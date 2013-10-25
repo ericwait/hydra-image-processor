@@ -875,3 +875,24 @@ __global__ void cudaUnmixing(const ImagePixelType* imageIn1, const ImagePixelTyp
 		}	
 	}
 }
+
+template<typename ImagePixelType>
+__global__ void cudaMask(const ImagePixelType* imageIn1, const ImagePixelType* imageIn2, ImagePixelType* imageOut,
+						 Vec<unsigned int> hostImageDims, ImagePixelType threshold, bool isColumnMajor=false)
+{
+	DeviceVec<unsigned int> imageDims = hostImageDims;
+	DeviceVec<unsigned int> coordinate;
+	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
+	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
+	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
+
+	if (coordinate<imageDims)
+	{
+		ImagePixelType val=0;
+
+		if (imageIn2[imageDims.linearAddressAt(coordinate,isColumnMajor)] <= threshold)
+			val = imageIn1[imageDims.linearAddressAt(coordinate,isColumnMajor)];
+
+		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = val;
+	}
+}

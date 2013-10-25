@@ -2,8 +2,8 @@
 #include "CudaImageBuffer.cuh"
 #include "CHelpers.h"
 
-CudaImageBuffer<unsigned char>* g_cudaBuffer = NULL;
-CudaImageBuffer<unsigned char>* g_cudaBuffer2 = NULL;
+CudaImageBuffer<MexImagePixelType>* g_cudaBuffer = NULL;
+CudaImageBuffer<MexImagePixelType>* g_cudaBuffer2 = NULL;
 
 void clear()
 {
@@ -93,6 +93,19 @@ size_t getGlobalMemoryAvailable()
 	return g_cudaBuffer->getGlobalMemoryAvailable();
 }
 
+void mask(const MexImagePixelType* image1, const MexImagePixelType* image2, MexImagePixelType* imageOut, Vec<unsigned int> imageDims,
+		  double threshold)
+{
+	set(imageDims);
+	set2(imageDims);
+	g_cudaBuffer->loadImage(image1,imageDims);
+	g_cudaBuffer2->loadImage(image2,imageDims);
+
+	g_cudaBuffer->mask(g_cudaBuffer2,threshold);
+
+	g_cudaBuffer->retrieveImage(imageOut);
+}
+
 void maxFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
 			   double* kernel/*=NULL*/)
 {
@@ -141,6 +154,28 @@ void minFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec
 	g_cudaBuffer->loadImage(image,imageDims);
 
 	g_cudaBuffer->minFilter(neighborhood,kernel,true);
+
+	g_cudaBuffer->retrieveImage(imageOut);
+}
+
+void morphClosure( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
+			   double* kernel/*=NULL*/)
+{
+	set(imageDims);
+	g_cudaBuffer->loadImage(image,imageDims);
+
+	g_cudaBuffer->morphClosure(neighborhood,kernel,true);
+
+	g_cudaBuffer->retrieveImage(imageOut);
+}
+
+void morphOpening( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
+				  double* kernel/*=NULL*/)
+{
+	set(imageDims);
+	g_cudaBuffer->loadImage(image,imageDims);
+
+	g_cudaBuffer->morphOpening(neighborhood,kernel,true);
 
 	g_cudaBuffer->retrieveImage(imageOut);
 }
