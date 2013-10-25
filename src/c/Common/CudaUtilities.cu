@@ -81,7 +81,6 @@ void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, 
 	}
 }
 
-template<typename KernelType>
 Vec<unsigned int> createGaussianKernel(Vec<float> sigma, float* kernel, int& iterations)
 {
 	Vec<unsigned int> kernelDims(1,1,1);
