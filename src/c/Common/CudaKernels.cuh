@@ -288,7 +288,7 @@ __global__ void cudaMinFilter(ImagePixelType* imageIn, ImagePixelType* imageOut,
 
 	if (coordinate<imageDims)
 	{
-		ImagePixelType minVal = imageOut[imageDims.linearAddressAt(coordinate)];
+		ImagePixelType minVal = imageIn[imageDims.linearAddressAt(coordinate,isColumnMajor)];
 		DeviceVec<unsigned int> kernelDims = hostKernelDims;
 		DeviceVec<unsigned int> kernelMidIdx;
 		DeviceVec<unsigned int> curCoordIm; 
@@ -313,7 +313,7 @@ __global__ void cudaMinFilter(ImagePixelType* imageIn, ImagePixelType* imageOut,
 				{
 					if(cudaConstKernel[kernelDims.linearAddressAt(curCoordKrn)]>0)
 					{
-						minVal = min((float)minVal, imageIn[imageDims.linearAddressAt(curCoordIm,isColumnMajor)]*
+						minVal = (ImagePixelType)min((float)minVal, imageIn[imageDims.linearAddressAt(curCoordIm,isColumnMajor)]*
 							cudaConstKernel[kernelDims.linearAddressAt(curCoordKrn)]);
 					}
 				}
@@ -336,15 +336,15 @@ __global__ void cudaMaxFilter(ImagePixelType* imageIn, ImagePixelType* imageOut,
 
 	if (coordinate<imageDims)
 	{
-		ImagePixelType maxVal = imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)];
+		ImagePixelType maxVal = imageIn[imageDims.linearAddressAt(coordinate,isColumnMajor)];
 		DeviceVec<unsigned int> kernelDims = hostKernelDims;
 		DeviceVec<unsigned int> kernelMidIdx;
 		DeviceVec<unsigned int> curCoordIm; 
 		DeviceVec<unsigned int> curCoordKrn;
 
-		kernelMidIdx.x = kernelDims.x/2;
-		kernelMidIdx.y = kernelDims.y/2;
-		kernelMidIdx.z = kernelDims.z/2;
+		kernelMidIdx.x = (kernelDims.x+1)/2;
+		kernelMidIdx.y = (kernelDims.y+1)/2;
+		kernelMidIdx.z = (kernelDims.z+1)/2;
 
 		//find if the kernel will go off the edge of the image
 		curCoordIm.z = (unsigned int) max(0,(int)coordinate.z-(int)kernelMidIdx.z);
@@ -361,7 +361,7 @@ __global__ void cudaMaxFilter(ImagePixelType* imageIn, ImagePixelType* imageOut,
 				{
 					if(cudaConstKernel[kernelDims.linearAddressAt(curCoordKrn)]>0)
 					{
-						maxVal = max((float)maxVal, imageIn[imageDims.linearAddressAt(curCoordIm,isColumnMajor)]*
+						maxVal = (ImagePixelType)max((float)maxVal, imageIn[imageDims.linearAddressAt(curCoordIm,isColumnMajor)]*
 							cudaConstKernel[kernelDims.linearAddressAt(curCoordKrn)]);
 					}
 				}
