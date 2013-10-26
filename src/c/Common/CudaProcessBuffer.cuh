@@ -6,18 +6,19 @@
 #undef DEVICE_VEC
 #include "CudaKernels.cuh"
 #include "CudaUtilities.cuh"
+#include "CudaStorageBuffer.cuh"
 #include "assert.h"
 #include <limits>
 
 template<typename ImagePixelType>
-class CudaImageBuffer
+class CudaProcessBuffer
 {
 public:
 	//////////////////////////////////////////////////////////////////////////
 	// Constructor / Destructor
 	//////////////////////////////////////////////////////////////////////////
 
-	CudaImageBuffer(Vec<unsigned int> dims, bool columnMajor=false, int device=0)
+	CudaProcessBuffer(Vec<unsigned int> dims, bool columnMajor=false, int device=0)
 	{
 		defaults();
 		isColumnMajor = columnMajor;
@@ -28,7 +29,7 @@ public:
 		memoryAllocation();
 	}
 
-	CudaImageBuffer(unsigned int x, unsigned int y, unsigned int z, bool columnMajor=false, int device=0)
+	CudaProcessBuffer(unsigned int x, unsigned int y, unsigned int z, bool columnMajor=false, int device=0)
 	{
 		defaults();
 		isColumnMajor = columnMajor;
@@ -39,7 +40,7 @@ public:
 		memoryAllocation();
 	}
 
-	CudaImageBuffer(int n, bool columnMajor=false, int device=0)
+	CudaProcessBuffer(int n, bool columnMajor=false, int device=0)
 	{
 		defaults();
 		isColumnMajor = columnMajor;
@@ -51,7 +52,7 @@ public:
 		memoryAllocation();
 	}
 
-	~CudaImageBuffer()
+	~CudaProcessBuffer()
 	{
 		clean();
 	}
@@ -62,10 +63,10 @@ public:
 	// Copy Constructors
 	//////////////////////////////////////////////////////////////////////////
 
-	CudaImageBuffer (const CudaImageBuffer<ImagePixelType>& bufferIn){copy(bufferIn);}
-	CudaImageBuffer& operator=(const CudaImageBuffer<ImagePixelType>& bufferIn)
+	CudaProcessBuffer (const CudaProcessBuffer<ImagePixelType>* bufferIn){copy(bufferIn);}
+	CudaProcessBuffer& operator=(const CudaProcessBuffer<ImagePixelType>* bufferIn)
 	{
-		if (this == &bufferIn)
+		if (this == bufferIn)
 			return *this;
 
 		clean();
@@ -187,47 +188,63 @@ public:
 	*	****ENSURE that this' original size is big enough to accommodates the
 	*	the new buffer size.  Does not do error checking thus far.
 	*/
-	void copyROI(const CudaImageBuffer<ImagePixelType>& bufferIn, Vec<unsigned int> starts, Vec<unsigned int> sizes)
+	void copyROI(const CudaProcessBuffer<ImagePixelType>* image, Vec<unsigned int> starts, Vec<unsigned int> sizes)
 	{
-		if (sizes.product()>bufferSize)
+		if (sizes.product()>bufferSize || this->device!=image->getDevice())
 		{
 			bool wasColumnMajor = isColumnMajor;
-			int device = this->device;
 			clean();
 			isColumnMajor = wasColumnMajor;
-			this->device = device;
-			imageDims = bufferIn.getDimension();
+			this->device = image->getDevice();
+			imageDims = sizes;
 			deviceSetup();
 			memoryAllocation();
 		}
 
 		imageDims = sizes;
-		device = bufferIn.getDevice();
 		currentBuffer = 0;
-		bufferIn.getRoi(getCurrentBuffer(),starts,sizes);
+		image->getRoi(getCurrentBuffer(),starts,sizes);
 		updateBlockThread();
 	}
 
-	void copyImage(const CudaImageBuffer<ImagePixelType>& bufferIn)
+	void copyROI(const CudaStorageBuffer<ImagePixelType>* image, Vec<unsigned int> starts, Vec<unsigned int> sizes)
 	{
-		if (bufferIn.getDimension().product()>bufferSize)
+		if ((size_t)sizes.product()>bufferSize || this->device!=image->getDevice())
 		{
 			bool wasColumnMajor = isColumnMajor;
-			int device = this->device;
 			clean();
 			isColumnMajor = wasColumnMajor;
-			this->device = device;
-			imageDims = bufferIn.getDimension();
+			this->device = image->getDevice();
+			imageDims = sizes;
 			deviceSetup();
 			memoryAllocation();
 		}
 
-		imageDims = bufferIn.getDimension();
-		device = bufferIn.getDevice();
+		imageDims = sizes;
+		currentBuffer = 0;
+		image->getRoi(getCurrentBuffer(),starts,sizes);
+		updateBlockThread();	
+	}
+
+	void copyImage(const CudaProcessBuffer<ImagePixelType>* bufferIn)
+	{
+		if (bufferIn->getDimension().product()>bufferSize)
+		{
+			bool wasColumnMajor = isColumnMajor;
+			clean();
+			isColumnMajor = wasColumnMajor;
+			this->device = device;
+			imageDims = bufferIn->getDimension();
+			deviceSetup();
+			memoryAllocation();
+		}
+
+		imageDims = bufferIn->getDimension();
+		device = bufferIn->getDevice();
 		updateBlockThread();
 
 		currentBuffer = 0;
-		HANDLE_ERROR(cudaMemcpy(getCurrentBuffer(),bufferIn.getCudaBuffer(),sizeof(ImagePixelType)*imageDims.product(),
+		HANDLE_ERROR(cudaMemcpy(getCurrentBuffer(),bufferIn->getCudaBuffer(),sizeof(ImagePixelType)*imageDims.product(),
 			cudaMemcpyDeviceToDevice));
 	}
 
@@ -259,7 +276,7 @@ public:
 	*	Adds this image to the passed in one.  You can apply a factor
 	*	which is multiplied to the passed in image prior to adding
 	*/
-	void addImageWith(const CudaImageBuffer* image, double factor)
+	void addImageWith(const CudaProcessBuffer* image, double factor)
 	{
 		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),
 			imageDims,factor,minPixel,maxPixel,isColumnMajor);
@@ -385,7 +402,7 @@ public:
 	 *	The threshold it to allow the input image to be gray scale instead of logical.
 	 *	This buffer will get zeroed out where the imageMask is less than or equal to the threshold.
 	 */
-	void mask(const CudaImageBuffer* imageMask, ImagePixelType threshold)
+	void mask(const CudaProcessBuffer* imageMask, ImagePixelType threshold)
 	{
 		cudaMask<<<blocks,threads>>>(getCurrentBuffer(),imageMask->getCudaBuffer(),getNextBuffer(),imageDims,threshold,isColumnMajor);
 		incrementBufferNumber();
@@ -497,7 +514,7 @@ public:
 	/*
 	*	Multiplies this image to the passed in one.
 	*/
-	void multiplyImageWith(const CudaImageBuffer* image)
+	void multiplyImageWith(const CudaProcessBuffer* image)
 	{
 		cudaMultiplyTwoImages<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims,isColumnMajor);
 		incrementBufferNumber();
@@ -508,7 +525,7 @@ public:
 	 *	returns (sum over all{(A-mu(A)) X (B-mu(B))}) / (sigma(A)Xsigma(B)
 	 *	The images buffers will not change the original data 
 	 */
-	double normalizedCovariance(CudaImageBuffer* otherImage)
+	double normalizedCovariance(CudaProcessBuffer* otherImage)
 	{
 		ImagePixelType* aOrg = this->retrieveImage();
 		ImagePixelType* bOrg = otherImage->retrieveImage();
@@ -648,7 +665,7 @@ public:
 		incrementBufferNumber();
 	}
 
-	void unmix(const CudaImageBuffer* image, Vec<unsigned int> neighborhood)
+	void unmix(const CudaProcessBuffer* image, Vec<unsigned int> neighborhood)
 	{
 		cudaUnmixing<<<blocks,threads>>>(getCurrentBuffer(),image->getCudaBuffer(),getNextBuffer(),
 			imageDims,neighborhood,minPixel,maxPixel);
@@ -658,7 +675,7 @@ public:
 	// End Cuda Operators
 
 private:
-	CudaImageBuffer();
+	CudaProcessBuffer();
 
 	void updateBlockThread()
 	{
@@ -714,39 +731,39 @@ private:
 		cudaGetROI<<<blocks,threads>>>(getCurrentBuffer(),roi,imageDims,starts,sizes);
 	}
 
-	void copy(const CudaImageBuffer<ImagePixelType>& bufferIn)
+	void copy(const CudaProcessBuffer<ImagePixelType>* bufferIn)
 	{
 		defaults();
 
-		imageDims = bufferIn.getDimension();
-		device = bufferIn.getDevice();
+		imageDims = bufferIn->getDimension();
+		device = bufferIn->getDevice();
 
 		deviceSetup();
 		memoryAllocation();
 
 		currentBuffer = 0;
-		ImagePixelType* inImage = bufferIn.getCurrentBuffer();
+		ImagePixelType* inImage = bufferIn->getCurrentBuffer();
 
 		if (inImage!=NULL)
 			HANDLE_ERROR(cudaMemcpy(imageBuffers[currentBuffer],inImage,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyDeviceToDevice));
 
-		if (bufferIn.reducedImageHost!=NULL)
-			memcpy(reducedImageHost,bufferIn.reducedImageHost,sizeof(ImagePixelType)*reducedDims.product());
+		if (bufferIn->reducedImageHost!=NULL)
+			memcpy(reducedImageHost,bufferIn->reducedImageHost,sizeof(ImagePixelType)*reducedDims.product());
 
-		if (bufferIn.reducedImageDevice!=NULL)
-			HANDLE_ERROR(cudaMemcpy(reducedImageDevice,bufferIn.reducedImageDevice,sizeof(ImagePixelType)*reducedDims.product(),cudaMemcpyDeviceToDevice));
+		if (bufferIn->reducedImageDevice!=NULL)
+			HANDLE_ERROR(cudaMemcpy(reducedImageDevice,bufferIn->reducedImageDevice,sizeof(ImagePixelType)*reducedDims.product(),cudaMemcpyDeviceToDevice));
 
-		if (bufferIn.histogramHost!=NULL)
-			memcpy(histogramHost,bufferIn.histogramHost,sizeof(unsigned int)*imageDims.product());
+		if (bufferIn->histogramHost!=NULL)
+			memcpy(histogramHost,bufferIn->histogramHost,sizeof(unsigned int)*imageDims.product());
 
-		if (bufferIn.histogramDevice!=NULL)
-			HANDLE_ERROR(cudaMemcpy(histogramDevice,bufferIn.histogramDevice,sizeof(unsigned int)*NUM_BINS,cudaMemcpyDeviceToDevice));
+		if (bufferIn->histogramDevice!=NULL)
+			HANDLE_ERROR(cudaMemcpy(histogramDevice,bufferIn->histogramDevice,sizeof(unsigned int)*NUM_BINS,cudaMemcpyDeviceToDevice));
 
-		if (bufferIn.normalizedHistogramHost!=NULL)
-			memcpy(normalizedHistogramHost,bufferIn.normalizedHistogramHost,sizeof(double)*imageDims.product());
+		if (bufferIn->normalizedHistogramHost!=NULL)
+			memcpy(normalizedHistogramHost,bufferIn->normalizedHistogramHost,sizeof(double)*imageDims.product());
 
-		if (bufferIn.normalizedHistogramDevice!=NULL)
-			HANDLE_ERROR(cudaMemcpy(normalizedHistogramDevice,bufferIn.normalizedHistogramDevice,sizeof(double)*NUM_BINS,cudaMemcpyDeviceToDevice));
+		if (bufferIn->normalizedHistogramDevice!=NULL)
+			HANDLE_ERROR(cudaMemcpy(normalizedHistogramDevice,bufferIn->normalizedHistogramDevice,sizeof(double)*NUM_BINS,cudaMemcpyDeviceToDevice));
 	}
 
 	void constKernelOnes()
@@ -789,6 +806,7 @@ private:
 		gausKernelSigmas  = Vec<float>(0.0f,0.0f,0.0f);
 		device = -1;
 		currentBuffer = -1;
+		bufferSize = 0;
 		for (int i=0; i<NUM_BUFFERS; ++i)
 		{
 			imageBuffers[i] = NULL;
