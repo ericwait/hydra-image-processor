@@ -59,9 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\CHelpers.h" />
-    <ClInclude Include="Common\CudaImageBuffer.cuh">
-      <FileType>Document</FileType>
-    </ClInclude>
     <ClInclude Include="Common\Vec.h" />
     <ClInclude Include="Common\VecFuncs.h" />
     <ClInclude Include="CudaMex\MexCommand.h" />
@@ -71,6 +68,8 @@
     <ClInclude Include="Common\CudaUtilities.cuh">
       <FileType>Document</FileType>
     </ClInclude>
+    <None Include="Common\CudaProcessBuffer.cuh" />
+    <None Include="Common\CudaStorageBuffer.cuh" />
     <None Include="CudaMex\CudaMex.def" />
   </ItemGroup>
   <ItemGroup>

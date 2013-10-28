@@ -127,12 +127,15 @@
     <None Include="CudaMex\CudaMex.def">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Common\CudaProcessBuffer.cuh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Common\CudaStorageBuffer.cuh">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CudaMex\Process.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaImageBuffer.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Vec.h">

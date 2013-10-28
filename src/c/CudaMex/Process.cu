@@ -1,9 +1,9 @@
 #include "Process.h"
-#include "CudaImageBuffer.cuh"
+#include "CudaProcessBuffer.cuh"
 #include "CHelpers.h"
 
-CudaImageBuffer<MexImagePixelType>* g_cudaBuffer = NULL;
-CudaImageBuffer<MexImagePixelType>* g_cudaBuffer2 = NULL;
+CudaProcessBuffer<MexImagePixelType>* g_cudaBuffer = NULL;
+CudaProcessBuffer<MexImagePixelType>* g_cudaBuffer2 = NULL;
 
 void clear()
 {
@@ -16,13 +16,13 @@ void clear()
 void set(Vec<unsigned int> imageDims)
 {
 	if (g_cudaBuffer==NULL)
-		g_cudaBuffer = new CudaImageBuffer<unsigned char>(imageDims,true);
+		g_cudaBuffer = new CudaProcessBuffer<unsigned char>(imageDims,true);
 }
 
 void set2(Vec<unsigned int> imageDims)
 {
 	if (g_cudaBuffer2==NULL)
-		g_cudaBuffer2 = new CudaImageBuffer<unsigned char>(imageDims,true);
+		g_cudaBuffer2 = new CudaProcessBuffer<unsigned char>(imageDims,true);
 }
 
 void addConstant(const MexImagePixelType* image,  MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double additive)
@@ -89,7 +89,7 @@ void gaussianFilter( const MexImagePixelType* image, MexImagePixelType* imageOut
 
 size_t getGlobalMemoryAvailable()
 {
-	CudaImageBuffer<unsigned char> cudaBuffer(1);
+	CudaProcessBuffer<unsigned char> cudaBuffer(1);
 	return g_cudaBuffer->getGlobalMemoryAvailable();
 }
 
