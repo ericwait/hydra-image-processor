@@ -79,18 +79,18 @@ void MexCommand::addCommand(const std::string commandText, MexCommand* commandOb
 	commandList.insert(std::pair<std::string,MexCommand*>(commandText,commandObject));
 }
 
-void MexCommand::setupImagePointers( const mxArray* imageIn, MexImagePixelType** image, Vec<unsigned int>* imageDims, mxArray** argOut/*=NULL*/,
-									MexImagePixelType** imageOut/*=NULL*/ )
+void MexCommand::setupImagePointers( const mxArray* imageIn, HostPixelType** image, Vec<unsigned int>* imageDims, mxArray** argOut/*=NULL*/,
+									HostPixelType** imageOut/*=NULL*/ )
 {
 	size_t numDims = mxGetNumberOfDimensions(imageIn);
 	const mwSize* DIMS = mxGetDimensions(imageIn);
 
-	*image = (MexImagePixelType*)mxGetData(imageIn);
+	*image = (HostPixelType*)mxGetData(imageIn);
 
 	if (argOut!=NULL && imageOut!=NULL)
 	{
 		*argOut = mxCreateNumericArray(numDims,DIMS,mxUINT8_CLASS,mxREAL);
-		*imageOut = (MexImagePixelType*)mxGetData(*argOut);
+		*imageOut = (HostPixelType*)mxGetData(*argOut);
 	}
 
 	imageDims->x = (unsigned int)DIMS[1];

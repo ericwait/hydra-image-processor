@@ -1,44 +1,44 @@
 #pragma once
 #include "Vec.h"
 
-typedef unsigned char MexImagePixelType;
+typedef unsigned char HostPixelType;
 
 void clear();
-void addConstant(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double additive);
-void addImageWith(const MexImagePixelType* image1, const MexImagePixelType* image2, MexImagePixelType* imageOut, Vec<unsigned int> imageDims,
+void addConstant(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, double additive);
+void addImageWith(const HostPixelType* image1, const HostPixelType* image2, HostPixelType* imageOut, Vec<unsigned int> imageDims,
 				  double factor);
-void applyPolyTransformation(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double a, double b,
-							 double c, MexImagePixelType minValue, MexImagePixelType maxValue);
-void calculateMinMax(const MexImagePixelType* image, Vec<unsigned int> imageDims, double& minValue, double& maxValue);
-void contrastEnhancement(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<float> sigmas,
+void applyPolyTransformation(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, double a, double b,
+							 double c, HostPixelType minValue, HostPixelType maxValue);
+void calculateMinMax(const HostPixelType* image, Vec<unsigned int> imageDims, double& minValue, double& maxValue);
+void contrastEnhancement(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<float> sigmas,
 						 Vec<unsigned int> medianNeighborhood);
-void gaussianFilter(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<float> sigmas);
-size_t getGlobalMemoryAvailable(const MexImagePixelType* image1, const MexImagePixelType* image2, MexImagePixelType* imageOut,
+void gaussianFilter(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<float> sigmas);
+size_t getGlobalMemoryAvailable(const HostPixelType* image1, const HostPixelType* image2, HostPixelType* imageOut,
 								Vec<unsigned int> imageDims, double factor);
-void mask(const MexImagePixelType* image1, const MexImagePixelType* image2, MexImagePixelType* imageOut, Vec<unsigned int> imageDims,
+void mask(const HostPixelType* image1, const HostPixelType* image2, HostPixelType* imageOut, Vec<unsigned int> imageDims,
 		  double theshold=1);
-void maxFilter(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
+void maxFilter(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
 			   double* kernel=NULL);
-void maximumIntensityProjection(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims);
-void meanFilter(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood);
-void medianFilter(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood);
-void minFilter(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
+void maximumIntensityProjection(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims);
+void meanFilter(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood);
+void medianFilter(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood);
+void minFilter(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
 			   double* kernel=NULL);
-void morphClosure(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
+void morphClosure(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
 				  double* kernel=NULL);
-void morphOpening(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
+void morphOpening(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
 				  double* kernel=NULL);
-void multiplyImage(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double factor);
-void multiplyImageWith(const MexImagePixelType* image1, const MexImagePixelType* image2, MexImagePixelType* imageOut,
+void multiplyImage(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, double factor);
+void multiplyImageWith(const HostPixelType* image1, const HostPixelType* image2, HostPixelType* imageOut,
 					   Vec<unsigned int> imageDims);
-double normalizedCovariance(const MexImagePixelType* image1, const MexImagePixelType* image2, Vec<unsigned int> imageDims);
-void otsuThresholdFilter(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double alpha);
-MexImagePixelType otsuThesholdValue(const MexImagePixelType* image, Vec<unsigned int> imageDims);
-void imagePow(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, int p);
-double sumArray(const MexImagePixelType* image, Vec<unsigned int> imageDims);
-MexImagePixelType* reduceImage(const MexImagePixelType* image, Vec<unsigned int>& imageDims, Vec<double> reductions);
-unsigned int* retrieveHistogram(const MexImagePixelType* image, Vec<unsigned int>& imageDims, int& returnSize);
-double* retrieveNormalizedHistogram(const MexImagePixelType* image, Vec<unsigned int>& imageDims, int& returnSize);
-void thresholdFilter(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double threshold);
-void unmix(const MexImagePixelType* image, const MexImagePixelType* image2, MexImagePixelType* imageOut, Vec<unsigned int> imageDims,
+double normalizedCovariance(const HostPixelType* image1, const HostPixelType* image2, Vec<unsigned int> imageDims);
+void otsuThresholdFilter(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, double alpha);
+HostPixelType otsuThesholdValue(const HostPixelType* image, Vec<unsigned int> imageDims);
+void imagePow(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, int p);
+double sumArray(const HostPixelType* image, Vec<unsigned int> imageDims);
+HostPixelType* reduceImage(const HostPixelType* image, Vec<unsigned int>& imageDims, Vec<double> reductions);
+unsigned int* retrieveHistogram(const HostPixelType* image, Vec<unsigned int>& imageDims, int& returnSize);
+double* retrieveNormalizedHistogram(const HostPixelType* image, Vec<unsigned int>& imageDims, int& returnSize);
+void thresholdFilter(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, double threshold);
+void unmix(const HostPixelType* image, const HostPixelType* image2, HostPixelType* imageOut, Vec<unsigned int> imageDims,
 		   Vec<unsigned int> neighborhood);

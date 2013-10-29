@@ -4,7 +4,7 @@
 void ReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	MexImagePixelType* imageIn, * processedImage, * imageOut;
+	HostPixelType* imageIn, * processedImage, * imageOut;
 	setupImagePointers(prhs[0],&imageIn,&imageDims);
 
 	double* reductionD = (double*)mxGetData(prhs[1]);
@@ -18,8 +18,8 @@ void ReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	dims[1] = imageDims.y;
 	dims[2] = imageDims.z;
 	argOut = mxCreateNumericArray(3,dims,mxUINT8_CLASS,mxREAL);
-	imageOut = (MexImagePixelType*)mxGetData(argOut);
-	memcpy(imageOut,processedImage,sizeof(MexImagePixelType)*imageDims.product());
+	imageOut = (HostPixelType*)mxGetData(argOut);
+	memcpy(imageOut,processedImage,sizeof(HostPixelType)*imageDims.product());
 }
 
 std::string ReduceImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

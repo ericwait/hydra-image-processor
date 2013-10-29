@@ -3,7 +3,7 @@
 void OtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	MexImagePixelType* imageIn, * imageOut;
+	HostPixelType* imageIn, * imageOut;
 	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
 	double alpha = 1.0;

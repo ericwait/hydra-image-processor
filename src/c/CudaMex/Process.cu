@@ -2,8 +2,8 @@
 #include "CudaProcessBuffer.cuh"
 #include "CHelpers.h"
 
-CudaProcessBuffer<MexImagePixelType>* g_cudaBuffer = NULL;
-CudaProcessBuffer<MexImagePixelType>* g_cudaBuffer2 = NULL;
+CudaProcessBuffer<HostPixelType>* g_cudaBuffer = NULL;
+CudaProcessBuffer<HostPixelType>* g_cudaBuffer2 = NULL;
 
 void clear()
 {
@@ -25,7 +25,7 @@ void set2(Vec<unsigned int> imageDims)
 		g_cudaBuffer2 = new CudaProcessBuffer<unsigned char>(imageDims,true);
 }
 
-void addConstant(const MexImagePixelType* image,  MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double additive)
+void addConstant(const HostPixelType* image,  HostPixelType* imageOut, Vec<unsigned int> imageDims, double additive)
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -35,7 +35,7 @@ void addConstant(const MexImagePixelType* image,  MexImagePixelType* imageOut, V
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void addImageWith(const MexImagePixelType* image1, const MexImagePixelType* image2, MexImagePixelType* imageOut,
+void addImageWith(const HostPixelType* image1, const HostPixelType* image2, HostPixelType* imageOut,
 								Vec<unsigned int> imageDims, double factor)
 {
 	set(imageDims);
@@ -48,7 +48,7 @@ void addImageWith(const MexImagePixelType* image1, const MexImagePixelType* imag
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void applyPolyTransformation( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double a, double b, double c, MexImagePixelType minValue, MexImagePixelType maxValue )
+void applyPolyTransformation( const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, double a, double b, double c, HostPixelType minValue, HostPixelType maxValue )
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -58,7 +58,7 @@ void applyPolyTransformation( const MexImagePixelType* image, MexImagePixelType*
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void calculateMinMax(const MexImagePixelType* image, Vec<unsigned int> imageDims, double& minValue, double& maxValue)
+void calculateMinMax(const HostPixelType* image, Vec<unsigned int> imageDims, double& minValue, double& maxValue)
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -66,7 +66,7 @@ void calculateMinMax(const MexImagePixelType* image, Vec<unsigned int> imageDims
 	g_cudaBuffer->calculateMinMax(minValue,maxValue);
 }
 
-void contrastEnhancement(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<float> sigmas,
+void contrastEnhancement(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<float> sigmas,
 									   Vec<unsigned int> medianNeighborhood)
 {
 	set(imageDims);
@@ -77,7 +77,7 @@ void contrastEnhancement(const MexImagePixelType* image, MexImagePixelType* imag
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void gaussianFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<float> sigmas )
+void gaussianFilter( const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<float> sigmas )
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -93,7 +93,7 @@ size_t getGlobalMemoryAvailable()
 	return g_cudaBuffer->getGlobalMemoryAvailable();
 }
 
-void mask(const MexImagePixelType* image1, const MexImagePixelType* image2, MexImagePixelType* imageOut, Vec<unsigned int> imageDims,
+void mask(const HostPixelType* image1, const HostPixelType* image2, HostPixelType* imageOut, Vec<unsigned int> imageDims,
 		  double threshold)
 {
 	set(imageDims);
@@ -106,7 +106,7 @@ void mask(const MexImagePixelType* image1, const MexImagePixelType* image2, MexI
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void maxFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
+void maxFilter( const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
 			   double* kernel/*=NULL*/)
 {
 	set(imageDims);
@@ -117,7 +117,7 @@ void maxFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void maximumIntensityProjection( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims )
+void maximumIntensityProjection( const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims )
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -127,7 +127,7 @@ void maximumIntensityProjection( const MexImagePixelType* image, MexImagePixelTy
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void meanFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood )
+void meanFilter( const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood )
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -137,7 +137,7 @@ void meanFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Ve
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void medianFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood )
+void medianFilter( const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood )
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -147,7 +147,7 @@ void medianFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, 
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void minFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
+void minFilter( const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
 			   double* kernel/*=NULL*/)
 {
 	set(imageDims);
@@ -158,7 +158,7 @@ void minFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void morphClosure( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
+void morphClosure( const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
 			   double* kernel/*=NULL*/)
 {
 	set(imageDims);
@@ -169,7 +169,7 @@ void morphClosure( const MexImagePixelType* image, MexImagePixelType* imageOut, 
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void morphOpening( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
+void morphOpening( const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
 				  double* kernel/*=NULL*/)
 {
 	set(imageDims);
@@ -180,7 +180,7 @@ void morphOpening( const MexImagePixelType* image, MexImagePixelType* imageOut, 
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void multiplyImage( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double factor )
+void multiplyImage( const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, double factor )
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -190,7 +190,7 @@ void multiplyImage( const MexImagePixelType* image, MexImagePixelType* imageOut,
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void multiplyImageWith( const MexImagePixelType* image1, const MexImagePixelType* image2, MexImagePixelType* imageOut, Vec<unsigned int> imageDims )
+void multiplyImageWith( const HostPixelType* image1, const HostPixelType* image2, HostPixelType* imageOut, Vec<unsigned int> imageDims )
 {
 	set(imageDims);
 	set2(imageDims);
@@ -202,7 +202,7 @@ void multiplyImageWith( const MexImagePixelType* image1, const MexImagePixelType
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-double normalizedCovariance(const MexImagePixelType* image1, const MexImagePixelType* image2, Vec<unsigned int> imageDims)
+double normalizedCovariance(const HostPixelType* image1, const HostPixelType* image2, Vec<unsigned int> imageDims)
 {
 	set(imageDims);
 	set2(imageDims);
@@ -212,7 +212,7 @@ double normalizedCovariance(const MexImagePixelType* image1, const MexImagePixel
 	return g_cudaBuffer->normalizedCovariance(g_cudaBuffer2);
 }
 
-void otsuThresholdFilter(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double alpha)
+void otsuThresholdFilter(const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, double alpha)
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -222,7 +222,7 @@ void otsuThresholdFilter(const MexImagePixelType* image, MexImagePixelType* imag
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-MexImagePixelType otsuThesholdValue(const MexImagePixelType* image, Vec<unsigned int> imageDims)
+HostPixelType otsuThesholdValue(const HostPixelType* image, Vec<unsigned int> imageDims)
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -230,7 +230,7 @@ MexImagePixelType otsuThesholdValue(const MexImagePixelType* image, Vec<unsigned
 	return g_cudaBuffer->otsuThresholdValue();
 }
 
-void imagePow( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, int p )
+void imagePow( const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, int p )
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -240,7 +240,7 @@ void imagePow( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-double sumArray(const MexImagePixelType* image, Vec<unsigned int> imageDims)
+double sumArray(const HostPixelType* image, Vec<unsigned int> imageDims)
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -250,7 +250,7 @@ double sumArray(const MexImagePixelType* image, Vec<unsigned int> imageDims)
 	return sum;
 }
 
-MexImagePixelType* reduceImage( const MexImagePixelType* image, Vec<unsigned int>& imageDims, Vec<double> reductions )
+HostPixelType* reduceImage( const HostPixelType* image, Vec<unsigned int>& imageDims, Vec<double> reductions )
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -261,7 +261,7 @@ MexImagePixelType* reduceImage( const MexImagePixelType* image, Vec<unsigned int
 	return g_cudaBuffer->retrieveImage();
 }
 
-unsigned int* retrieveHistogram(const MexImagePixelType* image, Vec<unsigned int>& imageDims, int& returnSize)
+unsigned int* retrieveHistogram(const HostPixelType* image, Vec<unsigned int>& imageDims, int& returnSize)
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -269,7 +269,7 @@ unsigned int* retrieveHistogram(const MexImagePixelType* image, Vec<unsigned int
 	return g_cudaBuffer->retrieveHistogram(returnSize);
 }
 
-double* retrieveNormalizedHistogram(const MexImagePixelType* image, Vec<unsigned int>& imageDims, int& returnSize)
+double* retrieveNormalizedHistogram(const HostPixelType* image, Vec<unsigned int>& imageDims, int& returnSize)
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -277,7 +277,7 @@ double* retrieveNormalizedHistogram(const MexImagePixelType* image, Vec<unsigned
 	return g_cudaBuffer->retrieveNormalizedHistogram(returnSize);
 }
 
-void thresholdFilter( const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, double threshold )
+void thresholdFilter( const HostPixelType* image, HostPixelType* imageOut, Vec<unsigned int> imageDims, double threshold )
 {
 	set(imageDims);
 	g_cudaBuffer->loadImage(image,imageDims);
@@ -287,7 +287,7 @@ void thresholdFilter( const MexImagePixelType* image, MexImagePixelType* imageOu
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void unmix( const MexImagePixelType* image1, const MexImagePixelType* image2, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood )
+void unmix( const HostPixelType* image1, const HostPixelType* image2, HostPixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood )
 {
 	set(imageDims);
 	set2(imageDims);

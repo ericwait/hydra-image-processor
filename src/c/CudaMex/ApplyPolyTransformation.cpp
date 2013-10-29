@@ -5,7 +5,7 @@
 void ApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	MexImagePixelType* imageIn, * imageOut;
+	HostPixelType* imageIn, * imageOut;
 	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
 	double a = mxGetScalar(prhs[1]);
@@ -13,7 +13,7 @@ void ApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 	double c = mxGetScalar(prhs[3]);
 
 	applyPolyTransformation(imageIn,imageOut,imageDims,a,b,c,
-		std::numeric_limits<MexImagePixelType>::min(),std::numeric_limits<MexImagePixelType>::max());
+		std::numeric_limits<HostPixelType>::min(),std::numeric_limits<HostPixelType>::max());
 }
 
 

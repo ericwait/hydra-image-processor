@@ -3,7 +3,7 @@
 void Histogram::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	MexImagePixelType* imageIn;
+	HostPixelType* imageIn;
 	setupImagePointers(prhs[0],&imageIn,&imageDims);
 
 	int arraySize;
