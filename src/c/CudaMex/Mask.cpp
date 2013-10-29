@@ -10,13 +10,17 @@ void Mask::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 	MexImagePixelType* imageIn2;
 	setupImagePointers(prhs[1],&imageIn2,&imageDims2);
 
-	double threshold = mxGetScalar(prhs[2]);
+
+	double threshold = 1;
+	if (nrhs==3)
+		threshold = mxGetScalar(prhs[2]);
+
 	mask(imageIn1,imageIn2,imageOut,imageDims1,threshold);
 }
 
 std::string Mask::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	if (nrhs!=3)
+	if (nrhs!=2 && nrhs!=3)
 		return "Incorrect number of inputs!";
 
 	if (nlhs!=1)
@@ -33,13 +37,16 @@ std::string Mask::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prh
 	if (numDims>3 || numDims<2)
 		return "Image can only be either 2D or 3D!";
 
-	if (!mxIsDouble(prhs[2]))
-		return "Threshold needs to be a double!";
+	if (nrhs==3)
+	{
+		if (!mxIsDouble(prhs[2]))
+			return "Threshold needs to be a double!";
+	}
 
 	return "";
 }
 
 std::string Mask::printUsage()
 {
-	return "imageOut = CudaMex('Mask',imageIn1,imageIn2,threshold)";
+	return "imageOut = CudaMex('Mask',imageIn,imageInMask[,threshold])";
 }

@@ -402,7 +402,7 @@ public:
 	 *	The threshold it to allow the input image to be gray scale instead of logical.
 	 *	This buffer will get zeroed out where the imageMask is less than or equal to the threshold.
 	 */
-	void mask(const CudaProcessBuffer* imageMask, ImagePixelType threshold)
+	void mask(const CudaProcessBuffer* imageMask, ImagePixelType threshold=1)
 	{
 		cudaMask<<<blocks,threads>>>(getCurrentBuffer(),imageMask->getCudaBuffer(),getNextBuffer(),imageDims,threshold,isColumnMajor);
 		incrementBufferNumber();

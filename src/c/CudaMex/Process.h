@@ -16,7 +16,7 @@ void gaussianFilter(const MexImagePixelType* image, MexImagePixelType* imageOut,
 size_t getGlobalMemoryAvailable(const MexImagePixelType* image1, const MexImagePixelType* image2, MexImagePixelType* imageOut,
 								Vec<unsigned int> imageDims, double factor);
 void mask(const MexImagePixelType* image1, const MexImagePixelType* image2, MexImagePixelType* imageOut, Vec<unsigned int> imageDims,
-		  double theshold);
+		  double theshold=1);
 void maxFilter(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims, Vec<unsigned int> neighborhood,
 			   double* kernel=NULL);
 void maximumIntensityProjection(const MexImagePixelType* image, MexImagePixelType* imageOut, Vec<unsigned int> imageDims);
