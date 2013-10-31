@@ -31,19 +31,19 @@ void clearAll()
 	clear2();
 }
 
-void set(Vec<unsigned int> imageDims)
+void set(Vec<size_t> imageDims)
 {
 	if (g_cudaBuffer==NULL)
 		g_cudaBuffer = new CudaProcessBuffer<HostPixelType>(imageDims);
 }
 
-void set2(Vec<unsigned int> imageDims)
+void set2(Vec<size_t> imageDims)
 {
 	if (g_cudaBuffer2==NULL)
 		g_cudaBuffer2 = new CudaProcessBuffer<HostPixelType>(imageDims);
 }
 
-void calculateChunks(Vec<unsigned int> imageDims, Vec<unsigned int>& numChunks, Vec<unsigned int>& sizes, int deviceNum=0,
+void calculateChunks(Vec<size_t> imageDims, Vec<size_t>& numChunks, Vec<size_t>& sizes, int deviceNum=0,
 					 bool secondBufferNeeded=false)
 {
 	HANDLE_ERROR(cudaSetDevice(deviceNum));
@@ -51,7 +51,7 @@ void calculateChunks(Vec<unsigned int> imageDims, Vec<unsigned int>& numChunks, 
 	cudaDeviceProp deviceProp;
 	HANDLE_ERROR(cudaGetDeviceProperties(&deviceProp,deviceNum));
 
-	unsigned int numVoxels = (unsigned int)(((double)deviceProp.totalGlobalMem/sizeof(HostPixelType))*0.8/NUM_BUFFERS/(1+(int)secondBufferNeeded));
+	size_t numVoxels = (size_t)(((double)deviceProp.totalGlobalMem/sizeof(HostPixelType))*0.8/NUM_BUFFERS/(1+(int)secondBufferNeeded));
 
 	if (imageDims.z==1)
 	{
@@ -118,8 +118,8 @@ void calculateChunks(Vec<unsigned int> imageDims, Vec<unsigned int>& numChunks, 
 		}
 		else
 		{
-			Vec<unsigned int> dims;
-			unsigned int dim = (unsigned int)pow((float)numVoxels,1/3.0f);
+			Vec<size_t> dims;
+			size_t dim = (size_t)pow((float)numVoxels,1/3.0f);
 			if (dim>imageDims.z)
 			{
 				dim = (int)sqrt((double)numVoxels/imageDims.z);
@@ -134,31 +134,31 @@ void calculateChunks(Vec<unsigned int> imageDims, Vec<unsigned int>& numChunks, 
 			sizes.y = dims.y;
 			sizes.z = dims.z;
 
-			numChunks.x = (unsigned int)ceil((float)imageDims.x/sizes.x);
-			numChunks.y = (unsigned int)ceil((float)imageDims.y/sizes.y);
-			numChunks.z = (unsigned int)ceil((float)imageDims.z/sizes.z);
+			numChunks.x = (size_t)ceil((float)imageDims.x/sizes.x);
+			numChunks.y = (size_t)ceil((float)imageDims.y/sizes.y);
+			numChunks.z = (size_t)ceil((float)imageDims.z/sizes.z);
 		}
 	}
 }
 
 void addConstant(const ImageContainer* image,  ImageContainer* imageOut, double additive, int deviceNum)
 {
-	Vec<unsigned int> numChunks;
-	Vec<unsigned int> sizes;
+	Vec<size_t> numChunks;
+	Vec<size_t> sizes;
 	calculateChunks(image->getDims(),numChunks,sizes);
 	if (numChunks.x>1)
 		clear2();
 
 	set(sizes);
 
-	Vec<unsigned int> curChunk(0,0,0);
+	Vec<size_t> curChunk(0,0,0);
 	for (curChunk.z=0; curChunk.z<numChunks.z; ++curChunk.z)
 	{
 		for (curChunk.y=0; curChunk.y<numChunks.y; ++curChunk.y)
 		{
 			for (curChunk.x=0; curChunk.x<numChunks.x; ++curChunk.x)
 			{
-				Vec<unsigned int> curStarts(curChunk.x*sizes.x,curChunk.y*sizes.y,curChunk.z*sizes.z);
+				Vec<size_t> curStarts(curChunk.x*sizes.x,curChunk.y*sizes.y,curChunk.z*sizes.z);
 				const HostPixelType* curROIorg = image->getConstROIData(curStarts,sizes);
 
 				g_cudaBuffer->loadImage(curROIorg,sizes);
@@ -207,7 +207,7 @@ void calculateMinMax(const ImageContainer* image, double& minValue, double& maxV
 	g_cudaBuffer->calculateMinMax(minValue,maxValue);
 }
 
-void contrastEnhancement(const ImageContainer* image, ImageContainer* imageOut, Vec<float> sigmas, Vec<unsigned int> medianNeighborhood)
+void contrastEnhancement(const ImageContainer* image, ImageContainer* imageOut, Vec<float> sigmas, Vec<size_t> medianNeighborhood)
 {
 	set(image->getDims());
 	g_cudaBuffer->loadImage(image);
@@ -245,7 +245,7 @@ void mask(const ImageContainer* image1, const ImageContainer* image2, ImageConta
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void maxFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<unsigned int> neighborhood, double* kernel)
+void maxFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<size_t> neighborhood, double* kernel)
 {
 	set(image->getDims());
 	g_cudaBuffer->loadImage(image);
@@ -265,7 +265,7 @@ void maximumIntensityProjection( const ImageContainer* image, ImageContainer* im
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void meanFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<unsigned int> neighborhood )
+void meanFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<size_t> neighborhood )
 {
 	set(image->getDims());
 	g_cudaBuffer->loadImage(image);
@@ -275,7 +275,7 @@ void meanFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<unsi
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void medianFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<unsigned int> neighborhood )
+void medianFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<size_t> neighborhood )
 {
 	set(image->getDims());
 	g_cudaBuffer->loadImage(image);
@@ -285,7 +285,7 @@ void medianFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<un
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void minFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<unsigned int> neighborhood,
+void minFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<size_t> neighborhood,
 			   double* kernel)
 {
 	set(image->getDims());
@@ -296,7 +296,7 @@ void minFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<unsig
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void morphClosure( const ImageContainer* image, ImageContainer* imageOut, Vec<unsigned int> neighborhood,
+void morphClosure( const ImageContainer* image, ImageContainer* imageOut, Vec<size_t> neighborhood,
 			   double* kernel)
 {
 	set(image->getDims());
@@ -307,7 +307,7 @@ void morphClosure( const ImageContainer* image, ImageContainer* imageOut, Vec<un
 	g_cudaBuffer->retrieveImage(imageOut);
 }
 
-void morphOpening( const ImageContainer* image, ImageContainer* imageOut, Vec<unsigned int> neighborhood,
+void morphOpening( const ImageContainer* image, ImageContainer* imageOut, Vec<size_t> neighborhood,
 				  double* kernel)
 {
 	set(image->getDims());
@@ -390,21 +390,21 @@ double sumArray(const ImageContainer* image)
 
 void reduceImage( const ImageContainer* image, ImageContainer** imageOut, Vec<double> reductions)
 {
-	Vec<unsigned int> numChunks;
-	Vec<unsigned int> chunkDims;
+	Vec<size_t> numChunks;
+	Vec<size_t> chunkDims;
 	calculateChunks(image->getDims(),numChunks,chunkDims);
 	if (numChunks.x>1)
 		clear2();
 
-	Vec<unsigned int>reducedImageDims(Vec<unsigned int>(
-		(unsigned int)(image->getDims().x/reductions.x),
-		(unsigned int)(image->getDims().y/reductions.y),
-		(unsigned int)(image->getDims().z/reductions.z)));
+	Vec<size_t>reducedImageDims(Vec<size_t>(
+		(size_t)(image->getDims().x/reductions.x),
+		(size_t)(image->getDims().y/reductions.y),
+		(size_t)(image->getDims().z/reductions.z)));
 
-	Vec<unsigned int> reducedChunkDims(
-		(unsigned int)(chunkDims.x/reductions.x),
-		(unsigned int)(chunkDims.y/reductions.y),
-		(unsigned int)(chunkDims.z/reductions.z));
+	Vec<size_t> reducedChunkDims(
+		(size_t)(chunkDims.x/reductions.x),
+		(size_t)(chunkDims.y/reductions.y),
+		(size_t)(chunkDims.z/reductions.z));
 
 	set(chunkDims);
 
@@ -417,32 +417,32 @@ void reduceImage( const ImageContainer* image, ImageContainer** imageOut, Vec<do
 	*imageOut = new ImageContainer(reducedImageDims);
 	memset((*imageOut)->getMemoryPointer(),0,reducedImageDims.product());
 
-	Vec<unsigned int> curChunk(0,0,0);
+	Vec<size_t> curChunk(0,0,0);
 	for (curChunk.z=0; curChunk.z<numChunks.z; ++curChunk.z)
 	{
 		for (curChunk.y=0; curChunk.y<numChunks.y; ++curChunk.y)
 		{
 			for (curChunk.x=0; curChunk.x<numChunks.x; ++curChunk.x)
 			{
-				Vec<unsigned int> curStarts(
+				Vec<size_t> curStarts(
 					curChunk.x*chunkDims.x,
 					curChunk.y*chunkDims.y,
 					curChunk.z*chunkDims.z);
 
-				Vec<unsigned int> reducedStarts(
-					(unsigned int)(curStarts.x/reductions.x),
-					(unsigned int)(curStarts.y/reductions.y),
-					(unsigned int)(curStarts.z/reductions.z));
+				Vec<size_t> reducedStarts(
+					(size_t)(curStarts.x/reductions.x),
+					(size_t)(curStarts.y/reductions.y),
+					(size_t)(curStarts.z/reductions.z));
 
-				Vec<unsigned int> curChunkDims(
+				Vec<size_t> curChunkDims(
 					min(chunkDims.x,image->getWidth()-curStarts.x),
 					min(chunkDims.y,image->getHeight()-curStarts.y),
 					min(chunkDims.z,image->getDepth()-curStarts.z));
 
-				Vec<unsigned int> curReducedChunkDims(
-					(unsigned int)(curChunkDims.x/reductions.x),
-					(unsigned int)(curChunkDims.y/reductions.y),
-					(unsigned int)(curChunkDims.z/reductions.z));
+				Vec<size_t> curReducedChunkDims(
+					(size_t)(curChunkDims.x/reductions.x),
+					(size_t)(curChunkDims.y/reductions.y),
+					(size_t)(curChunkDims.z/reductions.z));
 				
 				const HostPixelType* curROIorg = image->getConstROIData(curStarts,curChunkDims);
 
@@ -452,7 +452,7 @@ void reduceImage( const ImageContainer* image, ImageContainer** imageOut, Vec<do
 
 				HostPixelType* curROIprocessed = g_cudaBuffer->retrieveImage();
 
-				(*imageOut)->setROIData(curROIprocessed,curStarts,curReducedChunkDims);
+				(*imageOut)->setROIData(curROIprocessed,reducedStarts,curReducedChunkDims);
 
 				delete[] curROIprocessed;
 				delete[] curROIorg;
@@ -461,7 +461,7 @@ void reduceImage( const ImageContainer* image, ImageContainer** imageOut, Vec<do
 	}
 }
 
-unsigned int* retrieveHistogram(const ImageContainer* image, int& returnSize)
+size_t* retrieveHistogram(const ImageContainer* image, int& returnSize)
 {
 	set(image->getDims());
 	g_cudaBuffer->loadImage(image);

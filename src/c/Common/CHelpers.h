@@ -4,4 +4,4 @@
 #include <memory.h>
 #include <complex>
 
-double* createEllipsoidKernel(Vec<unsigned int> radii, Vec<unsigned int>& kernelDims);
+double* createEllipsoidKernel(Vec<size_t> radii, Vec<size_t>& kernelDims);

@@ -4,15 +4,15 @@
 
 void MorphOpening::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	Vec<unsigned int> imageDims;
+	Vec<size_t> imageDims;
 	ImageContainer* imageIn, * imageOut;
 	HostPixelType* mexImageOut;
 	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
 
 	double* radiiD = (double*)mxGetData(prhs[1]);
 
-	Vec<unsigned int> radii((unsigned int)radiiD[0],(unsigned int)radiiD[1],(unsigned int)radiiD[2]);
-	Vec<unsigned int> kernDims;
+	Vec<size_t> radii((size_t)radiiD[0],(size_t)radiiD[1],(size_t)radiiD[2]);
+	Vec<size_t> kernDims;
 	double* circleKernel = createEllipsoidKernel(radii,kernDims);
 	morphOpening(imageIn,imageOut,kernDims,circleKernel);
 	rearange(imageOut,mexImageOut);

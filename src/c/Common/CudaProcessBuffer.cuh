@@ -27,24 +27,24 @@ public:
 	// Constructor / Destructor
 	//////////////////////////////////////////////////////////////////////////
 
-	CudaProcessBuffer(Vec<unsigned int> dims, bool isColumnMajor=false, int device=0)
+	CudaProcessBuffer(Vec<size_t> dims, bool isColumnMajor=false, int device=0)
 	{
 		defaults();
 		this->imageDims = dims;
 		this->device = device;
 		columnMajor = isColumnMajor;
-		UNSET = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
+		UNSET = Vec<size_t>((size_t)-1,(size_t)-1,(size_t)-1);
 		deviceSetup();
 		memoryAllocation();
 	}
 
-	CudaProcessBuffer(unsigned int x, unsigned int y, unsigned int z, bool isColumnMajor=false, int device=0)
+	CudaProcessBuffer(size_t x, size_t y, size_t z, bool isColumnMajor=false, int device=0)
 	{
 		defaults();
-		imageDims = Vec<unsigned int>(x,y,z);
+		imageDims = Vec<size_t>(x,y,z);
 		this->device = device;
 		columnMajor = isColumnMajor;
-		UNSET = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
+		UNSET = Vec<size_t>((size_t)-1,(size_t)-1,(size_t)-1);
 		deviceSetup();
 		memoryAllocation();
 	}
@@ -52,11 +52,11 @@ public:
 	CudaProcessBuffer(int n, bool isColumnMajor=false, int device=0)
 	{
 		defaults();
-		imageDims = Vec<unsigned int>(n,1,1);
+		imageDims = Vec<size_t>(n,1,1);
 		this->device = device;
 		columnMajor = isColumnMajor;
 
-		UNSET = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
+		UNSET = Vec<size_t>((size_t)-1,(size_t)-1,(size_t)-1);
 		deviceSetup();
 		memoryAllocation();
 	}
@@ -114,7 +114,7 @@ public:
 		HANDLE_ERROR(cudaMemcpy((void*)getCurrentBuffer(),image,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyHostToDevice));
 	}
 
-	void loadImage(const ImagePixelType* image, Vec<unsigned int> dims)
+	void loadImage(const ImagePixelType* image, Vec<size_t> dims)
 	{
 		if (dims.product()>bufferSize)
 		{
@@ -173,13 +173,13 @@ public:
 	*	This is destroyed when this' destructor is called
 	*	Will call the needed histogram creation methods if not all ready
 	*/
-	unsigned int* retrieveHistogram(int& returnSize)
+	size_t* retrieveHistogram(int& returnSize)
 	{
 		if (!isCurrentNormHistogramHost)
 		{
 			createHistogram();
 
-			HANDLE_ERROR(cudaMemcpy(histogramHost,histogramDevice,sizeof(unsigned int)*NUM_BINS,cudaMemcpyDeviceToHost));
+			HANDLE_ERROR(cudaMemcpy(histogramHost,histogramDevice,sizeof(size_t)*NUM_BINS,cudaMemcpyDeviceToHost));
 			isCurrentHistogramHost = true;
 		}
 
@@ -208,7 +208,7 @@ public:
 		return normalizedHistogramHost;
 	}
 
-	ImagePixelType* retrieveReducedImage(Vec<unsigned int>& reducedDims)
+	ImagePixelType* retrieveReducedImage(Vec<size_t>& reducedDims)
 	{
 		reducedDims = this->reducedDims;
 
@@ -220,7 +220,7 @@ public:
 		return reducedImageHost;
 	}
 
-	Vec<unsigned int> getDimension() const {return imageDims;}
+	Vec<size_t> getDimension() const {return imageDims;}
 	int getDevice() const {return device;}
 	size_t getBufferSize() {return bufferSize;}
 
@@ -230,7 +230,7 @@ public:
 	*	****ENSURE that this' original size is big enough to accommodates the
 	*	the new buffer size.  Does not do error checking thus far.
 	*/
-	void copyROI(const CudaProcessBuffer<ImagePixelType>* image, Vec<unsigned int> starts, Vec<unsigned int> sizes)
+	void copyROI(const CudaProcessBuffer<ImagePixelType>* image, Vec<size_t> starts, Vec<size_t> sizes)
 	{
 		if (sizes.product()>bufferSize || this->device!=image->getDevice())
 		{
@@ -247,7 +247,7 @@ public:
 		updateBlockThread();
 	}
 
-	void copyROI(const CudaStorageBuffer<ImagePixelType>* imageIn, Vec<unsigned int> starts, Vec<unsigned int> sizes)
+	void copyROI(const CudaStorageBuffer<ImagePixelType>* imageIn, Vec<size_t> starts, Vec<size_t> sizes)
 	{
 		if ((size_t)sizes.product()>bufferSize || this->device!=imageIn->getDevice())
 		{
@@ -356,7 +356,7 @@ public:
 		maxValue = maxValuesHost[0];
 		minValue = minValuesHost[0];
 
-		for (unsigned int i=1; i<sumBlocks.x; ++i)
+		for (size_t i=1; i<sumBlocks.x; ++i)
 		{
 			if (maxValue < maxValuesHost[i])
 				maxValue = maxValuesHost[i];
@@ -373,7 +373,7 @@ public:
 	*	Contrast Enhancement will run the Michel High Pass Filter and then a mean filter
 	*	Pass in the sigmas that will be used for the Gaussian filter to subtract off and the mean neighborhood dimensions
 	*/
-	void contrastEnhancement(Vec<float> sigmas, Vec<unsigned int> medianNeighborhood)
+	void contrastEnhancement(Vec<float> sigmas, Vec<size_t> medianNeighborhood)
 	{
 		reserveCurrentBuffer();
 
@@ -399,11 +399,11 @@ public:
 		if (isCurrentHistogramDevice)
 			return;
 
-		memset(histogramHost,0,NUM_BINS*sizeof(unsigned int));
-		HANDLE_ERROR(cudaMemset(histogramDevice,0,NUM_BINS*sizeof(unsigned int)));
+		memset(histogramHost,0,NUM_BINS*sizeof(size_t));
+		HANDLE_ERROR(cudaMemset(histogramDevice,0,NUM_BINS*sizeof(size_t)));
 
 #if CUDA_CALLS_ON
-		cudaHistogramCreate<<<deviceProp.multiProcessorCount*2,NUM_BINS,sizeof(unsigned int)*NUM_BINS>>>
+		cudaHistogramCreate<<<deviceProp.multiProcessorCount*2,NUM_BINS,sizeof(size_t)*NUM_BINS>>>
 			(getCurrentBuffer(),histogramDevice,imageDims);
 #endif
 
@@ -426,7 +426,7 @@ public:
 		for (int x=0; x<gaussIterations.x; ++x)
 		{
 #if CUDA_CALLS_ON
-			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(constKernelDims.x,1,1));
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<size_t>(constKernelDims.x,1,1));
 #endif
 			incrementBufferNumber();
 		}
@@ -434,7 +434,7 @@ public:
 		for (int y=0; y<gaussIterations.y; ++y)
 		{
 #if CUDA_CALLS_ON
-			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,constKernelDims.y,1), constKernelDims.x);
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<size_t>(1,constKernelDims.y,1), constKernelDims.x);
 #endif
 			incrementBufferNumber();
 		}
@@ -442,7 +442,7 @@ public:
 		for (int z=0; z<gaussIterations.z; ++z)
 		{
 #if CUDA_CALLS_ON
-			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,1,constKernelDims.z), constKernelDims.x+constKernelDims.y);
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<size_t>(1,1,constKernelDims.z), constKernelDims.x+constKernelDims.y);
 #endif
 			incrementBufferNumber();
 		}
@@ -465,7 +465,7 @@ public:
 	*	Sets each pixel to the max value of its neighborhood
 	*	Dilates structures
 	*/ 
-	void maxFilter(Vec<unsigned int> neighborhood, double* kernel=NULL)
+	void maxFilter(Vec<size_t> neighborhood, double* kernel=NULL)
 	{
 		if (kernel==NULL)
 			constKernelOnes();
@@ -495,7 +495,7 @@ public:
 	/*
 	*	Filters image where each pixel is the mean of its neighborhood 
 	*/
-	void meanFilter(Vec<unsigned int> neighborhood)
+	void meanFilter(Vec<size_t> neighborhood)
 	{
 #if CUDA_CALLS_ON
 		cudaMeanFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
@@ -506,7 +506,7 @@ public:
 	/*
 	*	Filters image where each pixel is the median of its neighborhood
 	*/
-	void medianFilter(Vec<unsigned int> neighborhood)
+	void medianFilter(Vec<size_t> neighborhood)
 	{
 		static dim3 localBlocks = blocks;
 		static dim3 localThreads = threads;
@@ -514,14 +514,14 @@ public:
 		if (sizeof(ImagePixelType)*sharedMemorySize>deviceProp.sharedMemPerBlock)
 		{
 			float maxThreads = (float)deviceProp.sharedMemPerBlock/(sizeof(ImagePixelType)*neighborhood.product());
-			unsigned int threadDim = (unsigned int)pow(maxThreads,1/3.0f);
+			size_t threadDim = (size_t)pow(maxThreads,1/3.0f);
 			localThreads.x = threadDim;
 			localThreads.y = threadDim;
 			localThreads.z = threadDim;
 
-			localBlocks.x = (unsigned int)ceil((float)imageDims.x/localThreads.x);
-			localBlocks.y = (unsigned int)ceil((float)imageDims.y/localThreads.y);
-			localBlocks.z = (unsigned int)ceil((float)imageDims.z/localThreads.z);
+			localBlocks.x = (size_t)ceil((float)imageDims.x/localThreads.x);
+			localBlocks.y = (size_t)ceil((float)imageDims.y/localThreads.y);
+			localBlocks.z = (size_t)ceil((float)imageDims.z/localThreads.z);
 
 			sharedMemorySize = neighborhood.product()*localThreads.x*localThreads.y*localThreads.z;
 		}
@@ -537,7 +537,7 @@ public:
 	*	Sets each pixel to the min value of its neighborhood
 	*	Erodes structures
 	*/ 
-	void minFilter(Vec<unsigned int> neighborhood, double* kernel=NULL)
+	void minFilter(Vec<size_t> neighborhood, double* kernel=NULL)
 	{
 		if (kernel==NULL)
 			constKernelOnes();
@@ -550,13 +550,13 @@ public:
 		incrementBufferNumber();
 	}
 
-	void morphClosure(Vec<unsigned int> neighborhood, double* kernel=NULL)
+	void morphClosure(Vec<size_t> neighborhood, double* kernel=NULL)
 	{
 		maxFilter(neighborhood,kernel);
 		minFilter(neighborhood,kernel);
 	}
 
-	void morphOpening(Vec<unsigned int> neighborhood, double* kernel=NULL)
+	void morphOpening(Vec<size_t> neighborhood, double* kernel=NULL)
 	{
 		minFilter(neighborhood,kernel);
 		maxFilter(neighborhood,kernel);
@@ -703,7 +703,7 @@ public:
 		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*sumBlocks.x,cudaMemcpyDeviceToHost));
 
 		sum = 0;
-		for (unsigned int i=0; i<sumBlocks.x; ++i)
+		for (size_t i=0; i<sumBlocks.x; ++i)
 		{
 			sum += hostSum[i];
 		}
@@ -714,10 +714,10 @@ public:
 	*/
 	void reduceImage(Vec<double> reductions)
 	{
-		reducedDims = Vec<unsigned int>(
-			(unsigned int)(imageDims.x/reductions.x),
-			(unsigned int)(imageDims.y/reductions.y),
-			(unsigned int)(imageDims.z/reductions.z));
+		reducedDims = Vec<size_t>(
+			(size_t)(imageDims.x/reductions.x),
+			(size_t)(imageDims.y/reductions.y),
+			(size_t)(imageDims.z/reductions.z));
 
 #if CUDA_CALLS_ON
 		cudaRuduceImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,reducedDims,reductions);
@@ -742,7 +742,7 @@ public:
 		incrementBufferNumber();
 	}
 
-	void unmix(const CudaProcessBuffer<ImagePixelType>* image, Vec<unsigned int> neighborhood)
+	void unmix(const CudaProcessBuffer<ImagePixelType>* image, Vec<size_t> neighborhood)
 	{
 #if CUDA_CALLS_ON
 		cudaUnmixing<<<blocks,threads>>>(getCurrentBuffer(),image->getCudaBuffer(),getNextBuffer(), imageDims,neighborhood,minPixel,maxPixel);
@@ -758,7 +758,7 @@ private:
 	void updateBlockThread()
 	{
 		calcBlockThread(imageDims,deviceProp,blocks,threads);
-		calcBlockThread(Vec<unsigned int>((unsigned int)imageDims.product(),1,1),deviceProp,sumBlocks,sumThreads);
+		calcBlockThread(Vec<size_t>((size_t)imageDims.product(),1,1),deviceProp,sumBlocks,sumThreads);
 		sumBlocks.x = (sumBlocks.x+1) / 2;
 	}
 
@@ -792,9 +792,9 @@ private:
 		HANDLE_ERROR(cudaMalloc((void**)&minValuesDevice,sizeof(double)*sumBlocks.x));
 		memoryUsage += sizeof(double)*sumBlocks.x;
 
-		histogramHost = new unsigned int[NUM_BINS];
-		HANDLE_ERROR(cudaMalloc((void**)&histogramDevice,NUM_BINS*sizeof(unsigned int)));
-		memoryUsage += NUM_BINS*sizeof(unsigned int);
+		histogramHost = new size_t[NUM_BINS];
+		HANDLE_ERROR(cudaMalloc((void**)&histogramDevice,NUM_BINS*sizeof(size_t)));
+		memoryUsage += NUM_BINS*sizeof(size_t);
 
 		normalizedHistogramHost = new double[NUM_BINS];
 		HANDLE_ERROR(cudaMalloc((void**)&normalizedHistogramDevice,NUM_BINS*sizeof(double)));
@@ -804,7 +804,7 @@ private:
 		maxPixel = std::numeric_limits<ImagePixelType>::max();
 	}
 
-	void getRoi(ImagePixelType* roi, Vec<unsigned int> starts, Vec<unsigned int> sizes) const
+	void getRoi(ImagePixelType* roi, Vec<size_t> starts, Vec<size_t> sizes) const
 	{
 #if CUDA_CALLS_ON
 		cudaGetROI<<<blocks,threads>>>(getCurrentBuffer(),roi,imageDims,starts,sizes);
@@ -835,10 +835,10 @@ private:
 			HANDLE_ERROR(cudaMemcpy(reducedImageDevice,bufferIn->reducedImageDevice,sizeof(ImagePixelType)*reducedDims.product(),cudaMemcpyDeviceToDevice));
 
 		if (bufferIn->histogramHost!=NULL)
-			memcpy(histogramHost,bufferIn->histogramHost,sizeof(unsigned int)*imageDims.product());
+			memcpy(histogramHost,bufferIn->histogramHost,sizeof(size_t)*imageDims.product());
 
 		if (bufferIn->histogramDevice!=NULL)
-			HANDLE_ERROR(cudaMemcpy(histogramDevice,bufferIn->histogramDevice,sizeof(unsigned int)*NUM_BINS,cudaMemcpyDeviceToDevice));
+			HANDLE_ERROR(cudaMemcpy(histogramDevice,bufferIn->histogramDevice,sizeof(size_t)*NUM_BINS,cudaMemcpyDeviceToDevice));
 
 		if (bufferIn->normalizedHistogramHost!=NULL)
 			memcpy(normalizedHistogramHost,bufferIn->normalizedHistogramHost,sizeof(double)*imageDims.product());
@@ -859,11 +859,11 @@ private:
 		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel,hostKernel,sizeof(float)*MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM));
 	}
 
-	void setConstKernel(double* kernel, Vec<unsigned int> kernelDims)
+	void setConstKernel(double* kernel, Vec<size_t> kernelDims)
 	{
 		memset(hostKernel,0,sizeof(float)*MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM);
 
-		Vec<unsigned int> coordinate(0,0,0);
+		Vec<size_t> coordinate(0,0,0);
 		for (; coordinate.x<kernelDims.x; ++coordinate.x)
 		{
 			coordinate.y = 0;
@@ -1009,10 +1009,10 @@ private:
 	size_t bufferSize;
 
 	//This is the original size of the loaded images and the size of the buffers
-	Vec<unsigned int> imageDims;
+	Vec<size_t> imageDims;
 
 	//This is the dimensions of the reduced image buffer
-	Vec<unsigned int> reducedDims;
+	Vec<size_t> reducedDims;
 
 	bool columnMajor;
 	int device;
@@ -1026,8 +1026,8 @@ private:
 	double* minValuesDevice;
 	ImagePixelType minPixel;
 	ImagePixelType maxPixel;
-	unsigned int* histogramHost;
-	unsigned int* histogramDevice;
+	size_t* histogramHost;
+	size_t* histogramDevice;
 	double* normalizedHistogramHost;
 	double* normalizedHistogramDevice;
 	bool isCurrentHistogramHost, isCurrentHistogramDevice, isCurrentNormHistogramHost, isCurrentNormHistogramDevice;
@@ -1035,10 +1035,10 @@ private:
 	double* deviceSum;
 	double* hostSum;
 	int sizeSum;
-	Vec<unsigned int> constKernelDims;
+	Vec<size_t> constKernelDims;
 	Vec<int> gaussIterations;
 	Vec<float> gausKernelSigmas;
 	float hostKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
 	int reservedBuffer;
-	Vec<unsigned int> UNSET;
+	Vec<size_t> UNSET;
 };

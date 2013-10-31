@@ -3,7 +3,7 @@
 
 void MaximumIntensityProjection::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	Vec<unsigned int> imageDims;
+	Vec<size_t> imageDims;
 	HostPixelType* mexImageOut;
 	ImageContainer* imageIn;
 	setupImagePointers(prhs[0],&imageIn);
@@ -14,7 +14,7 @@ void MaximumIntensityProjection::execute( int nlhs, mxArray* plhs[], int nrhs, c
 	plhs[0] = mxCreateNumericArray(2,dims,mxUINT8_CLASS,mxREAL);
 	mexImageOut = (HostPixelType*)mxGetData(plhs[0]);
 
-	ImageContainer imageOut(Vec<unsigned int>(imageDims.x,imageDims.y,1));
+	ImageContainer imageOut(Vec<size_t>(imageDims.x,imageDims.y,1));
 	maximumIntensityProjection(imageIn,&imageOut);
 	rearange(&imageOut,mexImageOut);
 }

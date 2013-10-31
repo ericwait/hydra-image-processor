@@ -1,6 +1,6 @@
 #include "CHelpers.h"
 
-double* createEllipsoidKernel(Vec<unsigned int> radii, Vec<unsigned int>& kernelDims)
+double* createEllipsoidKernel(Vec<size_t> radii, Vec<size_t>& kernelDims)
 {
 	kernelDims.x = radii.x*2+1;
 	kernelDims.y = radii.y*2+1;
@@ -9,13 +9,13 @@ double* createEllipsoidKernel(Vec<unsigned int> radii, Vec<unsigned int>& kernel
 	double* kernel = new double[kernelDims.product()];
 	memset(kernel,0,sizeof(double)*kernelDims.product());
 
-	Vec<unsigned int> mid;
+	Vec<size_t> mid;
 	mid.x = (kernelDims.x+1)/2;
 	mid.y = (kernelDims.y+1)/2;
 	mid.z = (kernelDims.z+1)/2;
 	Vec<float> dimScale(1.0f/((float)SQR(radii.x)),1.0f/((float)SQR(radii.y)),1.0f/((float)SQR(radii.z)));
 
-	Vec<unsigned int> cur(0,0,0);
+	Vec<size_t> cur(0,0,0);
 	for (cur.z=0; cur.z<kernelDims.z ; ++cur.z)
 	{
 		for (cur.y=0; cur.y<kernelDims.y ; ++cur.y)

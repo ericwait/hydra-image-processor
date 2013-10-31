@@ -3,7 +3,7 @@
 
 void MultiplyImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	Vec<unsigned int> imageDims;
+	Vec<size_t> imageDims;
 	HostPixelType* mexImageOut;
 	ImageContainer* imageIn, * imageOut;
 	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);

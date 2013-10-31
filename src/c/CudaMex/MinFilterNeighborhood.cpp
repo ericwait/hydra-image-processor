@@ -3,13 +3,13 @@
 
 void MinFilterNeighborhood::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	Vec<unsigned int> imageDims;
+	Vec<size_t> imageDims;
 	ImageContainer* imageIn, * imageOut;
 	HostPixelType* mexImageOut;
 	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
 
 	double* nbh = (double*)mxGetData(prhs[1]);
-	Vec<unsigned int> neighborhood((unsigned int)nbh[0],(unsigned int)nbh[1],(unsigned int)nbh[2]);
+	Vec<size_t> neighborhood((size_t)nbh[0],(size_t)nbh[1],(size_t)nbh[2]);
 	minFilter(imageIn,imageOut,neighborhood);
 	rearange(imageOut,mexImageOut);
 }

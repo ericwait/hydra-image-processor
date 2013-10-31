@@ -2,10 +2,10 @@
 
 void NormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	Vec<unsigned int> imageDims1;
+	Vec<size_t> imageDims1;
 	ImageContainer* imageIn1;
 	setupImagePointers(prhs[0],&imageIn1);
-	Vec<unsigned int> imageDims2;
+	Vec<size_t> imageDims2;
 	ImageContainer* imageIn2;
 	setupImagePointers(prhs[1],&imageIn2);
 

@@ -3,7 +3,7 @@
 
 void ContrastEnhancement::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	Vec<unsigned int> imageDims;
+	Vec<size_t> imageDims;
 	ImageContainer* imageIn, * imageOut;
 	HostPixelType* mexImageOut;
 	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
@@ -12,7 +12,7 @@ void ContrastEnhancement::execute( int nlhs, mxArray* plhs[], int nrhs, const mx
 	double* neighborhoodD = (double*)mxGetData(prhs[2]);
 
 	Vec<float> sigmas((float)sigmasD[0],(float)sigmasD[1],(float)sigmasD[2]);
-	Vec<unsigned int> neighborhood((int)neighborhoodD[0],(int)neighborhoodD[1],(int)neighborhoodD[2]);
+	Vec<size_t> neighborhood((int)neighborhoodD[0],(int)neighborhoodD[1],(int)neighborhoodD[2]);
 	
 	contrastEnhancement(imageIn,imageOut,sigmas,neighborhood);
 	rearange(imageOut,mexImageOut);

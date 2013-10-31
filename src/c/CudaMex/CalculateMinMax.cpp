@@ -3,7 +3,7 @@
 
 void CalculateMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	Vec<unsigned int> imageDims;
+	Vec<size_t> imageDims;
 	ImageContainer* imageIn;
 	setupImagePointers(prhs[0],&imageIn);
 

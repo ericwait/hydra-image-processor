@@ -68,7 +68,7 @@ inline void gpuAssert(cudaError_t code, char *file, int line, bool abort=true)
 	}
 }
 
-void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads);
+void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads);
 
 struct Lock 
 {
@@ -105,8 +105,8 @@ struct Lock
 	}
 };
 
-Vec<unsigned int> createGaussianKernel(Vec<float> sigma, float* kernel, int& iterations);
+Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, int& iterations);
 
-Vec<unsigned int> createGaussianKernel(Vec<float> sigma, float* kernel, Vec<int>& iterations);
+Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, Vec<int>& iterations);
 
 int calcOtsuThreshold(const double* normHistogram, int numBins);

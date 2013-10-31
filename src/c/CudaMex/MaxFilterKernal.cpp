@@ -3,21 +3,21 @@
 
 void MaxFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	Vec<unsigned int> imageDims;
+	Vec<size_t> imageDims;
 	ImageContainer* imageIn, * imageOut;
 	HostPixelType* mexImageOut;
 	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
 
 	size_t kernDims = mxGetNumberOfDimensions(prhs[1]);
 	const mwSize* DIMS = mxGetDimensions(prhs[1]);
-	Vec<unsigned int> kernelDims(1,1,1);
+	Vec<size_t> kernelDims(1,1,1);
 	if (kernDims>1)
 	{
-		kernelDims.x = (unsigned int)DIMS[0];
-		kernelDims.y = (unsigned int)DIMS[1];
+		kernelDims.x = (size_t)DIMS[0];
+		kernelDims.y = (size_t)DIMS[1];
 	}
 	if (kernDims>2)
-		kernelDims.z = (unsigned int)DIMS[2];
+		kernelDims.z = (size_t)DIMS[2];
 
 	double* kern = (double*)mxGetData(prhs[1]);
 

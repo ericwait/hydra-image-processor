@@ -83,11 +83,11 @@ void MexCommand::setupImagePointers( const mxArray* imageIn, ImageContainer** im
 	size_t numDims = mxGetNumberOfDimensions(imageIn);
 	const mwSize* DIMS = mxGetDimensions(imageIn);
 
-	Vec<unsigned int> imageDims;
-	imageDims.x = (unsigned int)DIMS[1];
-	imageDims.y = (unsigned int)DIMS[0];
+	Vec<size_t> imageDims;
+	imageDims.x = (size_t)DIMS[1];
+	imageDims.y = (size_t)DIMS[0];
 	if (numDims==3)
-		imageDims.z = (unsigned int)DIMS[2];
+		imageDims.z = (size_t)DIMS[2];
 	else
 		imageDims.z = 1;
 
@@ -103,7 +103,7 @@ void MexCommand::setupImagePointers( const mxArray* imageIn, ImageContainer** im
 
 void MexCommand::rearange( ImageContainer* image, HostPixelType* mexImage )
 {
-	Vec<unsigned int> curIdx(0,0,0);
+	Vec<size_t> curIdx(0,0,0);
 	for (curIdx.z=0; curIdx.z<image->getDepth(); ++curIdx.z)
 	{
 		for (curIdx.y=0; curIdx.y<image->getHeight(); ++curIdx.y)

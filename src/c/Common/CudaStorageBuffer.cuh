@@ -11,7 +11,7 @@ template<typename ImagePixelType>
 class CudaStorageBuffer
 {
 public:
-	CudaStorageBuffer(const ImagePixelType* image, Vec<unsigned int> dims, int device=0)
+	CudaStorageBuffer(const ImagePixelType* image, Vec<size_t> dims, int device=0)
 	{
 		defaults();
 		imageDims = dims;
@@ -51,12 +51,12 @@ public:
 		return *this;
 	}
 
-	Vec<unsigned int> getDims() const {return imageDims;}
+	Vec<size_t> getDims() const {return imageDims;}
 	int getDevice() const {return device;}
 	const ImagePixelType* getImagePointer(){return deviceImage;}
 	size_t getGlobalMemoryAvailable() {return deviceProp.totalGlobalMem;}
 
-	void getRoi(ImagePixelType* roi, Vec<unsigned int> starts, Vec<unsigned int> sizes) const
+	void getRoi(ImagePixelType* roi, Vec<size_t> starts, Vec<size_t> sizes) const
 	{
 		cudaGetROI<<<blocks,threads>>>(deviceImage,roi,imageDims,starts,sizes);
 	}
@@ -66,7 +66,7 @@ private:
 
 	void defaults()
 	{
-		imageDims = Vec<unsigned int>(0,0,0);
+		imageDims = Vec<size_t>(0,0,0);
 		device = 0;
 		deviceImage = NULL;
 	}
@@ -98,7 +98,7 @@ private:
 		setImage(buff->deviceImage,cudaMemcpyDeviceToDevice);
 	}
 
-	Vec<unsigned int> imageDims;
+	Vec<size_t> imageDims;
 	int device;
 	cudaDeviceProp deviceProp;
 	dim3 blocks, threads;

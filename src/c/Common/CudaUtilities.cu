@@ -1,6 +1,6 @@
 #include "CudaUtilities.cuh"
 
-void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads)
+void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads)
 {
 	if (dims.z==1)
 	{
@@ -74,16 +74,16 @@ void calcBlockThread(const Vec<unsigned int>& dims, const cudaDeviceProp &prop, 
 			threads.y = dim;
 			threads.z = dim;
 
-			blocks.x = (unsigned int)ceil((float)dims.x/threads.x);
-			blocks.y = (unsigned int)ceil((float)dims.y/threads.y);
-			blocks.z = (unsigned int)ceil((float)dims.z/threads.z);
+			blocks.x = (size_t)ceil((float)dims.x/threads.x);
+			blocks.y = (size_t)ceil((float)dims.y/threads.y);
+			blocks.z = (size_t)ceil((float)dims.z/threads.z);
 		}
 	}
 }
 
-Vec<unsigned int> createGaussianKernel(Vec<float> sigma, float* kernel, int& iterations)
+Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, int& iterations)
 {
-	Vec<unsigned int> kernelDims(1,1,1);
+	Vec<size_t> kernelDims(1,1,1);
 	iterations = 1;
 
 	if (sigma.product()*27>MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM)
@@ -97,20 +97,20 @@ Vec<unsigned int> createGaussianKernel(Vec<float> sigma, float* kernel, int& ite
 		sigma = sigma/sqrt((float)iterations);
 	}
 
-	kernelDims.x = (unsigned int)(3*sigma.x);
-	kernelDims.y = (unsigned int)(3*sigma.y);
-	kernelDims.z = (unsigned int)(3*sigma.z);
+	kernelDims.x = (size_t)(3*sigma.x);
+	kernelDims.y = (size_t)(3*sigma.y);
+	kernelDims.z = (size_t)(3*sigma.z);
 
 	kernelDims.x = kernelDims.x%2==0 ? kernelDims.x+1 : kernelDims.x;
 	kernelDims.y = kernelDims.y%2==0 ? kernelDims.y+1 : kernelDims.y;
 	kernelDims.z = kernelDims.z%2==0 ? kernelDims.z+1 : kernelDims.z;
 
-	Vec<unsigned int> mid;
+	Vec<size_t> mid;
 	mid.x = kernelDims.x/2;
 	mid.y = kernelDims.y/2;
 	mid.z = kernelDims.z/2;
 
-	Vec<unsigned int> cur(0,0,0);
+	Vec<size_t> cur(0,0,0);
 	Vec<float> gaus;
 	float total = 0.0;
 	for (cur.x=0; cur.x<kernelDims.x ; ++cur.x)
@@ -136,9 +136,9 @@ Vec<unsigned int> createGaussianKernel(Vec<float> sigma, float* kernel, int& ite
 	return kernelDims;
 }
 
-Vec<unsigned int> createGaussianKernel(Vec<float> sigma, float* kernel, Vec<int>& iterations)
+Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, Vec<int>& iterations)
 {
-	Vec<unsigned int> kernelDims(1,1,1);
+	Vec<size_t> kernelDims(1,1,1);
 	iterations = Vec<int>(1,1,1);
 
 	if ((sigma.x+sigma.y+sigma.z)*3>MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM)
@@ -153,35 +153,35 @@ Vec<unsigned int> createGaussianKernel(Vec<float> sigma, float* kernel, Vec<int>
 		sigma.z = sigma.z/sqrt((float)iterations.z);
 	}
 
-	kernelDims.x = (unsigned int)(3*sigma.x);
-	kernelDims.y = (unsigned int)(3*sigma.y);
-	kernelDims.z = (unsigned int)(3*sigma.z);
+	kernelDims.x = (size_t)(3*sigma.x);
+	kernelDims.y = (size_t)(3*sigma.y);
+	kernelDims.z = (size_t)(3*sigma.z);
 
 	kernelDims.x = kernelDims.x%2==0 ? kernelDims.x+1 : kernelDims.x;
 	kernelDims.y = kernelDims.y%2==0 ? kernelDims.y+1 : kernelDims.y;
 	kernelDims.z = kernelDims.z%2==0 ? kernelDims.z+1 : kernelDims.z;
 
-	Vec<unsigned int> mid;
+	Vec<size_t> mid;
 	mid.x = kernelDims.x/2;
 	mid.y = kernelDims.y/2;
 	mid.z = kernelDims.z/2;
 
 	float total = 0.0;
-	for (unsigned int x=0; x<kernelDims.x ; ++x)
+	for (size_t x=0; x<kernelDims.x ; ++x)
 		total += kernel[x] =  exp(-(int)(SQR(mid.x-x)) / (2*SQR(sigma.x)));
-	for (unsigned int x=0; x<kernelDims.x ; ++x)
+	for (size_t x=0; x<kernelDims.x ; ++x)
 		kernel[x] /= total;
 
 	total = 0.0;
-	for (unsigned int y=0; y<kernelDims.y ; ++y)
+	for (size_t y=0; y<kernelDims.y ; ++y)
 		total += kernel[y+kernelDims.x] = exp(-(int)(SQR(mid.y-y)) / (2*SQR(sigma.y)));
-	for (unsigned int y=0; y < kernelDims.y ; ++y)
+	for (size_t y=0; y < kernelDims.y ; ++y)
 		kernel[y+kernelDims.x] /= total;
 
 	total = 0.0;
-	for (unsigned int z=0; z<kernelDims.z ; ++z)
+	for (size_t z=0; z<kernelDims.z ; ++z)
 		total += kernel[z+kernelDims.x+kernelDims.y] = exp(-(int)(SQR(mid.z-z)) / (2*SQR(sigma.z)));
-	for (unsigned int z=0; z < kernelDims.z ; ++z)
+	for (size_t z=0; z < kernelDims.z ; ++z)
 		kernel[z+kernelDims.x+kernelDims.y] /= total;
 
 

@@ -3,7 +3,7 @@
 
 void ReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	Vec<unsigned int> imageDims;
+	Vec<size_t> imageDims;
 	HostPixelType* mexImageOut;
 	ImageContainer* imageIn, * processedImage;
 	setupImagePointers(prhs[0],&imageIn);
@@ -23,6 +23,7 @@ void ReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	rearange(processedImage,mexImageOut);
 
 	delete processedImage;
+	delete imageIn;
 }
 
 std::string ReduceImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

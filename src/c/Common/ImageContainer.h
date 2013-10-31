@@ -8,35 +8,35 @@ typedef unsigned char HostPixelType;
 class ImageContainer
 {
 public:
-	ImageContainer(unsigned int width, unsigned int height, unsigned int depth, bool isColumnMajor=false);
-	ImageContainer(Vec<unsigned int> dims, bool isColumnMajor=false);
-	ImageContainer(HostPixelType* imageIn, Vec<unsigned int> dims, bool isColumnMajor=false);
+	ImageContainer(size_t width, size_t height, size_t depth, bool isColumnMajor=false);
+	ImageContainer(Vec<size_t> dims, bool isColumnMajor=false);
+	ImageContainer(HostPixelType* imageIn, Vec<size_t> dims, bool isColumnMajor=false);
 	ImageContainer(const ImageContainer& image){copy(image);}
 	~ImageContainer(){clear();}
 	ImageContainer& operator=(const ImageContainer& image){copy(image); return *this;}
 
-	HostPixelType& operator[](Vec<unsigned int> coordinate);
-	const HostPixelType& operator[](Vec<unsigned int> coordinate) const;
-	HostPixelType& at(Vec<unsigned int> coordinate);
-	const HostPixelType& at(Vec<unsigned int> coordinate) const;
-	HostPixelType getPixelValue(unsigned int x, unsigned int y, unsigned int z) const;
-	HostPixelType getPixelValue(Vec<unsigned int> coordinate) const;
+	HostPixelType& operator[](Vec<size_t> coordinate);
+	const HostPixelType& operator[](Vec<size_t> coordinate) const;
+	HostPixelType& at(Vec<size_t> coordinate);
+	const HostPixelType& at(Vec<size_t> coordinate) const;
+	HostPixelType getPixelValue(size_t x, size_t y, size_t z) const;
+	HostPixelType getPixelValue(Vec<size_t> coordinate) const;
 	const HostPixelType* getConstMemoryPointer() const {return image;}
-	const HostPixelType* ImageContainer::getConstROIData (unsigned int minX, unsigned int sizeX, unsigned int minY,
-		unsigned int sizeY, unsigned int minZ, unsigned int sizeZ) const;
+	const HostPixelType* ImageContainer::getConstROIData (size_t minX, size_t sizeX, size_t minY,
+		size_t sizeY, size_t minZ, size_t sizeZ) const;
 
-	const HostPixelType* getConstROIData(Vec<unsigned int> startIndex, Vec<unsigned int> size) const;
+	const HostPixelType* getConstROIData(Vec<size_t> startIndex, Vec<size_t> size) const;
 	HostPixelType* getMemoryPointer(){return image;}
-	Vec<unsigned int> getDims() const {return imageDims;}
-	unsigned int getWidth() const {return imageDims.x;}
-	unsigned int getHeight() const {return imageDims.y;}
-	unsigned int getDepth() const {return imageDims.z;}
+	Vec<size_t> getDims() const {return imageDims;}
+	size_t getWidth() const {return imageDims.x;}
+	size_t getHeight() const {return imageDims.y;}
+	size_t getDepth() const {return imageDims.z;}
 
-	void setROIData(HostPixelType* image, Vec<unsigned int> startIndex, Vec<unsigned int> size);
-	void setPixelValue(unsigned int x, unsigned int y, unsigned int z, unsigned char val);
-	void setPixelValue(Vec<unsigned int> coordinate, HostPixelType val);
-	void loadImage(const HostPixelType* imageIn, unsigned int width, unsigned int height, unsigned int depth, bool isColumnMajor=false);
-	void loadImage(const HostPixelType* imageIn, Vec<unsigned int> dims, bool isColumnMajor=false);
+	void setROIData(HostPixelType* image, Vec<size_t> startIndex, Vec<size_t> size);
+	void setPixelValue(size_t x, size_t y, size_t z, unsigned char val);
+	void setPixelValue(Vec<size_t> coordinate, HostPixelType val);
+	void loadImage(const HostPixelType* imageIn, size_t width, size_t height, size_t depth, bool isColumnMajor=false);
+	void loadImage(const HostPixelType* imageIn, Vec<size_t> dims, bool isColumnMajor=false);
 
 private:
 	ImageContainer();
@@ -44,12 +44,12 @@ private:
 	void clear();
 	void defaults() 
 	{
-		imageDims = Vec<unsigned int>(0,0,0);
+		imageDims = Vec<size_t>(0,0,0);
 		columnMajor = false;
 		image = NULL;
 	}
 
-	Vec<unsigned int> imageDims;
+	Vec<size_t> imageDims;
 	bool columnMajor;
 	HostPixelType*	image;
 };

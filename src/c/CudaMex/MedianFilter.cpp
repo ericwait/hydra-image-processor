@@ -3,13 +3,13 @@
 
 void MedianFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	Vec<unsigned int> imageDims;
+	Vec<size_t> imageDims;
 	ImageContainer* imageIn, * imageOut;
 	HostPixelType* mexImageOut;
 	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
 
 	double* neighborhoodD = (double*)mxGetData(prhs[1]);
-	Vec<unsigned int> neighborhood((int)neighborhoodD[0],(int)neighborhoodD[1],(int)neighborhoodD[2]);
+	Vec<size_t> neighborhood((int)neighborhoodD[0],(int)neighborhoodD[1],(int)neighborhoodD[2]);
 
 	medianFilter(imageIn,imageOut,neighborhood);
 	rearange(imageOut,mexImageOut);

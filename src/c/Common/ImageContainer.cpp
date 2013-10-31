@@ -1,6 +1,6 @@
 #include "ImageContainer.h"
 
-ImageContainer::ImageContainer(unsigned int width, unsigned int height, unsigned int depth, bool isColumnMajor/*=false*/)
+ImageContainer::ImageContainer(size_t width, size_t height, size_t depth, bool isColumnMajor/*=false*/)
 {
 	defaults();
 	imageDims.x = width;
@@ -12,7 +12,7 @@ ImageContainer::ImageContainer(unsigned int width, unsigned int height, unsigned
 	image = new HostPixelType[imageDims.product()];
 }
 
-ImageContainer::ImageContainer(Vec<unsigned int> dimsIn, bool isColumnMajor/*=false*/)
+ImageContainer::ImageContainer(Vec<size_t> dimsIn, bool isColumnMajor/*=false*/)
 {
 	defaults();
 	imageDims = dimsIn;
@@ -22,7 +22,7 @@ ImageContainer::ImageContainer(Vec<unsigned int> dimsIn, bool isColumnMajor/*=fa
 	image = new HostPixelType[imageDims.product()];
 }
 
-ImageContainer::ImageContainer( HostPixelType* imageIn, Vec<unsigned int> dims, bool isColumnMajor/*=false*/)
+ImageContainer::ImageContainer( HostPixelType* imageIn, Vec<size_t> dims, bool isColumnMajor/*=false*/)
 {
 	defaults();
 	columnMajor = isColumnMajor;
@@ -48,43 +48,43 @@ void ImageContainer::clear()
 	}
 }
 
-HostPixelType ImageContainer::getPixelValue(unsigned int x, unsigned int y, unsigned int z) const
+HostPixelType ImageContainer::getPixelValue(size_t x, size_t y, size_t z) const
 {
-	return getPixelValue(Vec<unsigned int>(x,y,z));
+	return getPixelValue(Vec<size_t>(x,y,z));
 }
 
-HostPixelType ImageContainer::getPixelValue(Vec<unsigned int> coordinate) const
+HostPixelType ImageContainer::getPixelValue(Vec<size_t> coordinate) const
 {
 	return image[imageDims.linearAddressAt(coordinate)];
 }
 
-void ImageContainer::setPixelValue(unsigned int x, unsigned int y, unsigned int z, unsigned char val)
+void ImageContainer::setPixelValue(size_t x, size_t y, size_t z, unsigned char val)
 {
-	setPixelValue(Vec<unsigned int>(x,y,z),val);
+	setPixelValue(Vec<size_t>(x,y,z),val);
 }
 
-void ImageContainer::setPixelValue(Vec<unsigned int> coordinate, unsigned char val)
+void ImageContainer::setPixelValue(Vec<size_t> coordinate, unsigned char val)
 {
 	image[imageDims.linearAddressAt(coordinate)] = val;
 }
 
-const HostPixelType* ImageContainer::getConstROIData (unsigned int minX, unsigned int sizeX, unsigned int minY,
-													  unsigned int sizeY, unsigned int minZ, unsigned int sizeZ) const
+const HostPixelType* ImageContainer::getConstROIData (size_t minX, size_t sizeX, size_t minY,
+													  size_t sizeY, size_t minZ, size_t sizeZ) const
 {
-	return getConstROIData(Vec<unsigned int>(minX,minY,minZ), Vec<unsigned int>(sizeX,sizeY,sizeZ));
+	return getConstROIData(Vec<size_t>(minX,minY,minZ), Vec<size_t>(sizeX,sizeY,sizeZ));
 }
 
-const HostPixelType* ImageContainer::getConstROIData(Vec<unsigned int> startIndex, Vec<unsigned int> size) const
+const HostPixelType* ImageContainer::getConstROIData(Vec<size_t> startIndex, Vec<size_t> size) const
 {
 	HostPixelType* imageOut = new HostPixelType[size.product()];
 
-	unsigned int i=0;
-	Vec<unsigned int> curIdx(startIndex);
-	for (curIdx.z=startIndex.z; curIdx.z<size.z; ++curIdx.z)
+	size_t i=0;
+	Vec<size_t> curIdx(startIndex);
+	for (curIdx.z=startIndex.z; curIdx.z-startIndex.z<size.z && curIdx.z<imageDims.z; ++curIdx.z)
 	{
-		for (curIdx.y=startIndex.y; curIdx.y<size.y; ++curIdx.y)
+		for (curIdx.y=startIndex.y; curIdx.y-startIndex.y<size.y && curIdx.y<imageDims.y; ++curIdx.y)
 		{
-			for (curIdx.x=startIndex.x; curIdx.x<size.x; ++curIdx.x)		
+			for (curIdx.x=startIndex.x; curIdx.x-startIndex.x<size.x && curIdx.x<imageDims.x; ++curIdx.x)		
 			{
 				imageOut[i] = getPixelValue(curIdx);
 				++i;
@@ -95,7 +95,7 @@ const HostPixelType* ImageContainer::getConstROIData(Vec<unsigned int> startInde
 	return imageOut;
 }
 
-void ImageContainer::loadImage( const HostPixelType* imageIn, Vec<unsigned int> dims, bool isColumnMajor/*=false*/ )
+void ImageContainer::loadImage( const HostPixelType* imageIn, Vec<size_t> dims, bool isColumnMajor/*=false*/ )
 {
 	if (!isColumnMajor)
 	{
@@ -125,8 +125,10 @@ void ImageContainer::loadImage( const HostPixelType* imageIn, Vec<unsigned int> 
 			imageDims = dims;
 		}
 		//TODO: take this out when the cuda storage can take column major buffers
-		unsigned int i = 0;
-		Vec<unsigned int> curInIdx(0,0,0);
+		size_t i = 0;
+		double acum = 0.0;
+		int mx = -1;
+		Vec<size_t> curInIdx(0,0,0);
 		for (curInIdx.z=0; curInIdx.z<dims.z; ++curInIdx.z)
 		{
 			for (curInIdx.y=0; curInIdx.y<dims.y; ++curInIdx.y)
@@ -136,45 +138,50 @@ void ImageContainer::loadImage( const HostPixelType* imageIn, Vec<unsigned int> 
 					if (i>=imageDims.product())
 						break;
 
-					image[i] = imageIn[imageDims.linearAddressAt(curInIdx,true)];
+					acum += image[i] = imageIn[imageDims.linearAddressAt(curInIdx,true)];
+
+					if (image[i]>mx)
+						mx = image[i];
+
 					++i;
 				}
 			}
 		}
+		double mean = acum/i;
 		columnMajor = false;
 	}
 }
 
-void ImageContainer::loadImage( const HostPixelType* imageIn, unsigned int width, unsigned int height, unsigned int depth, bool isColumnMajor/*=false*/ )
+void ImageContainer::loadImage( const HostPixelType* imageIn, size_t width, size_t height, size_t depth, bool isColumnMajor/*=false*/ )
 {
-	loadImage(imageIn,Vec<unsigned int>(width,height,depth),isColumnMajor);
+	loadImage(imageIn,Vec<size_t>(width,height,depth),isColumnMajor);
 }
 
-HostPixelType& ImageContainer::operator[]( Vec<unsigned int> coordinate )
+HostPixelType& ImageContainer::operator[]( Vec<size_t> coordinate )
 {
 	return image[imageDims.linearAddressAt(coordinate,columnMajor)];
 }
 
-const HostPixelType& ImageContainer::operator[]( Vec<unsigned int> coordinate ) const
+const HostPixelType& ImageContainer::operator[]( Vec<size_t> coordinate ) const
 {
 	return image[imageDims.linearAddressAt(coordinate,columnMajor)];
 }
 
-HostPixelType& ImageContainer::at( Vec<unsigned int> coordinate )
+HostPixelType& ImageContainer::at( Vec<size_t> coordinate )
 {
 	return image[imageDims.linearAddressAt(coordinate,columnMajor)];
 }
 
-void ImageContainer::setROIData( HostPixelType* imageIn, Vec<unsigned int> startIndex, Vec<unsigned int> sizeIn )
+void ImageContainer::setROIData( HostPixelType* imageIn, Vec<size_t> startIndex, Vec<size_t> sizeIn )
 {
-	Vec<unsigned int> curIdx(startIndex);
-	for (curIdx.z=startIndex.z; curIdx.z<startIndex.z+sizeIn.z && curIdx.z<imageDims.z; ++curIdx.z)
+	Vec<size_t> curIdx(0,0,0);
+	for (curIdx.z=0; curIdx.z<sizeIn.z && curIdx.z+startIndex.z<imageDims.z; ++curIdx.z)
 	{
-		for (curIdx.y=startIndex.y; curIdx.y<startIndex.y+sizeIn.y && curIdx.y<imageDims.y; ++curIdx.y)
+		for (curIdx.y=0; curIdx.y<sizeIn.y && curIdx.y+startIndex.y<imageDims.y; ++curIdx.y)
 		{
-			for (curIdx.x=startIndex.x; curIdx.x<startIndex.x+sizeIn.x && curIdx.x<imageDims.x; ++curIdx.x)		
+			for (curIdx.x=0; curIdx.x<sizeIn.x && curIdx.x+startIndex.x<imageDims.x; ++curIdx.x)		
 			{
-				setPixelValue(curIdx,imageIn[sizeIn.linearAddressAt(curIdx-startIndex)]);
+				setPixelValue(curIdx+startIndex,imageIn[sizeIn.linearAddressAt(curIdx)]);
 			}
 		}
 	}
