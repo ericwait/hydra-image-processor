@@ -4,11 +4,13 @@
 void ImagePow::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	HostPixelType* imageIn, * imageOut;
-	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+	ImageContainer* imageIn, * imageOut;
+	HostPixelType* mexImageOut;
+	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
 
 	double p = mxGetScalar(prhs[1]);
-	imagePow(imageIn,imageOut,imageDims,(int)p);
+	imagePow(imageIn,imageOut,(int)p);
+	rearange(imageOut,mexImageOut);
 }
 
 std::string ImagePow::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

@@ -3,11 +3,11 @@
 void NormalizedHistogram::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	HostPixelType* imageIn;
-	setupImagePointers(prhs[0],&imageIn,&imageDims);
+	ImageContainer* imageIn;
+	setupImagePointers(prhs[0],&imageIn);
 
 	int arraySize;
-	double* hist = retrieveNormalizedHistogram(imageIn,imageDims,arraySize);
+	double* hist = retrieveNormalizedHistogram(imageIn,arraySize);
 
 	const mwSize DIM = arraySize;
 	plhs[0] = mxCreateNumericArray(1,&DIM,mxDOUBLE_CLASS,mxREAL);

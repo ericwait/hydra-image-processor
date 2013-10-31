@@ -66,9 +66,6 @@
     <ClCompile Include="CudaMex\ThresholdFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\Unmix.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CudaMex\Histogram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -114,12 +111,15 @@
     <ClCompile Include="CudaMex\MorphOpening.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Common\ImageContainer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="CudaMex\Process.cu">
+    <CudaCompile Include="Common\CudaUtilities.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
-    <CudaCompile Include="Common\CudaUtilities.cu">
+    <CudaCompile Include="Common\Process.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
   </ItemGroup>
@@ -127,17 +127,8 @@
     <None Include="CudaMex\CudaMex.def">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Common\CudaProcessBuffer.cuh">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="Common\CudaStorageBuffer.cuh">
-      <Filter>Header Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CudaMex\Process.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common\Vec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -154,6 +145,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\CudaKernels.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Process.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ImageContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaStorageBuffer.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaProcessBuffer.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

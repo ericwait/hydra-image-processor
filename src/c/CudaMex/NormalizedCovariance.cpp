@@ -3,16 +3,16 @@
 void NormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims1;
-	HostPixelType* imageIn1;
-	setupImagePointers(prhs[0],&imageIn1,&imageDims1);
+	ImageContainer* imageIn1;
+	setupImagePointers(prhs[0],&imageIn1);
 	Vec<unsigned int> imageDims2;
-	HostPixelType* imageIn2;
-	setupImagePointers(prhs[1],&imageIn2,&imageDims2);
+	ImageContainer* imageIn2;
+	setupImagePointers(prhs[1],&imageIn2);
 
 	if (imageDims1!=imageDims2)
 		mexErrMsgTxt("Image Dimensions Must Match!\n");
 
-	double normCoVar = normalizedCovariance(imageIn1,imageIn2,imageDims1);
+	double normCoVar = normalizedCovariance(imageIn1,imageIn2);
 
 	plhs[0] = mxCreateDoubleScalar(normCoVar);
 }

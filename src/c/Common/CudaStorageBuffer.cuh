@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CudaUtilities.cuh"
+#include "CudaKernels.cuh"
 #include "Vec.h"
 
 template<typename ImagePixelType>

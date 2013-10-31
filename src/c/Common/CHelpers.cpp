@@ -30,3 +30,4 @@ double* createEllipsoidKernel(Vec<unsigned int> radii, Vec<unsigned int>& kernel
 
 	return kernel;
 }
+

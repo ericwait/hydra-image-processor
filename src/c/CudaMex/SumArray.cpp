@@ -4,10 +4,10 @@
 void SumArray::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	HostPixelType* imageIn;;
-	setupImagePointers(prhs[0],&imageIn,&imageDims);
+	ImageContainer* imageIn;
+	setupImagePointers(prhs[0],&imageIn);
 
-	double sm = sumArray(imageIn,imageDims);
+	double sm = sumArray(imageIn);
 
 	plhs[0] = mxCreateDoubleScalar(sm);
 }

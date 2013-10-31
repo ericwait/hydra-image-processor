@@ -1,14 +1,23 @@
 #pragma once
 
+#include "CudaKernels.cuh"
 #include "defines.h"
 #define DEVICE_VEC
 #include "Vec.h"
 #undef DEVICE_VEC
-#include "CudaKernels.cuh"
 #include "CudaUtilities.cuh"
 #include "CudaStorageBuffer.cuh"
 #include "assert.h"
 #include <limits>
+#include "ImageContainer.h"
+
+#ifdef __CUDACC__
+#define CUDA_CALLS_ON (1)
+#pragma message("__CUDACC__ was defined")
+#else
+#define CUDA_CALLS_ON (0)
+#pragma message("NOPE!")
+#endif // __CUDACC__
 
 template<typename ImagePixelType>
 class CudaProcessBuffer
@@ -18,34 +27,34 @@ public:
 	// Constructor / Destructor
 	//////////////////////////////////////////////////////////////////////////
 
-	CudaProcessBuffer(Vec<unsigned int> dims, bool columnMajor=false, int device=0)
+	CudaProcessBuffer(Vec<unsigned int> dims, bool isColumnMajor=false, int device=0)
 	{
 		defaults();
-		isColumnMajor = columnMajor;
 		this->imageDims = dims;
 		this->device = device;
+		columnMajor = isColumnMajor;
 		UNSET = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
 		deviceSetup();
 		memoryAllocation();
 	}
 
-	CudaProcessBuffer(unsigned int x, unsigned int y, unsigned int z, bool columnMajor=false, int device=0)
+	CudaProcessBuffer(unsigned int x, unsigned int y, unsigned int z, bool isColumnMajor=false, int device=0)
 	{
 		defaults();
-		isColumnMajor = columnMajor;
 		imageDims = Vec<unsigned int>(x,y,z);
 		this->device = device;
+		columnMajor = isColumnMajor;
 		UNSET = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
 		deviceSetup();
 		memoryAllocation();
 	}
 
-	CudaProcessBuffer(int n, bool columnMajor=false, int device=0)
+	CudaProcessBuffer(int n, bool isColumnMajor=false, int device=0)
 	{
 		defaults();
-		isColumnMajor = columnMajor;
 		imageDims = Vec<unsigned int>(n,1,1);
 		this->device = device;
+		columnMajor = isColumnMajor;
 
 		UNSET = Vec<unsigned int>((unsigned int)-1,(unsigned int)-1,(unsigned int)-1);
 		deviceSetup();
@@ -80,16 +89,14 @@ public:
 	// Setters / Getters
 	//////////////////////////////////////////////////////////////////////////
 
-	void loadImage(const ImagePixelType* image, Vec<unsigned int> imageInDims)
+	void loadImage(const ImageContainer* image)
 	{
-		if (imageInDims.product()>bufferSize)
+		if (image->getDims().product()>bufferSize)
 		{
-			bool wasColumnMajor = isColumnMajor;
 			int device = this->device;
 			clean();
-			isColumnMajor = wasColumnMajor;
 			this->device = device;
-			imageDims = imageInDims;
+			imageDims = image->getDims();
 			deviceSetup();
 			memoryAllocation();
 		}
@@ -101,12 +108,37 @@ public:
 			isCurrentNormHistogramDevice = false;
 		}
 
-		imageDims = imageInDims;
+		imageDims = image->getDims();
 		currentBuffer = 0;
 		reservedBuffer = -1;
 		HANDLE_ERROR(cudaMemcpy((void*)getCurrentBuffer(),image,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyHostToDevice));
 	}
-	
+
+	void loadImage(const ImagePixelType* image, Vec<unsigned int> dims)
+	{
+		if (dims.product()>bufferSize)
+		{
+			int device = this->device;
+			clean();
+			this->device = device;
+			imageDims = dims;
+			deviceSetup();
+			memoryAllocation();
+		}
+		else
+		{
+			isCurrentHistogramHost = false;
+			isCurrentHistogramDevice = false;
+			isCurrentNormHistogramHost = false;
+			isCurrentNormHistogramDevice = false;
+		}
+
+		imageDims = dims;
+		currentBuffer = 0;
+		reservedBuffer = -1;
+		HANDLE_ERROR(cudaMemcpy((void*)getCurrentBuffer(),image,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyHostToDevice));
+	}
+
 	ImagePixelType otsuThresholdValue()
 	{
 		int temp;//TODO
@@ -124,6 +156,16 @@ public:
 
 		HANDLE_ERROR(cudaMemcpy(imageOut,getCurrentBuffer(),sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyDeviceToHost));
 		return imageOut;
+	}
+
+	void retrieveImage(ImageContainer* imageOut)
+	{
+		if (currentBuffer<0 || currentBuffer>NUM_BUFFERS)
+		{
+			return;
+		}
+
+		HANDLE_ERROR(cudaMemcpy(imageOut->getMemoryPointer(),getCurrentBuffer(),sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyDeviceToHost));
 	}
 
 	/*
@@ -192,9 +234,7 @@ public:
 	{
 		if (sizes.product()>bufferSize || this->device!=image->getDevice())
 		{
-			bool wasColumnMajor = isColumnMajor;
 			clean();
-			isColumnMajor = wasColumnMajor;
 			this->device = image->getDevice();
 			imageDims = sizes;
 			deviceSetup();
@@ -207,14 +247,12 @@ public:
 		updateBlockThread();
 	}
 
-	void copyROI(const CudaStorageBuffer<ImagePixelType>* image, Vec<unsigned int> starts, Vec<unsigned int> sizes)
+	void copyROI(const CudaStorageBuffer<ImagePixelType>* imageIn, Vec<unsigned int> starts, Vec<unsigned int> sizes)
 	{
-		if ((size_t)sizes.product()>bufferSize || this->device!=image->getDevice())
+		if ((size_t)sizes.product()>bufferSize || this->device!=imageIn->getDevice())
 		{
-			bool wasColumnMajor = isColumnMajor;
 			clean();
-			isColumnMajor = wasColumnMajor;
-			this->device = image->getDevice();
+			this->device = imageIn->getDevice();
 			imageDims = sizes;
 			deviceSetup();
 			memoryAllocation();
@@ -222,7 +260,7 @@ public:
 
 		imageDims = sizes;
 		currentBuffer = 0;
-		image->getRoi(getCurrentBuffer(),starts,sizes);
+		imageIn->getRoi(getCurrentBuffer(),starts,sizes);
 		updateBlockThread();	
 	}
 
@@ -230,9 +268,7 @@ public:
 	{
 		if (bufferIn->getDimension().product()>bufferSize)
 		{
-			bool wasColumnMajor = isColumnMajor;
 			clean();
-			isColumnMajor = wasColumnMajor;
 			this->device = device;
 			imageDims = bufferIn->getDimension();
 			deviceSetup();
@@ -268,7 +304,9 @@ public:
 	template<typename T>
 	void addConstant(T additive)
 	{
-		cudaAddFactor<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,additive,minPixel,maxPixel,isColumnMajor);
+#if (CUDA_CALLS_ON)
+		cudaAddFactor<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,additive,minPixel,maxPixel);
+#endif
 		incrementBufferNumber();
 	}
 
@@ -276,10 +314,12 @@ public:
 	*	Adds this image to the passed in one.  You can apply a factor
 	*	which is multiplied to the passed in image prior to adding
 	*/
-	void addImageWith(const CudaProcessBuffer* image, double factor)
+	void addImageWith(const CudaProcessBuffer<ImagePixelType>* image, double factor)
 	{
-		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),
-			imageDims,factor,minPixel,maxPixel,isColumnMajor);
+#if (CUDA_CALLS_ON)
+		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims,factor,
+			minPixel,maxPixel);
+#endif
 		incrementBufferNumber();
 	}
 
@@ -291,7 +331,9 @@ public:
 	template<typename ThresholdType>
 	void applyPolyTransformation(ThresholdType a, ThresholdType b, ThresholdType c, ImagePixelType minValue, ImagePixelType maxValue)
 	{
-		cudaPolyTransferFuncImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,a,b,c,minValue,maxValue,isColumnMajor);
+#if CUDA_CALLS_ON
+		cudaPolyTransferFuncImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,a,b,c,minValue,maxValue);
+#endif
 		incrementBufferNumber();
 	}
 
@@ -304,8 +346,9 @@ public:
 		double* maxValuesHost = new double[(blocks.x+1)/2];
 		double* minValuesHost = new double[(blocks.x+1)/2];
 
-		cudaFindMinMax<<<sumBlocks,sumThreads,2*sizeof(double)*sumThreads.x>>>(getCurrentBuffer(),minValuesDevice,deviceSum,
-			imageDims.product());
+#if CUDA_CALLS_ON
+		cudaFindMinMax<<<sumBlocks,sumThreads,2*sizeof(double)*sumThreads.x>>>(getCurrentBuffer(),minValuesDevice,deviceSum, imageDims.product());
+#endif
 
 		HANDLE_ERROR(cudaMemcpy(maxValuesHost,deviceSum,sizeof(double)*sumBlocks.x,cudaMemcpyDeviceToHost));
 		HANDLE_ERROR(cudaMemcpy(minValuesHost,minValuesDevice,sizeof(double)*sumBlocks.x,cudaMemcpyDeviceToHost));
@@ -327,16 +370,19 @@ public:
 	}
 
 	/*
-	 *	Contrast Enhancement will run the Michel High Pass Filter and then a mean filter
-	 *	Pass in the sigmas that will be used for the Gaussian filter to subtract off and the mean neighborhood dimensions
-	 */
+	*	Contrast Enhancement will run the Michel High Pass Filter and then a mean filter
+	*	Pass in the sigmas that will be used for the Gaussian filter to subtract off and the mean neighborhood dimensions
+	*/
 	void contrastEnhancement(Vec<float> sigmas, Vec<unsigned int> medianNeighborhood)
 	{
 		reserveCurrentBuffer();
 
- 		gaussianFilter(sigmas);
+		gaussianFilter(sigmas);
+#if CUDA_CALLS_ON
 		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(getReservedBuffer(),getCurrentBuffer(),getNextBuffer(),imageDims,
-			-1.0,minPixel,maxPixel,isColumnMajor);
+			-1.0,minPixel,maxPixel);
+#endif
+
 
 		incrementBufferNumber();
 		releaseReservedBuffer();
@@ -356,8 +402,10 @@ public:
 		memset(histogramHost,0,NUM_BINS*sizeof(unsigned int));
 		HANDLE_ERROR(cudaMemset(histogramDevice,0,NUM_BINS*sizeof(unsigned int)));
 
+#if CUDA_CALLS_ON
 		cudaHistogramCreate<<<deviceProp.multiProcessorCount*2,NUM_BINS,sizeof(unsigned int)*NUM_BINS>>>
 			(getCurrentBuffer(),histogramDevice,imageDims);
+#endif
 
 		isCurrentHistogramDevice = true;
 	}
@@ -377,34 +425,39 @@ public:
 
 		for (int x=0; x<gaussIterations.x; ++x)
 		{
-			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(constKernelDims.x,1,1),
-				isColumnMajor);
+#if CUDA_CALLS_ON
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(constKernelDims.x,1,1));
+#endif
 			incrementBufferNumber();
 		}
 
 		for (int y=0; y<gaussIterations.y; ++y)
 		{
-			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,constKernelDims.y,1),
-				constKernelDims.x,isColumnMajor);
+#if CUDA_CALLS_ON
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,constKernelDims.y,1), constKernelDims.x);
+#endif
 			incrementBufferNumber();
 		}
 
 		for (int z=0; z<gaussIterations.z; ++z)
 		{
-			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,1,constKernelDims.z),
-				constKernelDims.x+constKernelDims.y,isColumnMajor);
+#if CUDA_CALLS_ON
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,Vec<unsigned int>(1,1,constKernelDims.z), constKernelDims.x+constKernelDims.y);
+#endif
 			incrementBufferNumber();
 		}
 	}
 
 	/*
-	 *	Mask will mask out the pixels of this buffer given an image and a threshold.
-	 *	The threshold it to allow the input image to be gray scale instead of logical.
-	 *	This buffer will get zeroed out where the imageMask is less than or equal to the threshold.
-	 */
-	void mask(const CudaProcessBuffer* imageMask, ImagePixelType threshold=1)
+	*	Mask will mask out the pixels of this buffer given an image and a threshold.
+	*	The threshold it to allow the input image to be gray scale instead of logical.
+	*	This buffer will get zeroed out where the imageMask is less than or equal to the threshold.
+	*/
+	void mask(const CudaProcessBuffer<ImagePixelType>* imageMask, ImagePixelType threshold=1)
 	{
-		cudaMask<<<blocks,threads>>>(getCurrentBuffer(),imageMask->getCudaBuffer(),getNextBuffer(),imageDims,threshold,isColumnMajor);
+#if CUDA_CALLS_ON
+		cudaMask<<<blocks,threads>>>(getCurrentBuffer(),imageMask->getCudaBuffer(),getNextBuffer(),imageDims,threshold);
+#endif
 		incrementBufferNumber();
 	}
 
@@ -412,14 +465,16 @@ public:
 	*	Sets each pixel to the max value of its neighborhood
 	*	Dilates structures
 	*/ 
-	void maxFilter(Vec<unsigned int> neighborhood, double* kernel=NULL, bool columnMajor=false)
+	void maxFilter(Vec<unsigned int> neighborhood, double* kernel=NULL)
 	{
 		if (kernel==NULL)
 			constKernelOnes();
 		else
-			setConstKernel(kernel,neighborhood,columnMajor);
+			setConstKernel(kernel,neighborhood);
 
-		cudaMaxFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood,isColumnMajor);
+#if CUDA_CALLS_ON
+		cudaMaxFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+#endif
 		incrementBufferNumber();
 	}
 
@@ -429,7 +484,9 @@ public:
 	*/
 	void maximumIntensityProjection()
 	{
-		cudaMaximumIntensityProjection<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,isColumnMajor);
+#if CUDA_CALLS_ON
+		cudaMaximumIntensityProjection<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims);
+#endif
 		imageDims.z = 1;
 		updateBlockThread();
 		incrementBufferNumber();
@@ -440,7 +497,9 @@ public:
 	*/
 	void meanFilter(Vec<unsigned int> neighborhood)
 	{
-		cudaMeanFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood,isColumnMajor);
+#if CUDA_CALLS_ON
+		cudaMeanFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+#endif
 		incrementBufferNumber();
 	}
 
@@ -467,8 +526,9 @@ public:
 			sharedMemorySize = neighborhood.product()*localThreads.x*localThreads.y*localThreads.z;
 		}
 
-		cudaMedianFilter<<<localBlocks,localThreads,sizeof(ImagePixelType)*sharedMemorySize>>>(getCurrentBuffer(),getNextBuffer(),
-			imageDims,neighborhood,isColumnMajor);
+#if CUDA_CALLS_ON
+		cudaMedianFilter<<<localBlocks,localThreads,sizeof(ImagePixelType)*sharedMemorySize>>>(getCurrentBuffer(),getNextBuffer(), imageDims,neighborhood);
+#endif
 
 		incrementBufferNumber();
 	}
@@ -477,27 +537,29 @@ public:
 	*	Sets each pixel to the min value of its neighborhood
 	*	Erodes structures
 	*/ 
-	void minFilter(Vec<unsigned int> neighborhood, double* kernel=NULL, bool columnMajor=false)
+	void minFilter(Vec<unsigned int> neighborhood, double* kernel=NULL)
 	{
 		if (kernel==NULL)
 			constKernelOnes();
 		else
-			setConstKernel(kernel,neighborhood,columnMajor);
+			setConstKernel(kernel,neighborhood);
 
-		cudaMinFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood,isColumnMajor);
+#if CUDA_CALLS_ON
+		cudaMinFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,neighborhood);
+#endif
 		incrementBufferNumber();
 	}
 
-	void morphClosure(Vec<unsigned int> neighborhood, double* kernel=NULL, bool columnMajor=false)
+	void morphClosure(Vec<unsigned int> neighborhood, double* kernel=NULL)
 	{
-		maxFilter(neighborhood,kernel,columnMajor);
-		minFilter(neighborhood,kernel,columnMajor);
+		maxFilter(neighborhood,kernel);
+		minFilter(neighborhood,kernel);
 	}
 
-	void morphOpening(Vec<unsigned int> neighborhood, double* kernel=NULL, bool columnMajor=false)
+	void morphOpening(Vec<unsigned int> neighborhood, double* kernel=NULL)
 	{
-		minFilter(neighborhood,kernel,columnMajor);
-		maxFilter(neighborhood,kernel,columnMajor);
+		minFilter(neighborhood,kernel);
+		maxFilter(neighborhood,kernel);
 	}
 
 	/*
@@ -507,25 +569,29 @@ public:
 	template<typename FactorType>
 	void multiplyImage(FactorType factor)
 	{
-		cudaMultiplyImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,factor,minPixel,maxPixel,isColumnMajor);
+#if CUDA_CALLS_ON
+		cudaMultiplyImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,factor,minPixel,maxPixel);
+#endif
 		incrementBufferNumber();
 	}
 
 	/*
 	*	Multiplies this image to the passed in one.
 	*/
-	void multiplyImageWith(const CudaProcessBuffer* image)
+	void multiplyImageWith(const CudaProcessBuffer<ImagePixelType>* image)
 	{
-		cudaMultiplyTwoImages<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims,isColumnMajor);
+#if CUDA_CALLS_ON
+		cudaMultiplyTwoImages<<<blocks,threads>>>(getCurrentBuffer(),image->getCurrentBuffer(),getNextBuffer(),imageDims);
+#endif
 		incrementBufferNumber();
 	}
 
 	/*
-	 *	This will calculate the normalized covariance between the two images A and B
-	 *	returns (sum over all{(A-mu(A)) X (B-mu(B))}) / (sigma(A)Xsigma(B)
-	 *	The images buffers will not change the original data 
-	 */
-	double normalizedCovariance(CudaProcessBuffer* otherImage)
+	*	This will calculate the normalized covariance between the two images A and B
+	*	returns (sum over all{(A-mu(A)) X (B-mu(B))}) / (sigma(A)Xsigma(B)
+	*	The images buffers will not change the original data 
+	*/
+	double normalizedCovariance(CudaProcessBuffer<ImagePixelType>* otherImage)
 	{
 		ImagePixelType* aOrg = this->retrieveImage();
 		ImagePixelType* bOrg = otherImage->retrieveImage();
@@ -571,8 +637,9 @@ public:
 		this->releaseReservedBuffer();
 		otherImage->releaseReservedBuffer();
 
-		cudaMultiplyTwoImages<<<blocks,threads>>>(this->getCurrentBuffer(),otherImage->getCurrentBuffer(),this->getNextBuffer(),
-			this->imageDims,this->isColumnMajor);
+#if CUDA_CALLS_ON
+		cudaMultiplyTwoImages<<<blocks,threads>>>(this->getCurrentBuffer(),otherImage->getCurrentBuffer(),this->getNextBuffer(), this->imageDims);
+#endif
 		this->incrementBufferNumber();
 
 		double multSum = 0.0;
@@ -602,7 +669,9 @@ public:
 		if(!isCurrentHistogramDevice)
 			createHistogram();
 
+#if CUDA_CALLS_ON
 		cudaNormalizeHistogram<<<NUM_BINS,1>>>(histogramDevice,normalizedHistogramDevice,imageDims);
+#endif
 		isCurrentNormHistogramDevice = true;
 	}
 
@@ -617,7 +686,9 @@ public:
 	*/
 	void imagePow(int p)
 	{
-		cudaPow<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,p,isColumnMajor);
+#if CUDA_CALLS_ON
+		cudaPow<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,p);
+#endif
 		incrementBufferNumber();
 	}
 
@@ -626,7 +697,9 @@ public:
 	*/
 	void sumArray(double& sum)
 	{
+#if CUDA_CALLS_ON
 		cudaSumArray<<<sumBlocks,sumThreads,sizeof(double)*sumThreads.x>>>(getCurrentBuffer(),deviceSum,imageDims.product());		
+#endif
 		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*sumBlocks.x,cudaMemcpyDeviceToHost));
 
 		sum = 0;
@@ -646,7 +719,9 @@ public:
 			(unsigned int)(imageDims.y/reductions.y),
 			(unsigned int)(imageDims.z/reductions.z));
 
-		cudaRuduceImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,reducedDims,reductions,isColumnMajor);
+#if CUDA_CALLS_ON
+		cudaRuduceImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,reducedDims,reductions);
+#endif
 		incrementBufferNumber();
 	}
 
@@ -661,14 +736,17 @@ public:
 	template<typename ThresholdType>
 	void thresholdFilter(ThresholdType threshold)
 	{
-		cudaThresholdImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,threshold,minPixel,maxPixel,isColumnMajor);
+#if CUDA_CALLS_ON
+		cudaThresholdImage<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),imageDims,threshold,minPixel,maxPixel);
+#endif
 		incrementBufferNumber();
 	}
 
-	void unmix(const CudaProcessBuffer* image, Vec<unsigned int> neighborhood)
+	void unmix(const CudaProcessBuffer<ImagePixelType>* image, Vec<unsigned int> neighborhood)
 	{
-		cudaUnmixing<<<blocks,threads>>>(getCurrentBuffer(),image->getCudaBuffer(),getNextBuffer(),
-			imageDims,neighborhood,minPixel,maxPixel);
+#if CUDA_CALLS_ON
+		cudaUnmixing<<<blocks,threads>>>(getCurrentBuffer(),image->getCudaBuffer(),getNextBuffer(), imageDims,neighborhood,minPixel,maxPixel);
+#endif
 		incrementBufferNumber();
 	}
 
@@ -693,7 +771,7 @@ private:
 
 	void memoryAllocation()
 	{
-		assert(sizeof(ImagePixelType)*imageDims.product()*NUM_BUFFERS < deviceProp.totalGlobalMem*.7);
+		assert(sizeof(ImagePixelType)*imageDims.product()*NUM_BUFFERS < deviceProp.totalGlobalMem*.8);
 
 		for (int i=0; i<NUM_BUFFERS; ++i)
 		{
@@ -728,7 +806,9 @@ private:
 
 	void getRoi(ImagePixelType* roi, Vec<unsigned int> starts, Vec<unsigned int> sizes) const
 	{
+#if CUDA_CALLS_ON
 		cudaGetROI<<<blocks,threads>>>(getCurrentBuffer(),roi,imageDims,starts,sizes);
+#endif
 	}
 
 	void copy(const CudaProcessBuffer<ImagePixelType>* bufferIn)
@@ -737,6 +817,7 @@ private:
 
 		imageDims = bufferIn->getDimension();
 		device = bufferIn->getDevice();
+		columnMajor = bufferIn->columnMajor;
 
 		deviceSetup();
 		memoryAllocation();
@@ -778,10 +859,10 @@ private:
 		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel,hostKernel,sizeof(float)*MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM));
 	}
 
-	void setConstKernel(double* kernel, Vec<unsigned int> kernelDims, bool columnMajor)
+	void setConstKernel(double* kernel, Vec<unsigned int> kernelDims)
 	{
 		memset(hostKernel,0,sizeof(float)*MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM);
-		
+
 		Vec<unsigned int> coordinate(0,0,0);
 		for (; coordinate.x<kernelDims.x; ++coordinate.x)
 		{
@@ -791,7 +872,7 @@ private:
 				coordinate.z = 0;
 				for (; coordinate.z<kernelDims.z; ++coordinate.z)
 				{
-					hostKernel[kernelDims.linearAddressAt(coordinate,false)] = (float)kernel[kernelDims.linearAddressAt(coordinate,columnMajor)];
+					hostKernel[kernelDims.linearAddressAt(coordinate)] = (float)kernel[kernelDims.linearAddressAt(coordinate)];
 				}
 			}
 		}
@@ -803,6 +884,7 @@ private:
 		imageDims = UNSET;
 		reducedDims = UNSET;
 		constKernelDims = UNSET;
+		columnMajor = false;
 		gausKernelSigmas  = Vec<float>(0.0f,0.0f,0.0f);
 		device = -1;
 		currentBuffer = -1;
@@ -828,7 +910,6 @@ private:
 		gaussIterations = Vec<int>(0,0,0);
 		reservedBuffer = -1;
 		memoryUsage = 0;
-		isColumnMajor = false;
 	}
 
 	void clean() 
@@ -917,9 +998,9 @@ private:
 	void incrementBufferNumber()
 	{
 		cudaThreadSynchronize();
-		#ifdef _DEBUG
-				gpuErrchk( cudaPeekAtLastError() );
-		#endif // _DEBUG
+#ifdef _DEBUG
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
 
 		currentBuffer = getNextBufferNum();
 	}
@@ -933,6 +1014,7 @@ private:
 	//This is the dimensions of the reduced image buffer
 	Vec<unsigned int> reducedDims;
 
+	bool columnMajor;
 	int device;
 	cudaDeviceProp deviceProp;
 	dim3 blocks, threads;
@@ -959,5 +1041,4 @@ private:
 	float hostKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
 	int reservedBuffer;
 	Vec<unsigned int> UNSET;
-	bool isColumnMajor;
 };

@@ -4,15 +4,18 @@
 void MaxFilterCircle::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	HostPixelType* imageIn, * imageOut;
-	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+	ImageContainer* imageIn, * imageOut;
+	HostPixelType* mexImageOut;
+	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
 
 	double* radiiD = (double*)mxGetData(prhs[1]);
 
 	Vec<unsigned int> radii((unsigned int)radiiD[0],(unsigned int)radiiD[1],(unsigned int)radiiD[2]);
 	Vec<unsigned int> kernDims;
 	double* circleKernel = createEllipsoidKernel(radii,kernDims);
-	maxFilter(imageIn,imageOut,imageDims,kernDims,circleKernel);
+	maxFilter(imageIn,imageOut,kernDims,circleKernel);
+
+	rearange(imageOut,mexImageOut);
 }
 
 std::string MaxFilterCircle::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

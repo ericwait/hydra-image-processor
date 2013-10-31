@@ -4,22 +4,25 @@
 void ReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	HostPixelType* imageIn, * processedImage, * imageOut;
-	setupImagePointers(prhs[0],&imageIn,&imageDims);
+	HostPixelType* mexImageOut;
+	ImageContainer* imageIn, * processedImage;
+	setupImagePointers(prhs[0],&imageIn);
 
 	double* reductionD = (double*)mxGetData(prhs[1]);
 	Vec<double> reductionFactors(reductionD[0],reductionD[1],reductionD[2]);
 
-	processedImage = reduceImage(imageIn,imageDims,reductionFactors);
+	reduceImage(imageIn,&processedImage,reductionFactors);
 
-	mxArray* argOut;
 	mwSize* dims = new mwSize[3];
-	dims[0] = imageDims.x;
-	dims[1] = imageDims.y;
-	dims[2] = imageDims.z;
-	argOut = mxCreateNumericArray(3,dims,mxUINT8_CLASS,mxREAL);
-	imageOut = (HostPixelType*)mxGetData(argOut);
-	memcpy(imageOut,processedImage,sizeof(HostPixelType)*imageDims.product());
+	dims[0] = processedImage->getHeight();
+	dims[1] = processedImage->getWidth();
+	dims[2] = processedImage->getDepth();
+	plhs[0] = mxCreateNumericArray(3,dims,mxUINT8_CLASS,mxREAL);
+	mexImageOut = (HostPixelType*)mxGetData(plhs[0]);
+	//memcpy(imageOut,processedImage,sizeof(HostPixelType)*reducedDims.product());
+	rearange(processedImage,mexImageOut);
+
+	delete processedImage;
 }
 
 std::string ReduceImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

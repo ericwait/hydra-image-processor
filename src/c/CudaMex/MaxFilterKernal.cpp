@@ -4,8 +4,9 @@
 void MaxFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	HostPixelType* imageIn, * imageOut;
-	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+	ImageContainer* imageIn, * imageOut;
+	HostPixelType* mexImageOut;
+	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
 
 	size_t kernDims = mxGetNumberOfDimensions(prhs[1]);
 	const mwSize* DIMS = mxGetDimensions(prhs[1]);
@@ -20,7 +21,8 @@ void MaxFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 
 	double* kern = (double*)mxGetData(prhs[1]);
 
-	maxFilter(imageIn,imageOut,imageDims,kernelDims,kern);
+	maxFilter(imageIn,imageOut,kernelDims,kern);
+	rearange(imageOut,mexImageOut);
 }
 
 std::string MaxFilterKernel::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

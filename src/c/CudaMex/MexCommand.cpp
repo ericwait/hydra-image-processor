@@ -38,7 +38,6 @@ void MexCommand::init()
 	REGISTER_COMMAND(ReduceImage);
 	REGISTER_COMMAND(SumArray);
 	REGISTER_COMMAND(ThresholdFilter);
-	REGISTER_COMMAND(Unmix);
 }
 
 MexCommand* MexCommand::getCommand(std::string cmd)
@@ -65,7 +64,7 @@ std::string MexCommand::printUsageList()
 
 void MexCommand::cleanUp()
 {
-	clear();
+	clearAll();
 	std::map<std::string,MexCommand*>::iterator it = commandList.begin();
 
 	for (; it!=commandList.end(); ++it)
@@ -79,24 +78,40 @@ void MexCommand::addCommand(const std::string commandText, MexCommand* commandOb
 	commandList.insert(std::pair<std::string,MexCommand*>(commandText,commandObject));
 }
 
-void MexCommand::setupImagePointers( const mxArray* imageIn, HostPixelType** image, Vec<unsigned int>* imageDims, mxArray** argOut/*=NULL*/,
-									HostPixelType** imageOut/*=NULL*/ )
+void MexCommand::setupImagePointers( const mxArray* imageIn, ImageContainer** image, mxArray** argOut/*=NULL*/, HostPixelType** mexImageOut/*=NULL*/, ImageContainer** imageOut/*=NULL*/ )
 {
 	size_t numDims = mxGetNumberOfDimensions(imageIn);
 	const mwSize* DIMS = mxGetDimensions(imageIn);
 
-	*image = (HostPixelType*)mxGetData(imageIn);
+	Vec<unsigned int> imageDims;
+	imageDims.x = (unsigned int)DIMS[1];
+	imageDims.y = (unsigned int)DIMS[0];
+	if (numDims==3)
+		imageDims.z = (unsigned int)DIMS[2];
+	else
+		imageDims.z = 1;
 
-	if (argOut!=NULL && imageOut!=NULL)
+	*image = new ImageContainer((HostPixelType*)mxGetData(imageIn),imageDims,true);
+
+	if (argOut!=NULL && mexImageOut!=NULL && imageOut!=NULL)
 	{
 		*argOut = mxCreateNumericArray(numDims,DIMS,mxUINT8_CLASS,mxREAL);
-		*imageOut = (HostPixelType*)mxGetData(*argOut);
+		*mexImageOut = (HostPixelType*)mxGetData(*argOut);
+		*imageOut = new ImageContainer(imageDims);
 	}
+}
 
-	imageDims->x = (unsigned int)DIMS[1];
-	imageDims->y = (unsigned int)DIMS[0];
-	if (numDims==3)
-		imageDims->z = (unsigned int)DIMS[2];
-	else
-		imageDims->z = 1;
+void MexCommand::rearange( ImageContainer* image, HostPixelType* mexImage )
+{
+	Vec<unsigned int> curIdx(0,0,0);
+	for (curIdx.z=0; curIdx.z<image->getDepth(); ++curIdx.z)
+	{
+		for (curIdx.y=0; curIdx.y<image->getHeight(); ++curIdx.y)
+		{
+			for (curIdx.x=0; curIdx.x<image->getWidth(); ++curIdx.x)
+			{
+				mexImage[image->getDims().linearAddressAt(curIdx,true)] = (*image)[curIdx];
+			}
+		}
+	}
 }

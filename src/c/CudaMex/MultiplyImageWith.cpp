@@ -4,13 +4,15 @@
 void MultiplyImageWith::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims1;
-	HostPixelType* imageIn1, * imageOut;
-	setupImagePointers(prhs[0],&imageIn1,&imageDims1,&plhs[0],&imageOut);
+	ImageContainer* imageIn1, * imageOut;
+	HostPixelType* mexImageOut;
+	setupImagePointers(prhs[0],&imageIn1,&plhs[0],&mexImageOut,&imageOut);
 	Vec<unsigned int> imageDims2;
-	HostPixelType* imageIn2;
-	setupImagePointers(prhs[1],&imageIn2,&imageDims2);
+	ImageContainer* imageIn2;
+	setupImagePointers(prhs[1],&imageIn2);
 
-	multiplyImageWith(imageIn1,imageIn2,imageOut,imageDims1);
+	multiplyImageWith(imageIn1,imageIn2,imageOut);
+	rearange(imageOut,mexImageOut);
 }
 
 std::string MultiplyImageWith::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

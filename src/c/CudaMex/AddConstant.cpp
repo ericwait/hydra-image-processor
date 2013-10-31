@@ -4,12 +4,14 @@
 void AddConstant::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
 	Vec<unsigned int> imageDims;
-	HostPixelType* imageIn, * imageOut;
-	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+	ImageContainer* imageIn, * imageOut;
+	HostPixelType* mexImageOut;
+	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
 
 	double additive = mxGetScalar(prhs[1]);
 
-	addConstant(imageIn,imageOut,imageDims,additive);
+	addConstant(imageIn,imageOut,additive);
+	rearange(imageOut,mexImageOut);
 }
 
 std::string AddConstant::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])

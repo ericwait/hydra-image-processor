@@ -9,7 +9,7 @@ __constant__ float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM]
 
 template<typename ImagePixelType>
 __global__ void cudaMeanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims,
-							   Vec<unsigned int> hostKernelDims, bool isColumnMajor=false)
+							   Vec<unsigned int> hostKernelDims)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -43,19 +43,19 @@ __global__ void cudaMeanFilter(ImagePixelType* imageIn, ImagePixelType* imageOut
 				curCoordKrn.x = ((int)coordinate.x-(int)kernelMidIdx.x>=0) ? (0) : (kernelMidIdx.x-coordinate.x);		
 				for (; curCoordIm.x<imageDims.x && curCoordKrn.x<kernelDims.x; ++curCoordIm.x, ++curCoordKrn.x)
 				{
-					val += imageIn[imageDims.linearAddressAt(curCoordIm,isColumnMajor)];
+					val += imageIn[imageDims.linearAddressAt(curCoordIm)];
 					++kernelVolume;
 				}
 			}
 		}
 
-		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = val/kernelVolume;
+		imageOut[imageDims.linearAddressAt(coordinate)] = val/kernelVolume;
 	}
 }
 
 template<typename ImagePixelType>
 __global__ void cudaMultiplyImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims, double factor,
-	ImagePixelType minValue, ImagePixelType maxValue, bool isColumnMajor=false)
+	ImagePixelType minValue, ImagePixelType maxValue)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -65,14 +65,14 @@ __global__ void cudaMultiplyImage(ImagePixelType* imageIn, ImagePixelType* image
 
 	if (coordinate<imageDims)
 	{
-		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = 
-			min((double)maxValue,max((double)minValue, factor*imageIn[imageDims.linearAddressAt(coordinate,isColumnMajor)]));
+		imageOut[imageDims.linearAddressAt(coordinate)] = 
+			min((double)maxValue,max((double)minValue, factor*imageIn[imageDims.linearAddressAt(coordinate)]));
 	}
 }
 
 template<typename ImagePixelType1, typename ImagePixelType2, typename ImagePixelType3>//, typename FactorType>
 __global__ void cudaAddTwoImagesWithFactor(ImagePixelType1* imageIn1, ImagePixelType2* imageIn2, ImagePixelType3* imageOut,
-	Vec<unsigned int> hostImageDims, double factor, ImagePixelType3 minValue, ImagePixelType3 maxValue, bool isColumnMajor=false)
+	Vec<unsigned int> hostImageDims, double factor, ImagePixelType3 minValue, ImagePixelType3 maxValue)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -82,16 +82,16 @@ __global__ void cudaAddTwoImagesWithFactor(ImagePixelType1* imageIn1, ImagePixel
 
 	if (coordinate<imageDims)
 	{
-		double subtractor = factor*(double)imageIn2[imageDims.linearAddressAt(coordinate,isColumnMajor)];
-		ImagePixelType3 outValue = (double)imageIn1[imageDims.linearAddressAt(coordinate,isColumnMajor)] + subtractor;
+		double subtractor = factor*(double)imageIn2[imageDims.linearAddressAt(coordinate)];
+		ImagePixelType3 outValue = (double)imageIn1[imageDims.linearAddressAt(coordinate)] + subtractor;
 
-		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = min(maxValue,max(minValue,outValue));
+		imageOut[imageDims.linearAddressAt(coordinate)] = min(maxValue,max(minValue,outValue));
 	}
 }
 
 template<typename ImagePixelType1, typename ImagePixelType2, typename ImagePixelType3>
 __global__ void cudaMultiplyTwoImages(ImagePixelType1* imageIn1, ImagePixelType2* imageIn2, ImagePixelType3* imageOut,
-	Vec<unsigned int> hostImageDims, bool isColumnMajor=false)
+	Vec<unsigned int> hostImageDims)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -101,17 +101,17 @@ __global__ void cudaMultiplyTwoImages(ImagePixelType1* imageIn1, ImagePixelType2
 
 	if (coordinate<imageDims)
 	{
-		unsigned int idx = imageDims.linearAddressAt(coordinate,isColumnMajor);
-		ImagePixelType1 val1 = imageIn1[imageDims.linearAddressAt(coordinate,isColumnMajor)];
-		ImagePixelType2 val2 = imageIn2[imageDims.linearAddressAt(coordinate,isColumnMajor)];
-		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = 
-			imageIn1[imageDims.linearAddressAt(coordinate,isColumnMajor)] * imageIn2[imageDims.linearAddressAt(coordinate,isColumnMajor)];
+		unsigned int idx = imageDims.linearAddressAt(coordinate);
+		ImagePixelType1 val1 = imageIn1[imageDims.linearAddressAt(coordinate)];
+		ImagePixelType2 val2 = imageIn2[imageDims.linearAddressAt(coordinate)];
+		imageOut[imageDims.linearAddressAt(coordinate)] = 
+			imageIn1[imageDims.linearAddressAt(coordinate)] * imageIn2[imageDims.linearAddressAt(coordinate)];
 	}
 }
 
  template<typename ImagePixelType>
  __global__ void cudaAddFactor(ImagePixelType* imageIn1, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims, double factor,
-	 ImagePixelType minValue, ImagePixelType maxValue, bool isColumnMajor=false)
+	 ImagePixelType minValue, ImagePixelType maxValue)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -121,8 +121,8 @@ __global__ void cudaMultiplyTwoImages(ImagePixelType1* imageIn1, ImagePixelType2
 
 	if (coordinate<imageDims)
 	{
-		double outValue = imageIn1[imageDims.linearAddressAt(coordinate,isColumnMajor)] + factor;
-		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = min((double)maxValue,max((double)minValue,outValue));
+		double outValue = imageIn1[imageDims.linearAddressAt(coordinate)] + factor;
+		imageOut[imageDims.linearAddressAt(coordinate)] = min((double)maxValue,max((double)minValue,outValue));
 	}
 }
 
@@ -181,7 +181,7 @@ __device__ ImagePixelType cudaFindMedian(ImagePixelType* vals, int numVals)
 
 template<typename ImagePixelType>
 __global__ void cudaMedianFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims, 
-								 Vec<unsigned int> hostKernelDims, bool isColumnMajor=false)
+								 Vec<unsigned int> hostKernelDims)
 {
 	extern __shared__ ImagePixelType vals[];
 	DeviceVec<unsigned int> imageDims = hostImageDims;
@@ -217,20 +217,20 @@ __global__ void cudaMedianFilter(ImagePixelType* imageIn, ImagePixelType* imageO
 				curCoordKrn.x = ((int)coordinate.x-(int)kernelMidIdx.x>=0) ? (0) : (kernelMidIdx.x-coordinate.x);		
 				for (; curCoordIm.x<imageDims.x && curCoordKrn.x<kernelDims.x; ++curCoordIm.x, ++curCoordKrn.x)
 				{
-					vals[kernelVolume+offset] = imageIn[imageDims.linearAddressAt(curCoordIm,isColumnMajor)];
+					vals[kernelVolume+offset] = imageIn[imageDims.linearAddressAt(curCoordIm)];
 					++kernelVolume;
 				}
 			}
 		}
 
-		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = cudaFindMedian(vals+offset,kernelVolume);
+		imageOut[imageDims.linearAddressAt(coordinate)] = cudaFindMedian(vals+offset,kernelVolume);
 		__syncthreads();
 	}
 }
 
 template<typename ImagePixelType1, typename ImagePixelType2>
 __global__ void cudaMultAddFilter(ImagePixelType1* imageIn, ImagePixelType2* imageOut, Vec<unsigned int> hostImageDims,
-	Vec<unsigned int> hostKernelDims, int kernelOffset=0, bool isColumnMajor=false)
+	Vec<unsigned int> hostKernelDims, int kernelOffset=0)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -267,18 +267,18 @@ __global__ void cudaMultAddFilter(ImagePixelType1* imageIn, ImagePixelType2* ima
 				{
 					size_t kernIdx = kernelDims.linearAddressAt(curCoordKrn)+kernelOffset;
 					kernFactor += cudaConstKernel[kernIdx];
-					val += imageIn[imageDims.linearAddressAt(curCoordIm,isColumnMajor)] * cudaConstKernel[kernIdx];
+					val += imageIn[imageDims.linearAddressAt(curCoordIm)] * cudaConstKernel[kernIdx];
 				}
 			}
 		}
 
-		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = val/kernFactor;
+		imageOut[imageDims.linearAddressAt(coordinate)] = val/kernFactor;
 	}
 }
 
 template<typename ImagePixelType>
 __global__ void cudaMinFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims,
-	Vec<unsigned int> hostKernelDims, bool isColumnMajor=false)
+	Vec<unsigned int> hostKernelDims)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -288,7 +288,7 @@ __global__ void cudaMinFilter(ImagePixelType* imageIn, ImagePixelType* imageOut,
 
 	if (coordinate<imageDims)
 	{
-		ImagePixelType minVal = imageIn[imageDims.linearAddressAt(coordinate,isColumnMajor)];
+		ImagePixelType minVal = imageIn[imageDims.linearAddressAt(coordinate)];
 		DeviceVec<unsigned int> kernelDims = hostKernelDims;
 		DeviceVec<unsigned int> kernelMidIdx;
 		DeviceVec<unsigned int> curCoordIm; 
@@ -313,20 +313,20 @@ __global__ void cudaMinFilter(ImagePixelType* imageIn, ImagePixelType* imageOut,
 				{
 					if(cudaConstKernel[kernelDims.linearAddressAt(curCoordKrn)]>0)
 					{
-						minVal = (ImagePixelType)min((float)minVal, imageIn[imageDims.linearAddressAt(curCoordIm,isColumnMajor)]*
+						minVal = (ImagePixelType)min((float)minVal, imageIn[imageDims.linearAddressAt(curCoordIm)]*
 							cudaConstKernel[kernelDims.linearAddressAt(curCoordKrn)]);
 					}
 				}
 			}
 		}
 
-		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = minVal;
+		imageOut[imageDims.linearAddressAt(coordinate)] = minVal;
 	}
 }
 
 template<typename ImagePixelType>
 __global__ void cudaMaxFilter(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims,
-	Vec<unsigned int> hostKernelDims, bool isColumnMajor=false)
+	Vec<unsigned int> hostKernelDims)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -336,7 +336,7 @@ __global__ void cudaMaxFilter(ImagePixelType* imageIn, ImagePixelType* imageOut,
 
 	if (coordinate<imageDims)
 	{
-		ImagePixelType maxVal = imageIn[imageDims.linearAddressAt(coordinate,isColumnMajor)];
+		ImagePixelType maxVal = imageIn[imageDims.linearAddressAt(coordinate)];
 		DeviceVec<unsigned int> kernelDims = hostKernelDims;
 		DeviceVec<unsigned int> kernelMidIdx;
 		DeviceVec<unsigned int> curCoordIm; 
@@ -361,14 +361,14 @@ __global__ void cudaMaxFilter(ImagePixelType* imageIn, ImagePixelType* imageOut,
 				{
 					if(cudaConstKernel[kernelDims.linearAddressAt(curCoordKrn)]>0)
 					{
-						maxVal = (ImagePixelType)max((float)maxVal, imageIn[imageDims.linearAddressAt(curCoordIm,isColumnMajor)]*
+						maxVal = (ImagePixelType)max((float)maxVal, imageIn[imageDims.linearAddressAt(curCoordIm)]*
 							cudaConstKernel[kernelDims.linearAddressAt(curCoordKrn)]);
 					}
 				}
 			}
 		}
 
-		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = maxVal;
+		imageOut[imageDims.linearAddressAt(coordinate)] = maxVal;
 	}
 }
 
@@ -424,7 +424,7 @@ __global__ void cudaNormalizeHistogram(unsigned int* histogram, double* normHist
 
 template<typename ImagePixelType, typename ThresholdType>
 __global__ void cudaThresholdImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims,
-	ThresholdType threshold, ImagePixelType minValue, ImagePixelType maxValue, bool isColumnMajor=false)
+	ThresholdType threshold, ImagePixelType minValue, ImagePixelType maxValue)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -434,10 +434,10 @@ __global__ void cudaThresholdImage(ImagePixelType* imageIn, ImagePixelType* imag
 
 	if (coordinate<imageDims)
 	{
-		if (imageIn[imageDims.linearAddressAt(coordinate,isColumnMajor)]>=threshold)
-			imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = maxValue;
+		if (imageIn[imageDims.linearAddressAt(coordinate)]>=threshold)
+			imageOut[imageDims.linearAddressAt(coordinate)] = maxValue;
 		else
-			imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = minValue;
+			imageOut[imageDims.linearAddressAt(coordinate)] = minValue;
 	}
 }
 
@@ -599,7 +599,7 @@ __global__ void cudaFindMinMax(ImagePixelType* arrayIn, double* minArrayOut, dou
 
 template<typename ImagePixelType>
 __global__ void cudaPolyTransferFuncImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims,
-	double a, double b, double c, ImagePixelType minPixelValue, ImagePixelType maxPixelValue, bool isColumnMajor=false)
+	double a, double b, double c, ImagePixelType minPixelValue, ImagePixelType maxPixelValue)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -609,7 +609,7 @@ __global__ void cudaPolyTransferFuncImage(ImagePixelType* imageIn, ImagePixelTyp
 
 	if (coordinate<imageDims)
 	{
-		double pixVal = (double)imageIn[imageDims.linearAddressAt(coordinate,isColumnMajor)] / maxPixelValue;
+		double pixVal = (double)imageIn[imageDims.linearAddressAt(coordinate)] / maxPixelValue;
 		double multiplier = a*pixVal*pixVal + b*pixVal + c;
 		if (multiplier<0)
 			multiplier = 0;
@@ -618,7 +618,7 @@ __global__ void cudaPolyTransferFuncImage(ImagePixelType* imageIn, ImagePixelTyp
 
 		ImagePixelType newPixelVal = min((double)maxPixelValue,max((double)minPixelValue, multiplier*maxPixelValue));
 
-		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = newPixelVal;
+		imageOut[imageDims.linearAddressAt(coordinate)] = newPixelVal;
 	}
 }
 
@@ -718,7 +718,7 @@ __global__ void cudaSumArray(DataType* arrayIn, double* arrayOut, unsigned int n
 
 template<typename ImagePixelType>
 __global__ void cudaRuduceImage(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageInDims,
-	Vec<unsigned int> hostImageOutDims, Vec<double> hostReductions, bool isColumnMajor=false)
+	Vec<unsigned int> hostImageOutDims, Vec<double> hostReductions)
 {
 	DeviceVec<unsigned int> imageInDims = hostImageInDims;
 	DeviceVec<unsigned int> imageOutDims = hostImageOutDims;
@@ -746,12 +746,12 @@ __global__ void cudaRuduceImage(ImagePixelType* imageIn, ImagePixelType* imageOu
 			{
 				for (currCorrd.x=mins.x; currCorrd.x<maxs.x; ++currCorrd.x)
 				{
-					val += (float)imageIn[imageInDims.linearAddressAt(currCorrd,isColumnMajor)];
+					val += (float)imageIn[imageInDims.linearAddressAt(currCorrd)];
 				}
 			}
 		}
 
-		imageOut[imageOutDims.linearAddressAt(coordinate,isColumnMajor)] = val/(maxs-mins).product();
+		imageOut[imageOutDims.linearAddressAt(coordinate)] = val/(maxs-mins).product();
 	}
 }
 
@@ -783,7 +783,7 @@ __global__ void cudaMaximumIntensityProjection(ImagePixelType* imageIn, ImagePix
 
 template<typename ImagePixelType>
 __global__ void cudaGetROI(ImagePixelType* imageIn, ImagePixelType* imageOut, Vec<unsigned int> hostImageDims,
-	Vec<unsigned int> hostStartPos,	Vec<unsigned int> hostNewSize, bool isColumnMajor=false)
+	Vec<unsigned int> hostStartPos,	Vec<unsigned int> hostNewSize)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> newSize = hostNewSize;
@@ -795,8 +795,8 @@ __global__ void cudaGetROI(ImagePixelType* imageIn, ImagePixelType* imageOut, Ve
 
 	if (coordinate>=startPos && coordinate<startPos+newSize && coordinate<imageDims)
 	{
-		unsigned int outIndex = newSize.linearAddressAt(coordinate-startPos,isColumnMajor);
-		imageOut[outIndex] = imageIn[imageDims.linearAddressAt(coordinate,isColumnMajor)];
+		unsigned int outIndex = newSize.linearAddressAt(coordinate-startPos);
+		imageOut[outIndex] = imageIn[imageDims.linearAddressAt(coordinate)];
 	}
 }
 
@@ -878,7 +878,7 @@ __global__ void cudaUnmixing(const ImagePixelType* imageIn1, const ImagePixelTyp
 
 template<typename ImagePixelType>
 __global__ void cudaMask(const ImagePixelType* imageIn1, const ImagePixelType* imageIn2, ImagePixelType* imageOut,
-						 Vec<unsigned int> hostImageDims, ImagePixelType threshold, bool isColumnMajor=false)
+						 Vec<unsigned int> hostImageDims, ImagePixelType threshold)
 {
 	DeviceVec<unsigned int> imageDims = hostImageDims;
 	DeviceVec<unsigned int> coordinate;
@@ -890,9 +890,9 @@ __global__ void cudaMask(const ImagePixelType* imageIn1, const ImagePixelType* i
 	{
 		ImagePixelType val=0;
 
-		if (imageIn2[imageDims.linearAddressAt(coordinate,isColumnMajor)] <= threshold)
-			val = imageIn1[imageDims.linearAddressAt(coordinate,isColumnMajor)];
+		if (imageIn2[imageDims.linearAddressAt(coordinate)] <= threshold)
+			val = imageIn1[imageDims.linearAddressAt(coordinate)];
 
-		imageOut[imageDims.linearAddressAt(coordinate,isColumnMajor)] = val;
+		imageOut[imageDims.linearAddressAt(coordinate)] = val;
 	}
 }

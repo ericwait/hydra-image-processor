@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common\CHelpers.cpp" />
+    <ClCompile Include="Common\ImageContainer.cpp" />
     <ClCompile Include="CudaMex\AddConstant.cpp" />
     <ClCompile Include="CudaMex\AddImageWith.cpp" />
     <ClCompile Include="CudaMex\ApplyPolyTransformation.cpp" />
@@ -51,14 +52,15 @@
     <ClCompile Include="CudaMex\ReduceImage.cpp" />
     <ClCompile Include="CudaMex\SumArray.cpp" />
     <ClCompile Include="CudaMex\ThresholdFilter.cpp" />
-    <ClCompile Include="CudaMex\Unmix.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="Common\CudaUtilities.cu" />
-    <CudaCompile Include="CudaMex\Process.cu" />
+    <CudaCompile Include="Common\Process.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\CHelpers.h" />
+    <ClInclude Include="Common\ImageContainer.h" />
+    <ClInclude Include="Common\Process.h" />
     <ClInclude Include="Common\Vec.h" />
     <ClInclude Include="Common\VecFuncs.h" />
     <ClInclude Include="CudaMex\MexCommand.h" />
@@ -68,12 +70,13 @@
     <ClInclude Include="Common\CudaUtilities.cuh">
       <FileType>Document</FileType>
     </ClInclude>
-    <None Include="Common\CudaProcessBuffer.cuh" />
-    <None Include="Common\CudaStorageBuffer.cuh" />
+    <ClInclude Include="Common\CudaProcessBuffer.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="Common\CudaStorageBuffer.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
     <None Include="CudaMex\CudaMex.def" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CudaMex\Process.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DF033EF0-D4AC-41CD-900B-5BFE8099BED4}</ProjectGuid>
@@ -143,6 +146,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(MATLAB_DIR)\extern\include;$(SolutionDir)CudaMex;$(SolutionDir)Common;</AdditionalIncludeDirectories>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -167,7 +171,12 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\MATLAB\."</Command>
     </CudaLink>
     <CudaCompile>
       <CodeGeneration>compute_20,sm_20;compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <Warning>InheritFromHost</Warning>
     </CudaCompile>
+    <Bscmake>
+      <PreserveSBR>true</PreserveSBR>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -219,6 +228,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\..\bin\."</Command>
     </CudaLink>
     <CudaCompile>
       <CodeGeneration>compute_20,sm_20;compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
     </CudaCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

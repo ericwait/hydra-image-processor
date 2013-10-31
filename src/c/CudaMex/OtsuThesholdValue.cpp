@@ -3,12 +3,12 @@
 void OtsuThesholdValue::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	HostPixelType* imageIn;
-	setupImagePointers(prhs[0],&imageIn,&imageDims);
+	ImageContainer* imageIn;
+	setupImagePointers(prhs[0],&imageIn);
 
 	double thresh;
 
-	thresh = (double)otsuThesholdValue(imageIn,imageDims);
+	thresh = (double)otsuThesholdValue(imageIn);
 
 	plhs[0] = mxCreateDoubleScalar(thresh);
 }

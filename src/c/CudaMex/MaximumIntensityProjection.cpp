@@ -4,17 +4,19 @@
 void MaximumIntensityProjection::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	HostPixelType* imageIn, * imageOut;
-	setupImagePointers(prhs[0],&imageIn,&imageDims);
+	HostPixelType* mexImageOut;
+	ImageContainer* imageIn;
+	setupImagePointers(prhs[0],&imageIn);
 
-	mxArray* argOut;
 	mwSize* dims = new mwSize[2];
 	dims[0] = imageDims.x;
 	dims[1] = imageDims.y;
-	argOut = mxCreateNumericArray(2,dims,mxUINT8_CLASS,mxREAL);
-	imageOut = (HostPixelType*)mxGetData(argOut);
+	plhs[0] = mxCreateNumericArray(2,dims,mxUINT8_CLASS,mxREAL);
+	mexImageOut = (HostPixelType*)mxGetData(plhs[0]);
 
-	maximumIntensityProjection(imageIn,imageOut,imageDims);
+	ImageContainer imageOut(Vec<unsigned int>(imageDims.x,imageDims.y,1));
+	maximumIntensityProjection(imageIn,&imageOut);
+	rearange(&imageOut,mexImageOut);
 }
 
 std::string MaximumIntensityProjection::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

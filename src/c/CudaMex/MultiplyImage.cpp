@@ -4,12 +4,14 @@
 void MultiplyImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	HostPixelType* imageIn, * imageOut;
-	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+	HostPixelType* mexImageOut;
+	ImageContainer* imageIn, * imageOut;
+	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
 
 	double multiplier = mxGetScalar(prhs[1]);
 
-	multiplyImage(imageIn,imageOut,imageDims,multiplier);
+	multiplyImage(imageIn,imageOut,multiplier);
+	rearange(imageOut,mexImageOut);
 }
 
 std::string MultiplyImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
@@ -35,5 +37,5 @@ std::string MultiplyImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxA
 
 std::string MultiplyImage::printUsage()
 {
-	return "imageOut = CudaMex('MultiplyImage',imageIn,multipier)";
+	return "imageOut = CudaMex('MultiplyImage',imageIn,multiplier)";
 }

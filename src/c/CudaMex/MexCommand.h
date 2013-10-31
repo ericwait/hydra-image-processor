@@ -23,8 +23,9 @@ public:
 protected:
 	MexCommand(){}
 	static void addCommand(const std::string commandText, MexCommand* commandObject);
-	void setupImagePointers( const mxArray* imageIn, HostPixelType** image, Vec<unsigned int>* imageDims, mxArray** argOut=NULL,
-		HostPixelType** imageOut=NULL);
+	void setupImagePointers( const mxArray* imageIn, ImageContainer** image, mxArray** argOut=NULL, HostPixelType** mexImageOut=NULL,
+		ImageContainer** imageOut=NULL);
+	void rearange(ImageContainer* image, HostPixelType* mexImage);
 
 private:
 	static std::map<std::string,MexCommand*> commandList;
@@ -342,17 +343,6 @@ class ThresholdFilter : MexCommand
 public:
 	ThresholdFilter(){}
 	virtual ~ThresholdFilter(){}
-
-	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-	virtual std::string printUsage();
-};
-
-class Unmix
-{
-public:
-	Unmix(){}
-	virtual ~Unmix(){}
 
 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);

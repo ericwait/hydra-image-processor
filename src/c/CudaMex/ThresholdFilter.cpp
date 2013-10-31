@@ -4,12 +4,14 @@
 void ThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	HostPixelType* imageIn, * imageOut;
-	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+	ImageContainer* imageIn, * imageOut;
+	HostPixelType* mexImageOut;
+	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
 
 	double thresh = mxGetScalar(prhs[1]);
 
-	thresholdFilter(imageIn,imageOut,imageDims,thresh);
+	thresholdFilter(imageIn,imageOut,thresh);
+	rearange(imageOut,mexImageOut);
 }
 
 std::string ThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

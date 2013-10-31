@@ -4,12 +4,12 @@
 void CalculateMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<unsigned int> imageDims;
-	HostPixelType* imageIn;
-	setupImagePointers(prhs[0],&imageIn,&imageDims);
+	ImageContainer* imageIn;
+	setupImagePointers(prhs[0],&imageIn);
 
 	double mn, mx;
 
-	calculateMinMax(imageIn,imageDims,mn,mx);
+	calculateMinMax(imageIn,mn,mx);
 
 	plhs[0] = mxCreateDoubleScalar(mn);
 	plhs[1] = mxCreateDoubleScalar(mx);
