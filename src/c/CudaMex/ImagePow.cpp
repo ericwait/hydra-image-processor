@@ -11,6 +11,9 @@ void ImagePow::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
 	double p = mxGetScalar(prhs[1]);
 	imagePow(imageIn,imageOut,(int)p);
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn;
+	delete imageOut;
 }
 
 std::string ImagePow::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

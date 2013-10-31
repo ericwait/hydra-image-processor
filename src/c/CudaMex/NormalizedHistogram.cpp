@@ -14,6 +14,8 @@ void NormalizedHistogram::execute( int nlhs, mxArray* plhs[], int nrhs, const mx
 	double* histPr = mxGetPr(plhs[0]);
 
 	memcpy(histPr,hist,sizeof(double)*arraySize);
+
+	delete imageIn;
 }
 
 std::string NormalizedHistogram::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

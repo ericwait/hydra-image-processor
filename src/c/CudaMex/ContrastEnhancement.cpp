@@ -16,6 +16,9 @@ void ContrastEnhancement::execute( int nlhs, mxArray* plhs[], int nrhs, const mx
 	
 	contrastEnhancement(imageIn,imageOut,sigmas,neighborhood);
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn;
+	delete imageOut;
 }
 
 std::string ContrastEnhancement::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

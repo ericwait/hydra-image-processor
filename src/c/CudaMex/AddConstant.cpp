@@ -12,6 +12,9 @@ void AddConstant::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* pr
 
 	addConstant(imageIn,imageOut,additive);
 	rearange(imageOut,mexImageOut);
+	
+	delete imageIn;
+	delete imageOut;
 }
 
 std::string AddConstant::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])

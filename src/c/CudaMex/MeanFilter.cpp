@@ -13,6 +13,9 @@ void MeanFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* pr
 
 	meanFilter(imageIn,imageOut,neighborhood);
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn;
+	delete imageOut;
 }
 
 std::string MeanFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

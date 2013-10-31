@@ -15,6 +15,8 @@ void Histogram::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prh
 
 	for (int i=0; i<arraySize; ++i)
 		histPr[i] = (double)hist[i];
+
+	delete imageIn;
 }
 
 std::string Histogram::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

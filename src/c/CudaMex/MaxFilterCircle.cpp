@@ -16,6 +16,10 @@ void MaxFilterCircle::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	maxFilter(imageIn,imageOut,kernDims,circleKernel);
 
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn;
+	delete imageOut;
+	delete[] circleKernel;
 }
 
 std::string MaxFilterCircle::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

@@ -15,6 +15,9 @@ void ApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 
 	applyPolyTransformation(imageIn,imageOut,a,b,c,std::numeric_limits<HostPixelType>::min(),std::numeric_limits<HostPixelType>::max());
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn;
+	delete imageOut;
 }
 
 

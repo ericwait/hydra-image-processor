@@ -15,6 +15,9 @@ void NormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, const m
 	double normCoVar = normalizedCovariance(imageIn1,imageIn2);
 
 	plhs[0] = mxCreateDoubleScalar(normCoVar);
+
+	delete imageIn1;
+	delete imageIn2;
 }
 
 std::string NormalizedCovariance::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

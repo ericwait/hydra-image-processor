@@ -12,6 +12,9 @@ void MaxFilterNeighborHood::execute( int nlhs, mxArray* plhs[], int nrhs, const 
 	Vec<size_t> neighborhood((size_t)nbh[0],(size_t)nbh[1],(size_t)nbh[2]);
 	maxFilter(imageIn,imageOut,neighborhood);
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn;
+	delete imageOut;
 }
 
 std::string MaxFilterNeighborHood::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

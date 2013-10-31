@@ -11,6 +11,8 @@ void OtsuThesholdValue::execute( int nlhs, mxArray* plhs[], int nrhs, const mxAr
 	thresh = (double)otsuThesholdValue(imageIn);
 
 	plhs[0] = mxCreateDoubleScalar(thresh);
+
+	delete imageIn;
 }
 
 std::string OtsuThesholdValue::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

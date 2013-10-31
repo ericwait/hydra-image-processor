@@ -13,6 +13,9 @@ void GaussianFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	Vec<float> sigmas((float)sigmasD[0],(float)sigmasD[1],(float)sigmasD[2]);
 	gaussianFilter(imageIn,imageOut,sigmas);
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn;
+	delete imageOut;
 }
 
 std::string GaussianFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

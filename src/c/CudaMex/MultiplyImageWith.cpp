@@ -13,6 +13,10 @@ void MultiplyImageWith::execute( int nlhs, mxArray* plhs[], int nrhs, const mxAr
 
 	multiplyImageWith(imageIn1,imageIn2,imageOut);
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn1;
+	delete imageIn2;
+	delete imageOut;
 }
 
 std::string MultiplyImageWith::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

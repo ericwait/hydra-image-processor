@@ -13,6 +13,8 @@ void CalculateMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 
 	plhs[0] = mxCreateDoubleScalar(mn);
 	plhs[1] = mxCreateDoubleScalar(mx);
+
+	delete imageIn;
 }
 
 std::string CalculateMinMax::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

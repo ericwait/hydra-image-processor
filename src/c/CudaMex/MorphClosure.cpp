@@ -16,6 +16,10 @@ void MorphClosure::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* 
 	double* circleKernel = createEllipsoidKernel(radii,kernDims);
 	morphClosure(imageIn,imageOut,kernDims,circleKernel);
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn;
+	delete imageOut;
+	delete[] circleKernel;
 }
 
 std::string MorphClosure::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

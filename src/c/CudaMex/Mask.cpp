@@ -18,6 +18,10 @@ void Mask::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 
 	mask(imageIn1,imageIn2,imageOut,threshold);
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn1;
+	delete imageIn2;
+	delete imageOut;
 }
 
 std::string Mask::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

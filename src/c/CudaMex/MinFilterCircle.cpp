@@ -15,6 +15,10 @@ void MinFilterCircle::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	double* circleKernel = createEllipsoidKernel(radii,kernDims);
 	minFilter(imageIn,imageOut,kernDims,circleKernel);
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn;
+	delete imageOut;
+	delete[] circleKernel;
 }
 
 std::string MinFilterCircle::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

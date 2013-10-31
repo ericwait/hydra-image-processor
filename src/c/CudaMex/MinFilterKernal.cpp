@@ -24,6 +24,9 @@ void MinFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	minFilter(imageIn,imageOut,kernelDims,kern);
 
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn;
+	delete imageOut;
 }
 
 std::string MinFilterKernel::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

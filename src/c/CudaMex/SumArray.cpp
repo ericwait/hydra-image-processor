@@ -10,6 +10,8 @@ void SumArray::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
 	double sm = sumArray(imageIn);
 
 	plhs[0] = mxCreateDoubleScalar(sm);
+
+	delete imageIn;
 }
 
 std::string SumArray::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

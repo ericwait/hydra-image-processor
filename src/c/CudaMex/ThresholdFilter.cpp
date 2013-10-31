@@ -12,6 +12,9 @@ void ThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 
 	thresholdFilter(imageIn,imageOut,thresh);
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn;
+	delete imageOut;
 }
 
 std::string ThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

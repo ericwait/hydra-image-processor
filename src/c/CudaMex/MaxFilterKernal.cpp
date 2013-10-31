@@ -23,6 +23,9 @@ void MaxFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 
 	maxFilter(imageIn,imageOut,kernelDims,kern);
 	rearange(imageOut,mexImageOut);
+	
+	delete imageIn;
+	delete imageOut;
 }
 
 std::string MaxFilterKernel::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

@@ -14,6 +14,10 @@ void AddImageWith::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* 
 	double factor = mxGetScalar(prhs[2]);
 	addImageWith(imageIn1,imageIn2,imageOut,factor);
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn1;
+	delete imageIn2;
+	delete imageOut;
 }
 
 std::string AddImageWith::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

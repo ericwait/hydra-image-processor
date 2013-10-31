@@ -12,6 +12,9 @@ void MultiplyImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray*
 
 	multiplyImage(imageIn,imageOut,multiplier);
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn;
+	delete imageOut;
 }
 
 std::string MultiplyImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

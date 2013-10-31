@@ -13,6 +13,9 @@ void OtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mx
 
 	otsuThresholdFilter(imageIn,imageOut,alpha);
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn;
+	delete imageOut;
 }
 
 std::string OtsuThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

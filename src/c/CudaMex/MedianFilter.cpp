@@ -13,6 +13,9 @@ void MedianFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* 
 
 	medianFilter(imageIn,imageOut,neighborhood);
 	rearange(imageOut,mexImageOut);
+
+	delete imageIn;
+	delete imageOut;
 }
 
 std::string MedianFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

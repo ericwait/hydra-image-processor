@@ -17,6 +17,9 @@ void MaximumIntensityProjection::execute( int nlhs, mxArray* plhs[], int nrhs, c
 	ImageContainer imageOut(Vec<size_t>(imageDims.x,imageDims.y,1));
 	maximumIntensityProjection(imageIn,&imageOut);
 	rearange(&imageOut,mexImageOut);
+
+	delete imageIn;
+	delete[] dims;
 }
 
 std::string MaximumIntensityProjection::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

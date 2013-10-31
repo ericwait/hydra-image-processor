@@ -24,6 +24,7 @@ void ReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 
 	delete processedImage;
 	delete imageIn;
+	delete[] dims;
 }
 
 std::string ReduceImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
