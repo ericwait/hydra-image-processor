@@ -39,13 +39,13 @@ void ImageContainer::copy(const ImageContainer& im)
 
 void ImageContainer::clear()
 {
-	defaults();
-
-	if (image)
+	if (image!=NULL)
 	{
 		delete[] image;
 		image = NULL;
 	}
+
+	defaults();
 }
 
 HostPixelType ImageContainer::getPixelValue(size_t x, size_t y, size_t z) const
