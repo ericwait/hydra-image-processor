@@ -122,10 +122,16 @@
     <CudaCompile Include="Common\Process.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
+    <CudaCompile Include="Common\CudaKernels.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="CudaMex\CudaMex.def">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Common\CudaImageContainer.cuh">
+      <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

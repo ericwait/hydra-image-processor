@@ -2,6 +2,7 @@
 
 #include "CudaUtilities.cuh"
 #include "CudaKernels.cuh"
+#include "CudaImageContainer.cuh"
 #include "Vec.h"
 
 template<typename ImagePixelType>
@@ -18,24 +19,23 @@ public:
 		this->device = device;
 		deviceSetup();
 		memoryAllocation();
-		setImage(image,cudaMemcpyHostToDevice);
-		
+		setImage(image);
 	}
 
-	CudaStorageBuffer(const CudaProcessBuffer<ImagePixelType>* imageBuff)
-	{
-		defaults();
-		imageDims = imageBuff->getDimension();
-		device = imageBuff->getDevice();
-		deviceSetup();
-		memoryAllocation();
-		setImage(imageBuff->getCudaBuffer(),cudaMemcpyDeviceToDevice);
-	}
+// 	CudaStorageBuffer(const CudaProcessBuffer<ImagePixelType>* imageBuff)
+// 	{
+// 		defaults();
+// 		imageDims = imageBuff->getDimension();
+// 		device = imageBuff->getDevice();
+// 		deviceSetup();
+// 		memoryAllocation();
+// 		setImage(imageBuff->getCudaBuffer(),cudaMemcpyDeviceToDevice);
+// 	}
 
 	~CudaStorageBuffer()
 	{
 		if (deviceImage!=NULL)
-			HANDLE_ERROR(cudaFree(deviceImage));
+			delete deviceImage;
 
 		defaults();
 	}
@@ -53,12 +53,12 @@ public:
 
 	Vec<size_t> getDims() const {return imageDims;}
 	int getDevice() const {return device;}
-	const ImagePixelType* getImagePointer(){return deviceImage;}
+	const CudaImageContainer* getImageContainer() const {return deviceImage;}
 	size_t getGlobalMemoryAvailable() {return deviceProp.totalGlobalMem;}
 
 	void getRoi(ImagePixelType* roi, Vec<size_t> starts, Vec<size_t> sizes) const
 	{
-		cudaGetROI<<<blocks,threads>>>(deviceImage,roi,imageDims,starts,sizes);
+		cudaGetROI<<<blocks,threads>>>(*deviceImage,roi,starts,sizes);
 	}
 
 private:
@@ -78,14 +78,14 @@ private:
 		calcBlockThread(imageDims,deviceProp,blocks,threads);
 	}
 
-	void memoryAllocation()
+	void memoryAllocation(bool isColumnMajor=false)
 	{
-		HANDLE_ERROR(cudaMalloc((void**)&deviceImage,sizeof(ImagePixelType)*imageDims.product()));
+		deviceImage = new CudaImageContainer(imageDims,device,isColumnMajor);
 	}
 
-	void setImage(const ImagePixelType* image, cudaMemcpyKind direction)
+	void setImage(const ImagePixelType* image)
 	{
-		HANDLE_ERROR(cudaMemcpy(deviceImage,image,sizeof(ImagePixelType)*imageDims.product(),direction));
+		deviceImage->loadImage(image,imageDims);
 	}
 
 	void copy(const CudaStorageBuffer<ImagePixelType>* buff)
@@ -94,13 +94,12 @@ private:
 		imageDims = buff->getDims();
 		device = buff->getDevice();
 		deviceSetup();
-		memoryAllocation();
-		setImage(buff->deviceImage,cudaMemcpyDeviceToDevice);
+		deviceImage = new CudaImageContainer(*buff->getImageContainer());
 	}
 
 	Vec<size_t> imageDims;
 	int device;
 	cudaDeviceProp deviceProp;
 	dim3 blocks, threads;
-	ImagePixelType* deviceImage;
+	CudaImageContainer* deviceImage;
 };

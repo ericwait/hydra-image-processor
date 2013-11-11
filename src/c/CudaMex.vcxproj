@@ -54,7 +54,7 @@
     <ClCompile Include="CudaMex\ThresholdFilter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Common\CudaImageContainer.cu" />
+    <CudaCompile Include="Common\CudaKernels.cu" />
     <CudaCompile Include="Common\CudaUtilities.cu" />
     <CudaCompile Include="Common\Process.cu" />
   </ItemGroup>

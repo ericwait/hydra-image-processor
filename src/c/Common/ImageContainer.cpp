@@ -97,59 +97,18 @@ const HostPixelType* ImageContainer::getConstROIData(Vec<size_t> startIndex, Vec
 
 void ImageContainer::loadImage( const HostPixelType* imageIn, Vec<size_t> dims, bool isColumnMajor/*=false*/ )
 {
-	if (!isColumnMajor)
+	if (dims!=imageDims)
 	{
-		if (dims!=imageDims)
+		if (image!=NULL)
 		{
-			if (image!=NULL)
-			{
-				delete[] image;
-			}
-			image = new HostPixelType[dims.product()];
-			imageDims = dims;
+			delete[] image;
 		}
-
-		memcpy(image,imageIn,sizeof(HostPixelType)*imageDims.product());
+		image = new HostPixelType[dims.product()];
+		imageDims = dims;
 	}
-	else
-	{
-// 		if (dims.x!=imageDims.y || dims.y!=imageDims.x || dims.z!=imageDims.z)
-// 		{
-		if (dims!=imageDims)
-		{
-			if (image!=NULL)
-			{
-				delete[] image;
-			}
-			image = new HostPixelType[dims.product()];
-			imageDims = dims;
-		}
-		//TODO: take this out when the cuda storage can take column major buffers
-		size_t i = 0;
-		double acum = 0.0;
-		int mx = -1;
-		Vec<size_t> curInIdx(0,0,0);
-		for (curInIdx.z=0; curInIdx.z<dims.z; ++curInIdx.z)
-		{
-			for (curInIdx.y=0; curInIdx.y<dims.y; ++curInIdx.y)
-			{
-				for (curInIdx.x=0; curInIdx.x<dims.x; ++curInIdx.x)
-				{
-					if (i>=imageDims.product())
-						break;
 
-					acum += image[i] = imageIn[imageDims.linearAddressAt(curInIdx,true)];
+	memcpy(image,imageIn,sizeof(HostPixelType)*imageDims.product());
 
-					if (image[i]>mx)
-						mx = image[i];
-
-					++i;
-				}
-			}
-		}
-		double mean = acum/i;
-		columnMajor = false;
-	}
 }
 
 void ImageContainer::loadImage( const HostPixelType* imageIn, size_t width, size_t height, size_t depth, bool isColumnMajor/*=false*/ )

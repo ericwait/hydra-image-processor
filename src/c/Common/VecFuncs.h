@@ -7,6 +7,15 @@ DEVICE_PREFIX VEC_THIS_CLASS(const EXTERN_TYPE<T>& other)
 	this->z = other.z;
 }
 
+DEVICE_PREFIX VEC_THIS_CLASS& operator= (const EXTERN_TYPE<T>& other)
+{
+	this->x = other.x;
+	this->y = other.y;
+	this->z = other.z;
+
+	return *this;
+}
+
 DEVICE_PREFIX VEC_THIS_CLASS<T> operator+ (const EXTERN_TYPE<T>& other) const
 {
 	VEC_THIS_CLASS<T> outVec;
