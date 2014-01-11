@@ -5,14 +5,12 @@ void GaussianFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 {
 	Vec<size_t> imageDims;
 	ImageContainer* imageIn, * imageOut;
-	HostPixelType* mexImageOut;
-	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
+	setupImagePointers(prhs[0],&imageIn,&plhs[0],&imageOut);
 
 	double* sigmasD = (double*)mxGetData(prhs[1]);
 
 	Vec<float> sigmas((float)sigmasD[0],(float)sigmasD[1],(float)sigmasD[2]);
 	gaussianFilter(imageIn,imageOut,sigmas);
-	rearange(imageOut,mexImageOut);
 
 	delete imageIn;
 	delete imageOut;

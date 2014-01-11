@@ -4,8 +4,7 @@ void MinFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 {
 	Vec<size_t> imageDims;
 	ImageContainer* imageIn, * imageOut;
-	HostPixelType* mexImageOut;
-	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
+	setupImagePointers(prhs[0],&imageIn,&plhs[0],&imageOut);
 
 	size_t kernDims = mxGetNumberOfDimensions(prhs[1]);
 
@@ -22,8 +21,6 @@ void MinFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	double* kern = (double*)mxGetData(prhs[1]);
 
 	minFilter(imageIn,imageOut,kernelDims,kern);
-
-	rearange(imageOut,mexImageOut);
 
 	delete imageIn;
 	delete imageOut;

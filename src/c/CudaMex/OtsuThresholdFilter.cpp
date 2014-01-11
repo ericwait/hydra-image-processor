@@ -4,15 +4,13 @@ void OtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mx
 {
 	Vec<size_t> imageDims;
 	ImageContainer* imageIn, * imageOut;
-	HostPixelType* mexImageOut;
-	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
+	setupImagePointers(prhs[0],&imageIn,&plhs[0],&imageOut);
 
 	double alpha = 1.0;
 	if (nrhs==2)
 	 alpha = mxGetScalar(prhs[1]);
 
 	otsuThresholdFilter(imageIn,imageOut,alpha);
-	rearange(imageOut,mexImageOut);
 
 	delete imageIn;
 	delete imageOut;

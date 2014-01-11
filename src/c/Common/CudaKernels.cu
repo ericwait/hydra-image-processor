@@ -7,7 +7,7 @@ __global__ void cudaMeanFilter( CudaImageContainer imageIn, CudaImageContainer i
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDims())
+	if (coordinate<imageIn.getDeviceDims())
 	{
 		double val = 0;
 		double kernelVolume = 0;
@@ -43,27 +43,29 @@ __global__ void cudaMeanFilter( CudaImageContainer imageIn, CudaImageContainer i
 	}
 }
 
-__global__ void cudaMultiplyImage( CudaImageContainer imageIn, CudaImageContainer imageOut, double factor, DevicePixelType minValue, DevicePixelType maxValue )
+__global__ void cudaMultiplyImage( CudaImageContainer imageIn, CudaImageContainer imageOut, double factor, DevicePixelType minValue,
+								  DevicePixelType maxValue )
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDims())
+	if (coordinate<imageIn.getDeviceDims())
 	{
 		imageOut[coordinate] = min((double)maxValue,max((double)minValue, factor*imageIn[coordinate]));
 	}
 }
 
-__global__ void cudaAddTwoImagesWithFactor( CudaImageContainer imageIn1, CudaImageContainer imageIn2, CudaImageContainer imageOut, double factor, DevicePixelType minValue, DevicePixelType maxValue )
+__global__ void cudaAddTwoImagesWithFactor( CudaImageContainer imageIn1, CudaImageContainer imageIn2, CudaImageContainer imageOut, double factor,
+										   DevicePixelType minValue, DevicePixelType maxValue )
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn1.getDims())
+	if (coordinate<imageIn1.getDeviceDims())
 	{
 		double subtractor = factor*(double)imageIn2[coordinate];
 		DevicePixelType outValue = (double)imageIn1[coordinate] + subtractor;
@@ -79,7 +81,7 @@ __global__ void cudaMultiplyTwoImages( CudaImageContainer imageIn1, CudaImageCon
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn1.getDims())
+	if (coordinate<imageIn1.getDeviceDims())
 	{
 		DevicePixelType val1 = imageIn1[coordinate];
 		DevicePixelType val2 = imageIn2[coordinate];
@@ -95,10 +97,16 @@ __global__ void cudaAddFactor( CudaImageContainer imageIn1, CudaImageContainer i
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn1.getDims())
+	if (coordinate<imageIn1.getDeviceDims())
 	{
 		double outValue = imageIn1[coordinate] + factor;
+		//size_t idxIn1 = imageIn1.getDeviceDims().linearAddressAt(coordinate,imageIn1.isColumnMajor());
+		//size_t idxOut = imageOut.getDeviceDims().linearAddressAt(coordinate,imageOut.isColumnMajor());
 		imageOut[coordinate] = min((double)maxValue,max((double)minValue,outValue));
+// 		DevicePixelType* im = imageOut.getDeviceImagePointer();
+// 		size_t idx = coordinate.x+coordinate.y*imageOut.getWidth()+coordinate.z*imageOut.getHeight();
+// 		size_t calcIdx = imageOut.getDeviceDims().linearAddressAt(coordinate);
+// 		im[idx] = coordinate.x;
 	}
 }
 
@@ -163,7 +171,7 @@ __global__ void cudaMedianFilter( CudaImageContainer imageIn, CudaImageContainer
 	int offset = threadIdx.x + threadIdx.y*blockDim.x + threadIdx.z*blockDim.y*blockDim.x;
 	offset *=  kernelDims.product();
 
-	if (coordinate<imageIn.getDims())
+	if (coordinate<imageIn.getDeviceDims())
 	{
 		int kernelVolume = 0;
 		DeviceVec<size_t> kernelMidIdx;
@@ -198,14 +206,14 @@ __global__ void cudaMedianFilter( CudaImageContainer imageIn, CudaImageContainer
 	}
 }
 
-__global__ void cudaMultAddFilter( CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostKernelDims, int kernelOffset/*=0*/ )
+__global__ void cudaMultAddFilter( CudaImageContainer* imageIn, CudaImageContainer* imageOut, Vec<size_t> hostKernelDims, size_t kernelOffset/*=0*/ )
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDims())
+	if (coordinate<imageIn->getDeviceDims())
 	{
 		double val = 0;
 		double kernFactor = 0;
@@ -222,24 +230,24 @@ __global__ void cudaMultAddFilter( CudaImageContainer imageIn, CudaImageContaine
 		//find if the kernel will go off the edge of the image
 		curCoordIm.z = (size_t) max(0,(int)coordinate.z-(int)kernelMidIdx.z);
 		curCoordKrn.z = ((int)coordinate.z-(int)kernelMidIdx.z>=0) ? (0) : (kernelMidIdx.z-coordinate.z);
-		for (; curCoordIm.z<imageIn.getDepth() && curCoordKrn.z<kernelDims.z; ++curCoordIm.z, ++curCoordKrn.z)
+		for (; curCoordIm.z<imageIn->getDepth() && curCoordKrn.z<kernelDims.z; ++curCoordIm.z, ++curCoordKrn.z)
 		{
 			curCoordIm.y = (size_t)max(0,(int)coordinate.y-(int)kernelMidIdx.y);
 			curCoordKrn.y = ((int)coordinate.y-(int)kernelMidIdx.y>=0) ? (0) : (kernelMidIdx.y-coordinate.y);
-			for (; curCoordIm.y<imageIn.getHeight() && curCoordKrn.y<kernelDims.y; ++curCoordIm.y, ++curCoordKrn.y)
+			for (; curCoordIm.y<imageIn->getHeight() && curCoordKrn.y<kernelDims.y; ++curCoordIm.y, ++curCoordKrn.y)
 			{
 				curCoordIm.x = (size_t)max(0,(int)coordinate.x-(int)kernelMidIdx.x);
 				curCoordKrn.x = ((int)coordinate.x-(int)kernelMidIdx.x>=0) ? (0) : (kernelMidIdx.x-coordinate.x);		
-				for (; curCoordIm.x<imageIn.getWidth() && curCoordKrn.x<kernelDims.x; ++curCoordIm.x, ++curCoordKrn.x)
+				for (; curCoordIm.x<imageIn->getWidth() && curCoordKrn.x<kernelDims.x; ++curCoordIm.x, ++curCoordKrn.x)
 				{
 					size_t kernIdx = kernelDims.linearAddressAt(curCoordKrn)+kernelOffset;
 					kernFactor += cudaConstKernel[kernIdx];
-					val += imageIn[curCoordIm] * cudaConstKernel[kernIdx];
+					val += (*imageIn)[curCoordIm] * cudaConstKernel[kernIdx];
 				}
 			}
 		}
 
-		imageOut[coordinate] = val/kernFactor;
+		(*imageOut)[coordinate] = val/kernFactor;
 	}
 }
 
@@ -250,7 +258,7 @@ __global__ void cudaMinFilter( CudaImageContainer imageIn, CudaImageContainer im
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDims())
+	if (coordinate<imageIn.getDeviceDims())
 	{
 		DevicePixelType minVal = imageIn[coordinate];
 		DeviceVec<size_t> kernelDims = hostKernelDims;
@@ -295,7 +303,7 @@ __global__ void cudaMaxFilter( CudaImageContainer imageIn, CudaImageContainer im
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDims())
+	if (coordinate<imageIn.getDeviceDims())
 	{
 		DevicePixelType maxVal = imageIn[coordinate];
 		DeviceVec<size_t> kernelDims = hostKernelDims;
@@ -343,7 +351,7 @@ __global__ void cudaHistogramCreate( CudaImageContainer imageIn, size_t* histogr
 	int i = threadIdx.x + blockIdx.x * blockDim.x;
 	int stride = blockDim.x * gridDim.x;
 
-	while (i < imageIn.getDims().product())
+	while (i < imageIn.getDeviceDims().product())
 	{
 		atomicAdd(&(tempHisto[imageIn[i]]), 1);
 		i += stride;
@@ -367,7 +375,7 @@ __global__ void cudaThresholdImage( CudaImageContainer imageIn, CudaImageContain
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDims())
+	if (coordinate<imageIn.getDeviceDims())
 	{
 		if (imageIn[coordinate]>=threshold)
 			imageOut[coordinate] = maxValue;
@@ -538,7 +546,7 @@ __global__ void cudaPolyTransferFuncImage( CudaImageContainer imageIn, CudaImage
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDims())
+	if (coordinate<imageIn.getDeviceDims())
 	{
 		double pixVal = (double)imageIn[coordinate] / maxPixelValue;
 		double multiplier = a*pixVal*pixVal + b*pixVal + c;
@@ -653,7 +661,7 @@ __global__ void cudaRuduceImage( CudaImageContainer imageIn, CudaImageContainer 
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageOut.getDims())
+	if (coordinate<imageOut.getDeviceDims())
 	{
 		double val = 0;
 		DeviceVec<size_t> mins, maxs;
@@ -687,7 +695,7 @@ __global__ void cudaMaximumIntensityProjection( CudaImageContainer imageIn, Cuda
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDims() && coordinate.z==0)
+	if (coordinate<imageIn.getDeviceDims() && coordinate.z==0)
 	{
 		DevicePixelType maxVal = 0;
 		for (; coordinate.z<imageIn.getDepth(); ++coordinate.z)
@@ -712,7 +720,7 @@ __global__ void cudaGetROI( CudaImageContainer imageIn, CudaImageContainer image
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate>=startPos && coordinate<startPos+newSize && coordinate<imageIn.getDims())
+	if (coordinate>=startPos && coordinate<startPos+newSize && coordinate<imageIn.getDeviceDims())
 	{
 		imageOut[coordinate-startPos] = imageIn[coordinate];
 	}
@@ -725,7 +733,7 @@ __global__ void cudaPow( CudaImageContainer imageIn, CudaImageContainer imageOut
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDims())
+	if (coordinate<imageIn.getDeviceDims())
 		imageOut[coordinate] = pow((double)imageIn[coordinate],p);
 }
 
@@ -737,7 +745,7 @@ __global__ void cudaUnmixing( const CudaImageContainer imageIn1, const CudaImage
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn1.getDims())
+	if (coordinate<imageIn1.getDeviceDims())
 	{
 		double meanIm1 = 0;
 		double meanIm2 = 0;		int kernelVolume = 0;
@@ -792,7 +800,7 @@ __global__ void cudaMask( const CudaImageContainer imageIn1, const CudaImageCont
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn1.getDims())
+	if (coordinate<imageIn1.getDeviceDims())
 	{
 		DevicePixelType val=0;
 

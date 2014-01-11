@@ -7,6 +7,7 @@
 #undef DEVICE_VEC
 #include "CudaUtilities.cuh"
 #include "CudaStorageBuffer.cuh"
+#include "CudaImageContainerClean.cuh"
 #include "assert.h"
 #include <limits>
 #include "ImageContainer.h"
@@ -27,7 +28,7 @@ public:
 	// Constructor / Destructor
 	//////////////////////////////////////////////////////////////////////////
 
-	CudaProcessBuffer(Vec<size_t> dims, bool isColumnMajor=false, int device=0)
+	CudaProcessBuffer(Vec<size_t> dims, int device=0)
 	{
 		defaults();
 		this->imageDims = dims;
@@ -37,7 +38,7 @@ public:
 		memoryAllocation();
 	}
 
-	CudaProcessBuffer(size_t x, size_t y, size_t z, bool isColumnMajor=false, int device=0)
+	CudaProcessBuffer(size_t x, size_t y, size_t z, int device=0)
 	{
 		defaults();
 		imageDims = Vec<size_t>(x,y,z);
@@ -47,12 +48,11 @@ public:
 		memoryAllocation();
 	}
 
-	CudaProcessBuffer(int n, bool isColumnMajor=false, int device=0)
+	CudaProcessBuffer(int n, int device=0)
 	{
 		defaults();
 		imageDims = Vec<size_t>(n,1,1);
 		this->device = device;
-
 		UNSET = Vec<size_t>((size_t)-1,(size_t)-1,(size_t)-1);
 		deviceSetup();
 		memoryAllocation();
@@ -88,58 +88,23 @@ public:
 
 	void loadImage(const ImageContainer* image)
 	{
-		if (image->getDims().product()>bufferSize)
-		{
-			int device = this->device;
-			clean();
-			this->device = device;
-			imageDims = image->getDims();
-			deviceSetup();
-			memoryAllocation();
-		}
-		else
-		{
-			isCurrentHistogramHost = false;
-			isCurrentHistogramDevice = false;
-			isCurrentNormHistogramHost = false;
-			isCurrentNormHistogramDevice = false;
-		}
-
-		imageDims = image->getDims();
-		currentBuffer = 0;
-		reservedBuffer = -1;
+		setStatus(image->getDims());
 
 		getCurrentBuffer()->loadImage(image->getConstMemoryPointer(),imageDims);
 	}
 
 	void loadImage(const ImagePixelType* image, Vec<size_t> dims)
 	{
-		if (dims.product()>bufferSize)
-		{
-			int device = this->device;
-			clean();
-			this->device = device;
-			imageDims = dims;
-			deviceSetup();
-			memoryAllocation();
-		}
-		else
-		{
-			isCurrentHistogramHost = false;
-			isCurrentHistogramDevice = false;
-			isCurrentNormHistogramHost = false;
-			isCurrentNormHistogramDevice = false;
-		}
+		setStatus(dims);
 
-		imageDims = dims;
-		currentBuffer = 0;
-		reservedBuffer = -1;
-		HANDLE_ERROR(cudaMemcpy((void*)getCurrentBuffer(),image,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyHostToDevice));
+		getCurrentBuffer()->loadImage(image,dims);
 	}
+
+
 
 	ImagePixelType otsuThresholdValue()
 	{
-		int temp;//TODO
+		int temp;
 		return calcOtsuThreshold(retrieveNormalizedHistogram(temp),NUM_BINS);
 	}
 
@@ -152,7 +117,9 @@ public:
 		if (imageOut==NULL)
 			imageOut = new ImagePixelType[imageDims.product()];
 
-		HANDLE_ERROR(cudaMemcpy(imageOut,getCurrentBuffer(),sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyDeviceToHost));
+		const DevicePixelType* deviceImage = getCurrentBuffer()->getConstImagePointer();
+
+		HANDLE_ERROR(cudaMemcpy(imageOut,deviceImage,sizeof(ImagePixelType)*imageDims.product(),cudaMemcpyDeviceToHost));
 		return imageOut;
 	}
 
@@ -425,7 +392,7 @@ public:
 		for (int x=0; x<gaussIterations.x; ++x)
 		{
 #if CUDA_CALLS_ON
-			cudaMultAddFilter<<<blocks,threads>>>(*getCurrentBuffer(),*getNextBuffer(),Vec<size_t>(constKernelDims.x,1,1));
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),Vec<size_t>(constKernelDims.x,1,1));
 #endif
 			incrementBufferNumber();
 		}
@@ -433,7 +400,7 @@ public:
 		for (int y=0; y<gaussIterations.y; ++y)
 		{
 #if CUDA_CALLS_ON
-			cudaMultAddFilter<<<blocks,threads>>>(*getCurrentBuffer(),*getNextBuffer(),Vec<size_t>(1,constKernelDims.y,1),
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),Vec<size_t>(1,constKernelDims.y,1),
 				constKernelDims.x);
 #endif
 			incrementBufferNumber();
@@ -442,7 +409,7 @@ public:
 		for (int z=0; z<gaussIterations.z; ++z)
 		{
 #if CUDA_CALLS_ON
-			cudaMultAddFilter<<<blocks,threads>>>(*getCurrentBuffer(),*getNextBuffer(),Vec<size_t>(1,1,constKernelDims.z),
+			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),Vec<size_t>(1,1,constKernelDims.z),
 				constKernelDims.x+constKernelDims.y);
 #endif
 			incrementBufferNumber();
@@ -511,14 +478,14 @@ public:
 	{
 		static dim3 localBlocks = blocks;
 		static dim3 localThreads = threads;
-		int sharedMemorySize = neighborhood.product()*localThreads.x*localThreads.y*localThreads.z;
+		size_t sharedMemorySize = neighborhood.product()*localThreads.x*localThreads.y*localThreads.z;
 		if (sizeof(ImagePixelType)*sharedMemorySize>deviceProp.sharedMemPerBlock)
 		{
 			float maxThreads = (float)deviceProp.sharedMemPerBlock/(sizeof(ImagePixelType)*neighborhood.product());
 			size_t threadDim = (size_t)pow(maxThreads,1/3.0f);
-			localThreads.x = threadDim;
-			localThreads.y = threadDim;
-			localThreads.z = threadDim;
+			localThreads.x = (unsigned int)threadDim;
+			localThreads.y = (unsigned int)threadDim;
+			localThreads.z = (unsigned int)threadDim;
 
 			localBlocks.x = (size_t)ceil((float)imageDims.x/localThreads.x);
 			localBlocks.y = (size_t)ceil((float)imageDims.y/localThreads.y);
@@ -739,7 +706,8 @@ public:
 	void thresholdFilter(ThresholdType threshold)
 	{
 #if CUDA_CALLS_ON
-		cudaThresholdImage<<<blocks,threads>>>(*getCurrentBuffer(),*getNextBuffer(),threshold,minPixel,maxPixel);
+		cudaThresholdImage<<<blocks,threads>>>(*getCurrentBuffer(),*getNextBuffer(),(DevicePixelType)threshold,
+			(DevicePixelType)minPixel,(DevicePixelType)maxPixel);
 #endif
 		incrementBufferNumber();
 	}
@@ -771,13 +739,13 @@ private:
 		updateBlockThread();
 	}
 
-	void memoryAllocation(bool isColumnMajor=false)
+	void memoryAllocation()
 	{
 		assert(sizeof(ImagePixelType)*imageDims.product()*NUM_BUFFERS < deviceProp.totalGlobalMem*.8);
 
 		for (int i=0; i<NUM_BUFFERS; ++i)
 		{
-			imageBuffers[i] = new CudaImageContainer(imageDims,device,isColumnMajor);
+			imageBuffers[i] = new CudaImageContainerClean(imageDims,device);
 		}
 
 		currentBuffer = -1;
@@ -803,6 +771,30 @@ private:
 
 		minPixel = std::numeric_limits<ImagePixelType>::min();
 		maxPixel = std::numeric_limits<ImagePixelType>::max();
+	}
+
+	void setStatus( Vec<size_t> dims )
+	{
+		if (dims.product()>bufferSize)
+		{
+			int device = this->device;
+			clean();
+			this->device = device;
+			imageDims = dims;
+			deviceSetup();
+			memoryAllocation();
+		}
+		else
+		{
+			isCurrentHistogramHost = false;
+			isCurrentHistogramDevice = false;
+			isCurrentNormHistogramHost = false;
+			isCurrentNormHistogramDevice = false;
+		}
+
+		imageDims = dims;
+		currentBuffer = 0;
+		reservedBuffer = -1;
 	}
 
 	void getRoi(ImagePixelType* roi, Vec<size_t> starts, Vec<size_t> sizes) const
@@ -915,17 +907,17 @@ private:
 
 	void clean() 
 	{
-		for (int i=0; i<NUM_BUFFERS; ++i)
+		for (int i=0; i<NUM_BUFFERS && imageBuffers!=NULL; ++i)
 		{
 			if (imageBuffers[i]!=NULL)
-				HANDLE_ERROR(cudaFree(imageBuffers[i]));
+				delete imageBuffers[i];
 		}
 
 		if (reducedImageHost!=NULL)
-			delete[] reducedImageHost;
+			delete reducedImageHost;
 
 		if (reducedImageDevice!=NULL)
-			HANDLE_ERROR(cudaFree(reducedImageDevice));
+			delete reducedImageDevice;
 
 		if (histogramHost!=NULL)
 			delete[] histogramHost;
@@ -1020,9 +1012,9 @@ private:
 	dim3 blocks, threads;
 	int currentBuffer;
 	size_t memoryUsage;
-	CudaImageContainer* imageBuffers[NUM_BUFFERS];
-	CudaImageContainer* reducedImageHost;
-	CudaImageContainer* reducedImageDevice;
+	CudaImageContainerClean* imageBuffers[NUM_BUFFERS];
+	CudaImageContainerClean* reducedImageHost;
+	CudaImageContainerClean* reducedImageDevice;
 	double* minValuesDevice;
 	ImagePixelType minPixel;
 	ImagePixelType maxPixel;

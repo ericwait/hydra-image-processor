@@ -14,9 +14,8 @@ void MaximumIntensityProjection::execute( int nlhs, mxArray* plhs[], int nrhs, c
 	plhs[0] = mxCreateNumericArray(2,dims,mxUINT8_CLASS,mxREAL);
 	mexImageOut = (HostPixelType*)mxGetData(plhs[0]);
 
-	ImageContainer imageOut(Vec<size_t>(imageDims.x,imageDims.y,1));
+	ImageContainer imageOut(Vec<size_t>(imageDims.x,imageDims.y,1),true);
 	maximumIntensityProjection(imageIn,&imageOut);
-	rearange(&imageOut,mexImageOut);
 
 	delete imageIn;
 	delete[] dims;

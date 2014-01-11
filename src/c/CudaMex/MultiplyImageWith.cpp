@@ -5,14 +5,12 @@ void MultiplyImageWith::execute( int nlhs, mxArray* plhs[], int nrhs, const mxAr
 {
 	Vec<size_t> imageDims1;
 	ImageContainer* imageIn1, * imageOut;
-	HostPixelType* mexImageOut;
-	setupImagePointers(prhs[0],&imageIn1,&plhs[0],&mexImageOut,&imageOut);
+	setupImagePointers(prhs[0],&imageIn1,&plhs[0],&imageOut);
 	Vec<size_t> imageDims2;
 	ImageContainer* imageIn2;
 	setupImagePointers(prhs[1],&imageIn2);
 
 	multiplyImageWith(imageIn1,imageIn2,imageOut);
-	rearange(imageOut,mexImageOut);
 
 	delete imageIn1;
 	delete imageIn2;

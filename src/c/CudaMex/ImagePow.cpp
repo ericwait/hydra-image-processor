@@ -5,12 +5,10 @@ void ImagePow::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
 {
 	Vec<size_t> imageDims;
 	ImageContainer* imageIn, * imageOut;
-	HostPixelType* mexImageOut;
-	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
+	setupImagePointers(prhs[0],&imageIn,&plhs[0],&imageOut);
 
 	double p = mxGetScalar(prhs[1]);
 	imagePow(imageIn,imageOut,(int)p);
-	rearange(imageOut,mexImageOut);
 
 	delete imageIn;
 	delete imageOut;

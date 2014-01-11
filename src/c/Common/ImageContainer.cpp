@@ -22,11 +22,22 @@ ImageContainer::ImageContainer(Vec<size_t> dimsIn, bool isColumnMajor/*=false*/)
 	image = new HostPixelType[imageDims.product()];
 }
 
-ImageContainer::ImageContainer( HostPixelType* imageIn, Vec<size_t> dims, bool isColumnMajor/*=false*/)
+ImageContainer::ImageContainer(HostPixelType* imageIn, Vec<size_t> dims, bool isColumnMajor/*=false*/, bool preallocatedMemory/*=false*/)
 {
 	defaults();
-	columnMajor = isColumnMajor;
-	loadImage(imageIn,dims,isColumnMajor);
+
+	if (preallocatedMemory)
+	{
+		image = imageIn;
+
+		columnMajor = isColumnMajor;
+		preallocated = true;
+		imageDims = dims;
+	}
+	else
+	{
+		loadImage(imageIn,dims,isColumnMajor);
+	}
 }
 
 void ImageContainer::copy(const ImageContainer& im)
@@ -39,7 +50,7 @@ void ImageContainer::copy(const ImageContainer& im)
 
 void ImageContainer::clear()
 {
-	if (image!=NULL)
+	if (image!=NULL && !preallocated)
 	{
 		delete[] image;
 		image = NULL;
@@ -55,7 +66,7 @@ HostPixelType ImageContainer::getPixelValue(size_t x, size_t y, size_t z) const
 
 HostPixelType ImageContainer::getPixelValue(Vec<size_t> coordinate) const
 {
-	return image[imageDims.linearAddressAt(coordinate)];
+	return image[imageDims.linearAddressAt(coordinate,columnMajor)];
 }
 
 void ImageContainer::setPixelValue(size_t x, size_t y, size_t z, unsigned char val)
@@ -65,7 +76,7 @@ void ImageContainer::setPixelValue(size_t x, size_t y, size_t z, unsigned char v
 
 void ImageContainer::setPixelValue(Vec<size_t> coordinate, unsigned char val)
 {
-	image[imageDims.linearAddressAt(coordinate)] = val;
+	image[imageDims.linearAddressAt(coordinate,columnMajor)] = val;
 }
 
 const HostPixelType* ImageContainer::getConstROIData (size_t minX, size_t sizeX, size_t minY,
@@ -80,14 +91,27 @@ const HostPixelType* ImageContainer::getConstROIData(Vec<size_t> startIndex, Vec
 
 	size_t i=0;
 	Vec<size_t> curIdx(startIndex);
-	for (curIdx.z=startIndex.z; curIdx.z-startIndex.z<size.z && curIdx.z<imageDims.z; ++curIdx.z)
+	Vec<size_t> outIdx(0,0,0);
+	for (curIdx.z=startIndex.z, outIdx.z=0; curIdx.z-startIndex.z<size.z && curIdx.z<imageDims.z; ++curIdx.z, ++outIdx.z)
 	{
-		for (curIdx.y=startIndex.y; curIdx.y-startIndex.y<size.y && curIdx.y<imageDims.y; ++curIdx.y)
+		if (!columnMajor)
 		{
-			for (curIdx.x=startIndex.x; curIdx.x-startIndex.x<size.x && curIdx.x<imageDims.x; ++curIdx.x)		
+			for (curIdx.y=startIndex.y, outIdx.y=0; curIdx.y-startIndex.y<size.y && curIdx.y<imageDims.y; ++curIdx.y, ++outIdx.y)
 			{
-				imageOut[i] = getPixelValue(curIdx);
-				++i;
+				for (curIdx.x=startIndex.x, outIdx.x=0; curIdx.x-startIndex.x<size.x && curIdx.x<imageDims.x; ++curIdx.x, ++outIdx.x)		
+				{
+					imageOut[size.linearAddressAt(outIdx)] = getPixelValue(curIdx);
+				}
+			}
+		}
+		else
+		{
+			for (curIdx.x=startIndex.x, outIdx.x=0; curIdx.x-startIndex.x<size.x && curIdx.x<imageDims.x; ++curIdx.x, ++outIdx.x)
+			{
+				for (curIdx.y=startIndex.y, outIdx.y=0; curIdx.y-startIndex.y<size.y && curIdx.y<imageDims.y; ++curIdx.y, ++outIdx.y)
+				{
+					imageOut[size.linearAddressAt(outIdx)] = getPixelValue(curIdx);
+				}
 			}
 		}
 	}
@@ -108,7 +132,7 @@ void ImageContainer::loadImage( const HostPixelType* imageIn, Vec<size_t> dims, 
 	}
 
 	memcpy(image,imageIn,sizeof(HostPixelType)*imageDims.product());
-
+	columnMajor = isColumnMajor;
 }
 
 void ImageContainer::loadImage( const HostPixelType* imageIn, size_t width, size_t height, size_t depth, bool isColumnMajor/*=false*/ )
@@ -131,7 +155,7 @@ HostPixelType& ImageContainer::at( Vec<size_t> coordinate )
 	return image[imageDims.linearAddressAt(coordinate,columnMajor)];
 }
 
-void ImageContainer::setROIData( HostPixelType* imageIn, Vec<size_t> startIndex, Vec<size_t> sizeIn )
+void ImageContainer::setROIData( HostPixelType* imageIn, Vec<size_t> startIndex, Vec<size_t> sizeIn, bool isColumnMajor)
 {
 	Vec<size_t> curIdx(0,0,0);
 	for (curIdx.z=0; curIdx.z<sizeIn.z && curIdx.z+startIndex.z<imageDims.z; ++curIdx.z)
@@ -140,7 +164,8 @@ void ImageContainer::setROIData( HostPixelType* imageIn, Vec<size_t> startIndex,
 		{
 			for (curIdx.x=0; curIdx.x<sizeIn.x && curIdx.x+startIndex.x<imageDims.x; ++curIdx.x)		
 			{
-				setPixelValue(curIdx+startIndex,imageIn[sizeIn.linearAddressAt(curIdx)]);
+				unsigned int val = imageIn[sizeIn.linearAddressAt(curIdx,isColumnMajor)];
+				setPixelValue(curIdx+startIndex,imageIn[sizeIn.linearAddressAt(curIdx,isColumnMajor)]);
 			}
 		}
 	}

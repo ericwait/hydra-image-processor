@@ -5,19 +5,16 @@ void Mask::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<size_t> imageDims1;
 	ImageContainer* imageIn1, * imageOut;
-	HostPixelType* mexImageOut;
-	setupImagePointers(prhs[0],&imageIn1,&plhs[0],&mexImageOut,&imageOut);
+	setupImagePointers(prhs[0],&imageIn1,&plhs[0],&imageOut);
 	Vec<size_t> imageDims2;
 	ImageContainer* imageIn2;
 	setupImagePointers(prhs[1],&imageIn2);
-
 
 	double threshold = 1;
 	if (nrhs==3)
 		threshold = mxGetScalar(prhs[2]);
 
 	mask(imageIn1,imageIn2,imageOut,threshold);
-	rearange(imageOut,mexImageOut);
 
 	delete imageIn1;
 	delete imageIn2;

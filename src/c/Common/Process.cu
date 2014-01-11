@@ -31,16 +31,16 @@ void clearAll()
 	clear2();
 }
 
-void set(Vec<size_t> imageDims)
+void set(Vec<size_t> imageDims, bool isColumnMajor, int device=0)
 {
 	if (g_cudaBuffer==NULL)
-		g_cudaBuffer = new CudaProcessBuffer<HostPixelType>(imageDims);
+		g_cudaBuffer = new CudaProcessBuffer<HostPixelType>(imageDims,device);
 }
 
-void set2(Vec<size_t> imageDims)
+void set2(Vec<size_t> imageDims, bool isColumnMajor, int device=0)
 {
 	if (g_cudaBuffer2==NULL)
-		g_cudaBuffer2 = new CudaProcessBuffer<HostPixelType>(imageDims);
+		g_cudaBuffer2 = new CudaProcessBuffer<HostPixelType>(imageDims,device);
 }
 
 void calculateChunks(Vec<size_t> imageDims, Vec<size_t>& numChunks, Vec<size_t>& sizes, int deviceNum=0,
@@ -149,7 +149,7 @@ void addConstant(const ImageContainer* image,  ImageContainer* imageOut, double 
 	if (numChunks.x>1)
 		clear2();
 
-	set(sizes);
+	set(sizes,image->isColumnMajor(),deviceNum);
 
 	Vec<size_t> curChunk(0,0,0);
 	for (curChunk.z=0; curChunk.z<numChunks.z; ++curChunk.z)
@@ -167,7 +167,7 @@ void addConstant(const ImageContainer* image,  ImageContainer* imageOut, double 
 
 				HostPixelType* curROIprocessed = g_cudaBuffer->retrieveImage();
 
-				imageOut->setROIData(curROIprocessed,curStarts,sizes);
+				imageOut->setROIData(curROIprocessed,curStarts,sizes,false);
 
 				delete[] curROIprocessed;
 				delete[] curROIorg;
@@ -178,8 +178,8 @@ void addConstant(const ImageContainer* image,  ImageContainer* imageOut, double 
 
 void addImageWith(const ImageContainer* image1, const ImageContainer* image2, ImageContainer* imageOut, double factor)
 {
-	set(image1->getDims());
-	set2(image2->getDims());
+	set(image1->getDims(),image1->isColumnMajor());
+	set2(image2->getDims(),image2->isColumnMajor());
 	g_cudaBuffer->loadImage(image1);
 	g_cudaBuffer2->loadImage(image2);
 
@@ -191,7 +191,7 @@ void addImageWith(const ImageContainer* image1, const ImageContainer* image2, Im
 void applyPolyTransformation( const ImageContainer* image, ImageContainer* imageOut, double a, double b, double c, HostPixelType minValue,
 							 HostPixelType maxValue )
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->applyPolyTransformation(a,b,c,minValue,maxValue);
@@ -201,7 +201,7 @@ void applyPolyTransformation( const ImageContainer* image, ImageContainer* image
 
 void calculateMinMax(const ImageContainer* image, double& minValue, double& maxValue)
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->calculateMinMax(minValue,maxValue);
@@ -209,7 +209,7 @@ void calculateMinMax(const ImageContainer* image, double& minValue, double& maxV
 
 void contrastEnhancement(const ImageContainer* image, ImageContainer* imageOut, Vec<float> sigmas, Vec<size_t> medianNeighborhood)
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->contrastEnhancement(sigmas,medianNeighborhood);
@@ -219,7 +219,7 @@ void contrastEnhancement(const ImageContainer* image, ImageContainer* imageOut, 
 
 void gaussianFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<float> sigmas )
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->gaussianFilter(sigmas);
@@ -229,14 +229,14 @@ void gaussianFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<
 
 size_t getGlobalMemoryAvailable()
 {
-	CudaProcessBuffer<HostPixelType> cudaBuffer(1);
+	CudaProcessBuffer<HostPixelType> cudaBuffer(1,false);
 	return g_cudaBuffer->getGlobalMemoryAvailable();
 }
 
 void mask(const ImageContainer* image1, const ImageContainer* image2, ImageContainer* imageOut, double threshold)
 {
-	set(image1->getDims());
-	set2(image2->getDims());
+	set(image1->getDims(),image1->isColumnMajor());
+	set2(image2->getDims(),image2->isColumnMajor());
 	g_cudaBuffer->loadImage(image1);
 	g_cudaBuffer2->loadImage(image2);
 
@@ -247,7 +247,7 @@ void mask(const ImageContainer* image1, const ImageContainer* image2, ImageConta
 
 void maxFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<size_t> neighborhood, double* kernel)
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->maxFilter(neighborhood,kernel);
@@ -257,7 +257,7 @@ void maxFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<size_
 
 void maximumIntensityProjection( const ImageContainer* image, ImageContainer* imageOut)
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->maximumIntensityProjection();
@@ -267,7 +267,7 @@ void maximumIntensityProjection( const ImageContainer* image, ImageContainer* im
 
 void meanFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<size_t> neighborhood )
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->meanFilter(neighborhood);
@@ -277,7 +277,7 @@ void meanFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<size
 
 void medianFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<size_t> neighborhood )
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->medianFilter(neighborhood);
@@ -288,7 +288,7 @@ void medianFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<si
 void minFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<size_t> neighborhood,
 			   double* kernel)
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->minFilter(neighborhood,kernel);
@@ -299,7 +299,7 @@ void minFilter( const ImageContainer* image, ImageContainer* imageOut, Vec<size_
 void morphClosure( const ImageContainer* image, ImageContainer* imageOut, Vec<size_t> neighborhood,
 			   double* kernel)
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->morphClosure(neighborhood,kernel);
@@ -310,7 +310,7 @@ void morphClosure( const ImageContainer* image, ImageContainer* imageOut, Vec<si
 void morphOpening( const ImageContainer* image, ImageContainer* imageOut, Vec<size_t> neighborhood,
 				  double* kernel)
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->morphOpening(neighborhood,kernel);
@@ -320,7 +320,7 @@ void morphOpening( const ImageContainer* image, ImageContainer* imageOut, Vec<si
 
 void multiplyImage( const ImageContainer* image, ImageContainer* imageOut, double factor )
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->multiplyImage(factor);
@@ -330,8 +330,8 @@ void multiplyImage( const ImageContainer* image, ImageContainer* imageOut, doubl
 
 void multiplyImageWith( const ImageContainer* image1, const ImageContainer* image2, ImageContainer* imageOut )
 {
-	set(image1->getDims());
-	set2(image2->getDims());
+	set(image1->getDims(),image1->isColumnMajor());
+	set2(image2->getDims(),image2->isColumnMajor());
 	g_cudaBuffer->loadImage(image1);
 	g_cudaBuffer2->loadImage(image2);
 
@@ -342,8 +342,8 @@ void multiplyImageWith( const ImageContainer* image1, const ImageContainer* imag
 
 double normalizedCovariance(const ImageContainer* image1, const ImageContainer* image2)
 {
-	set(image1->getDims());
-	set2(image2->getDims());
+	set(image1->getDims(),image1->isColumnMajor());
+	set2(image2->getDims(),image2->isColumnMajor());
 	g_cudaBuffer->loadImage(image1);
 	g_cudaBuffer2->loadImage(image2);
 
@@ -352,7 +352,7 @@ double normalizedCovariance(const ImageContainer* image1, const ImageContainer* 
 
 void otsuThresholdFilter(const ImageContainer* image, ImageContainer* imageOut, double alpha)
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->otsuThresholdFilter((float)alpha);
@@ -362,7 +362,7 @@ void otsuThresholdFilter(const ImageContainer* image, ImageContainer* imageOut, 
 
 HostPixelType otsuThesholdValue(const ImageContainer* image)
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	return g_cudaBuffer->otsuThresholdValue();
@@ -370,7 +370,7 @@ HostPixelType otsuThesholdValue(const ImageContainer* image)
 
 void imagePow( const ImageContainer* image, ImageContainer* imageOut, int p )
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->imagePow(p);
@@ -380,7 +380,7 @@ void imagePow( const ImageContainer* image, ImageContainer* imageOut, int p )
 
 double sumArray(const ImageContainer* image)
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	double sum;
@@ -406,7 +406,7 @@ void reduceImage( const ImageContainer* image, ImageContainer** imageOut, Vec<do
 		(size_t)(chunkDims.y/reductions.y),
 		(size_t)(chunkDims.z/reductions.z));
 
-	set(chunkDims);
+	set(chunkDims,image->isColumnMajor());
 
 	HostPixelType* curROIorg = new HostPixelType[chunkDims.product()];
 	memset(curROIorg,0,chunkDims.product());
@@ -414,7 +414,7 @@ void reduceImage( const ImageContainer* image, ImageContainer** imageOut, Vec<do
 	HostPixelType* curROIprocessed = new HostPixelType[reducedChunkDims.product()];
 	memset(curROIprocessed,0,reducedChunkDims.product());
 
-	*imageOut = new ImageContainer(reducedImageDims);
+	*imageOut = new ImageContainer(reducedImageDims,image->isColumnMajor());
 	memset((*imageOut)->getMemoryPointer(),0,reducedImageDims.product());
 
 	Vec<size_t> curChunk(0,0,0);
@@ -452,7 +452,7 @@ void reduceImage( const ImageContainer* image, ImageContainer** imageOut, Vec<do
 
 				HostPixelType* curROIprocessed = g_cudaBuffer->retrieveImage();
 
-				(*imageOut)->setROIData(curROIprocessed,reducedStarts,curReducedChunkDims);
+				(*imageOut)->setROIData(curROIprocessed,reducedStarts,curReducedChunkDims,image->isColumnMajor());
 
 				delete[] curROIprocessed;
 				delete[] curROIorg;
@@ -463,7 +463,7 @@ void reduceImage( const ImageContainer* image, ImageContainer** imageOut, Vec<do
 
 size_t* retrieveHistogram(const ImageContainer* image, int& returnSize)
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	return g_cudaBuffer->retrieveHistogram(returnSize);
@@ -471,7 +471,7 @@ size_t* retrieveHistogram(const ImageContainer* image, int& returnSize)
 
 double* retrieveNormalizedHistogram(const ImageContainer* image, int& returnSize)
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	return g_cudaBuffer->retrieveNormalizedHistogram(returnSize);
@@ -479,7 +479,7 @@ double* retrieveNormalizedHistogram(const ImageContainer* image, int& returnSize
 
 void thresholdFilter( const ImageContainer* image, ImageContainer* imageOut, double threshold )
 {
-	set(image->getDims());
+	set(image->getDims(),image->isColumnMajor());
 	g_cudaBuffer->loadImage(image);
 
 	g_cudaBuffer->thresholdFilter(threshold);

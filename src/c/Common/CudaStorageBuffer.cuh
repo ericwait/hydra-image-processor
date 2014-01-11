@@ -3,6 +3,7 @@
 #include "CudaUtilities.cuh"
 #include "CudaKernels.cuh"
 #include "CudaImageContainer.cuh"
+#include "CudaImageContainerClean.cuh"
 #include "Vec.h"
 
 template<typename ImagePixelType>
@@ -21,16 +22,6 @@ public:
 		memoryAllocation();
 		setImage(image);
 	}
-
-// 	CudaStorageBuffer(const CudaProcessBuffer<ImagePixelType>* imageBuff)
-// 	{
-// 		defaults();
-// 		imageDims = imageBuff->getDimension();
-// 		device = imageBuff->getDevice();
-// 		deviceSetup();
-// 		memoryAllocation();
-// 		setImage(imageBuff->getCudaBuffer(),cudaMemcpyDeviceToDevice);
-// 	}
 
 	~CudaStorageBuffer()
 	{
@@ -56,6 +47,7 @@ public:
 	const CudaImageContainer* getImageContainer() const {return deviceImage;}
 	size_t getGlobalMemoryAvailable() {return deviceProp.totalGlobalMem;}
 
+	bool isColumnMajor() const {return columnMajor;}
 	void getRoi(ImagePixelType* roi, Vec<size_t> starts, Vec<size_t> sizes) const
 	{
 		cudaGetROI<<<blocks,threads>>>(*deviceImage,roi,starts,sizes);
@@ -78,9 +70,9 @@ private:
 		calcBlockThread(imageDims,deviceProp,blocks,threads);
 	}
 
-	void memoryAllocation(bool isColumnMajor=false)
+	void memoryAllocation()
 	{
-		deviceImage = new CudaImageContainer(imageDims,device,isColumnMajor);
+		deviceImage = new CudaImageContainerClean(imageDims,device);
 	}
 
 	void setImage(const ImagePixelType* image)
@@ -94,12 +86,12 @@ private:
 		imageDims = buff->getDims();
 		device = buff->getDevice();
 		deviceSetup();
-		deviceImage = new CudaImageContainer(*buff->getImageContainer());
+		deviceImage = new CudaImageContainerClean(*buff->getImageContainer());
 	}
 
 	Vec<size_t> imageDims;
 	int device;
 	cudaDeviceProp deviceProp;
 	dim3 blocks, threads;
-	CudaImageContainer* deviceImage;
+	CudaImageContainerClean* deviceImage;
 };

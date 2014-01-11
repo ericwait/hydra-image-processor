@@ -130,9 +130,6 @@
     <None Include="CudaMex\CudaMex.def">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Common\CudaImageContainer.cuh">
-      <Filter>Header Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\Vec.h">
@@ -163,6 +160,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\CudaProcessBuffer.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaImageContainer.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaImageContainerClean.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Defines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

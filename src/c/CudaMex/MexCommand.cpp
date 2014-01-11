@@ -78,7 +78,7 @@ void MexCommand::addCommand(const std::string commandText, MexCommand* commandOb
 	commandList.insert(std::pair<std::string,MexCommand*>(commandText,commandObject));
 }
 
-void MexCommand::setupImagePointers( const mxArray* imageIn, ImageContainer** image, mxArray** argOut/*=NULL*/, HostPixelType** mexImageOut/*=NULL*/, ImageContainer** imageOut/*=NULL*/ )
+void MexCommand::setupImagePointers( const mxArray* imageIn, ImageContainer** image, mxArray** argOut/*=NULL*/, ImageContainer** imageOut/*=NULL*/ )
 {
 	size_t numDims = mxGetNumberOfDimensions(imageIn);
 	const mwSize* DIMS = mxGetDimensions(imageIn);
@@ -93,25 +93,10 @@ void MexCommand::setupImagePointers( const mxArray* imageIn, ImageContainer** im
 
 	*image = new ImageContainer((HostPixelType*)mxGetData(imageIn),imageDims,true);
 
-	if (argOut!=NULL && mexImageOut!=NULL && imageOut!=NULL)
+	if (argOut!=NULL && imageOut!=NULL)
 	{
 		*argOut = mxCreateNumericArray(numDims,DIMS,mxUINT8_CLASS,mxREAL);
-		*mexImageOut = (HostPixelType*)mxGetData(*argOut);
-		*imageOut = new ImageContainer(imageDims);
-	}
-}
-
-void MexCommand::rearange( ImageContainer* image, HostPixelType* mexImage )
-{
-	Vec<size_t> curIdx(0,0,0);
-	for (curIdx.z=0; curIdx.z<image->getDepth(); ++curIdx.z)
-	{
-		for (curIdx.y=0; curIdx.y<image->getHeight(); ++curIdx.y)
-		{
-			for (curIdx.x=0; curIdx.x<image->getWidth(); ++curIdx.x)
-			{
-				mexImage[image->getDims().linearAddressAt(curIdx,true)] = (*image)[curIdx];
-			}
-		}
+		HostPixelType *mexImageOut = (HostPixelType*)mxGetData(*argOut);
+		*imageOut = new ImageContainer(mexImageOut,imageDims,true,true);
 	}
 }

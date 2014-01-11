@@ -4,14 +4,12 @@
 void MultiplyImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<size_t> imageDims;
-	HostPixelType* mexImageOut;
 	ImageContainer* imageIn, * imageOut;
-	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
+	setupImagePointers(prhs[0],&imageIn,&plhs[0],&imageOut);
 
 	double multiplier = mxGetScalar(prhs[1]);
 
 	multiplyImage(imageIn,imageOut,multiplier);
-	rearange(imageOut,mexImageOut);
 
 	delete imageIn;
 	delete imageOut;

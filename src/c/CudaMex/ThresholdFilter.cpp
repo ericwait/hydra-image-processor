@@ -5,13 +5,11 @@ void ThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 {
 	Vec<size_t> imageDims;
 	ImageContainer* imageIn, * imageOut;
-	HostPixelType* mexImageOut;
-	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
+	setupImagePointers(prhs[0],&imageIn,&plhs[0],&imageOut);
 
 	double thresh = mxGetScalar(prhs[1]);
 
 	thresholdFilter(imageIn,imageOut,thresh);
-	rearange(imageOut,mexImageOut);
 
 	delete imageIn;
 	delete imageOut;

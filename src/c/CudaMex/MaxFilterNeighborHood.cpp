@@ -5,13 +5,11 @@ void MaxFilterNeighborHood::execute( int nlhs, mxArray* plhs[], int nrhs, const 
 {
 	Vec<size_t> imageDims;
 	ImageContainer* imageIn, * imageOut;
-	HostPixelType* mexImageOut;
-	setupImagePointers(prhs[0],&imageIn,&plhs[0],&mexImageOut,&imageOut);
+	setupImagePointers(prhs[0],&imageIn,&plhs[0],&imageOut);
 
 	double* nbh = (double*)mxGetData(prhs[1]);
 	Vec<size_t> neighborhood((size_t)nbh[0],(size_t)nbh[1],(size_t)nbh[2]);
 	maxFilter(imageIn,imageOut,neighborhood);
-	rearange(imageOut,mexImageOut);
 
 	delete imageIn;
 	delete imageOut;

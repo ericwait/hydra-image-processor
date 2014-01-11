@@ -62,6 +62,7 @@
     <ClInclude Include="Common\CHelpers.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="Common\Defines.h" />
     <ClInclude Include="Common\ImageContainer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
@@ -93,7 +94,12 @@
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <None Include="Common\CudaImageContainer.cuh" />
+    <ClInclude Include="Common\CudaImageContainer.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="Common\CudaImageContainerClean.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
     <None Include="CudaMex\CudaMex.def" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

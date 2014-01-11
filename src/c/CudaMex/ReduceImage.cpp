@@ -19,8 +19,7 @@ void ReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	dims[2] = processedImage->getDepth();
 	plhs[0] = mxCreateNumericArray(3,dims,mxUINT8_CLASS,mxREAL);
 	mexImageOut = (HostPixelType*)mxGetData(plhs[0]);
-	//memcpy(imageOut,processedImage,sizeof(HostPixelType)*reducedDims.product());
-	rearange(processedImage,mexImageOut);
+	memcpy(mexImageOut,processedImage->getConstMemoryPointer(),sizeof(HostPixelType)*processedImage->getDims().product());
 
 	delete processedImage;
 	delete imageIn;
