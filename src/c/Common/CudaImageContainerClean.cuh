@@ -5,10 +5,9 @@
 class CudaImageContainerClean : public CudaImageContainer
 {
 public:
-	CudaImageContainerClean( DevicePixelType* imageIn, Vec<size_t> dims, int device=0) : 
-		CudaImageContainer(imageIn,dims,device){};
-
+	CudaImageContainerClean(const DevicePixelType* imageIn, Vec<size_t> dims, int device=0) : CudaImageContainer(imageIn,dims,device){};
 	CudaImageContainerClean(Vec<size_t> dims, int device=0) : CudaImageContainer(dims,device){};
+	CudaImageContainerClean(const ImageContainer* imageIn) : CudaImageContainer(imageIn){};
 
 	~CudaImageContainerClean()
 	{

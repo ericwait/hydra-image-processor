@@ -10,7 +10,7 @@ static void HandleError( cudaError_t err, const char *file, int line )
 	char* errorMessage = new char[255];
 	if (err != cudaSuccess) 
 	{
-		sprintf(errorMessage, "%s in %s at line %d\n", cudaGetErrorString( err ),	file, line );
+		sprintf_s(errorMessage, 255, "%s in %s at line %d\n", cudaGetErrorString( err ),	file, line );
 		fprintf(stderr,"%s\n",errorMessage);
 		throw(errorMessage);
 	}

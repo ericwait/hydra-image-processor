@@ -2,15 +2,18 @@
 
 #define DEVICE_VEC
 #include "Vec.h"
+#undef DEVICE_VEC
+#include "Vec.h"
 #include <string>
 #include "CudaUtilities.cuh"
+#include "ImageContainer.h"
 
 typedef unsigned char DevicePixelType;
 
 class CudaImageContainer
 {
 public:
-	CudaImageContainer( DevicePixelType* imageIn, Vec<size_t> dims, int device=0)
+	CudaImageContainer(const DevicePixelType* imageIn, Vec<size_t> dims, int device=0)
 	{
 		defaults();
 		image = NULL;
@@ -22,6 +25,13 @@ public:
 		defaults();
 		imageDims = dims;
 		HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(DevicePixelType)*dims.product()));
+	}
+
+	CudaImageContainer(const ImageContainer* image)
+	{
+		defaults();
+		image = NULL;
+		loadImage(image->getConstMemoryPointer(),image->getDims());
 	}
 
 	~CudaImageContainer()
@@ -42,7 +52,7 @@ public:
 
 	int getDeviceNumber() const {return device;}
 
-	__device__ DevicePixelType* getDeviceImagePointer(){return image;}
+	DevicePixelType* getDeviceImagePointer(){return image;}
 
 	__device__ DevicePixelType& operator[]( DeviceVec<size_t> coordinate )
 	{

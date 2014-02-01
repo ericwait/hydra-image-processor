@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="Common\CudaKernels.cu" />
+    <CudaCompile Include="Common\CudaProcessBuffer.cu" />
     <CudaCompile Include="Common\CudaUtilities.cu" />
     <CudaCompile Include="Common\Process.cu" />
   </ItemGroup>
