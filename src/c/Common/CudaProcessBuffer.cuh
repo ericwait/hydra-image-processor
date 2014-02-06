@@ -8,6 +8,16 @@
 #include "ImageContainer.h"
  #include "CudaImageContainerClean.cuh"
 
+struct ImageChunk
+{
+	Vec<size_t> startImageInds;
+	Vec<size_t> startBuffInds;
+	Vec<size_t> endImageInds;
+	Vec<size_t> endBuffInds;
+
+	ImageContainer* image;
+};
+
 class CudaProcessBuffer
 {
 public:
@@ -240,7 +250,7 @@ public:
 		// Filters image where each pixel is the mean of its neighborhood 
 		// If imageOut is null, then a new image pointer will be created and returned.
 		// In either case the caller must clean up the the return image correctly
-	 	DevicePixelType* meanFilter(DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, DevicePixelType** imageOut=NULL);
+	 	DevicePixelType* meanFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, DevicePixelType** imageOut=NULL);
 
 	// 	/*
 	// 	*	Filters image where each pixel is the median of its neighborhood
@@ -498,18 +508,16 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	void updateBlockThread();
 	void deviceSetup();
-	void calculateChunking();
+	void calculateChunking(Vec<size_t> kernalDims);
 	void defaults();
 	void createBuffers();
 	void clearBuffers();
 	void loadImage(HostPixelType* imageIn);
-	void createDeviceBuffers(Vec<size_t> dims, int numBuffersNeeded);
+	void createDeviceBuffers(int numBuffersNeeded, Vec<size_t> kernalDims);
+
 	//////////////////////////////////////////////////////////////////////////
 	// Private Member Variables
 	//////////////////////////////////////////////////////////////////////////
-
-	//This is the maximum size that the current buffer can handle 
-	size_t bufferSize;
 
 	// Device that this buffer will utilize
 	int device;
@@ -520,14 +528,10 @@ private:
 	// This is the size that the input and output images will be
 	Vec<size_t> orgImageDims;
 
-	// This is the dimension for each chunk of the original image that will fit
-	// in the buffer on the device
-	Vec<size_t> chunkDims;
-
 	// This is how many chunks are being used to cover the whole original image
 	Vec<size_t> numChunks;
 
-	ImageContainer** hostImageBuffers;
+	ImageChunk* hostImageBuffers;
 
 	int numDeviceBuffers;
 	Vec<size_t> deviceDims;
