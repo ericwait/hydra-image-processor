@@ -49,4 +49,8 @@
  	{
  		mexErrMsgTxt(err.c_str());
  	}
+	catch(std::logic_error err)
+	{
+		mexErrMsgTxt(err.what());
+	}
  }

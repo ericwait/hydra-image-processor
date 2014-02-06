@@ -291,52 +291,52 @@ void CudaProcessBuffer::loadImage(HostPixelType* imageIn)
 
 void CudaProcessBuffer::addConstant(double additive)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::addImageWith(const DevicePixelType* image, double factor)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::applyPolyTransformation(double a, double b, double c, DevicePixelType minValue, DevicePixelType maxValue)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::calculateMinMax(double& minValue, double& maxValue)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::contrastEnhancement(Vec<float> sigmas, Vec<size_t> medianNeighborhood)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::createHistogram()
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::gaussianFilter(Vec<float> sigmas)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::mask(const DevicePixelType* imageMask, DevicePixelType threshold/*=1*/)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::maxFilter(Vec<size_t> neighborhood, double* kernel/*=NULL*/)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::maximumIntensityProjection()
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 DevicePixelType* CudaProcessBuffer::meanFilter(DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood,
@@ -349,7 +349,7 @@ DevicePixelType* CudaProcessBuffer::meanFilter(DevicePixelType* imageIn, Vec<siz
 	if (dims==deviceDims)
 		deviceImageBuffers[0]->loadImage(imageIn,dims);
 	else
-		;
+		throw std::logic_error("Image size not handled yet.");
 
 	if (imageOut==NULL)
 		meanImage = new DevicePixelType[deviceDims.product()];
@@ -358,74 +358,75 @@ DevicePixelType* CudaProcessBuffer::meanFilter(DevicePixelType* imageIn, Vec<siz
 
 	cudaMeanFilter<<<blocks,threads>>>(*(deviceImageBuffers[0]),*(deviceImageBuffers[1]),neighborhood);
 
-	HANDLE_ERROR(cudaMemcpy(meanImage,deviceImageBuffers[1]->getDeviceImagePointer(),sizeof(DevicePixelType)*deviceDims.product(),cudaMemcpyDeviceToHost));
+	HANDLE_ERROR(cudaMemcpy(meanImage,deviceImageBuffers[1]->getDeviceImagePointer(),sizeof(DevicePixelType)*dims.product(),cudaMemcpyDeviceToHost));
 
 	return meanImage;
 }
 
 void CudaProcessBuffer::medianFilter(Vec<size_t> neighborhood)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::minFilter(Vec<size_t> neighborhood, double* kernel/*=NULL*/)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::morphClosure(Vec<size_t> neighborhood, double* kernel/*=NULL*/)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::morphOpening(Vec<size_t> neighborhood, double* kernel/*=NULL*/)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::multiplyImage(double factor)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::multiplyImageWith(const DevicePixelType* image)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 double CudaProcessBuffer::normalizedCovariance(DevicePixelType* otherImage)
 {
+	throw std::logic_error("The method or operation is not implemented.");
 	return 0.0;
 }
 
 void CudaProcessBuffer::normalizeHistogram()
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::otsuThresholdFilter(float alpha/*=1.0f*/)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::imagePow(int p)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::sumArray(double& sum)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::reduceImage(Vec<double> reductions)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::thresholdFilter(double threshold)
 {
-
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CudaProcessBuffer::unmix(const DevicePixelType* image, Vec<size_t> neighborhood)
