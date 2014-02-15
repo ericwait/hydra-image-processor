@@ -13,7 +13,14 @@ public:
 	{
 		if (image!=NULL)
 		{
-			HANDLE_ERROR(cudaFree(image));
+			try
+			{
+				HANDLE_ERROR(cudaFree(image));
+			}
+			catch (char* err)
+			{
+				;
+			}
 			image = NULL;
 		}
 	}

@@ -53,4 +53,8 @@
 	{
 		mexErrMsgTxt(err.what());
 	}
+	catch(std::runtime_error err)
+	{
+		mexErrMsgTxt(err.what());
+	}
  }

@@ -4,6 +4,7 @@
 #include "Vec.h"
 #include "cuda_runtime.h"
 #include <stdio.h>
+#include <stdexcept>
 
 static void HandleError( cudaError_t err, const char *file, int line ) 
 {
@@ -11,7 +12,6 @@ static void HandleError( cudaError_t err, const char *file, int line )
 	if (err != cudaSuccess) 
 	{
 		sprintf_s(errorMessage, 255, "%s in %s at line %d\n", cudaGetErrorString( err ),	file, line );
-		fprintf(stderr,"%s\n",errorMessage);
 		throw(errorMessage);
 	}
 	delete[] errorMessage;
@@ -64,7 +64,9 @@ inline void gpuAssert(cudaError_t code, char *file, int line, bool abort=true)
 {
 	if (code != cudaSuccess) 
 	{
-		fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+		char buff[255];
+		sprintf_s(buff, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+		throw std::runtime_error(buff);
 	}
 }
 
