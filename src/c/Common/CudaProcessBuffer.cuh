@@ -1,19 +1,20 @@
 #pragma once
- #include "cuda.h"
- #include "cuda_runtime.h"
+#include "cuda.h"
+#include "cuda_runtime.h"
 #define DEVICE_VEC
 #include "Vec.h"
 #undef DEVICE_VEC
 #include "Defines.h"
 #include "ImageContainer.h"
- #include "CudaImageContainerClean.cuh"
+#include "CudaImageContainerClean.cuh"
+#include <vector>
 
 struct ImageChunk
 {
-	Vec<size_t> startImageInds;
-	Vec<size_t> startBuffInds;
-	Vec<size_t> endImageInds;
-	Vec<size_t> endBuffInds;
+	Vec<size_t> startImageIdx;
+	Vec<size_t> startBuffIdx;
+	Vec<size_t> endImageIdx;
+	Vec<size_t> endBuffIdx;
 
 	ImageContainer* image;
 };
@@ -164,42 +165,7 @@ public:
 	// 	/*
 	// 	*	Will smooth the image using the given sigmas for each dimension
 	// 	*/ 
-	 	void gaussianFilter(Vec<float> sigmas);
-	// 	{
-	// 		if (constKernelDims==UNSET || sigmas!=gausKernelSigmas)
-	// 		{
-	// 			constKernelZeros();
-	// 			gausKernelSigmas = sigmas;
-	// 			constKernelDims = createGaussianKernel(gausKernelSigmas,hostKernel,gaussIterations);
-	// 			HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel,hostKernel,sizeof(float)*(constKernelDims.x+constKernelDims.y+constKernelDims.z)));
-	// 		}
-	// 
-	// 		for (int x=0; x<gaussIterations.x; ++x)
-	// 		{
-	// #if CUDA_CALLS_ON
-	// 			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),Vec<size_t>(constKernelDims.x,1,1));
-	// #endif
-	// 			incrementBufferNumber();
-	// 		}
-	// 
-	// 		for (int y=0; y<gaussIterations.y; ++y)
-	// 		{
-	// #if CUDA_CALLS_ON
-	// 			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),Vec<size_t>(1,constKernelDims.y,1),
-	// 				constKernelDims.x);
-	// #endif
-	// 			incrementBufferNumber();
-	// 		}
-	// 
-	// 		for (int z=0; z<gaussIterations.z; ++z)
-	// 		{
-	// #if CUDA_CALLS_ON
-	// 			cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),Vec<size_t>(1,1,constKernelDims.z),
-	// 				constKernelDims.x+constKernelDims.y);
-	// #endif
-	// 			incrementBufferNumber();
-	// 		}
-	// 	}
+	 	DevicePixelType* gaussianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas, DevicePixelType** imageOut=NULL);
 	// 
 	// 	/*
 	// 	*	Mask will mask out the pixels of this buffer given an image and a threshold.
@@ -462,27 +428,16 @@ public:
 	// 	/*
 	// 	*	Will reduce the size of the image by the factors passed in
 	// 	*/
-	 	void reduceImage(Vec<double> reductions);
-	// 	{
-	// 		reducedDims = Vec<size_t>(
-	// 			(size_t)(imageDims.x/reductions.x),
-	// 			(size_t)(imageDims.y/reductions.y),
-	// 			(size_t)(imageDims.z/reductions.z));
-	// 
-	// #if CUDA_CALLS_ON
-	// 		cudaRuduceImage<<<blocks,threads>>>(*getCurrentBuffer(),*getNextBuffer(),reductions);
-	// #endif
-	// 		incrementBufferNumber();
-	// 	}
-	// 
-	// 	/*
-	// 	*	This creates a image with values of 0 where the pixels fall below
-	// 	*	the threshold and 1 where equal or greater than the threshold
-	// 	*	
-	// 	*	If you want a viewable image after this, you may want to use the
-	// 	*	multiplyImage routine to turn the 1 values to the max values of
-	// 	*	the type
-	// 	*/
+	 	HostPixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* image, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims);
+
+		/*
+		*	This creates a image with values of 0 where the pixels fall below
+		*	the threshold and 1 where equal or greater than the threshold
+		*	
+		*	If you want a viewable image after this, you may want to use the
+		*	multiplyImage routine to turn the 1 values to the max values of
+		*	the type
+		*/
 	// 	template<typename ThresholdType>
 	 	void thresholdFilter(double threshold);
 	// 	{
@@ -512,8 +467,28 @@ private:
 	void defaults();
 	void createBuffers();
 	void clearBuffers();
+
+	void clearDeviceBuffers()
+	{
+		for (int i=0; i<deviceImageBuffers.size(); ++i)
+		{
+			if (deviceImageBuffers[i]!=NULL)
+			{
+				delete deviceImageBuffers[i];
+				deviceImageBuffers[i] = NULL;
+			}
+		}
+
+		deviceImageBuffers.clear();
+	}
+
 	void loadImage(HostPixelType* imageIn);
 	void createDeviceBuffers(int numBuffersNeeded, Vec<size_t> kernalDims);
+	void CudaProcessBuffer::incrementBufferNumber();
+	CudaImageContainer* CudaProcessBuffer::getCurrentBuffer();
+	CudaImageContainer* CudaProcessBuffer::getNextBuffer();
+	bool loadNextChunk(const DevicePixelType* imageIn);
+	void saveCurChunk(DevicePixelType* imageOut);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Private Member Variables
@@ -530,12 +505,13 @@ private:
 
 	// This is how many chunks are being used to cover the whole original image
 	Vec<size_t> numChunks;
+	Vec<size_t> curChunkIdx;
 
 	ImageChunk* hostImageBuffers;
 
-	int numDeviceBuffers;
+	int currentBufferIdx;
 	Vec<size_t> deviceDims;
-	CudaImageContainerClean** deviceImageBuffers;
+	std::vector<CudaImageContainerClean*> deviceImageBuffers;
 
 	// This is the maximum size that we are allowing a constant kernel to exit
 	// on the device
