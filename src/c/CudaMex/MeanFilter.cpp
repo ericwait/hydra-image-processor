@@ -1,4 +1,4 @@
- #include "MexCommand.h"
+#include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
  
  void MeanFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
