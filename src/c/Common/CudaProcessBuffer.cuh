@@ -465,7 +465,7 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	void updateBlockThread();
 	void deviceSetup();
-	void calculateChunking(Vec<size_t> kernalDims);
+	void calculateChunking(Vec<size_t> kernalDims=Vec<size_t>(0,0,0));
 	void defaults();
 	void createBuffers();
 	void clearHostBuffers();

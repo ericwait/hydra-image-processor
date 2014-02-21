@@ -30,7 +30,7 @@ CudaProcessBuffer::~CudaProcessBuffer()
 	defaults();
 }
 
-void CudaProcessBuffer::calculateChunking(Vec<size_t> kernalDims)
+void CudaProcessBuffer::calculateChunking(Vec<size_t> kernalDims/*=Vec<size_t>(0,0,0)*/)
 {
 	Vec<size_t> margin((kernalDims + 1)/2); //integer round
 	Vec<size_t> chunkDelta(deviceDims-margin*2);
@@ -105,20 +105,104 @@ void CudaProcessBuffer::createDeviceBuffers(int numBuffersNeeded, Vec<size_t> ke
 
 	size_t numVoxels = (size_t)((double)deviceProp.totalGlobalMem*0.9/(sizeof(HostPixelType)*numBuffersNeeded));
 
-	deviceDims = Vec<size_t>(0,0,orgImageDims.z);
-	double leftOver = (double)numVoxels/orgImageDims.z;
+	Vec<size_t> chunkVolume;
+	chunkVolume.x = kernalDims.x * orgImageDims.y * orgImageDims.z;
+	chunkVolume.y = orgImageDims.x * kernalDims.y * orgImageDims.z;
+	chunkVolume.z = orgImageDims.x * orgImageDims.y * kernalDims.z;
 
-	double squareDim = sqrt(leftOver);
-
-	if (squareDim>orgImageDims.y)
-		deviceDims.y = orgImageDims.y;
-	else 
-		deviceDims.y = (size_t)squareDim;
-
-	deviceDims.x = (size_t)(leftOver/deviceDims.y);
-
-	if (deviceDims.x>orgImageDims.x)
+	if (chunkVolume.x>chunkVolume.y && chunkVolume.x>chunkVolume.z) // chunking in X is the worst
+	{
 		deviceDims.x = orgImageDims.x;
+		double leftOver = (double)numVoxels/orgImageDims.x;
+		double squareDim = sqrt(leftOver);
+
+		if (chunkVolume.y<chunkVolume.z) // chunking in Y is second worst
+		{
+			if (squareDim>orgImageDims.y)
+				deviceDims.y = orgImageDims.y;
+			else 
+				deviceDims.y = (size_t)squareDim;
+
+			deviceDims.z = (size_t)(leftOver/deviceDims.y);
+
+			if (deviceDims.z>orgImageDims.z)
+				deviceDims.z = orgImageDims.z;
+		}
+		else // chunking in Z is second worst
+		{
+			if (squareDim>orgImageDims.z)
+				deviceDims.z = orgImageDims.z;
+			else 
+				deviceDims.z = (size_t)squareDim;
+
+			deviceDims.y = (size_t)(leftOver/deviceDims.z);
+
+			if (deviceDims.y>orgImageDims.y)
+				deviceDims.y = orgImageDims.y;
+		}
+	}
+	else if (chunkVolume.y>chunkVolume.z) // chunking in Y is the worst
+	{
+		deviceDims.y = orgImageDims.y;
+		double leftOver = (double)numVoxels/orgImageDims.y;
+		double squareDim = sqrt(leftOver);
+
+		if (chunkVolume.x<chunkVolume.z)
+		{
+			if (squareDim>orgImageDims.x)
+				deviceDims.x = orgImageDims.x;
+			else 
+				deviceDims.x = (size_t)squareDim;
+
+			deviceDims.z = (size_t)(leftOver/deviceDims.x);
+
+			if (deviceDims.z>orgImageDims.z)
+				deviceDims.z = orgImageDims.z;
+		}
+		else
+		{
+			if (squareDim>orgImageDims.z)
+				deviceDims.z = orgImageDims.z;
+			else 
+				deviceDims.z = (size_t)squareDim;
+
+			deviceDims.x = (size_t)(leftOver/deviceDims.z);
+
+			if (deviceDims.x>orgImageDims.x)
+				deviceDims.x = orgImageDims.x;
+		}
+	}
+	else // chunking in Z is the worst
+	{
+		deviceDims.z = orgImageDims.z;
+		double leftOver = (double)numVoxels/orgImageDims.z;
+		double squareDim = sqrt(leftOver);
+
+		if (chunkVolume.x<chunkVolume.y)
+		{
+			if (squareDim>orgImageDims.x)
+				deviceDims.x = orgImageDims.x;
+			else 
+				deviceDims.x = (size_t)squareDim;
+
+			deviceDims.y = (size_t)(leftOver/deviceDims.x);
+
+			if (deviceDims.y>orgImageDims.y)
+				deviceDims.y = orgImageDims.y;
+		}
+		else
+		{
+			if (squareDim>orgImageDims.y)
+				deviceDims.y = orgImageDims.y;
+			else 
+				deviceDims.y = (size_t)squareDim;
+
+			deviceDims.x = (size_t)(leftOver/deviceDims.z);
+
+			if (deviceDims.x>orgImageDims.x)
+				deviceDims.x = orgImageDims.x;
+		}
+	}
 
 	for (int i=0; i<numBuffersNeeded; ++i)
 		deviceImageBuffers[i] = new CudaImageContainerClean(deviceDims,device);
