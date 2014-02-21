@@ -46,6 +46,16 @@ DEVICE_PREFIX VEC_THIS_CLASS<T> operator/ (const EXTERN_TYPE<T>& other) const
 	return outVec;
 }
 
+DEVICE_PREFIX VEC_THIS_CLASS<T> operator* (const EXTERN_TYPE<T>& other) const
+{
+	VEC_THIS_CLASS<T> outVec;
+	outVec.x = x * other.x;
+	outVec.y = y * other.y;
+	outVec.z = z * other.z;
+
+	return outVec;
+}
+
 // Adds each element by other
 template<typename d>
 DEVICE_PREFIX VEC_THIS_CLASS<T>& operator+= (const EXTERN_TYPE<T>& other) const

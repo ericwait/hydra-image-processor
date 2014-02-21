@@ -11,10 +11,12 @@
 
 struct ImageChunk
 {
-	Vec<size_t> startImageIdx;
-	Vec<size_t> startBuffIdx;
-	Vec<size_t> endImageIdx;
-	Vec<size_t> endBuffIdx;
+	Vec<size_t> imageStart;
+	Vec<size_t> chunkROIstart;
+	Vec<size_t> imageROIstart;
+	Vec<size_t> imageEnd;
+	Vec<size_t> chunkROIend;
+	Vec<size_t> imageROIend;
 
 	ImageContainer* image;
 };
@@ -55,7 +57,7 @@ public:
 	// 	/*
 	// 	*	Add a constant to all pixel values
 	// 	*/
-	 	void addConstant(double additive);
+	 	DevicePixelType* addConstant(const DevicePixelType* imageIn, Vec<size_t> dims, double additive, DevicePixelType** imageOut=NULL);
 	// 	{
 	// #if (CUDA_CALLS_ON)
 	// 		cudaAddFactor<<<blocks,threads>>>(*getCurrentBuffer(),*getNextBuffer(),additive,minPixel,maxPixel);
@@ -466,29 +468,18 @@ private:
 	void calculateChunking(Vec<size_t> kernalDims);
 	void defaults();
 	void createBuffers();
-	void clearBuffers();
+	void clearHostBuffers();
 
-	void clearDeviceBuffers()
-	{
-		for (int i=0; i<deviceImageBuffers.size(); ++i)
-		{
-			if (deviceImageBuffers[i]!=NULL)
-			{
-				delete deviceImageBuffers[i];
-				deviceImageBuffers[i] = NULL;
-			}
-		}
-
-		deviceImageBuffers.clear();
-	}
+	void clearDeviceBuffers();
 
 	void loadImage(HostPixelType* imageIn);
-	void createDeviceBuffers(int numBuffersNeeded, Vec<size_t> kernalDims);
+	void createDeviceBuffers(int numBuffersNeeded, Vec<size_t> kernalDims=Vec<size_t>(0,0,0));
 	void CudaProcessBuffer::incrementBufferNumber();
 	CudaImageContainer* CudaProcessBuffer::getCurrentBuffer();
 	CudaImageContainer* CudaProcessBuffer::getNextBuffer();
 	bool loadNextChunk(const DevicePixelType* imageIn);
-	void saveCurChunk(DevicePixelType* imageOut);
+	void saveChunks(DevicePixelType* imageOut);
+	void retriveCurChunk();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Private Member Variables
@@ -506,8 +497,10 @@ private:
 	// This is how many chunks are being used to cover the whole original image
 	Vec<size_t> numChunks;
 	Vec<size_t> curChunkIdx;
+	Vec<size_t> nextChunkIdx;
+	bool lastChunk;
 
-	ImageChunk* hostImageBuffers;
+	std::vector<ImageChunk> hostImageBuffers;
 
 	int currentBufferIdx;
 	Vec<size_t> deviceDims;

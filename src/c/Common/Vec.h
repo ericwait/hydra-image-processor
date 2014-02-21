@@ -28,6 +28,15 @@ public:
 
 	DEVICE_PREFIX VEC_THIS_CLASS(){x=0; y=0; z=0;};
 
+	template<typename U>
+	DEVICE_PREFIX VEC_THIS_CLASS(VEC_THIS_CLASS<U> other)
+	{
+		this->x = static_cast<T>(other.x);
+		this->y = static_cast<T>(other.y);
+		this->z = static_cast<T>(other.z);
+	}
+
+
 	DEVICE_PREFIX VEC_THIS_CLASS(T x, T y, T z)
 	{
 		this->x = x;
@@ -122,6 +131,26 @@ public:
 	DEVICE_PREFIX T minValue() const
 	{
 		return (x<y) ? ((x<z)?(x):(z)) : ((y<z)?(y):(z));
+	}
+
+	DEVICE_PREFIX static VEC_THIS_CLASS<T> min(VEC_THIS_CLASS<T> a, VEC_THIS_CLASS<T> b)
+	{
+		VEC_THIS_CLASS<T> outVec;
+		outVec.x = MIN(a.x, b.x);
+		outVec.y = MIN(a.y, b.y);
+		outVec.z = MIN(a.z, b.z);
+
+		return outVec;
+	}
+
+	DEVICE_PREFIX static VEC_THIS_CLASS<T> max(VEC_THIS_CLASS<T> a, VEC_THIS_CLASS<T> b)
+	{
+		VEC_THIS_CLASS<T> outVec;
+		outVec.x = MAX(a.x, b.x);
+		outVec.y = MAX(a.y, b.y);
+		outVec.z = MAX(a.z, b.z);
+
+		return outVec;
 	}
 
 #define EXTERN_TYPE VEC_THIS_CLASS

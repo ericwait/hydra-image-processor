@@ -31,16 +31,16 @@ protected:
 private:
 	static std::map<std::string,MexCommand*> commandList;
 };
-// 
-// class AddConstant : MexCommand
-// {
-// public:
-// 	AddConstant(){}
-// 	virtual ~AddConstant(){}
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-// };
+ 
+ class AddConstant : MexCommand
+ {
+ public:
+ 	AddConstant(){}
+ 	virtual ~AddConstant(){}
+ 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string printUsage();
+ };
 // 
 // class AddImageWith : MexCommand
 // {
@@ -86,16 +86,16 @@ private:
 // 	virtual std::string printUsage();
 // };
 // 
-// class GaussianFilter : MexCommand
-// {
-// public:
-// 	GaussianFilter(){}
-// 	virtual ~GaussianFilter(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-// };
+ class GaussianFilter : MexCommand
+ {
+ public:
+ 	GaussianFilter(){}
+ 	virtual ~GaussianFilter(){}
+ 
+ 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string printUsage();
+ };
 // 
 // class Histogram : MexCommand
 // {
@@ -328,16 +328,16 @@ private:
 // 	virtual std::string printUsage();
 // };
 // 
-// class ReduceImage : MexCommand
-// {
-// public:
-// 	ReduceImage(){}
-// 	virtual ~ReduceImage(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-// };
+ class ReduceImage : MexCommand
+ {
+ public:
+ 	ReduceImage(){}
+ 	virtual ~ReduceImage(){}
+ 
+ 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string printUsage();
+ };
 // 
 // class ThresholdFilter : MexCommand
 // {

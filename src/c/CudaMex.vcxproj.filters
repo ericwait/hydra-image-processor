@@ -119,9 +119,6 @@
     <CudaCompile Include="Common\CudaUtilities.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
-    <CudaCompile Include="Common\Process.cu">
-      <Filter>Source Files</Filter>
-    </CudaCompile>
     <CudaCompile Include="Common\CudaKernels.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
@@ -151,9 +148,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\CudaKernels.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\Process.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\ImageContainer.h">

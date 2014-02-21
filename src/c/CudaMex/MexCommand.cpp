@@ -8,12 +8,12 @@ MexCommand::~MexCommand(){}
 void MexCommand::init()
 {
 // 	//TODO Put every class here!
-// 	REGISTER_COMMAND(AddConstant);
+ 	REGISTER_COMMAND(AddConstant);
 // 	REGISTER_COMMAND(AddImageWith);
 // 	REGISTER_COMMAND(ApplyPolyTransformation);
 // 	REGISTER_COMMAND(CalculateMinMax);
 // 	REGISTER_COMMAND(ContrastEnhancement);
-// 	REGISTER_COMMAND(GaussianFilter);
+ 	REGISTER_COMMAND(GaussianFilter);
 // 	REGISTER_COMMAND(Histogram);
 // 	REGISTER_COMMAND(ImagePow);
 // 	REGISTER_COMMAND(Mask);
@@ -34,7 +34,7 @@ void MexCommand::init()
 // 	REGISTER_COMMAND(NormalizedHistogram);
 // 	REGISTER_COMMAND(OtsuThresholdFilter);
 // 	REGISTER_COMMAND(OtsuThesholdValue);
-// 	REGISTER_COMMAND(ReduceImage);
+ 	REGISTER_COMMAND(ReduceImage);
 // 	REGISTER_COMMAND(SumArray);
 // 	REGISTER_COMMAND(ThresholdFilter);
  }
@@ -82,8 +82,8 @@ void MexCommand::init()
  	size_t numDims = mxGetNumberOfDimensions(imageIn);
  	const mwSize* DIMS = mxGetDimensions(imageIn);
  
- 	dims->x = (size_t)DIMS[1];
- 	dims->y = (size_t)DIMS[0];
+ 	dims->x = (size_t)DIMS[0];
+ 	dims->y = (size_t)DIMS[1];
  	if (numDims==3)
  		dims->z = (size_t)DIMS[2];
  	else

@@ -9,7 +9,7 @@
  	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
  
  	double* neighborhoodD = (double*)mxGetData(prhs[1]);
- 	Vec<size_t> neighborhood((int)neighborhoodD[0],(int)neighborhoodD[1],(int)neighborhoodD[2]);
+ 	Vec<size_t> neighborhood((int)neighborhoodD[1],(int)neighborhoodD[0],(int)neighborhoodD[2]);
  
 	cudaBuffer.meanFilter(imageIn,imageDims,neighborhood,&imageOut);
  }

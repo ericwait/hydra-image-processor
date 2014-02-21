@@ -17,6 +17,7 @@ public:
 	{
 		defaults();
 		image = NULL;
+		maxImageDims = dims;
 		loadImage(imageIn, dims);
 	}
 
@@ -24,6 +25,7 @@ public:
 	{
 		defaults();
 		imageDims = dims;
+		maxImageDims = dims;
 		HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(DevicePixelType)*dims.product()));
 	}
 
@@ -31,6 +33,7 @@ public:
 	{
 		defaults();
 		image = NULL;
+		maxImageDims = image->getDims();
 		loadImage(image->getConstMemoryPointer(),image->getDims());
 	}
 
@@ -43,6 +46,7 @@ public:
 	{
 		device = other.device;
 		imageDims = other.imageDims;
+		maxImageDims = other.maxImageDims;
 		image = other.image;
 	}
 
@@ -98,6 +102,16 @@ public:
 	__device__ size_t getHeight() const {return imageDims.y;}
 	__device__ size_t getDepth() const {return imageDims.z;}
 
+	bool setDims(Vec<size_t> dims)
+	{
+		if (maxImageDims.product()<dims.product())
+			return false;
+
+		imageDims = dims;
+
+		return true;
+	}
+
 protected:
 	CudaImageContainer();
 
@@ -108,6 +122,7 @@ protected:
 	}
 
 	int device;
+	Vec<size_t> maxImageDims;
 	Vec<size_t> imageDims;
 	DevicePixelType*	image;
 };

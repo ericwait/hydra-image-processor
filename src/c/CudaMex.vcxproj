@@ -57,7 +57,6 @@
     <CudaCompile Include="Common\CudaKernels.cu" />
     <CudaCompile Include="Common\CudaProcessBuffer.cu" />
     <CudaCompile Include="Common\CudaUtilities.cu" />
-    <CudaCompile Include="Common\Process.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\CHelpers.h">
@@ -65,9 +64,6 @@
     </ClInclude>
     <ClInclude Include="Common\Defines.h" />
     <ClInclude Include="Common\ImageContainer.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Common\Process.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Common\Vec.h">
