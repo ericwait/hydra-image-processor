@@ -41,18 +41,18 @@ private:
  	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
  	virtual std::string printUsage();
  };
-// 
-// class AddImageWith : MexCommand
-// {
-// public:
-// 	AddImageWith(){}
-// 	virtual ~AddImageWith(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-// };
-// 
+ 
+//  class AddImageWith : MexCommand
+//  {
+//  public:
+//  	AddImageWith(){}
+//  	virtual ~AddImageWith(){}
+//  
+//  	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+//  	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+//  	virtual std::string printUsage();
+//  };
+ 
 // class ApplyPolyTransformation : MexCommand
 // {
 // public:

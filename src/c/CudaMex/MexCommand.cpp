@@ -9,7 +9,7 @@ void MexCommand::init()
 {
 // 	//TODO Put every class here!
  	REGISTER_COMMAND(AddConstant);
-// 	REGISTER_COMMAND(AddImageWith);
+ 	//REGISTER_COMMAND(AddImageWith);
 // 	REGISTER_COMMAND(ApplyPolyTransformation);
 // 	REGISTER_COMMAND(CalculateMinMax);
 // 	REGISTER_COMMAND(ContrastEnhancement);

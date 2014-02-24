@@ -12,26 +12,17 @@ __global__ void cudaMeanFilter( CudaImageContainer imageIn, CudaImageContainer i
 		double val = 0;
 		double kernelVolume = 0;
 		DeviceVec<size_t> kernelDims = hostKernelDims;
-		DeviceVec<size_t> kernelMidIdx;
-		DeviceVec<size_t> curCoordIm; 
-		DeviceVec<size_t> curCoordKrn;
+		DeviceVec<size_t> halfKernal = kernelDims/2;
 
-		kernelMidIdx.x = kernelDims.x/2;
-		kernelMidIdx.y = kernelDims.y/2;
-		kernelMidIdx.z = kernelDims.z/2;
-
-		//find if the kernel will go off the edge of the image
-		curCoordIm.z = (size_t) max(0,(int)coordinate.z-(int)kernelMidIdx.z);
-		curCoordKrn.z = ((int)coordinate.z-(int)kernelMidIdx.z>=0) ? (0) : (kernelMidIdx.z-coordinate.z);
-		for (; curCoordIm.z<imageIn.getDepth() && curCoordKrn.z<kernelDims.z; ++curCoordIm.z, ++curCoordKrn.z)
+		DeviceVec<size_t> curCoordIm = coordinate - halfKernal;
+		curCoordIm.z = (coordinate.z<halfKernal.z) ? 0 : coordinate.z-halfKernal.z;
+		for (; curCoordIm.z<coordinate.z+halfKernal.z && curCoordIm.z<imageIn.getDeviceDims().z; ++curCoordIm.z)
 		{
-			curCoordIm.y = (size_t)max(0,(int)coordinate.y-(int)kernelMidIdx.y);
-			curCoordKrn.y = ((int)coordinate.y-(int)kernelMidIdx.y>=0) ? (0) : (kernelMidIdx.y-coordinate.y);
-			for (; curCoordIm.y<imageIn.getHeight() && curCoordKrn.y<kernelDims.y; ++curCoordIm.y, ++curCoordKrn.y)
+			curCoordIm.y = (coordinate.y<halfKernal.y) ? 0 : coordinate.y-halfKernal.y/2;
+			for (; curCoordIm.y<coordinate.y+halfKernal.y && curCoordIm.y<imageIn.getDeviceDims().y; ++curCoordIm.y)
 			{
-				curCoordIm.x = (size_t)max(0,(int)coordinate.x-(int)kernelMidIdx.x);
-				curCoordKrn.x = ((int)coordinate.x-(int)kernelMidIdx.x>=0) ? (0) : (kernelMidIdx.x-coordinate.x);		
-				for (; curCoordIm.x<imageIn.getWidth() && curCoordKrn.x<kernelDims.x; ++curCoordIm.x, ++curCoordKrn.x)
+				curCoordIm.x = (coordinate.x<halfKernal.x) ? 0 : coordinate.x-halfKernal.x/2;
+				for (; curCoordIm.x<coordinate.x+halfKernal.x && curCoordIm.x<imageIn.getDeviceDims().x; ++curCoordIm.x)
 				{
 					val += imageIn[curCoordIm];
 					++kernelVolume;
@@ -653,38 +644,41 @@ __global__ void cudaSumArray(CudaImageContainer arrayIn, double* arrayOut, size_
 		arrayOut[blockIdx.x] = sdata[0];
 }
 
-__global__ void cudaRuduceImage( CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<double> hostReductions )
+__global__ void cudaRuduceImage( CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostReductions )
 {
-	DeviceVec<double> reductions = hostReductions;
-	DeviceVec<size_t> coordinate;
-	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
-	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
-	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
+	//extern __shared__ DevicePixelType vals[];
+	DeviceVec<size_t> reductions = hostReductions;
+	DeviceVec<size_t> coordinateOut;
+	coordinateOut.x = threadIdx.x + blockIdx.x * blockDim.x;
+	coordinateOut.y = threadIdx.y + blockIdx.y * blockDim.y;
+	coordinateOut.z = threadIdx.z + blockIdx.z * blockDim.z;
+	int offset = threadIdx.x + threadIdx.y*blockDim.x + threadIdx.z*blockDim.y*blockDim.x;
+	offset *=  reductions.product();
 
-	if (coordinate<imageOut.getDeviceDims())
+	if (coordinateOut<imageOut.getDeviceDims())
 	{
-		double val = 0;
-		DeviceVec<size_t> mins, maxs;
-		mins.x = coordinate.x*reductions.x;
-		maxs.x = min(mins.x+reductions.x,(double)imageIn.getWidth());
-		mins.y = coordinate.y*reductions.y;
-		maxs.y = min(mins.y+reductions.y,(double)imageIn.getHeight());
-		mins.z = coordinate.z*reductions.z;
-		maxs.z = min(mins.z+reductions.z,(double)imageIn.getDepth());
+		int kernelVolume = 0;
+		double val = 0.0;
+		DeviceVec<size_t> mins(coordinateOut*DeviceVec<size_t>(reductions));
+		DeviceVec<size_t> maxs = DeviceVec<size_t>::min(mins+reductions, imageIn.getDeviceDims());
 
-		DeviceVec<size_t> currCorrd;
-		for (currCorrd.z=mins.z; currCorrd.z<maxs.z; ++currCorrd.z)
-		{
-			for (currCorrd.y=mins.y; currCorrd.y<maxs.y; ++currCorrd.y)
-			{
-				for (currCorrd.x=mins.x; currCorrd.x<maxs.x; ++currCorrd.x)
-				{
-					val += (float)imageIn[currCorrd];
-				}
-			}
-		}
+		DeviceVec<size_t> currCorrdIn(mins);
+  		for (currCorrdIn.z=mins.z; currCorrdIn.z<maxs.z; ++currCorrdIn.z)
+  		{
+  			for (currCorrdIn.y=mins.y; currCorrdIn.y<maxs.y; ++currCorrdIn.y)
+  			{
+  				for (currCorrdIn.x=mins.x; currCorrdIn.x<maxs.x; ++currCorrdIn.x)
+  				{
+					//vals[offset+kernelVolume] += imageIn[currCorrdIn];
+					val += (double)imageIn[currCorrdIn];
+  					++kernelVolume;
+  				}
+  			}
+  		}
 
-		imageOut[coordinate] = val/(maxs-mins).product();
+		imageOut[coordinateOut] = val/kernelVolume;
+		//imageOut[coordinateOut] = cudaFindMedian(vals+offset,kernelVolume);
+		//__syncthreads();
 	}
 }
 

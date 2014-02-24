@@ -125,6 +125,9 @@
     <CudaCompile Include="Common\CudaProcessBuffer.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
+    <CudaCompile Include="Common\ImageChunk.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="CudaMex\CudaMex.def">
@@ -153,9 +156,6 @@
     <ClInclude Include="Common\ImageContainer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Common\CudaStorageBuffer.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common\CudaProcessBuffer.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -166,6 +166,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Common\Defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\ImageChunk.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

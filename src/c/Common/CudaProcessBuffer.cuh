@@ -8,18 +8,12 @@
 #include "ImageContainer.h"
 #include "CudaImageContainerClean.cuh"
 #include <vector>
+#include "ImageChunk.cuh"
 
-struct ImageChunk
-{
-	Vec<size_t> imageStart;
-	Vec<size_t> chunkROIstart;
-	Vec<size_t> imageROIstart;
-	Vec<size_t> imageEnd;
-	Vec<size_t> chunkROIend;
-	Vec<size_t> imageROIend;
+std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNeeded, size_t memAvailable, const cudaDeviceProp& prop,
+										  Vec<size_t> kernalDims=Vec<size_t>(0,0,0));
 
-	ImageContainer* image;
-};
+std::vector<ImageChunk> calculateChunking(Vec<size_t> orgImageDims, Vec<size_t> deviceDims, const cudaDeviceProp& prop, Vec<size_t> kernalDims=Vec<size_t>(0,0,0));
 
 class CudaProcessBuffer
 {
@@ -54,22 +48,18 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Cuda Operators (Alphabetical order)
 	//////////////////////////////////////////////////////////////////////////
+
 	// 	/*
 	// 	*	Add a constant to all pixel values
 	// 	*/
 	 	DevicePixelType* addConstant(const DevicePixelType* imageIn, Vec<size_t> dims, double additive, DevicePixelType** imageOut=NULL);
-	// 	{
-	// #if (CUDA_CALLS_ON)
-	// 		cudaAddFactor<<<blocks,threads>>>(*getCurrentBuffer(),*getNextBuffer(),additive,minPixel,maxPixel);
-	// #endif
-	// 		incrementBufferNumber();
-	// 	}
-	// 
+
 	// 	/*
 	// 	*	Adds this image to the passed in one.  You can apply a factor
 	// 	*	which is multiplied to the passed in image prior to adding
 	// 	*/
-	 	void addImageWith(const DevicePixelType* image, double factor);
+	 	DevicePixelType* addImageWith(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims, double additive,
+			DevicePixelType** imageOut=NULL);
 	// 	{
 	// #if (CUDA_CALLS_ON)
 	// 		cudaAddTwoImagesWithFactor<<<blocks,threads>>>(*getCurrentBuffer(),*(image->getCurrentBuffer()),*getNextBuffer(),factor,
@@ -212,8 +202,6 @@ public:
 	// 		updateBlockThread();
 	// 		incrementBufferNumber();
 	// 	}
-
-		
 
 		// Filters image where each pixel is the mean of its neighborhood 
 		// If imageOut is null, then a new image pointer will be created and returned.
@@ -430,7 +418,8 @@ public:
 	// 	/*
 	// 	*	Will reduce the size of the image by the factors passed in
 	// 	*/
-	 	HostPixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* image, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims);
+	 	DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* image, Vec<size_t> dims, Vec<size_t> reductions,
+			Vec<size_t>& reducedDims, DevicePixelType** imageOut=NULL);
 
 		/*
 		*	This creates a image with values of 0 where the pixels fall below
@@ -463,23 +452,9 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	// Private Helper Methods
 	//////////////////////////////////////////////////////////////////////////
-	void updateBlockThread();
 	void deviceSetup();
-	void calculateChunking(Vec<size_t> kernalDims=Vec<size_t>(0,0,0));
+
 	void defaults();
-	void createBuffers();
-	void clearHostBuffers();
-
-	void clearDeviceBuffers();
-
-	void loadImage(HostPixelType* imageIn);
-	void createDeviceBuffers(int numBuffersNeeded, Vec<size_t> kernalDims=Vec<size_t>(0,0,0));
-	void CudaProcessBuffer::incrementBufferNumber();
-	CudaImageContainer* CudaProcessBuffer::getCurrentBuffer();
-	CudaImageContainer* CudaProcessBuffer::getNextBuffer();
-	bool loadNextChunk(const DevicePixelType* imageIn);
-	void saveChunks(DevicePixelType* imageOut);
-	void retriveCurChunk();
 
 	//////////////////////////////////////////////////////////////////////////
 	// Private Member Variables
@@ -489,22 +464,8 @@ private:
 	int device;
 	cudaDeviceProp deviceProp;
 
-	dim3 blocks, threads;
-
 	// This is the size that the input and output images will be
 	Vec<size_t> orgImageDims;
-
-	// This is how many chunks are being used to cover the whole original image
-	Vec<size_t> numChunks;
-	Vec<size_t> curChunkIdx;
-	Vec<size_t> nextChunkIdx;
-	bool lastChunk;
-
-	std::vector<ImageChunk> hostImageBuffers;
-
-	int currentBufferIdx;
-	Vec<size_t> deviceDims;
-	std::vector<CudaImageContainerClean*> deviceImageBuffers;
 
 	// This is the maximum size that we are allowing a constant kernel to exit
 	// on the device

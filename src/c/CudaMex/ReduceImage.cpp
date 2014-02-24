@@ -4,7 +4,7 @@
 void ReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	Vec<size_t> imageDims;
-	HostPixelType* imageIn;
+	HostPixelType* imageIn, * imageOut;
 	CudaProcessBuffer cudaBuffer;
 	setupImagePointers(prhs[0],&imageIn,&imageDims);
 
@@ -12,19 +12,22 @@ void ReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	Vec<double> reductionFactors(reductionD[0],reductionD[1],reductionD[2]);
 
 	Vec<size_t> reducedDims;
-	HostPixelType* imageOut = cudaBuffer.reduceImage(imageIn, imageDims, reductionFactors, reducedDims);
+	imageOut = cudaBuffer.reduceImage(imageIn, imageDims, reductionFactors, reducedDims);
 
-// 	mwSize* dims = new mwSize[3];
-// 	dims[0] = reducedDims.x;
-// 	dims[1] = reducedDims.y;
-// 	dims[2] = reducedDims.z;
-// 	plhs[0] = mxCreateNumericArray(3,dims,mxUINT8_CLASS,mxREAL);
-// 	HostPixelType* mexImageOut = (HostPixelType*)mxGetData(plhs[0]);
-// 	memcpy(mexImageOut,imageOut,sizeof(HostPixelType)*reducedDims.product());
+	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
+	mwSize* dims = new mwSize[numDims];
 
-	//delete[] imageIn;
-// 	delete[] imageOut;
-// 	delete[] dims;
+	dims[0] = reducedDims.x;
+	dims[1] = reducedDims.y;
+	if (numDims==3)
+		dims[2] = reducedDims.z;
+
+	plhs[0] = mxCreateNumericArray(numDims,dims,mxUINT8_CLASS,mxREAL);
+	HostPixelType* mexImageOut = (HostPixelType*)mxGetData(plhs[0]);
+	memcpy(mexImageOut,imageOut,sizeof(HostPixelType)*reducedDims.product());
+
+	delete[] dims;
+	delete[] imageOut;
 }
 
 std::string ReduceImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

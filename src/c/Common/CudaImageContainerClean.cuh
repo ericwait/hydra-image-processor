@@ -19,7 +19,8 @@ public:
 			}
 			catch (char* err)
 			{
-				;
+				if (err!=NULL)
+					err[0] = 'e';
 			}
 			image = NULL;
 		}

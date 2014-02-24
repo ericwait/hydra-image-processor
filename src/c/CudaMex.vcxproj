@@ -57,12 +57,14 @@
     <CudaCompile Include="Common\CudaKernels.cu" />
     <CudaCompile Include="Common\CudaProcessBuffer.cu" />
     <CudaCompile Include="Common\CudaUtilities.cu" />
+    <CudaCompile Include="Common\ImageChunk.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\CHelpers.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Common\Defines.h" />
+    <ClInclude Include="Common\ImageChunk.cuh" />
     <ClInclude Include="Common\ImageContainer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
@@ -84,10 +86,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Common\CudaProcessBuffer.cuh">
-      <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Common\CudaStorageBuffer.cuh">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>

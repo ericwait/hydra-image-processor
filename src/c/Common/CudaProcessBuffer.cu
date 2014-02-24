@@ -1,40 +1,127 @@
-#include "CudaProcessBuffer.cuh"
 #include "CudaUtilities.cuh"
-#include "CudaStorageBuffer.cuh"
 #include "CudaKernels.cuh"
+#include "CudaProcessBuffer.cuh"
 
-CudaProcessBuffer::CudaProcessBuffer(int device/*=0*/)
+//Percent of memory that can be used on the device
+const double MAX_MEM_AVAIL = 0.95;
+
+std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNeeded, size_t memAvailable, const cudaDeviceProp& prop, Vec<size_t> kernalDims/*=Vec<size_t>(0,0,0)*/)
 {
-	defaults();
-	this->device = device;
-	deviceSetup();
+	// 	clearDeviceBuffers();
+	// 	deviceImageBuffers.resize(numBuffersNeeded);
+
+	size_t numVoxels = (size_t)(memAvailable / (sizeof(HostPixelType)*numBuffersNeeded));
+
+	Vec<size_t> overlapVolume;
+	overlapVolume.x = kernalDims.x * imageDims.y * imageDims.z;
+	overlapVolume.y = imageDims.x * kernalDims.y * imageDims.z;
+	overlapVolume.z = imageDims.x * imageDims.y * kernalDims.z;
+
+	Vec<size_t> deviceDims(0,0,0);
+
+	if (overlapVolume.x>overlapVolume.y && overlapVolume.x>overlapVolume.z) // chunking in X is the worst
+	{
+		deviceDims.x = imageDims.x;
+		double leftOver = (double)numVoxels/imageDims.x;
+		double squareDim = sqrt(leftOver);
+
+		if (overlapVolume.y<overlapVolume.z) // chunking in Y is second worst
+		{
+			if (squareDim>imageDims.y)
+				deviceDims.y = imageDims.y;
+			else 
+				deviceDims.y = (size_t)squareDim;
+
+			deviceDims.z = (size_t)(leftOver/deviceDims.y);
+
+			if (deviceDims.z>imageDims.z)
+				deviceDims.z = imageDims.z;
+		}
+		else // chunking in Z is second worst
+		{
+			if (squareDim>imageDims.z)
+				deviceDims.z = imageDims.z;
+			else 
+				deviceDims.z = (size_t)squareDim;
+
+			deviceDims.y = (size_t)(leftOver/deviceDims.z);
+
+			if (deviceDims.y>imageDims.y)
+				deviceDims.y = imageDims.y;
+		}
+	}
+	else if (overlapVolume.y>overlapVolume.z) // chunking in Y is the worst
+	{
+		deviceDims.y = imageDims.y;
+		double leftOver = (double)numVoxels/imageDims.y;
+		double squareDim = sqrt(leftOver);
+
+		if (overlapVolume.x<overlapVolume.z)
+		{
+			if (squareDim>imageDims.x)
+				deviceDims.x = imageDims.x;
+			else 
+				deviceDims.x = (size_t)squareDim;
+
+			deviceDims.z = (size_t)(leftOver/deviceDims.x);
+
+			if (deviceDims.z>imageDims.z)
+				deviceDims.z = imageDims.z;
+		}
+		else
+		{
+			if (squareDim>imageDims.z)
+				deviceDims.z = imageDims.z;
+			else 
+				deviceDims.z = (size_t)squareDim;
+
+			deviceDims.x = (size_t)(leftOver/deviceDims.z);
+
+			if (deviceDims.x>imageDims.x)
+				deviceDims.x = imageDims.x;
+		}
+	}
+	else // chunking in Z is the worst
+	{
+		deviceDims.z = imageDims.z;
+		double leftOver = (double)numVoxels/imageDims.z;
+		double squareDim = sqrt(leftOver);
+
+		if (overlapVolume.x<overlapVolume.y)
+		{
+			if (squareDim>imageDims.x)
+				deviceDims.x = imageDims.x;
+			else 
+				deviceDims.x = (size_t)squareDim;
+
+			deviceDims.y = (size_t)(leftOver/deviceDims.x);
+
+			if (deviceDims.y>imageDims.y)
+				deviceDims.y = imageDims.y;
+		}
+		else
+		{
+			if (squareDim>imageDims.y)
+				deviceDims.y = imageDims.y;
+			else 
+				deviceDims.y = (size_t)squareDim;
+
+			deviceDims.x = (size_t)(leftOver/deviceDims.z);
+
+			if (deviceDims.x>imageDims.x)
+				deviceDims.x = imageDims.x;
+		}
+	}
+
+	return calculateChunking(imageDims, deviceDims, prop, kernalDims);
 }
 
-// CudaProcessBuffer::CudaProcessBuffer(HostPixelType* imageIn, Vec<size_t> dims, int device/*=0*/)
-// {
-// 	defaults();
-// 
-// 	orgImageDims = dims;
-// 	this->device = device;
-// 
-// 	calculateChunking();
-// 	createBuffers();
-// 
-// 	loadImage(imageIn);
-// }
-
-CudaProcessBuffer::~CudaProcessBuffer()
+std::vector<ImageChunk> calculateChunking(Vec<size_t> orgImageDims, Vec<size_t> deviceDims, const cudaDeviceProp& prop, Vec<size_t> kernalDims/*=Vec<size_t>(0,0,0)*/)
 {
-	clearHostBuffers();
-	clearDeviceBuffers();
-	defaults();
-}
-
-void CudaProcessBuffer::calculateChunking(Vec<size_t> kernalDims/*=Vec<size_t>(0,0,0)*/)
-{
+	std::vector<ImageChunk> localChunks;
 	Vec<size_t> margin((kernalDims + 1)/2); //integer round
 	Vec<size_t> chunkDelta(deviceDims-margin*2);
-	numChunks = Vec<size_t>(1,1,1);
+	Vec<size_t> numChunks(1,1,1);
 
 	if (orgImageDims.x>deviceDims.x)
 		numChunks.x = (size_t)ceil((double)orgImageDims.x/chunkDelta.x);
@@ -51,7 +138,7 @@ void CudaProcessBuffer::calculateChunking(Vec<size_t> kernalDims/*=Vec<size_t>(0
 	else
 		chunkDelta.z = orgImageDims.z;
 
-	hostImageBuffers.resize(numChunks.product());
+	localChunks.resize(numChunks.product());
 
 	Vec<size_t> curChunk(0,0,0);
 	Vec<size_t> imageStart(0,0,0);
@@ -60,6 +147,7 @@ void CudaProcessBuffer::calculateChunking(Vec<size_t> kernalDims/*=Vec<size_t>(0
 	Vec<size_t> imageEnd(0,0,0);
 	Vec<size_t> chunkROIend(0,0,0);
 	Vec<size_t> imageROIend(0,0,0);
+
 	for (curChunk.z=0; curChunk.z<numChunks.z; ++curChunk.z)
 	{
 		for (curChunk.y=0; curChunk.y<numChunks.y; ++curChunk.y)
@@ -73,9 +161,7 @@ void CudaProcessBuffer::calculateChunking(Vec<size_t> kernalDims/*=Vec<size_t>(0
 				chunkROIstart = imageROIstart - imageStart;
 				chunkROIend = imageROIend - imageStart;
 
-				ImageChunk* curImageBuffer = &hostImageBuffers[numChunks.linearAddressAt(curChunk)];
-
-				curImageBuffer->image = new ImageContainer(imageEnd-imageStart);
+				ImageChunk* curImageBuffer = &localChunks[numChunks.linearAddressAt(curChunk)];
 
 				curImageBuffer->imageStart = imageStart;
 				curImageBuffer->chunkROIstart = chunkROIstart;
@@ -83,6 +169,8 @@ void CudaProcessBuffer::calculateChunking(Vec<size_t> kernalDims/*=Vec<size_t>(0
 				curImageBuffer->imageEnd = imageEnd;
 				curImageBuffer->chunkROIend = chunkROIend;
 				curImageBuffer->imageROIend = imageROIend;
+
+				calcBlockThread(curImageBuffer->getFullChunkSize(),prop,curImageBuffer->blocks,curImageBuffer->threads);
 			}
 
 			curChunk.x = 0;
@@ -90,6 +178,21 @@ void CudaProcessBuffer::calculateChunking(Vec<size_t> kernalDims/*=Vec<size_t>(0
 
 		curChunk.y = 0;
 	}
+
+	return localChunks;
+}
+
+
+CudaProcessBuffer::CudaProcessBuffer(int device/*=0*/)
+{
+	defaults();
+	this->device = device;
+	deviceSetup();
+}
+
+CudaProcessBuffer::~CudaProcessBuffer()
+{
+	defaults();
 }
 
 void CudaProcessBuffer::deviceSetup()
@@ -98,447 +201,47 @@ void CudaProcessBuffer::deviceSetup()
 	HANDLE_ERROR(cudaGetDeviceProperties(&deviceProp,device));
 }
 
-void CudaProcessBuffer::createDeviceBuffers(int numBuffersNeeded, Vec<size_t> kernalDims/*=Vec<size_t>(0,0,0)*/)
-{
-	clearDeviceBuffers();
-	deviceImageBuffers.resize(numBuffersNeeded);
-
-	size_t numVoxels = (size_t)((double)deviceProp.totalGlobalMem*0.9/(sizeof(HostPixelType)*numBuffersNeeded));
-
-	Vec<size_t> chunkVolume;
-	chunkVolume.x = kernalDims.x * orgImageDims.y * orgImageDims.z;
-	chunkVolume.y = orgImageDims.x * kernalDims.y * orgImageDims.z;
-	chunkVolume.z = orgImageDims.x * orgImageDims.y * kernalDims.z;
-
-	if (chunkVolume.x>chunkVolume.y && chunkVolume.x>chunkVolume.z) // chunking in X is the worst
-	{
-		deviceDims.x = orgImageDims.x;
-		double leftOver = (double)numVoxels/orgImageDims.x;
-		double squareDim = sqrt(leftOver);
-
-		if (chunkVolume.y<chunkVolume.z) // chunking in Y is second worst
-		{
-			if (squareDim>orgImageDims.y)
-				deviceDims.y = orgImageDims.y;
-			else 
-				deviceDims.y = (size_t)squareDim;
-
-			deviceDims.z = (size_t)(leftOver/deviceDims.y);
-
-			if (deviceDims.z>orgImageDims.z)
-				deviceDims.z = orgImageDims.z;
-		}
-		else // chunking in Z is second worst
-		{
-			if (squareDim>orgImageDims.z)
-				deviceDims.z = orgImageDims.z;
-			else 
-				deviceDims.z = (size_t)squareDim;
-
-			deviceDims.y = (size_t)(leftOver/deviceDims.z);
-
-			if (deviceDims.y>orgImageDims.y)
-				deviceDims.y = orgImageDims.y;
-		}
-	}
-	else if (chunkVolume.y>chunkVolume.z) // chunking in Y is the worst
-	{
-		deviceDims.y = orgImageDims.y;
-		double leftOver = (double)numVoxels/orgImageDims.y;
-		double squareDim = sqrt(leftOver);
-
-		if (chunkVolume.x<chunkVolume.z)
-		{
-			if (squareDim>orgImageDims.x)
-				deviceDims.x = orgImageDims.x;
-			else 
-				deviceDims.x = (size_t)squareDim;
-
-			deviceDims.z = (size_t)(leftOver/deviceDims.x);
-
-			if (deviceDims.z>orgImageDims.z)
-				deviceDims.z = orgImageDims.z;
-		}
-		else
-		{
-			if (squareDim>orgImageDims.z)
-				deviceDims.z = orgImageDims.z;
-			else 
-				deviceDims.z = (size_t)squareDim;
-
-			deviceDims.x = (size_t)(leftOver/deviceDims.z);
-
-			if (deviceDims.x>orgImageDims.x)
-				deviceDims.x = orgImageDims.x;
-		}
-	}
-	else // chunking in Z is the worst
-	{
-		deviceDims.z = orgImageDims.z;
-		double leftOver = (double)numVoxels/orgImageDims.z;
-		double squareDim = sqrt(leftOver);
-
-		if (chunkVolume.x<chunkVolume.y)
-		{
-			if (squareDim>orgImageDims.x)
-				deviceDims.x = orgImageDims.x;
-			else 
-				deviceDims.x = (size_t)squareDim;
-
-			deviceDims.y = (size_t)(leftOver/deviceDims.x);
-
-			if (deviceDims.y>orgImageDims.y)
-				deviceDims.y = orgImageDims.y;
-		}
-		else
-		{
-			if (squareDim>orgImageDims.y)
-				deviceDims.y = orgImageDims.y;
-			else 
-				deviceDims.y = (size_t)squareDim;
-
-			deviceDims.x = (size_t)(leftOver/deviceDims.z);
-
-			if (deviceDims.x>orgImageDims.x)
-				deviceDims.x = orgImageDims.x;
-		}
-	}
-
-	for (int i=0; i<numBuffersNeeded; ++i)
-		deviceImageBuffers[i] = new CudaImageContainerClean(deviceDims,device);
-
-	currentBufferIdx = 0;
-	updateBlockThread();
-	calculateChunking(kernalDims);
-}
-
-void CudaProcessBuffer::updateBlockThread()
-{
-	calcBlockThread(deviceDims,deviceProp,blocks,threads);
-}
-
 void CudaProcessBuffer::defaults()
 {
 	device = 0;
-	blocks = dim3(0,0,0);
-	threads = dim3(0,0,0);
 	orgImageDims = Vec<size_t>(0,0,0);
-	numChunks = Vec<size_t>(0,0,0);
-	curChunkIdx = Vec<size_t>(0,0,0);
-	nextChunkIdx = Vec<size_t>(0,0,0);
-	lastChunk = false;
-	currentBufferIdx = -1;
-	deviceDims = Vec<size_t>(0,0,0);
-}
-
-void CudaProcessBuffer::createBuffers()
-{
-	throw std::logic_error("The method or operation is not implemented.");
-// 	hostImageBuffers = new ImageContainer*[numChunks.product()];
-// 	Vec<size_t> curChunk(0,0,0);
-// 	Vec<size_t> startIdx(0,0,0);
-// 	Vec<size_t> curChunkDim;
-// 	for (; curChunk.z<numChunks.z; ++curChunk.z)
-// 	{
-// 		if (curChunk.z*chunkDims.z+chunkDims.z<orgImageDims.z)
-// 		{
-// 			curChunkDim.z = chunkDims.z;
-// 		}
-// 		else
-// 		{
-// 			curChunkDim.z = orgImageDims.z - curChunk.z*chunkDims.z;
-// 		}
-// 
-// 		for (curChunk.y=0; curChunk.y<numChunks.y; ++curChunk.y)
-// 		{
-// 			if (curChunk.y*chunkDims.y+chunkDims.y<orgImageDims.y)
-// 			{
-// 				curChunkDim.y = chunkDims.y;
-// 			}
-// 			else
-// 			{
-// 				curChunkDim.y = orgImageDims.y - curChunk.y*chunkDims.y;
-// 			}
-// 
-// 			for (curChunk.x=0; curChunk.x<numChunks.x; ++curChunk.x)
-// 			{
-// 				if (curChunk.x*chunkDims.x+chunkDims.x<orgImageDims.x)
-// 				{
-// 					curChunkDim.x = chunkDims.x;
-// 				}
-// 				else
-// 				{
-// 					curChunkDim.x = orgImageDims.x - curChunk.x*chunkDims.x;
-// 				}
-// 
-// 				hostImageBuffers[numChunks.linearAddressAt(curChunk)] = new ImageContainer(curChunkDim);
-// 			}
-// 		}
-// 	}
-
-// 	for (int i=0; i<NUM_DEVICE_BUFFERS; ++i)
-// 		deviceImageBuffers[i] = new CudaImageContainerClean(chunkDims,device);
-}
-
-void CudaProcessBuffer::clearHostBuffers()
-{
-	if (!hostImageBuffers.empty())
-	{
-		for (std::vector<ImageChunk>::iterator it=hostImageBuffers.begin(); it!=hostImageBuffers.end(); ++it)
-		{
-			if (it->image!=NULL)
-			{
-				delete it->image;
-				it->image = NULL;
-			}
-		}
-
-		hostImageBuffers.clear();
-	}
-}
-
-void CudaProcessBuffer::clearDeviceBuffers()
-{
-	if (!deviceImageBuffers.empty())
-	{
-		for (std::vector<CudaImageContainerClean*>::iterator it=deviceImageBuffers.begin(); it!=deviceImageBuffers.end(); ++it)
-		{
-			if (*it!=NULL)
-			{
-				delete *it;
-				*it = NULL;
-			}
-		}
-
-		deviceImageBuffers.clear();
-	}
-}
-
-void CudaProcessBuffer::loadImage(HostPixelType* imageIn)
-{
-	throw std::logic_error("The method or operation is not implemented.");
-// 	if (numChunks.product() == 1)
-// 	{
-// 		hostImageBuffers[0]->setImagePointer(imageIn,orgImageDims);
-// 		return;
-// 	}
-// 
-// 	Vec<size_t> curChunk(0,0,0);
-// 	Vec<size_t> curChunkDim;
-// 	for (; curChunk.z<numChunks.z; ++curChunk.z)
-// 	{
-// 		if (curChunk.z*chunkDims.z+chunkDims.z<orgImageDims.z)
-// 		{
-// 			curChunkDim.z = chunkDims.z;
-// 		}
-// 		else
-// 		{
-// 			curChunkDim.z = orgImageDims.z - curChunk.z*chunkDims.z;
-// 		}
-// 
-// 		for (curChunk.y=0; curChunk.y<numChunks.y; ++curChunk.y)
-// 		{
-// 			if (curChunk.y*chunkDims.y+chunkDims.y<orgImageDims.y)
-// 			{
-// 				curChunkDim.y = chunkDims.y;
-// 			}
-// 			else
-// 			{
-// 				curChunkDim.y = orgImageDims.y - curChunk.y*chunkDims.y;
-// 			}
-// 
-// 			for (curChunk.x=0; curChunk.x<numChunks.x; ++curChunk.x)
-// 			{
-// 				if (curChunk.x*chunkDims.x+chunkDims.x<orgImageDims.x)
-// 				{
-// 					curChunkDim.x = chunkDims.x;
-// 				}
-// 				else
-// 				{
-// 					curChunkDim.x = orgImageDims.x - curChunk.x*chunkDims.x;
-// 				}
-// 
-// 				HostPixelType* im = hostImageBuffers[numChunks.linearAddressAt(curChunk)]->getMemoryPointer();
-// 				Vec<size_t> startIdx(chunkDims.x*curChunk.x,chunkDims.y*curChunk.y,chunkDims.z*curChunk.z);
-// 				Vec<size_t> curIdx(startIdx);
-// 
-// 				for (; curIdx.z<startIdx.z+chunkDims.z && curIdx.z<curChunkDim.z; ++curIdx.z)
-// 				{
-// 					for(curIdx.y=startIdx.y; curIdx.y<startIdx.y+chunkDims.y && curIdx.y<curChunkDim.y; ++curIdx.y)
-// 					{
-// 						memcpy(im+chunkDims.linearAddressAt(curIdx-startIdx),imageIn+orgImageDims.linearAddressAt(curIdx),
-// 							sizeof(HostPixelType)*curChunkDim.x);
-// 					}
-// 				}
-// 			}
-// 		}
-// 	}
-}
-
-void CudaProcessBuffer::incrementBufferNumber()
-{
-	++currentBufferIdx;
-	if (currentBufferIdx>=deviceImageBuffers.size())
-		currentBufferIdx = 0;
-}
-
-CudaImageContainer* CudaProcessBuffer::getCurrentBuffer()
-{
-	return deviceImageBuffers[currentBufferIdx];
-}
-
-CudaImageContainer* CudaProcessBuffer::getNextBuffer()
-{
-	int nextIdx = (currentBufferIdx+1 >= deviceImageBuffers.size()) ? 0 : currentBufferIdx+1;
-	return deviceImageBuffers[nextIdx];
-}
-
-bool CudaProcessBuffer::loadNextChunk(const DevicePixelType* imageIn)
-{
-	curChunkIdx = nextChunkIdx;
-
-	if (lastChunk)
-	{
-		lastChunk = false;
-		return false;
-	}
-
-	if (numChunks.product()==1)
-	{
-		getCurrentBuffer()->loadImage(imageIn,orgImageDims);
-		lastChunk = true;
-		return true;
-	}
-
-	ImageChunk* curChunk = &hostImageBuffers[numChunks.linearAddressAt(curChunkIdx)];
-	Vec<size_t> curIdx(0,0,0);
-	Vec<size_t> curChunkSize = curChunk->imageEnd - curChunk->imageStart;
-
-	if (!getCurrentBuffer()->setDims(curChunkSize))
-		throw std::runtime_error("Unable to load chunk to the device because the buffer was too small!");
-
-	for (curIdx.z=0; curIdx.z<curChunkSize.z; ++curIdx.z)
-	{
-		for (curIdx.y=0; curIdx.y<curChunkSize.y; ++curIdx.y)
-		{
-			Vec<size_t> curHostIdx = curChunk->imageStart + curIdx;
-			Vec<size_t> curDeviceIdx = curIdx;
-
-			const DevicePixelType* hostPtr = imageIn + orgImageDims.linearAddressAt(curHostIdx);
-			//DevicePixelType* devicePtr = curChunk->image->getMemoryPointer() + curChunkSize.linearAddressAt(curDeviceIdx);
-			DevicePixelType* devicePtr = getCurrentBuffer()->getImagePointer() + curChunkSize.linearAddressAt(curDeviceIdx);
-
-			//memcpy(devicePtr,hostPtr,sizeof(DevicePixelType)*curChunkSize.x);
-			HANDLE_ERROR(cudaMemcpy(devicePtr,hostPtr,sizeof(DevicePixelType)*curChunkSize.x,cudaMemcpyHostToDevice));
-		}
-	}
-
-	++nextChunkIdx.x;
-	if (nextChunkIdx.x>=numChunks.x)
-	{
-		nextChunkIdx.x = 0;
-		++nextChunkIdx.y;
-
-		if (nextChunkIdx.y>=numChunks.y)
-		{
-			nextChunkIdx.y = 0;
-			++nextChunkIdx.z;
-
-			if (nextChunkIdx.z>=numChunks.z)
-			{
-				lastChunk = true;
-				nextChunkIdx = Vec<size_t>(0,0,0);
-			}
-		}
-	}
-
-	return true;
-}
-
-void CudaProcessBuffer::retriveCurChunk()
-{
-	ImageChunk* curChunk = &hostImageBuffers[numChunks.linearAddressAt(curChunkIdx)];
-
-	Vec<size_t> curBuffSize = curChunk->imageEnd - curChunk->imageStart;
-
- 	HANDLE_ERROR(cudaMemcpy(curChunk->image->getMemoryPointer(), getCurrentBuffer()->getConstImagePointer(),
- 		sizeof(DevicePixelType)*curBuffSize.product(), cudaMemcpyDeviceToHost));
-}
-
-void CudaProcessBuffer::saveChunks(DevicePixelType* imageOut)
-{
-	if (numChunks.product()==1)
-	{
-		ImageChunk* curChunk = &hostImageBuffers[numChunks.linearAddressAt(curChunkIdx)];
-		memcpy(imageOut,hostImageBuffers[0].image->getConstMemoryPointer(),sizeof(DevicePixelType)*orgImageDims.product());
-	}
-	else
-	{
-		Vec<size_t> localChunkIdx(0,0,0);
-		for (localChunkIdx.z=0; localChunkIdx.z<numChunks.z; ++localChunkIdx.z)
-		{
-			for (localChunkIdx.y=0; localChunkIdx.y<numChunks.y; ++localChunkIdx.y)
-			{
-				for (localChunkIdx.x=0; localChunkIdx.x<numChunks.x; ++localChunkIdx.x)
-				{
-					ImageChunk* curChunk = &hostImageBuffers[numChunks.linearAddressAt(localChunkIdx)];
-					Vec<size_t> roiIdx = Vec<size_t>(0,0,0);
-					Vec<size_t> curChunkSize = curChunk->imageEnd - curChunk->imageStart;
-					Vec<size_t> curROISize = curChunk->imageROIend - curChunk->imageROIstart;
-
-					const DevicePixelType* chunkImagePtr = curChunk->image->getConstMemoryPointer();
-
-					for (roiIdx.z=0; roiIdx.z<curROISize.z; ++roiIdx.z)
-					{
-						for (roiIdx.y=0; roiIdx.y<curROISize.y; ++roiIdx.y)
-						{
-							Vec<size_t> chunkIdx(curChunk->chunkROIstart+roiIdx);
-							Vec<size_t> outIdx(curChunk->imageROIstart+roiIdx);
-
-							DevicePixelType* outPtr = imageOut + orgImageDims.linearAddressAt(outIdx);
-							const DevicePixelType* chunkPtr = chunkImagePtr + curChunkSize.linearAddressAt(chunkIdx);
-
-							memcpy(outPtr,chunkPtr,sizeof(DevicePixelType)*curROISize.x);
-						}
-					}
-				}
-			}
-		}
-	}
 }
 
 //////////////////////////////////////////////////////////////////////////
 //Cuda Operators (Alphabetical order)
 //////////////////////////////////////////////////////////////////////////
 
-DevicePixelType* CudaProcessBuffer::addConstant(const DevicePixelType* imageIn, Vec<size_t> dims, double additive, DevicePixelType** imageOut/*=NULL*/)
+DevicePixelType* CudaProcessBuffer::addConstant(const DevicePixelType* imageIn, Vec<size_t> dims, double additive,
+												DevicePixelType** imageOut/*=NULL*/)
 {
-	orgImageDims = dims;
-
-	DevicePixelType* imOut;
-	if (imageOut==NULL)
-		imOut = new DevicePixelType[orgImageDims.product()];
-	else
-		imOut = *imageOut;
-
-	createDeviceBuffers(2);
-
-	while (loadNextChunk(imageIn))
-	{
-		if (!getNextBuffer()->setDims(getCurrentBuffer()->getDims()))
-			throw std::runtime_error("Unable to load chunk to the device because the buffer was too small!");
-
-		cudaAddFactor<<<blocks,threads>>>(*getCurrentBuffer(),*getNextBuffer(),additive,std::numeric_limits<DevicePixelType>::min(),std::numeric_limits<DevicePixelType>::max());
-		incrementBufferNumber();
-		retriveCurChunk();
-	}
-
-	saveChunks(imOut);
-
-	return imOut;
+	throw std::logic_error("The method or operation is not implemented.");
+// 	orgImageDims = dims;
+// 
+// 	DevicePixelType* imOut;
+// 	if (imageOut==NULL)
+// 		imOut = new DevicePixelType[orgImageDims.product()];
+// 	else
+// 		imOut = *imageOut;
+// 
+// 	calculateBufferDims(TODO,2);
+// 
+// 	while (loadChunk(imageIn, TODO))
+// 	{
+// 		if (!getNextBuffer()->setDims(getCurrentBuffer()->getDims()))
+// 			throw std::runtime_error("Unable to load chunk to the device because the buffer was too small!");
+// 
+// 		cudaAddFactor<<<blocks,threads>>>(*getCurrentBuffer(),*getNextBuffer(),additive,std::numeric_limits<DevicePixelType>::min(),std::numeric_limits<DevicePixelType>::max());
+// 		incrementBufferNumber();
+// 		retriveCurChunk();
+// 	}
+// 
+// 	saveChunks(imOut);
+// 
+// 	return imOut;
 }
 
-void CudaProcessBuffer::addImageWith(const DevicePixelType* image, double factor)
+DevicePixelType* CudaProcessBuffer::addImageWith(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims,
+													  double additive, DevicePixelType** imageOut/*=NULL*/)
 {
 	throw std::logic_error("The method or operation is not implemented.");
 }
@@ -624,7 +327,7 @@ DevicePixelType* CudaProcessBuffer::gaussianFilter(const DevicePixelType* imageI
 // 		cudaMemcpyDeviceToHost));
 // 
 // 	return gaussImage;
-	return NULL;
+	//return NULL;
 }
 
 void CudaProcessBuffer::mask(const DevicePixelType* imageMask, DevicePixelType threshold/*=1*/)
@@ -652,20 +355,23 @@ DevicePixelType* CudaProcessBuffer::meanFilter(const DevicePixelType* imageIn, V
 		meanImage = new DevicePixelType[orgImageDims.product()];
 	else
 		meanImage = *imageOut;
-	
-	createDeviceBuffers(2,neighborhood);
 
-	while (loadNextChunk(imageIn))
+	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,neighborhood);
+
+	CudaImageContainerClean* deviceImageIn = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
-		if (!getNextBuffer()->setDims(getCurrentBuffer()->getDims()))
-			throw std::runtime_error("Unable to load chunk to the device because the buffer was too small!");
-
-		cudaMeanFilter<<<blocks,threads>>>(*getCurrentBuffer(),*getNextBuffer(),neighborhood);
-		incrementBufferNumber();
-		retriveCurChunk();
+		curChunk->sendROI(imageIn,dims,deviceImageIn);
+		deviceImageOut->setDims(curChunk->getFullChunkSize());
+		
+		cudaMeanFilter<<<curChunk->blocks,curChunk->threads>>>(*deviceImageIn,*deviceImageOut,neighborhood);
+		
+		curChunk->retriveROI(meanImage,dims,deviceImageOut);
 	}
-
-	saveChunks(meanImage);
+	
+	delete deviceImageIn;
+	delete deviceImageOut;
 
 	return meanImage;
 }
@@ -703,7 +409,7 @@ void CudaProcessBuffer::multiplyImageWith(const DevicePixelType* image)
 double CudaProcessBuffer::normalizedCovariance(DevicePixelType* otherImage)
 {
 	throw std::logic_error("The method or operation is not implemented.");
-	return 0.0;
+	//return 0.0;
 }
 
 void CudaProcessBuffer::normalizeHistogram()
@@ -726,31 +432,59 @@ void CudaProcessBuffer::sumArray(double& sum)
 	throw std::logic_error("The method or operation is not implemented.");
 }
 
-HostPixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims)
+DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> reductions,
+												Vec<size_t>& reducedDims, DevicePixelType** imageOut/*=NULL*/)
 {
-	throw std::logic_error("The method or operation is not implemented.");
-// 	orgImageDims = dims;
-// 	Vec<size_t> boarder((size_t)ceil(reductions.x/2.0), (size_t)ceil(reductions.y/2.0), (size_t)ceil(reductions.z/2.0));
-// 	createDeviceBuffers(2,boarder);
-// 	reducedDims.x = (size_t)ceil(dims.x/reductions.x);
-// 	reducedDims.y = (size_t)ceil(dims.y/reductions.y);
-// 	reducedDims.z = (size_t)ceil(dims.z/reductions.z);
-// 
-// 	HostPixelType* outImage = new HostPixelType[reducedDims.product()];
-// 
-// 	if (numChunks.product()==1)//image fits on the device
-// 		deviceImageBuffers[0]->loadImage(imageIn,dims);
-// 	else
-// 	{
-// 		loadNextChunk(imageIn);
-// 		cudaRuduceImage<<<blocks,threads>>>(*getCurrentBuffer(),*getNextBuffer(),reductions);
-// 
-// 		HANDLE_ERROR(cudaMemcpy(curChunk.image->getMemoryPointer(),getNextBuffer()->getDeviceImagePointer(),
-// 			sizeof(DevicePixelType)*curBuffSize.product(),cudaMemcpyDeviceToHost));
-// 
-// 	}
+	orgImageDims = dims;
+	reducedDims = orgImageDims / reductions;
+	DevicePixelType* reducedImage;
+	if (imageOut==NULL)
+		reducedImage = new DevicePixelType[reducedDims.product()];
+	else
+		reducedImage = *imageOut;
 
-	return NULL;
+	double ratio = (double)reducedDims.product() / dims.product();
+
+	std::vector<ImageChunk> orgChunks = calculateBuffers(dims,1,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL*(1-ratio)),deviceProp,reductions);
+	std::vector<ImageChunk> reducedChunks = orgChunks;
+
+	for (std::vector<ImageChunk>::iterator it=reducedChunks.begin(); it!=reducedChunks.end(); ++it)
+	{
+		it->imageStart = it->imageStart/reductions;
+		it->chunkROIstart = it->chunkROIstart/reductions;
+		it->imageROIstart = it->imageROIstart/reductions;
+		it->imageEnd = it->imageEnd/reductions;
+		it->chunkROIend = it->chunkROIend/reductions;
+		it->imageROIend = it->imageROIend/reductions;
+
+		calcBlockThread(it->getFullChunkSize(),deviceProp,it->blocks,it->threads);
+	}
+
+	CudaImageContainerClean* deviceImageIn = new CudaImageContainerClean(orgChunks[0].getFullChunkSize(),device);
+	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(reducedChunks[0].getFullChunkSize(),device);
+
+	std::vector<ImageChunk>::iterator orgIt = orgChunks.begin();
+	std::vector<ImageChunk>::iterator reducedIt = reducedChunks.begin();
+	size_t sharedMemorysize = 0;
+	while (orgIt!=orgChunks.end() && reducedIt!=reducedChunks.end())
+	{
+		orgIt->sendROI(imageIn,dims,deviceImageIn);
+		deviceImageOut->setDims(reducedIt->getFullChunkSize());
+
+		sharedMemorysize = reductions.product() * reducedIt->threads.x * reducedIt->threads.y * reducedIt->threads.z;
+		//cudaRuduceImage<<<reducedIt->blocks,reducedIt->threads,sharedMemorysize>>>(*deviceImageIn,*deviceImageOut,reductions);
+		cudaRuduceImage<<<reducedIt->blocks,reducedIt->threads>>>(*deviceImageIn,*deviceImageOut,reductions);
+
+		reducedIt->retriveROI(reducedImage,reducedDims,deviceImageOut);
+		
+		++orgIt;
+		++reducedIt;
+	}
+
+	delete deviceImageIn;
+	delete deviceImageOut;
+
+ 	return reducedImage;
 }
 
 void CudaProcessBuffer::thresholdFilter(double threshold)
