@@ -173,18 +173,18 @@ private:
  	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
  	virtual std::string printUsage();
  };
-// 
-// class MedianFilter : MexCommand
-// {
-// public:
-// 	MedianFilter(){}
-// 	virtual ~MedianFilter(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-// };
-// 
+
+class MedianFilter : MexCommand
+{
+public:
+	MedianFilter(){}
+	virtual ~MedianFilter(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+};
+
 // class MinFilterCircle : MexCommand
 // {
 // public:

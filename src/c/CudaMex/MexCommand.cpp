@@ -8,12 +8,12 @@ MexCommand::~MexCommand(){}
 void MexCommand::init()
 {
 // 	//TODO Put every class here!
- 	REGISTER_COMMAND(AddConstant);
+// 	REGISTER_COMMAND(AddConstant);
  	//REGISTER_COMMAND(AddImageWith);
 // 	REGISTER_COMMAND(ApplyPolyTransformation);
 // 	REGISTER_COMMAND(CalculateMinMax);
 // 	REGISTER_COMMAND(ContrastEnhancement);
- 	REGISTER_COMMAND(GaussianFilter);
+// 	REGISTER_COMMAND(GaussianFilter);
 // 	REGISTER_COMMAND(Histogram);
 // 	REGISTER_COMMAND(ImagePow);
 // 	REGISTER_COMMAND(Mask);
@@ -22,7 +22,7 @@ void MexCommand::init()
 // 	REGISTER_COMMAND(MaxFilterNeighborHood);
 // 	REGISTER_COMMAND(MaximumIntensityProjection);
  	REGISTER_COMMAND(MeanFilter);
-// 	REGISTER_COMMAND(MedianFilter);
+ 	REGISTER_COMMAND(MedianFilter);
 // 	REGISTER_COMMAND(MinFilterCircle);
 // 	REGISTER_COMMAND(MinFilterKernel);
 // 	REGISTER_COMMAND(MinFilterNeighborhood);
