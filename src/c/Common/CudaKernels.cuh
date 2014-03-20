@@ -52,7 +52,9 @@ __global__ void cudaPolyTransferFuncImage(CudaImageContainer imageIn, CudaImageC
 
 __global__ void cudaSumArray(CudaImageContainer arrayIn, double* arrayOut, size_t n);
 
-__global__ void cudaRuduceImage(CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostReductions);
+__global__ void cudaMeanImageReduction(CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostReductions);
+
+__global__ void cudaMedianImageReduction(CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostReductions);
 
 __global__ void cudaMaximumIntensityProjection(CudaImageContainer imageIn, CudaImageContainer imageOut);
 

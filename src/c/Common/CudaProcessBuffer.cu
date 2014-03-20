@@ -7,9 +7,6 @@ const double MAX_MEM_AVAIL = 0.95;
 
 std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNeeded, size_t memAvailable, const cudaDeviceProp& prop, Vec<size_t> kernalDims/*=Vec<size_t>(0,0,0)*/)
 {
-	// 	clearDeviceBuffers();
-	// 	deviceImageBuffers.resize(numBuffersNeeded);
-
 	size_t numVoxels = (size_t)(memAvailable / (sizeof(HostPixelType)*numBuffersNeeded));
 
 	Vec<size_t> overlapVolume;
@@ -181,7 +178,6 @@ std::vector<ImageChunk> calculateChunking(Vec<size_t> orgImageDims, Vec<size_t> 
 
 	return localChunks;
 }
-
 
 CudaProcessBuffer::CudaProcessBuffer(int device/*=0*/)
 {
@@ -376,9 +372,50 @@ DevicePixelType* CudaProcessBuffer::meanFilter(const DevicePixelType* imageIn, V
 	return meanImage;
 }
 
-void CudaProcessBuffer::medianFilter(Vec<size_t> neighborhood)
+DevicePixelType* CudaProcessBuffer::medianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, DevicePixelType** imageOut/*=NULL*/)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	orgImageDims = dims;
+
+	DevicePixelType* medianImage;
+	if (imageOut==NULL)
+		medianImage = new DevicePixelType[orgImageDims.product()];
+	else
+		medianImage = *imageOut;
+
+	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,neighborhood);
+
+	CudaImageContainerClean* deviceImageIn = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		curChunk->sendROI(imageIn,dims,deviceImageIn);
+		deviceImageOut->setDims(curChunk->getFullChunkSize());
+
+		dim3 blocks(curChunk->blocks);
+		dim3 threads(curChunk->threads);
+		double threadVolume = threads.x * threads.y * threads.z;
+		double newThreadVolume = (double)deviceProp.sharedMemPerBlock/(sizeof(DevicePixelType)*neighborhood.product());
+
+		double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
+		threads.x = threads.x / alpha;
+		threads.y = threads.y / alpha;
+		threads.z = threads.z / alpha;
+
+		blocks.x = ceil((double)curChunk->getFullChunkSize().x / threads.x);
+		blocks.y = ceil((double)curChunk->getFullChunkSize().y / threads.y);
+		blocks.z = ceil((double)curChunk->getFullChunkSize().z / threads.z);
+
+		size_t sharedMemorysize = neighborhood.product() * threads.x * threads.y * threads.z;
+
+ 		cudaMedianFilter<<<blocks,threads,sharedMemorysize>>>(*deviceImageIn,*deviceImageOut,neighborhood);
+ 
+ 		curChunk->retriveROI(medianImage,dims,deviceImageOut);
+	}
+
+	delete deviceImageIn;
+	delete deviceImageOut;
+
+	return medianImage;
 }
 
 void CudaProcessBuffer::minFilter(Vec<size_t> neighborhood, double* kernel/*=NULL*/)
@@ -445,17 +482,23 @@ DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, 
 
 	double ratio = (double)reducedDims.product() / dims.product();
 
+	if (ratio==1.0)
+	{
+		memcpy(reducedImage,imageIn,sizeof(DevicePixelType)*reducedDims.product());
+		return reducedImage;
+	}
+
 	std::vector<ImageChunk> orgChunks = calculateBuffers(dims,1,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL*(1-ratio)),deviceProp,reductions);
 	std::vector<ImageChunk> reducedChunks = orgChunks;
 
 	for (std::vector<ImageChunk>::iterator it=reducedChunks.begin(); it!=reducedChunks.end(); ++it)
 	{
-		it->imageStart = it->imageStart/reductions;
-		it->chunkROIstart = it->chunkROIstart/reductions;
+		it->imageStart = it->imageROIstart/reductions;
+		it->chunkROIstart = Vec<size_t>(0,0,0);
 		it->imageROIstart = it->imageROIstart/reductions;
-		it->imageEnd = it->imageEnd/reductions;
-		it->chunkROIend = it->chunkROIend/reductions;
+		it->imageEnd = it->imageROIend/reductions;
 		it->imageROIend = it->imageROIend/reductions;
+		it->chunkROIend = it->imageEnd-it->imageStart;
 
 		calcBlockThread(it->getFullChunkSize(),deviceProp,it->blocks,it->threads);
 	}
@@ -471,9 +514,33 @@ DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, 
 		orgIt->sendROI(imageIn,dims,deviceImageIn);
 		deviceImageOut->setDims(reducedIt->getFullChunkSize());
 
-		sharedMemorysize = reductions.product() * reducedIt->threads.x * reducedIt->threads.y * reducedIt->threads.z;
-		//cudaRuduceImage<<<reducedIt->blocks,reducedIt->threads,sharedMemorysize>>>(*deviceImageIn,*deviceImageOut,reductions);
-		cudaRuduceImage<<<reducedIt->blocks,reducedIt->threads>>>(*deviceImageIn,*deviceImageOut,reductions);
+		dim3 blocks(reducedIt->blocks);
+		dim3 threads(reducedIt->threads);
+ 		double threadVolume = threads.x * threads.y * threads.z;
+ 		double newThreadVolume = (double)deviceProp.sharedMemPerBlock/(sizeof(DevicePixelType)*reductions.product());
+ 
+ 		double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
+ 		threads.x = threads.x / alpha;
+ 		threads.y = threads.y / alpha;
+ 		threads.z = threads.z / alpha;
+
+		if (threads.x*threads.y*threads.z>deviceProp.maxThreadsPerBlock)
+		{
+			unsigned int maxThreads = pow(deviceProp.maxThreadsPerBlock,1.0/3.0);
+			threads.x = maxThreads;
+			threads.y = maxThreads;
+			threads.z = maxThreads;
+		}
+ 
+ 		blocks.x = ceil((double)reducedIt->getFullChunkSize().x / threads.x);
+ 		blocks.y = ceil((double)reducedIt->getFullChunkSize().y / threads.y);
+ 		blocks.z = ceil((double)reducedIt->getFullChunkSize().z / threads.z);
+ 
+ 		size_t sharedMemorysize = reductions.product() * threads.x * threads.y * threads.z;
+ 
+ 		cudaMedianImageReduction<<<blocks,threads,sharedMemorysize>>>(*deviceImageIn, *deviceImageOut, reductions);
+
+		//cudaMeanImageReduction<<<blocks,threads>>>(*deviceImageIn,*deviceImageOut,reductions);
 
 		reducedIt->retriveROI(reducedImage,reducedDims,deviceImageOut);
 		
@@ -483,6 +550,8 @@ DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, 
 
 	delete deviceImageIn;
 	delete deviceImageOut;
+
+	cudaThreadExit();
 
  	return reducedImage;
 }

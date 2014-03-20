@@ -211,34 +211,8 @@ public:
 	// 	/*
 	// 	*	Filters image where each pixel is the median of its neighborhood
 	// 	*/
-	 	void medianFilter(Vec<size_t> neighborhood);
-	// 	{
-	// 		static dim3 localBlocks = blocks;
-	// 		static dim3 localThreads = threads;
-	// 		size_t sharedMemorySize = neighborhood.product()*localThreads.x*localThreads.y*localThreads.z;
-	// 		if (sizeof(ImagePixelType)*sharedMemorySize>deviceProp.sharedMemPerBlock)
-	// 		{
-	// 			float maxThreads = (float)deviceProp.sharedMemPerBlock/(sizeof(ImagePixelType)*neighborhood.product());
-	// 			size_t threadDim = (size_t)pow(maxThreads,1/3.0f);
-	// 			localThreads.x = (unsigned int)threadDim;
-	// 			localThreads.y = (unsigned int)threadDim;
-	// 			localThreads.z = (unsigned int)threadDim;
-	// 
-	// 			localBlocks.x = (size_t)ceil((float)imageDims.x/localThreads.x);
-	// 			localBlocks.y = (size_t)ceil((float)imageDims.y/localThreads.y);
-	// 			localBlocks.z = (size_t)ceil((float)imageDims.z/localThreads.z);
-	// 
-	// 			sharedMemorySize = neighborhood.product()*localThreads.x*localThreads.y*localThreads.z;
-	// 		}
-	// 
-	// #if CUDA_CALLS_ON
-	// 		cudaMedianFilter<<<localBlocks,localThreads,sizeof(ImagePixelType)*sharedMemorySize>>>(*getCurrentBuffer(),*getNextBuffer(),
-	// 			neighborhood);
-	// #endif
-	// 
-	// 		incrementBufferNumber();
-	// 	}
-	// 
+	 	DevicePixelType* medianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, DevicePixelType** imageOut=NULL);
+
 	// 	/*
 	// 	*	Sets each pixel to the min value of its neighborhood
 	// 	*	Erodes structures
