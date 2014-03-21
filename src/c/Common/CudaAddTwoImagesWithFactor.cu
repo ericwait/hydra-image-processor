@@ -10,8 +10,8 @@ __global__ void cudaAddTwoImagesWithFactor( CudaImageContainer imageIn1, CudaIma
 
 	if (coordinate<imageIn1.getDeviceDims())
 	{
-		double subtractor = factor*(double)imageIn2[coordinate];
-		DevicePixelType outValue = (double)imageIn1[coordinate] + subtractor;
+		double additive = factor*(double)imageIn2[coordinate];
+		DevicePixelType outValue = (double)imageIn1[coordinate] + additive;
 
 		imageOut[coordinate] = min(maxValue,max(minValue,outValue));
 	}
