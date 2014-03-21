@@ -245,7 +245,39 @@ DevicePixelType* CudaProcessBuffer::addConstant(const DevicePixelType* imageIn, 
 DevicePixelType* CudaProcessBuffer::addImageWith(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims,
 													  double additive, DevicePixelType** imageOut/*=NULL*/)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	orgImageDims = dims;
+
+	DevicePixelType* imOut;
+	if (imageOut==NULL)
+		imOut = new DevicePixelType[orgImageDims.product()];
+	else
+		imOut = *imageOut;
+
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
+
+	std::vector<ImageChunk> chunks = calculateBuffers(dims,3,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
+
+	CudaImageContainerClean* deviceImageIn1 = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+	CudaImageContainerClean* deviceImageIn2 = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		curChunk->sendROI(imageIn1,dims,deviceImageIn1);
+		curChunk->sendROI(imageIn2,dims,deviceImageIn2);
+		deviceImageOut->setDims(curChunk->getFullChunkSize());
+
+		cudaAddTwoImagesWithFactor<<<curChunk->blocks,curChunk->threads>>>(*deviceImageIn1,*deviceImageIn2,*deviceImageOut,additive,minVal,maxVal);
+
+		curChunk->retriveROI(imOut,dims,deviceImageOut);
+	}
+
+	delete deviceImageIn1;
+	delete deviceImageIn2;
+	delete deviceImageOut;
+
+	return imOut;
 }
 
 void CudaProcessBuffer::applyPolyTransformation(double a, double b, double c, DevicePixelType minValue, DevicePixelType maxValue)

@@ -42,16 +42,11 @@ private:
  	virtual std::string printUsage();
  };
  
-//  class AddImageWith : MexCommand
-//  {
-//  public:
-//  	AddImageWith(){}
-//  	virtual ~AddImageWith(){}
-//  
-//  	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-//  	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-//  	virtual std::string printUsage();
-//  };
+ class AddImageWith : MexCommand
+ {
+ public:
+ 	AddImageWith(){}
+ 	virtual ~AddImageWith(){}
  
 // class ApplyPolyTransformation : MexCommand
 // {
@@ -64,6 +59,11 @@ private:
 // 	virtual std::string printUsage();
 // };
 // 
+ 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string printUsage();
+ };
+ 
 // class CalculateMinMax : MexCommand
 // {
 // public:
