@@ -74,7 +74,7 @@ public:
 // 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 // 	virtual std::string printUsage();
 // };
-// 
+
 // class ContrastEnhancement : MexCommand
 // {
 // public:
@@ -85,7 +85,7 @@ public:
 // 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 // 	virtual std::string printUsage();
 // };
-// 
+
  class GaussianFilter : MexCommand
  {
  public:

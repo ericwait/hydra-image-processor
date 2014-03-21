@@ -331,66 +331,97 @@ void CudaProcessBuffer::createHistogram()
 DevicePixelType* CudaProcessBuffer::gaussianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
 												   DevicePixelType** imageOut/*=NULL*/)
 {
-	throw std::logic_error("The method or operation is not implemented.");
-// 	DevicePixelType* gaussImage;
-// 
-// 	createDeviceBuffers(dims, 2);
-// 
-// 	if (dims==deviceDims)
-// 	{
-// 		deviceImageBuffers[0]->loadImage(imageIn,dims);
-// 		currentBufferIdx = 0;
-// 	}
-// 	else
-// 		throw std::logic_error("Image size not handled yet.");
-// 
-// 	if (imageOut==NULL)
-// 		gaussImage = new DevicePixelType[deviceDims.product()];
-// 	else
-// 		gaussImage = *imageOut;
-// 
-// 	Vec<int> gaussIterations(0,0,0);
-// 	Vec<size_t> sizeconstKernelDims = createGaussianKernel(sigmas,hostKernel,gaussIterations);
-// 	HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)*
-// 		(sizeconstKernelDims.x+sizeconstKernelDims.y+sizeconstKernelDims.z)));
-// 
-// 	for (int x=0; x<gaussIterations.x; ++x)
-// 	{
-// 		cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),Vec<size_t>(sizeconstKernelDims.x,1,1));
-// 		incrementBufferNumber();
-// #ifdef _DEBUG
-// 		cudaThreadSynchronize();
-// 		gpuErrchk( cudaPeekAtLastError() );
-// #endif // _DEBUG
-// 	}
-// 
-// 	for (int y=0; y<gaussIterations.y; ++y)
-// 	{
-// 		cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),Vec<size_t>(1,sizeconstKernelDims.y,1),
-// 			sizeconstKernelDims.x);
-// 		incrementBufferNumber();
-// #ifdef _DEBUG
-// 		cudaThreadSynchronize();
-// 		gpuErrchk( cudaPeekAtLastError() );
-// #endif // _DEBUG
-// 	}
-// 
-// 	for (int z=0; z<gaussIterations.z; ++z)
-// 	{
-// 		cudaMultAddFilter<<<blocks,threads>>>(getCurrentBuffer(),getNextBuffer(),Vec<size_t>(1,1,sizeconstKernelDims.z),
-// 			sizeconstKernelDims.x+sizeconstKernelDims.y);
-// 		incrementBufferNumber();
-// #ifdef _DEBUG
-// 		cudaThreadSynchronize();
-// 		gpuErrchk( cudaPeekAtLastError() );
-// #endif // _DEBUG
-// 	}
-// 
-// 	HANDLE_ERROR(cudaMemcpy(gaussImage,getCurrentBuffer()->getDeviceImagePointer(),sizeof(DevicePixelType)*dims.product(),
-// 		cudaMemcpyDeviceToHost));
-// 
-// 	return gaussImage;
-	//return NULL;
+	orgImageDims = dims;
+
+	DevicePixelType* imOut;
+	if (imageOut==NULL)
+		imOut = new DevicePixelType[orgImageDims.product()];
+	else
+		imOut = *imageOut;
+
+	Vec<int> gaussIterations(0,0,0);
+	Vec<size_t> sizeconstKernelDims = createGaussianKernel(sigmas,hostKernel,gaussIterations);
+	HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)*
+		(sizeconstKernelDims.x+sizeconstKernelDims.y+sizeconstKernelDims.z)));
+
+	const unsigned int numBuffers = 3;
+	std::vector<ImageChunk> chunks = calculateBuffers(dims,numBuffers,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,sizeconstKernelDims);
+	CudaImageContainerClean* deviceImages[numBuffers];
+
+	Vec<size_t> maxDeviceDims(0,0,0);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		Vec<size_t> curDim = curChunk->getFullChunkSize();
+
+		if (curDim.x>maxDeviceDims.x)
+			maxDeviceDims.x = curDim.x;
+
+		if (curDim.y>maxDeviceDims.y)
+			maxDeviceDims.y = curDim.y;
+
+		if (curDim.z>maxDeviceDims.z)
+			maxDeviceDims.z = curDim.z;
+	}
+
+	for (int i=0; i<numBuffers; ++i)
+		deviceImages[i] = new CudaImageContainerClean(maxDeviceDims,device);
+
+	int curBuff = 0;
+	int nextBuff = 1;
+ 
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		curBuff = 0;
+		nextBuff = 1;
+		for (int i=0; i<numBuffers; ++i)
+			deviceImages[i]->setDims(curChunk->getFullChunkSize());
+		
+		curChunk->sendROI(imageIn,dims,deviceImages[curBuff]);
+
+		for (int x=0; x<gaussIterations.x; ++x)
+		{
+			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages[curBuff]),*(deviceImages[nextBuff]),
+				Vec<size_t>(sizeconstKernelDims.x,1,1));
+
+			if (++curBuff >= numBuffers)
+				curBuff = 0;
+
+			if (++nextBuff >= numBuffers)
+				nextBuff = 0;
+		}
+
+		for (int y=0; y<gaussIterations.y; ++y)
+		{
+			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages[curBuff]),*(deviceImages[nextBuff]),
+				Vec<size_t>(1,sizeconstKernelDims.y,1),	sizeconstKernelDims.x);
+
+			if (++curBuff >= numBuffers)
+				curBuff = 0;
+
+			if (++nextBuff >= numBuffers)
+				nextBuff = 0;
+		}
+
+		for (int z=0; z<gaussIterations.z; ++z)
+		{
+			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages[curBuff]),*(deviceImages[nextBuff]),
+				Vec<size_t>(1,1,sizeconstKernelDims.z),	sizeconstKernelDims.y);
+
+			if (++curBuff >= numBuffers)
+				curBuff = 0;
+
+			if (++nextBuff >= numBuffers)
+				nextBuff = 0;
+		}
+
+		curChunk->retriveROI(imOut,dims,deviceImages[curBuff]);
+	}
+
+	for (int i=0; i<numBuffers; ++i)
+		delete deviceImages[i];
+
+	return imOut;
 }
 
 void CudaProcessBuffer::mask(const DevicePixelType* imageMask, DevicePixelType threshold/*=1*/)

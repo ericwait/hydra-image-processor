@@ -39,7 +39,7 @@ __global__ void cudaMedianImageReduction(CudaImageContainer imageIn, CudaImageCo
 
 __global__ void cudaMinFilter(CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostKernelDims);
 
-__global__ void cudaMultAddFilter(CudaImageContainer* imageIn, CudaImageContainer* imageOut, Vec<size_t> hostKernelDims, size_t kernelOffset=0);
+__global__ void cudaMultAddFilter(CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostKernelDims, size_t kernelOffset=0);
 
 __global__ void cudaMultiplyImage(CudaImageContainer imageIn, CudaImageContainer imageOut, double factor, DevicePixelType minValue,
 								  DevicePixelType maxValue);
