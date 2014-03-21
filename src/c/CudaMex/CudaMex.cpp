@@ -20,7 +20,6 @@
  		MexCommand::init();
  	}
  
- 	//TODO: print the actual error reason after the list
  	if (nrhs==0)
  		mexErrMsgTxt(MexCommand::printUsageList().c_str());
  
@@ -37,8 +36,9 @@
  	std::string errMsg = thisCommand->check(nlhs,plhs,nrhs-1,prhs+1);
  	if (errMsg.length()!=0)
  	{
- 		mexPrintf("%s\n",thisCommand->printUsage().c_str());
- 		mexErrMsgTxt(errMsg.c_str());
+		char err[2048];
+		sprintf_s(err,"%s\n%s",errMsg.c_str(),thisCommand->printUsage().c_str());
+ 		mexErrMsgTxt(err);
  	}
  
  	try
