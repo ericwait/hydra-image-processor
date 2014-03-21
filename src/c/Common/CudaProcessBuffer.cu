@@ -225,8 +225,24 @@ DevicePixelType* CudaProcessBuffer::addConstant(const DevicePixelType* imageIn, 
 
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
 
-	CudaImageContainerClean* deviceImageIn = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
-	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+	Vec<size_t> maxDeviceDims(0,0,0);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		Vec<size_t> curDim = curChunk->getFullChunkSize();
+
+		if (curDim.x>maxDeviceDims.x)
+			maxDeviceDims.x = curDim.x;
+
+		if (curDim.y>maxDeviceDims.y)
+			maxDeviceDims.y = curDim.y;
+
+		if (curDim.z>maxDeviceDims.z)
+			maxDeviceDims.z = curDim.z;
+	}
+
+	CudaImageContainerClean* deviceImageIn = new CudaImageContainerClean(maxDeviceDims,device);
+	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -260,9 +276,25 @@ DevicePixelType* CudaProcessBuffer::addImageWith(const DevicePixelType* imageIn1
 
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,3,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
 
-	CudaImageContainerClean* deviceImageIn1 = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
-	CudaImageContainerClean* deviceImageIn2 = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
-	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+	Vec<size_t> maxDeviceDims(0,0,0);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		Vec<size_t> curDim = curChunk->getFullChunkSize();
+
+		if (curDim.x>maxDeviceDims.x)
+			maxDeviceDims.x = curDim.x;
+
+		if (curDim.y>maxDeviceDims.y)
+			maxDeviceDims.y = curDim.y;
+
+		if (curDim.z>maxDeviceDims.z)
+			maxDeviceDims.z = curDim.z;
+	}
+
+	CudaImageContainerClean* deviceImageIn1 = new CudaImageContainerClean(maxDeviceDims,device);
+	CudaImageContainerClean* deviceImageIn2 = new CudaImageContainerClean(maxDeviceDims,device);
+	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -294,9 +326,26 @@ DevicePixelType* CudaProcessBuffer::applyPolyTransformation(const DevicePixelTyp
 		imOut = *imageOut;
 
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
+	
+	Vec<size_t> maxDeviceDims(0,0,0);
 
-	CudaImageContainerClean* deviceImageIn = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
-	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		Vec<size_t> curDim = curChunk->getFullChunkSize();
+
+		if (curDim.x>maxDeviceDims.x)
+			maxDeviceDims.x = curDim.x;
+
+		if (curDim.y>maxDeviceDims.y)
+			maxDeviceDims.y = curDim.y;
+
+		if (curDim.z>maxDeviceDims.z)
+			maxDeviceDims.z = curDim.z;
+	}
+
+
+	CudaImageContainerClean* deviceImageIn = new CudaImageContainerClean(maxDeviceDims,device);
+	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(maxDeviceDims,device);
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
 		curChunk->sendROI(imageIn,dims,deviceImageIn);
@@ -318,10 +367,11 @@ void CudaProcessBuffer::calculateMinMax(double& minValue, double& maxValue)
 	throw std::logic_error("The method or operation is not implemented.");
 }
 
-void CudaProcessBuffer::contrastEnhancement(Vec<float> sigmas, Vec<size_t> medianNeighborhood)
-{
-	throw std::logic_error("The method or operation is not implemented.");
-}
+// DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
+// 														Vec<size_t> medianNeighborhood, DevicePixelType** imageOut/*=NULL*/)
+// {
+// 	
+// }
 
 void CudaProcessBuffer::createHistogram()
 {
@@ -452,8 +502,24 @@ DevicePixelType* CudaProcessBuffer::meanFilter(const DevicePixelType* imageIn, V
 
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,neighborhood);
 
-	CudaImageContainerClean* deviceImageIn = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
-	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+	Vec<size_t> maxDeviceDims(0,0,0);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		Vec<size_t> curDim = curChunk->getFullChunkSize();
+
+		if (curDim.x>maxDeviceDims.x)
+			maxDeviceDims.x = curDim.x;
+
+		if (curDim.y>maxDeviceDims.y)
+			maxDeviceDims.y = curDim.y;
+
+		if (curDim.z>maxDeviceDims.z)
+			maxDeviceDims.z = curDim.z;
+	}
+
+	CudaImageContainerClean* deviceImageIn = new CudaImageContainerClean(maxDeviceDims,device);
+	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(maxDeviceDims,device);
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
 		curChunk->sendROI(imageIn,dims,deviceImageIn);
@@ -483,8 +549,24 @@ DevicePixelType* CudaProcessBuffer::medianFilter(const DevicePixelType* imageIn,
 
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,neighborhood);
 
-	CudaImageContainerClean* deviceImageIn = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
-	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+	Vec<size_t> maxDeviceDims(0,0,0);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		Vec<size_t> curDim = curChunk->getFullChunkSize();
+
+		if (curDim.x>maxDeviceDims.x)
+			maxDeviceDims.x = curDim.x;
+
+		if (curDim.y>maxDeviceDims.y)
+			maxDeviceDims.y = curDim.y;
+
+		if (curDim.z>maxDeviceDims.z)
+			maxDeviceDims.z = curDim.z;
+	}
+
+	CudaImageContainerClean* deviceImageIn = new CudaImageContainerClean(maxDeviceDims,device);
+	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(maxDeviceDims,device);
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
 		curChunk->sendROI(imageIn,dims,deviceImageIn);
