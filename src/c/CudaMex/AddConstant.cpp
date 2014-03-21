@@ -36,5 +36,10 @@
  
  std::string AddConstant::printUsage()
  {
- 	return "imageOut = CudaMex('AddConstant',imageIn,additive)";
+	 std::string msg = "imageOut = CudaMex('AddConstant',imageIn,additive);\n";
+	 msg += "\tAdditive must be a double and will be floored if input is integer.\n";
+	 msg += "\tImageOut will not roll over.  Values are clamped to the range of the image space.\n";
+	 msg += "\tImageOut will have the same dimensions as imageIn.\n";
+	 msg += "\n";
+ 	return msg;
  }

@@ -50,11 +50,6 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 
 	// 	/*
-	// 	*	Add a constant to all pixel values
-	// 	*/
-	 	DevicePixelType* addConstant(const DevicePixelType* imageIn, Vec<size_t> dims, double additive, DevicePixelType** imageOut=NULL);
-
-	// 	/*
 	// 	*	Adds this image to the passed in one.  You can apply a factor
 	// 	*	which is multiplied to the passed in image prior to adding
 	// 	*/
@@ -420,6 +415,11 @@ public:
 	// #endif
 	// 		incrementBufferNumber();
 	// 	}
+	/*
+	*	Add a constant to all pixel values
+	*/
+	DevicePixelType* addConstant(const DevicePixelType* imageIn, Vec<size_t> dims, double additive, DevicePixelType** imageOut=NULL);
+
 
 private:
 

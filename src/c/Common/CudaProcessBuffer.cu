@@ -210,30 +210,36 @@ void CudaProcessBuffer::defaults()
 DevicePixelType* CudaProcessBuffer::addConstant(const DevicePixelType* imageIn, Vec<size_t> dims, double additive,
 												DevicePixelType** imageOut/*=NULL*/)
 {
-	throw std::logic_error("The method or operation is not implemented.");
-// 	orgImageDims = dims;
-// 
-// 	DevicePixelType* imOut;
-// 	if (imageOut==NULL)
-// 		imOut = new DevicePixelType[orgImageDims.product()];
-// 	else
-// 		imOut = *imageOut;
-// 
-// 	calculateBufferDims(TODO,2);
-// 
-// 	while (loadChunk(imageIn, TODO))
-// 	{
-// 		if (!getNextBuffer()->setDims(getCurrentBuffer()->getDims()))
-// 			throw std::runtime_error("Unable to load chunk to the device because the buffer was too small!");
-// 
-// 		cudaAddFactor<<<blocks,threads>>>(*getCurrentBuffer(),*getNextBuffer(),additive,std::numeric_limits<DevicePixelType>::min(),std::numeric_limits<DevicePixelType>::max());
-// 		incrementBufferNumber();
-// 		retriveCurChunk();
-// 	}
-// 
-// 	saveChunks(imOut);
-// 
-// 	return imOut;
+	orgImageDims = dims;
+
+	DevicePixelType* imOut;
+	if (imageOut==NULL)
+		imOut = new DevicePixelType[orgImageDims.product()];
+	else
+		imOut = *imageOut;
+
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
+
+	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
+
+	CudaImageContainerClean* deviceImageIn = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		curChunk->sendROI(imageIn,dims,deviceImageIn);
+		deviceImageOut->setDims(curChunk->getFullChunkSize());
+
+		cudaAddFactor<<<curChunk->blocks,curChunk->threads>>>(*deviceImageIn,*deviceImageOut,additive,minVal,maxVal);
+
+		curChunk->retriveROI(imOut,dims,deviceImageOut);
+	}
+
+	delete deviceImageIn;
+	delete deviceImageOut;
+
+	return imOut;
 }
 
 DevicePixelType* CudaProcessBuffer::addImageWith(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims,
