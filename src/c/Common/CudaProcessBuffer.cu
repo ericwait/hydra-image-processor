@@ -5,7 +5,8 @@
 //Percent of memory that can be used on the device
 const double MAX_MEM_AVAIL = 0.95;
 
-std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNeeded, size_t memAvailable, const cudaDeviceProp& prop, Vec<size_t> kernalDims/*=Vec<size_t>(0,0,0)*/)
+std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNeeded, size_t memAvailable, const cudaDeviceProp& prop,
+										 Vec<size_t> kernalDims/*=Vec<size_t>(0,0,0)*/)
 {
 	size_t numVoxels = (size_t)(memAvailable / (sizeof(HostPixelType)*numBuffersNeeded));
 
@@ -113,7 +114,8 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 	return calculateChunking(imageDims, deviceDims, prop, kernalDims);
 }
 
-std::vector<ImageChunk> calculateChunking(Vec<size_t> orgImageDims, Vec<size_t> deviceDims, const cudaDeviceProp& prop, Vec<size_t> kernalDims/*=Vec<size_t>(0,0,0)*/)
+std::vector<ImageChunk> calculateChunking(Vec<size_t> orgImageDims, Vec<size_t> deviceDims, const cudaDeviceProp& prop,
+										  Vec<size_t> kernalDims/*=Vec<size_t>(0,0,0)*/)
 {
 	std::vector<ImageChunk> localChunks;
 	Vec<size_t> margin((kernalDims + 1)/2); //integer round
@@ -283,7 +285,32 @@ DevicePixelType* CudaProcessBuffer::addImageWith(const DevicePixelType* imageIn1
 DevicePixelType* CudaProcessBuffer::applyPolyTransformation(const DevicePixelType* imageIn, Vec<size_t> dims, double a, double b, double c,
 												DevicePixelType minValue, DevicePixelType maxValue, DevicePixelType** imageOut/*=NULL*/)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	orgImageDims = dims;
+
+	DevicePixelType* imOut;
+	if (imageOut==NULL)
+		imOut = new DevicePixelType[orgImageDims.product()];
+	else
+		imOut = *imageOut;
+
+	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
+
+	CudaImageContainerClean* deviceImageIn = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(chunks[0].getFullChunkSize(),device);
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		curChunk->sendROI(imageIn,dims,deviceImageIn);
+		deviceImageOut->setDims(curChunk->getFullChunkSize());
+
+		cudaPolyTransferFuncImage<<<curChunk->blocks,curChunk->threads>>>(*deviceImageIn,*deviceImageOut,a,b,c,minValue,maxValue);
+
+		curChunk->retriveROI(imOut,dims,deviceImageOut);
+	}
+
+	delete deviceImageIn;
+	delete deviceImageOut;
+
+	return imOut;
 }
 
 void CudaProcessBuffer::calculateMinMax(double& minValue, double& maxValue)
@@ -301,7 +328,8 @@ void CudaProcessBuffer::createHistogram()
 	throw std::logic_error("The method or operation is not implemented.");
 }
 
-DevicePixelType* CudaProcessBuffer::gaussianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,DevicePixelType** imageOut/*=NULL*/)
+DevicePixelType* CudaProcessBuffer::gaussianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
+												   DevicePixelType** imageOut/*=NULL*/)
 {
 	throw std::logic_error("The method or operation is not implemented.");
 // 	DevicePixelType* gaussImage;
@@ -566,7 +594,7 @@ DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, 
 
 		if (threads.x*threads.y*threads.z>(unsigned int)deviceProp.maxThreadsPerBlock)
 		{
-			unsigned int maxThreads = pow(deviceProp.maxThreadsPerBlock,1.0/3.0);
+			unsigned int maxThreads = (unsigned int)pow(deviceProp.maxThreadsPerBlock,1.0/3.0);
 			threads.x = maxThreads;
 			threads.y = maxThreads;
 			threads.z = maxThreads;

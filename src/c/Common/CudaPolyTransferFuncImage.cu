@@ -10,7 +10,7 @@ __global__ void cudaPolyTransferFuncImage( CudaImageContainer imageIn, CudaImage
 
 	if (coordinate<imageIn.getDeviceDims())
 	{
-		double pixVal = (double)imageIn[coordinate] / maxPixelValue;
+		double pixVal = (double)imageIn[coordinate] / maxPixelValue;// place value between [0,1]
 		double multiplier = a*pixVal*pixVal + b*pixVal + c;
 		if (multiplier<0)
 			multiplier = 0;
