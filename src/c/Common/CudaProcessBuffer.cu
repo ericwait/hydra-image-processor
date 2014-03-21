@@ -410,7 +410,8 @@ DevicePixelType* CudaProcessBuffer::meanFilter(const DevicePixelType* imageIn, V
 	return meanImage;
 }
 
-DevicePixelType* CudaProcessBuffer::medianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, DevicePixelType** imageOut/*=NULL*/)
+DevicePixelType* CudaProcessBuffer::medianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood,
+												 DevicePixelType** imageOut/*=NULL*/)
 {
 	orgImageDims = dims;
 
@@ -435,13 +436,13 @@ DevicePixelType* CudaProcessBuffer::medianFilter(const DevicePixelType* imageIn,
 		double newThreadVolume = (double)deviceProp.sharedMemPerBlock/(sizeof(DevicePixelType)*neighborhood.product());
 
 		double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
-		threads.x = threads.x / alpha;
-		threads.y = threads.y / alpha;
-		threads.z = threads.z / alpha;
+		threads.x = (unsigned int)(threads.x / alpha);
+		threads.y = (unsigned int)(threads.y / alpha);
+		threads.z = (unsigned int)(threads.z / alpha);
 
-		blocks.x = ceil((double)curChunk->getFullChunkSize().x / threads.x);
-		blocks.y = ceil((double)curChunk->getFullChunkSize().y / threads.y);
-		blocks.z = ceil((double)curChunk->getFullChunkSize().z / threads.z);
+		blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x / threads.x);
+		blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y / threads.y);
+		blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z / threads.z);
 
 		size_t sharedMemorysize = neighborhood.product() * threads.x * threads.y * threads.z;
 
@@ -546,7 +547,7 @@ DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, 
 
 	std::vector<ImageChunk>::iterator orgIt = orgChunks.begin();
 	std::vector<ImageChunk>::iterator reducedIt = reducedChunks.begin();
-	size_t sharedMemorysize = 0;
+
 	while (orgIt!=orgChunks.end() && reducedIt!=reducedChunks.end())
 	{
 		orgIt->sendROI(imageIn,dims,deviceImageIn);
@@ -558,11 +559,11 @@ DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, 
  		double newThreadVolume = (double)deviceProp.sharedMemPerBlock/(sizeof(DevicePixelType)*reductions.product());
  
  		double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
- 		threads.x = threads.x / alpha;
- 		threads.y = threads.y / alpha;
- 		threads.z = threads.z / alpha;
+		threads.x = (unsigned int)(threads.x / alpha);
+		threads.y = (unsigned int)(threads.y / alpha);
+		threads.z = (unsigned int)(threads.z / alpha);
 
-		if (threads.x*threads.y*threads.z>deviceProp.maxThreadsPerBlock)
+		if (threads.x*threads.y*threads.z>(unsigned int)deviceProp.maxThreadsPerBlock)
 		{
 			unsigned int maxThreads = pow(deviceProp.maxThreadsPerBlock,1.0/3.0);
 			threads.x = maxThreads;
@@ -570,9 +571,9 @@ DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, 
 			threads.z = maxThreads;
 		}
  
- 		blocks.x = ceil((double)reducedIt->getFullChunkSize().x / threads.x);
- 		blocks.y = ceil((double)reducedIt->getFullChunkSize().y / threads.y);
- 		blocks.z = ceil((double)reducedIt->getFullChunkSize().z / threads.z);
+ 		blocks.x = (unsigned int)ceil((double)reducedIt->getFullChunkSize().x / threads.x);
+ 		blocks.y = (unsigned int)ceil((double)reducedIt->getFullChunkSize().y / threads.y);
+ 		blocks.z = (unsigned int)ceil((double)reducedIt->getFullChunkSize().z / threads.z);
  
  		size_t sharedMemorysize = reductions.product() * threads.x * threads.y * threads.z;
  
