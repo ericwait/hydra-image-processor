@@ -249,6 +249,28 @@ void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iter
 	}
 }
 
+void runMedianFilter(cudaDeviceProp& deviceProp, std::vector<ImageChunk>::iterator curChunk, Vec<size_t> &neighborhood, CudaImageContainerClean* deviceImageIn,
+					 CudaImageContainerClean* deviceImageOut)
+{
+	dim3 blocks(curChunk->blocks);
+	dim3 threads(curChunk->threads);
+	double threadVolume = threads.x * threads.y * threads.z;
+	double newThreadVolume = (double)deviceProp.sharedMemPerBlock/(sizeof(DevicePixelType)*neighborhood.product());
+
+	double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
+	threads.x = (unsigned int)(threads.x / alpha);
+	threads.y = (unsigned int)(threads.y / alpha);
+	threads.z = (unsigned int)(threads.z / alpha);
+
+	blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x / threads.x);
+	blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y / threads.y);
+	blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z / threads.z);
+
+	size_t sharedMemorysize = neighborhood.product() * threads.x * threads.y * threads.z;
+
+	cudaMedianFilter<<<blocks,threads,sharedMemorysize>>>(*deviceImageIn,*deviceImageOut,neighborhood);
+}
+
 //////////////////////////////////////////////////////////////////////////
 //Cuda Operators (Alphabetical order)
 //////////////////////////////////////////////////////////////////////////
@@ -583,24 +605,8 @@ DevicePixelType* CudaProcessBuffer::medianFilter(const DevicePixelType* imageIn,
 		curChunk->sendROI(imageIn,dims,deviceImageIn);
 		deviceImageOut->setDims(curChunk->getFullChunkSize());
 
-		dim3 blocks(curChunk->blocks);
-		dim3 threads(curChunk->threads);
-		double threadVolume = threads.x * threads.y * threads.z;
-		double newThreadVolume = (double)deviceProp.sharedMemPerBlock/(sizeof(DevicePixelType)*neighborhood.product());
+		runMedianFilter(deviceProp, curChunk, neighborhood, deviceImageIn, deviceImageOut);
 
-		double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
-		threads.x = (unsigned int)(threads.x / alpha);
-		threads.y = (unsigned int)(threads.y / alpha);
-		threads.z = (unsigned int)(threads.z / alpha);
-
-		blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x / threads.x);
-		blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y / threads.y);
-		blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z / threads.z);
-
-		size_t sharedMemorysize = neighborhood.product() * threads.x * threads.y * threads.z;
-
- 		cudaMedianFilter<<<blocks,threads,sharedMemorysize>>>(*deviceImageIn,*deviceImageOut,neighborhood);
- 
  		curChunk->retriveROI(medianImage,dims,deviceImageOut);
 	}
 
