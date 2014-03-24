@@ -44,11 +44,15 @@
  
  std::string AddImageWith::printUsage()
  {
-	 std::string msg = "imageOut = CudaMex('AddImageWith',imageIn1,imageIn2,factor);\n";
-	 msg += "\tWhere factor is a multiplier on imageIn2.  Pixel = imageIn1 + factor*imageIn2.";
+	 return "imageOut = CudaMex('AddImageWith',imageIn1,imageIn2,factor);";
+ }
+
+ std::string AddImageWith::printHelp()
+ {
+	 std::string msg = "\tWhere factor is a multiplier on imageIn2.  Pixel = imageIn1 + factor*imageIn2.";
 	 msg += "Pixel value is floored at assignment only when integer.\n";
 	 msg += "\tImageIn1 and ImageIn2 must have the same dimensions.\n";
 	 msg += "\tImageOut will have the same dimensions as the input images.\n";
 	 msg += "\n";
- 	return msg;
+	 return msg;
  }

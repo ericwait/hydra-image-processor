@@ -51,8 +51,12 @@ std::string ApplyPolyTransformation::check( int nlhs, mxArray* plhs[], int nrhs,
 
 std::string ApplyPolyTransformation::printUsage()
 {
-	std::string msg = "imageOut = CudaMex('ApplyPolyTransformation',imageIn,a,b,c,[min],[max]);\n";
-	msg += "\ta, b, and c are the polynomial curve parameters for the transfer function which maps imageIn to imageOut.\n";
+	return "imageOut = CudaMex('ApplyPolyTransformation',imageIn,a,b,c,[min],[max]);";
+}
+
+std::string ApplyPolyTransformation::printHelp()
+{
+	std::string msg = "\ta, b, and c are the polynomial curve parameters for the transfer function which maps imageIn to imageOut.\n";
 	msg += "\tmin and max are optional clamping parameters that will clamp the output values between [min,max].\n";
 	msg += "\tIf min and max are not supplied, imageOut is clamped to the range of imageIn's type.\n";
 	msg += "\timageOut will be the same dimension as imageIn.\n";

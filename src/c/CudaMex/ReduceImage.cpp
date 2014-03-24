@@ -54,5 +54,13 @@ std::string ReduceImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArr
 
 std::string ReduceImage::printUsage()
 {
-	return "imageOut = CudaMex('ReduceImage',imageIn,[reductionFactor.x,reductionFactor.y,reductionFactor.z])";
+	return "imageOut = CudaMex('ReduceImage',imageIn,[reductionFactorX,reductionFactorY,reductionFactorZ]);";
+}
+
+std::string ReduceImage::printHelp()
+{
+	std::string msg = "\treductionFactorX, reductionFactorY, and reductionFactorZ is the amount of\n";
+	msg += "\tpixels and direction to \"collapse\" into one pixel.";
+	msg += "\n";
+	return msg;
 }

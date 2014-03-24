@@ -38,5 +38,12 @@ std::string MedianFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxAr
 
 std::string MedianFilter::printUsage()
 {
-	return "imageOut = CudaMex('MedianFilter',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ])";
+	return "imageOut = CudaMex('MedianFilter',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ]);";
+}
+
+std::string MedianFilter::printHelp()
+{
+	std::string msg = "\tNeighborhoodX, NeighborhoodY, and NeighborhoodZ are the directions and area to look for a given pixel.";
+	msg += "\n";
+	return msg;
 }

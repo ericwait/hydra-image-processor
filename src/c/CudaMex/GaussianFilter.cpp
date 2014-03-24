@@ -38,8 +38,13 @@
  
  std::string GaussianFilter::printUsage()
  {
-	 std::string msg = "imageOut = CudaMex('GaussianFilter',imageIn,[sigmaX,sigmaY,sigmaZ]);\n";
-	 msg += "\tsigmaX, sigmaY, and sigmaZ are the parameters to set up the Gaussian smoothing kernel.\n";
+	 return "imageOut = CudaMex('GaussianFilter',imageIn,[sigmaX,sigmaY,sigmaZ]);";
+
+ }
+
+ std::string GaussianFilter::printHelp()
+ {
+	 std::string msg = "\tsigmaX, sigmaY, and sigmaZ are the parameters to set up the Gaussian smoothing kernel.\n";
 	 msg += "\n";
- 	return msg;
+	 return msg;
  }

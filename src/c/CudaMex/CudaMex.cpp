@@ -32,12 +32,23 @@
  	MexCommand* thisCommand = MexCommand::getCommand(cmd);
  	if (thisCommand==NULL)
  		mexErrMsgTxt(MexCommand::printUsageList().c_str());
+
+	if (nrhs>1 && mxIsChar(prhs[1]))
+	{
+		char buff[255];
+		mxGetString(prhs[1],buff,255);
+		if (_strcmpi("help",buff)==0)
+		{
+			mexPrintf("%s\n%s",thisCommand->printUsage().c_str(),thisCommand->printHelp().c_str());
+			return;
+		}
+	}
  
  	std::string errMsg = thisCommand->check(nlhs,plhs,nrhs-1,prhs+1);
  	if (errMsg.length()!=0)
  	{
 		char err[2048];
-		sprintf_s(err,"%s\n%s",errMsg.c_str(),thisCommand->printUsage().c_str());
+		sprintf_s(err,"%s\n%s\n%s",errMsg.c_str(),thisCommand->printUsage().c_str(),thisCommand->printHelp().c_str());
  		mexErrMsgTxt(err);
  	}
  

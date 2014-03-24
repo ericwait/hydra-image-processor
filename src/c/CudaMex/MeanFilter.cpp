@@ -38,5 +38,12 @@
  
  std::string MeanFilter::printUsage()
  {
- 	return "imageOut = CudaMex('MeanFilter',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ])";
+ 	return "imageOut = CudaMex('MeanFilter',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ]);";
+ }
+
+ std::string MeanFilter::printHelp()
+ {
+	 std::string msg = "\tNeighborhoodX, NeighborhoodY, and NeighborhoodZ are the directions and area to look for a given pixel.";
+	 msg += "\n";
+	 return msg;
  }
