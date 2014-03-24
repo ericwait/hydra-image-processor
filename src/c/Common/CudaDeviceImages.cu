@@ -1,0 +1,64 @@
+#include "CudaDeviceImages.cuh"
+
+
+CudaDeviceImages::CudaDeviceImages(int numBuffers, Vec<size_t> maxDeviceDims, int device)
+{
+	deviceImages = new CudaImageContainerClean*[numBuffers];
+
+	for (int i=0; i<numBuffers; ++i)
+		deviceImages[i] = new CudaImageContainerClean(maxDeviceDims,device);
+
+	this->numBuffers = numBuffers;
+	curBuff = 0;
+	nextBuff = 1;
+}
+
+CudaDeviceImages::~CudaDeviceImages()
+{
+	for (int i=0; i<numBuffers; ++i)
+		delete deviceImages[i];
+}
+
+CudaImageContainer* CudaDeviceImages::getCurBuffer()
+{
+	return deviceImages[curBuff];
+}
+
+CudaImageContainer* CudaDeviceImages::getNextBuffer()
+{
+	return deviceImages[nextBuff];
+}
+
+CudaImageContainer* CudaDeviceImages::getThirdBuffer()
+{
+	if (numBuffers<3)
+		return NULL;
+
+	int trd = nextBuff + 1;
+
+	if (trd >= numBuffers)
+		trd = 0;
+
+	return deviceImages[trd];
+}
+
+void CudaDeviceImages::setAllDims(Vec<size_t> dims)
+{
+	for (int i=0; i<numBuffers; ++i)
+		deviceImages[i]->setDims(dims);
+}
+
+
+void CudaDeviceImages::setNextDims(Vec<size_t> dims)
+{
+	deviceImages[nextBuff]->setDims(dims);
+}
+
+void CudaDeviceImages::incrementBuffer()
+{
+	if (++curBuff >= numBuffers)
+		curBuff = 0;
+
+	if (++nextBuff >= numBuffers)
+		nextBuff = 0;
+}

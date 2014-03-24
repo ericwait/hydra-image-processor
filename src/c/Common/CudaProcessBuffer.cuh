@@ -192,6 +192,10 @@ private:
 
 	void defaults();
 
+	void setMaxDeviceDims(std::vector<ImageChunk> &chunks, Vec<size_t> &maxDeviceDims);
+
+	DevicePixelType* setUpOutIm(Vec<size_t> dims, DevicePixelType** imageOut);
+
 	//////////////////////////////////////////////////////////////////////////
 	// Private Member Variables
 	//////////////////////////////////////////////////////////////////////////
@@ -206,4 +210,6 @@ private:
 	// This is the maximum size that we are allowing a constant kernel to exit
 	// on the device
 	float hostKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
+
+	Vec<size_t> maxDeviceDims;
 };
