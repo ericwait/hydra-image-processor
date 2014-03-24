@@ -385,44 +385,44 @@ void CudaProcessBuffer::calculateMinMax(double& minValue, double& maxValue)
 }
 
 DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
-														Vec<size_t> medianNeighborhood, DevicePixelType** imageOut/*=NULL*/)
+														Vec<size_t> neighborhood, DevicePixelType** imageOut/*=NULL*/)
 {
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
+
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
 
 	Vec<int> gaussIterations(0,0,0);
 	Vec<size_t> sizeconstKernelDims = createGaussianKernel(sigmas,hostKernel,gaussIterations);
 	HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)*
 		(sizeconstKernelDims.x+sizeconstKernelDims.y+sizeconstKernelDims.z)));
 
-	const unsigned int numBuffers = 3;
-	std::vector<ImageChunk> chunks = calculateBuffers(dims,numBuffers,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,
+	std::vector<ImageChunk> chunks = calculateBuffers(dims,3,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,
 		sizeconstKernelDims);
-	CudaImageContainerClean* deviceImages[numBuffers];
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	for (int i=0; i<numBuffers; ++i)
-		deviceImages[i] = new CudaImageContainerClean(maxDeviceDims,device);
-
-	int curBuff = 0;
-	int nextBuff = 1;
+	CudaDeviceImages deviceImages(3,maxDeviceDims,device);
  
-// 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-// 	{
-// 		curBuff = 0;
-// 		nextBuff = 1;
-// 		for (int i=0; i<numBuffers; ++i)
-// 			deviceImages[i]->setDims(curChunk->getFullChunkSize());
-// 		
-// 		curChunk->sendROI(imageIn,dims,deviceImages[curBuff]);
-// 
-// 		runGaussIterations(gaussIterations, curChunk, deviceImages, curBuff, nextBuff, sizeconstKernelDims, numBuffers);
-// 
-// 		curChunk->retriveROI(imOut,dims,deviceImages[curBuff]);
-// 	}
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		deviceImages.setAllDims(curChunk->getFullChunkSize());
 
-	for (int i=0; i<numBuffers; ++i)
-		delete deviceImages[i];
+		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
+
+		runGaussIterations(gaussIterations, curChunk, deviceImages, sizeconstKernelDims);
+
+		curChunk->sendROI(imageIn,dims,deviceImages.getNextBuffer());
+
+		cudaAddTwoImagesWithFactor<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
+			*(deviceImages.getThirdBuffer()),-1.0,minVal,maxVal);
+
+		deviceImages.setNthBuffCurent(3);
+
+		runMedianFilter(deviceProp, curChunk, neighborhood, deviceImages);
+
+		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
+	}
 
 	return imOut;
 }

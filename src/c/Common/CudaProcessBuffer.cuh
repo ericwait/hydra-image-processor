@@ -78,7 +78,8 @@ public:
 	*	Contrast Enhancement will run the Michel High Pass Filter and then a mean filter
 	*	Pass in the sigmas that will be used for the Gaussian filter to subtract off and the mean neighborhood dimensions
 	*/
-	void contrastEnhancement(Vec<float> sigmas, Vec<size_t> medianNeighborhood);
+	DevicePixelType* contrastEnhancement(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
+		Vec<size_t> medianNeighborhood, DevicePixelType** imageOut=NULL);
 
 	/*
 	*	Creates Histogram on the card using the #define NUM_BINS

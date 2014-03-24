@@ -80,16 +80,17 @@ public:
 //virtual std::string printHelp();
 // };
 
-// class ContrastEnhancement : MexCommand
-// {
-// public:
-// 	ContrastEnhancement(){}
-// 	virtual ~ContrastEnhancement(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-// };
+class ContrastEnhancement : MexCommand
+{
+public:
+	ContrastEnhancement(){}
+	virtual ~ContrastEnhancement(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+	virtual std::string printHelp();
+};
 
  class GaussianFilter : MexCommand
  {

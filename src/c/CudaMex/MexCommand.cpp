@@ -12,7 +12,7 @@ void MexCommand::init()
 	REGISTER_COMMAND(AddImageWith);
  	REGISTER_COMMAND(ApplyPolyTransformation);
 // 	REGISTER_COMMAND(CalculateMinMax);
-// 	REGISTER_COMMAND(ContrastEnhancement);
+ 	REGISTER_COMMAND(ContrastEnhancement);
  	REGISTER_COMMAND(GaussianFilter);
 // 	REGISTER_COMMAND(Histogram);
 // 	REGISTER_COMMAND(ImagePow);
