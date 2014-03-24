@@ -62,3 +62,22 @@ void CudaDeviceImages::incrementBuffer()
 	if (++nextBuff >= numBuffers)
 		nextBuff = 0;
 }
+
+bool CudaDeviceImages::setNthBuffCurent(int n)
+{
+	if (n>numBuffers)
+		return false;
+
+	int nth = curBuff;
+
+	for (int i=1; i<n; ++i)
+	{
+		++nth;
+		if (nth > numBuffers)
+			nth = 0;
+	}
+
+	curBuff = nth;
+
+	return true;
+}

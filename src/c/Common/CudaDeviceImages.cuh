@@ -13,6 +13,7 @@ public:
 	void incrementBuffer();
 	void setAllDims(Vec<size_t> dims);
 	void setNextDims(Vec<size_t> dims);
+	bool setNthBuffCurent(int n);
 
 private:
 	CudaDeviceImages();
