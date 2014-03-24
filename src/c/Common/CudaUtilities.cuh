@@ -112,5 +112,3 @@ struct Lock
 Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, int& iterations);
 
 Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, Vec<int>& iterations);
-
-int calcOtsuThreshold(const double* normHistogram, int numBins);

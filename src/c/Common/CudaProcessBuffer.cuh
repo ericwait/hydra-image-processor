@@ -153,6 +153,8 @@ public:
 
 	void otsuThresholdFilter(float alpha=1.0f);
 
+	double otsuThresholdValue(const DevicePixelType* imageIn, Vec<size_t> dims);
+
 	/*
 	*	Raise each pixel to a power
 	*/

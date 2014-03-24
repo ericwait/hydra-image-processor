@@ -614,6 +614,19 @@ void CudaProcessBuffer::otsuThresholdFilter(float alpha/*=1.0f*/)
 	throw std::logic_error("The method or operation is not implemented.");
 }
 
+
+double CudaProcessBuffer::otsuThresholdValue(const DevicePixelType* imageIn, Vec<size_t> dims)
+{
+	int arraySize;
+	double* hist = normalizeHistogram(imageIn,dims,arraySize);
+
+	double thrsh = calcOtsuThreshold(hist,arraySize);
+
+	delete[] hist;
+
+	return thrsh;
+}
+
 void CudaProcessBuffer::imagePow(int p)
 {
 	throw std::logic_error("The method or operation is not implemented.");
