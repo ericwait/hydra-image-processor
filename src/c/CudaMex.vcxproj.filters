@@ -57,9 +57,6 @@
     <ClCompile Include="CudaMex\Histogram.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
-    <ClCompile Include="Common\ImageContainer.cpp">
-      <Filter>Source Files\MexFiles</Filter>
-    </ClCompile>
     <ClCompile Include="CudaMex\ImagePow.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
@@ -130,6 +127,9 @@
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
     <ClCompile Include="Common\CHelpers.cpp">
+      <Filter>Source Files\HelperFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\ImageContainer.cpp">
       <Filter>Source Files\HelperFiles</Filter>
     </ClCompile>
   </ItemGroup>
@@ -212,10 +212,16 @@
     <CudaCompile Include="Common\CudaUnmixing.cu">
       <Filter>Source Files\CudaFiles</Filter>
     </CudaCompile>
+    <CudaCompile Include="Common\CudaDeviceImages.cu">
+      <Filter>Source Files\CudaFiles</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="CudaMex\CudaMex.def">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Common\CudaDeviceImages.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
