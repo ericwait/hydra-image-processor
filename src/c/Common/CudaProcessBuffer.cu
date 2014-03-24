@@ -206,6 +206,50 @@ void CudaProcessBuffer::defaults()
 }
 
 //////////////////////////////////////////////////////////////////////////
+// Helper Functions
+//////////////////////////////////////////////////////////////////////////
+
+void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iterator& curChunk, CudaImageContainerClean** deviceImages,
+						int &curBuff, int &nextBuff, Vec<size_t> sizeconstKernelDims, const unsigned int numBuffers)
+{
+	for (int x=0; x<gaussIterations.x; ++x)
+	{
+		cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages[curBuff]),*(deviceImages[nextBuff]),
+			Vec<size_t>(sizeconstKernelDims.x,1,1));
+
+		if (++curBuff >= numBuffers)
+			curBuff = 0;
+
+		if (++nextBuff >= numBuffers)
+			nextBuff = 0;
+	}
+
+	for (int y=0; y<gaussIterations.y; ++y)
+	{
+		cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages[curBuff]),*(deviceImages[nextBuff]),
+			Vec<size_t>(1,sizeconstKernelDims.y,1),	sizeconstKernelDims.x);
+
+		if (++curBuff >= numBuffers)
+			curBuff = 0;
+
+		if (++nextBuff >= numBuffers)
+			nextBuff = 0;
+	}
+
+	for (int z=0; z<gaussIterations.z; ++z)
+	{
+		cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages[curBuff]),*(deviceImages[nextBuff]),
+			Vec<size_t>(1,1,sizeconstKernelDims.z),	sizeconstKernelDims.y);
+
+		if (++curBuff >= numBuffers)
+			curBuff = 0;
+
+		if (++nextBuff >= numBuffers)
+			nextBuff = 0;
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
 //Cuda Operators (Alphabetical order)
 //////////////////////////////////////////////////////////////////////////
 
@@ -395,7 +439,8 @@ DevicePixelType* CudaProcessBuffer::gaussianFilter(const DevicePixelType* imageI
 		(sizeconstKernelDims.x+sizeconstKernelDims.y+sizeconstKernelDims.z)));
 
 	const unsigned int numBuffers = 3;
-	std::vector<ImageChunk> chunks = calculateBuffers(dims,numBuffers,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,sizeconstKernelDims);
+	std::vector<ImageChunk> chunks = calculateBuffers(dims,numBuffers,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,
+		sizeconstKernelDims);
 	CudaImageContainerClean* deviceImages[numBuffers];
 
 	Vec<size_t> maxDeviceDims(0,0,0);
@@ -429,41 +474,7 @@ DevicePixelType* CudaProcessBuffer::gaussianFilter(const DevicePixelType* imageI
 		
 		curChunk->sendROI(imageIn,dims,deviceImages[curBuff]);
 
-		for (int x=0; x<gaussIterations.x; ++x)
-		{
-			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages[curBuff]),*(deviceImages[nextBuff]),
-				Vec<size_t>(sizeconstKernelDims.x,1,1));
-
-			if (++curBuff >= numBuffers)
-				curBuff = 0;
-
-			if (++nextBuff >= numBuffers)
-				nextBuff = 0;
-		}
-
-		for (int y=0; y<gaussIterations.y; ++y)
-		{
-			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages[curBuff]),*(deviceImages[nextBuff]),
-				Vec<size_t>(1,sizeconstKernelDims.y,1),	sizeconstKernelDims.x);
-
-			if (++curBuff >= numBuffers)
-				curBuff = 0;
-
-			if (++nextBuff >= numBuffers)
-				nextBuff = 0;
-		}
-
-		for (int z=0; z<gaussIterations.z; ++z)
-		{
-			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages[curBuff]),*(deviceImages[nextBuff]),
-				Vec<size_t>(1,1,sizeconstKernelDims.z),	sizeconstKernelDims.y);
-
-			if (++curBuff >= numBuffers)
-				curBuff = 0;
-
-			if (++nextBuff >= numBuffers)
-				nextBuff = 0;
-		}
+		runGaussIterations(gaussIterations, curChunk, deviceImages, curBuff, nextBuff, sizeconstKernelDims, numBuffers);
 
 		curChunk->retriveROI(imOut,dims,deviceImages[curBuff]);
 	}
