@@ -31,7 +31,7 @@ void MexCommand::init()
 // 	REGISTER_COMMAND(MultiplyImage);
 // 	REGISTER_COMMAND(MultiplyImageWith);
 // 	REGISTER_COMMAND(NormalizedCovariance);
-// 	REGISTER_COMMAND(NormalizedHistogram);
+ 	REGISTER_COMMAND(NormalizedHistogram);
 // 	REGISTER_COMMAND(OtsuThresholdFilter);
 // 	REGISTER_COMMAND(OtsuThesholdValue);
  	REGISTER_COMMAND(ReduceImage);

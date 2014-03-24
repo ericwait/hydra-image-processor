@@ -148,10 +148,8 @@ public:
 
 	/*
 	*	Takes a histogram that is on the card and normalizes it
-	*	Will generate the original histogram if one doesn't already exist
-	*	Use retrieveNormalizedHistogram() to get a host pointer
 	*/
-	void normalizeHistogram();
+	double* CudaProcessBuffer::normalizeHistogram(const DevicePixelType* imageIn, Vec<size_t> dims, int& arraySize);
 
 	void otsuThresholdFilter(float alpha=1.0f);
 
