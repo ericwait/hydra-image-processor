@@ -83,9 +83,8 @@ public:
 
 	/*
 	*	Creates Histogram on the card using the #define NUM_BINS
-	*	Use retrieveHistogram to get the results off the card
 	*/
-	void createHistogram();
+	size_t* createHistogram(const DevicePixelType* imageIn, Vec<size_t> dims, int& arraySize);
 
 	/*
 	*	Will smooth the image using the given sigmas for each dimension

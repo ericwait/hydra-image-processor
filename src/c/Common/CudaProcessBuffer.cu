@@ -427,9 +427,30 @@ DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* i
 	return imOut;
 }
 
-void CudaProcessBuffer::createHistogram()
+size_t* CudaProcessBuffer::createHistogram(const DevicePixelType* imageIn, Vec<size_t> dims, int& arraySize)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	arraySize = NUM_BINS;
+	size_t* hostHist = new size_t[arraySize];
+
+	size_t* deviceHist;
+	HANDLE_ERROR(cudaMalloc((void**)&deviceHist,sizeof(size_t)*arraySize));
+	HANDLE_ERROR(cudaMemset(deviceHist,0,sizeof(size_t)*arraySize));
+
+	std::vector<ImageChunk> chunks = calculateBuffers(dims,1,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
+	setMaxDeviceDims(chunks, maxDeviceDims);
+	CudaDeviceImages deviceImages(1,maxDeviceDims,device);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
+		
+		cudaHistogramCreate<<<deviceProp.multiProcessorCount*2,arraySize,sizeof(size_t)*arraySize>>>(*(deviceImages.getCurBuffer()),
+			deviceHist);
+	}
+	HANDLE_ERROR(cudaMemcpy(hostHist,deviceHist,sizeof(size_t)*arraySize,cudaMemcpyDeviceToHost));
+	HANDLE_ERROR(cudaFree(deviceHist));
+
+	return hostHist;
 }
 
 DevicePixelType* CudaProcessBuffer::gaussianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
