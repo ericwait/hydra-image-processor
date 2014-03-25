@@ -127,19 +127,19 @@ virtual std::string printHelp();
 // 	virtual std::string printUsage();
  //virtual std::string printHelp();
 // };
-// 
-// class MaxFilterCircle : MexCommand
-// {
-// public:
-// 	MaxFilterCircle(){}
-// 	virtual ~MaxFilterCircle(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-// virtual std::string printHelp();
-// };
-// 
+
+class MaxFilterEllipsoid : MexCommand
+{
+public:
+	MaxFilterEllipsoid(){}
+	virtual ~MaxFilterEllipsoid(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+virtual std::string printHelp();
+};
+
 // class MaxFilterKernel : MexCommand
 // {
 // public:

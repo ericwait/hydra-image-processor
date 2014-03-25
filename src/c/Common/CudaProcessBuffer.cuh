@@ -102,7 +102,8 @@ public:
 	*	Sets each pixel to the max value of its neighborhood
 	*	Dilates structures
 	*/ 
-	void maxFilter(Vec<size_t> neighborhood, double* kernel=NULL);
+	DevicePixelType* maxFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernalDims, float* kernel=NULL,
+		DevicePixelType** imageOut=NULL);
 
 	/*
 	*	produce an image that is the maximum value in z for each (x,y)

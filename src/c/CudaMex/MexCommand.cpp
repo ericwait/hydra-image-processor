@@ -17,7 +17,7 @@ void MexCommand::init()
  	REGISTER_COMMAND(Histogram);
 // 	REGISTER_COMMAND(ImagePow);
 // 	REGISTER_COMMAND(Mask);
-// 	REGISTER_COMMAND(MaxFilterCircle);
+ 	REGISTER_COMMAND(MaxFilterEllipsoid);
 // 	REGISTER_COMMAND(MaxFilterKernel);
 // 	REGISTER_COMMAND(MaxFilterNeighborHood);
 // 	REGISTER_COMMAND(MaximumIntensityProjection);

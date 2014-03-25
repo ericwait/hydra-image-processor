@@ -25,7 +25,8 @@ __global__ void cudaHistogramCreate( CudaImageContainer imageIn, size_t* histogr
 __global__ void cudaMask(const CudaImageContainer imageIn1, const CudaImageContainer imageIn2, CudaImageContainer imageOut,
 						 DevicePixelType threshold);
 
-__global__ void cudaMaxFilter(CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostKernelDims);
+__global__ void cudaMaxFilter( CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostKernelDims, DevicePixelType  minVal,
+							  DevicePixelType maxVal);
 
 __global__ void cudaMaximumIntensityProjection(CudaImageContainer imageIn, CudaImageContainer imageOut);
 
