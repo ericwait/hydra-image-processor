@@ -105,12 +105,12 @@ public:
 
 	// Raises each element to the pwr
 	template<typename d>
-	DEVICE_PREFIX VEC_THIS_CLASS<T> pow (d pwr) const
+	DEVICE_PREFIX VEC_THIS_CLASS<T> pwr (d pw) const
 	{
 		VEC_THIS_CLASS<T> outVec;
-		outVec.x = (T)(pow(x,pwr));
-		outVec.y = (T)(pow(y,pwr));
-		outVec.z = (T)(pow(z,pwr));
+		outVec.x = (T)(pow((double)x,pw));
+		outVec.y = (T)(pow((double)y,pw));
+		outVec.z = (T)(pow((double)z,pw));
 
 		return outVec;
 	}
