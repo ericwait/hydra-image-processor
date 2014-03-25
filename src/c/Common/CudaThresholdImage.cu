@@ -10,10 +10,7 @@ __global__ void cudaThresholdImage( CudaImageContainer imageIn, CudaImageContain
 
 	if (coordinate<imageIn.getDeviceDims())
 	{
-		if (imageIn[coordinate]>=threshold)
-			imageOut[coordinate] = maxValue;
-		else
-			imageOut[coordinate] = minValue;
+		imageOut[coordinate] = (imageIn[coordinate]>=threshold) ? (maxValue) : (minValue);
 	}
 }
 

@@ -149,9 +149,9 @@ public:
 	/*
 	*	Takes a histogram that is on the card and normalizes it
 	*/
-	double* CudaProcessBuffer::normalizeHistogram(const DevicePixelType* imageIn, Vec<size_t> dims, int& arraySize);
+	double* normalizeHistogram(const DevicePixelType* imageIn, Vec<size_t> dims, int& arraySize);
 
-	void otsuThresholdFilter(float alpha=1.0f);
+	DevicePixelType* otsuThresholdFilter(const DevicePixelType* imageIn, Vec<size_t> dims, double alpha=1.0, DevicePixelType** imageOut=NULL);
 
 	double otsuThresholdValue(const DevicePixelType* imageIn, Vec<size_t> dims);
 
@@ -179,7 +179,7 @@ public:
 	*	multiplyImage routine to turn the 1 values to the max values of
 	*	the type
 	*/
-	void thresholdFilter(double threshold);
+	DevicePixelType* thresholdFilter(const DevicePixelType* image, Vec<size_t> dims, DevicePixelType threshold, DevicePixelType** imageOut=NULL);
 
 	void unmix(const DevicePixelType* image, Vec<size_t> neighborhood);
 

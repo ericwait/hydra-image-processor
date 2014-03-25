@@ -308,17 +308,17 @@ public:
 	virtual std::string printHelp();
 };
  
-// class OtsuThresholdFilter : MexCommand
-// {
-// public:
-// 	OtsuThresholdFilter(){}
-// 	virtual ~OtsuThresholdFilter(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-//virtual std::string printHelp();
-// };
+class OtsuThresholdFilter : MexCommand
+{
+public:
+	OtsuThresholdFilter(){}
+	virtual ~OtsuThresholdFilter(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+	virtual std::string printHelp();
+};
 
 class OtsuThesholdValue : MexCommand
 {
@@ -367,15 +367,15 @@ public:
  	virtual std::string printUsage();
 	virtual std::string printHelp();
  };
-// 
-// class ThresholdFilter : MexCommand
-// {
-// public:
-// 	ThresholdFilter(){}
-// 	virtual ~ThresholdFilter(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-// virtual std::string printHelp();
-// };
+
+class ThresholdFilter : MexCommand
+{
+public:
+	ThresholdFilter(){}
+	virtual ~ThresholdFilter(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+	virtual std::string printHelp();
+};
