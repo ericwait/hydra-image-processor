@@ -1,29 +1,28 @@
 #include "CHelpers.h"
 
-double* createEllipsoidKernel(Vec<size_t> radii, Vec<size_t>& kernelDims)
+float* createEllipsoidKernel(Vec<size_t> radii, Vec<size_t>& kernelDims)
 {
-	kernelDims.x = radii.x*2+1;
-	kernelDims.y = radii.y*2+1;
-	kernelDims.z = radii.z*2+1;
+	kernelDims = radii*2 +1;
 
-	double* kernel = new double[kernelDims.product()];
-	memset(kernel,0,sizeof(double)*kernelDims.product());
+	float* kernel = new float[kernelDims.product()];
+	memset(kernel,0,sizeof(float)*kernelDims.product());
 
-	Vec<size_t> mid;
-	mid.x = (kernelDims.x+1)/2;
-	mid.y = (kernelDims.y+1)/2;
-	mid.z = (kernelDims.z+1)/2;
-	Vec<float> dimScale(1.0f/((float)SQR(radii.x)),1.0f/((float)SQR(radii.y)),1.0f/((float)SQR(radii.z)));
+	Vec<size_t> mid((kernelDims-1)/2);
+	Vec<float> dimScale = Vec<float>(1,1,1) / Vec<float>(radii.pwr(2));
 
 	Vec<size_t> cur(0,0,0);
-	for (cur.z=0; cur.z<kernelDims.z ; ++cur.z)
+	for (cur.z=0; cur.z<kernelDims.z; ++cur.z)
 	{
-		for (cur.y=0; cur.y<kernelDims.y ; ++cur.y)
+		for (cur.y=0; cur.y<kernelDims.y; ++cur.y)
 		{
-			for (cur.x=0; cur.x<kernelDims.x ; ++cur.x)
+			for (cur.x=0; cur.x<kernelDims.x; ++cur.x)
 			{
-				if (dimScale.x*SQR(cur.x-mid.x)+dimScale.y*SQR(cur.y-mid.y)+dimScale.z*SQR(cur.z-mid.z)<=1)
+				Vec<float> tmp = dimScale * Vec<float>((cur-mid).pwr(2));
+				if (tmp.x+tmp.y+tmp.z<=1.0f)
+				{
+					size_t ind = kernelDims.linearAddressAt(cur);
 					kernel[kernelDims.linearAddressAt(cur)] = 1.0f;
+				}
 			}
 		}
 	}
