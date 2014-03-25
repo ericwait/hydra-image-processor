@@ -349,6 +349,8 @@ DevicePixelType* CudaProcessBuffer::addImageWith(const DevicePixelType* imageIn1
 		cudaAddTwoImagesWithFactor<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			*(deviceImages.getThirdBuffer()),additive,minVal,maxVal);
 
+		deviceImages.incrementBuffer();
+
 		curChunk->retriveROI(imOut,dims,deviceImages.getThirdBuffer());
 	}
 
@@ -519,6 +521,8 @@ DevicePixelType* CudaProcessBuffer::meanFilter(const DevicePixelType* imageIn, V
 		deviceImages.setNextDims(curChunk->getFullChunkSize());
 		
 		cudaMeanFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),neighborhood);
+
+		deviceImages.incrementBuffer();
 		
 		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
 	}
