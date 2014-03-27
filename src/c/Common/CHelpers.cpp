@@ -7,10 +7,10 @@ float* createEllipsoidKernel(Vec<size_t> radii, Vec<size_t>& kernelDims)
 	float* kernel = new float[kernelDims.product()];
 	memset(kernel,0,sizeof(float)*kernelDims.product());
 
-	Vec<size_t> mid((kernelDims-1)/2);
+	Vec<int> mid((kernelDims-1)/2);
 	Vec<float> dimScale = Vec<float>(1,1,1) / Vec<float>(radii.pwr(2));
 
-	Vec<size_t> cur(0,0,0);
+	Vec<int> cur(0,0,0);
 	for (cur.z=0; cur.z<kernelDims.z; ++cur.z)
 	{
 		for (cur.y=0; cur.y<kernelDims.y; ++cur.y)
