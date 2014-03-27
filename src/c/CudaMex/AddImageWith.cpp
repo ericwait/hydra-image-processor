@@ -3,9 +3,14 @@
  
  void AddImageWith::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
+	 int device = 0;
+
+	 if (nrhs>2)
+		 device = mat_to_c((int)mxGetScalar(prhs[2]));
+
 	 Vec<size_t> imageDims1, imageDims2;
 	 HostPixelType* imageIn1, * imageIn2, * imageOut;
-	 CudaProcessBuffer cudaBuffer;
+	 CudaProcessBuffer cudaBuffer(device);
 	 setupImagePointers(prhs[0],&imageIn1,&imageDims1,&plhs[0],&imageOut);
 	 setupImagePointers(prhs[1],&imageIn2,&imageDims2);
 
@@ -19,7 +24,7 @@
  
  std::string AddImageWith::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
- 	if (nrhs!=3)
+ 	if (nrhs<3 || nrhs>4)
  		return "Incorrect number of inputs!";
  
  	if (nlhs!=1)
@@ -44,7 +49,7 @@
  
  std::string AddImageWith::printUsage()
  {
-	 return "imageOut = CudaMex('AddImageWith',imageIn1,imageIn2,factor);";
+	 return "imageOut = CudaMex('AddImageWith',imageIn1,imageIn2,factor,[device]);";
  }
 
  std::string AddImageWith::printHelp()

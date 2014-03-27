@@ -3,9 +3,14 @@
 
 void OtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
+	int device = 0;
+
+	if (nrhs>2)
+		device = mat_to_c((int)mxGetScalar(prhs[2]));
+
 	Vec<size_t> imageDims;
 	HostPixelType* imageIn, * imageOut;
-	CudaProcessBuffer cudaBuffer;
+	CudaProcessBuffer cudaBuffer(device);
 	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
 	double alpha = 1.0;
@@ -17,7 +22,7 @@ void OtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mx
 
 std::string OtsuThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	if (nrhs<1 || nrhs>2)
+	if (nrhs<1 || nrhs>3)
 		return "Incorrect number of inputs!";
 
 	if (nlhs!=1)
@@ -39,7 +44,7 @@ std::string OtsuThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, con
 
 std::string OtsuThresholdFilter::printUsage()
 {
-	return "imageOut = CudaMex('OtsuThresholdFilter',imageIn,[alpha])";
+	return "imageOut = CudaMex('OtsuThresholdFilter',imageIn,[alpha],[device])";
 }
 
 std::string OtsuThresholdFilter::printHelp()

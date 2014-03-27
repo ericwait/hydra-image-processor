@@ -3,9 +3,14 @@
 
 void ContrastEnhancement::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
+	int device = 0;
+
+	if (nrhs>3)
+		device = mat_to_c((int)mxGetScalar(prhs[3]));
+
 	Vec<size_t> imageDims;
 	HostPixelType* imageIn, * imageOut;
-	CudaProcessBuffer cudaBuffer;
+	CudaProcessBuffer cudaBuffer(device);
 	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
 	double* sigmasD = (double*)mxGetData(prhs[1]);
@@ -19,7 +24,7 @@ void ContrastEnhancement::execute( int nlhs, mxArray* plhs[], int nrhs, const mx
 
 std::string ContrastEnhancement::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	if (nrhs!=3)
+	if (nrhs<3 || nrhs>4)
 		return "Incorrect number of inputs!";
 
 	if (nlhs!=1)
@@ -45,7 +50,7 @@ std::string ContrastEnhancement::check( int nlhs, mxArray* plhs[], int nrhs, con
 
 std::string ContrastEnhancement::printUsage()
 {
-	return "imageOut = CudaMex('ContrastEnhancement',imageIn,[sigmaX,sigmaY,sigmaZ],[MedianNeighborhoodX,MedianNeighborhoodY,MedianNeighborhoodZ]);";
+	return "imageOut = CudaMex('ContrastEnhancement',imageIn,[sigmaX,sigmaY,sigmaZ],[MedianNeighborhoodX,MedianNeighborhoodY,MedianNeighborhoodZ],[device]);";
 }
 
 std::string ContrastEnhancement::printHelp()

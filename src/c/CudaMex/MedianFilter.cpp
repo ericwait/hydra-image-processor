@@ -3,6 +3,11 @@
 
 void MedianFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
+	int device = 0;
+
+	if (nrhs>2)
+		device = mat_to_c((int)mxGetScalar(prhs[2]));
+
 	Vec<size_t> imageDims;
 	HostPixelType* imageIn, * imageOut;
 	CudaProcessBuffer cudaBuffer;
@@ -16,7 +21,7 @@ void MedianFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* 
 
 std::string MedianFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	if (nrhs!=2)
+	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
 
 	if (nlhs!=1)
@@ -38,7 +43,7 @@ std::string MedianFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxAr
 
 std::string MedianFilter::printUsage()
 {
-	return "imageOut = CudaMex('MedianFilter',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ]);";
+	return "imageOut = CudaMex('MedianFilter',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ],[device]);";
 }
 
 std::string MedianFilter::printHelp()

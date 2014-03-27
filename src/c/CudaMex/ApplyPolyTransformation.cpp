@@ -3,10 +3,14 @@
 
 void ApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
+	int device = 0;
+
+	if (nrhs>6)
+		device = mat_to_c((int)mxGetScalar(prhs[6]));
 
 	Vec<size_t> imageDims;
 	HostPixelType* imageIn, * imageOut;
-	CudaProcessBuffer cudaBuffer;
+	CudaProcessBuffer cudaBuffer(device);
 	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
 	double a, b, c;
@@ -30,7 +34,7 @@ void ApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 
 std::string ApplyPolyTransformation::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	if (nrhs<4 && 6<nrhs)
+	if (nrhs<4 && nrhs>7)
 		return "Incorrect number of inputs!";
 
 	if (nlhs!=1)
@@ -51,7 +55,7 @@ std::string ApplyPolyTransformation::check( int nlhs, mxArray* plhs[], int nrhs,
 
 std::string ApplyPolyTransformation::printUsage()
 {
-	return "imageOut = CudaMex('ApplyPolyTransformation',imageIn,a,b,c,[min],[max]);";
+	return "imageOut = CudaMex('ApplyPolyTransformation',imageIn,a,b,c,[min],[max],[device]);";
 }
 
 std::string ApplyPolyTransformation::printHelp()

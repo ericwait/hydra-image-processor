@@ -4,9 +4,14 @@
 
 void MaxFilterEllipsoid::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
+	int device = 0;
+
+	if (nrhs>2)
+		device = mat_to_c((int)mxGetScalar(prhs[2]));
+
 	Vec<size_t> imageDims;
 	HostPixelType* imageIn, * imageOut;
-	CudaProcessBuffer cudaBuffer;
+	CudaProcessBuffer cudaBuffer(device);
 	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
 	double* radiiD = (double*)mxGetData(prhs[1]);
@@ -21,7 +26,7 @@ void MaxFilterEllipsoid::execute( int nlhs, mxArray* plhs[], int nrhs, const mxA
 
 std::string MaxFilterEllipsoid::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	if (nrhs!=2)
+	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
 
 	if (nlhs!=1)
@@ -43,7 +48,7 @@ std::string MaxFilterEllipsoid::check( int nlhs, mxArray* plhs[], int nrhs, cons
 
 std::string MaxFilterEllipsoid::printUsage()
 {
-	return "imageOut = CudaMex('MaxFilterEllipsoid',imageIn,[radiusX,radiusY,radiusZ]);";
+	return "imageOut = CudaMex('MaxFilterEllipsoid',imageIn,[radiusX,radiusY,radiusZ],[device]);";
 }
 
 std::string MaxFilterEllipsoid::printHelp()

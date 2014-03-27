@@ -3,9 +3,14 @@
  
  void Histogram::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
+	 int device = 0;
+
+	 if (nrhs>1)
+		 device = mat_to_c((int)mxGetScalar(prhs[1]));
+
 	 Vec<size_t> imageDims;
 	 HostPixelType* imageIn;
-	 CudaProcessBuffer cudaBuffer;
+	 CudaProcessBuffer cudaBuffer(device);
 	 setupImagePointers(prhs[0],&imageIn,&imageDims);
  
  	int arraySize;
@@ -23,7 +28,7 @@
  
  std::string Histogram::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
- 	if (nrhs!=1)
+ 	if (nrhs<1 || nrhs>2)
  		return "Incorrect number of inputs!";
  
  	if (nlhs!=1)
@@ -41,7 +46,7 @@
  
  std::string Histogram::printUsage()
  {
- 	return "histogram = CudaMex('Histogram',imageIn);";
+ 	return "histogram = CudaMex('Histogram',imageIn,[device]);";
  }
 
  std::string Histogram::printHelp()

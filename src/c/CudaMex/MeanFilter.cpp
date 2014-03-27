@@ -3,9 +3,14 @@
  
  void MeanFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
+	 int device = 0;
+
+	 if (nrhs>2)
+		 device = mat_to_c((int)mxGetScalar(prhs[2]));
+
  	Vec<size_t> imageDims;
  	HostPixelType* imageIn, * imageOut;
-	CudaProcessBuffer cudaBuffer;
+	CudaProcessBuffer cudaBuffer(device);
  	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
  
  	double* neighborhoodD = (double*)mxGetData(prhs[1]);
@@ -16,7 +21,7 @@
  
  std::string MeanFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
- 	if (nrhs!=2)
+ 	if (nrhs<2 || nrhs>3)
  		return "Incorrect number of inputs!";
  
  	if (nlhs!=1)
@@ -38,7 +43,7 @@
  
  std::string MeanFilter::printUsage()
  {
- 	return "imageOut = CudaMex('MeanFilter',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ]);";
+ 	return "imageOut = CudaMex('MeanFilter',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ],[device]);";
  }
 
  std::string MeanFilter::printHelp()

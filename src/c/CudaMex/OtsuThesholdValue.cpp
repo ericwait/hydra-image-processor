@@ -3,9 +3,14 @@
  
  void OtsuThesholdValue::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
+	 int device = 0;
+
+	 if (nrhs>1)
+		 device = mat_to_c((int)mxGetScalar(prhs[1]));
+
 	 Vec<size_t> imageDims;
 	 HostPixelType* imageIn;
-	 CudaProcessBuffer cudaBuffer;
+	 CudaProcessBuffer cudaBuffer(device);
 	 setupImagePointers(prhs[0],&imageIn,&imageDims);
  
  	double thresh = cudaBuffer.otsuThresholdValue(imageIn,imageDims);
@@ -15,7 +20,7 @@
  
  std::string OtsuThesholdValue::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
- 	if (nrhs!=1)
+ 	if (nrhs<1 || nrhs>2)
  		return "Incorrect number of inputs!";
  
  	if (nlhs!=1)
@@ -33,7 +38,7 @@
  
  std::string OtsuThesholdValue::printUsage()
  {
- 	return "threshold = CudaMex('OtsuThesholdValue',imageIn)";
+ 	return "threshold = CudaMex('OtsuThesholdValue',imageIn,[device])";
  }
 
  std::string OtsuThesholdValue::printHelp()

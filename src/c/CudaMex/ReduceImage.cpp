@@ -3,9 +3,14 @@
 
 void ReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
+	int device = 0;
+
+	if (nrhs>2)
+		device = mat_to_c((int)mxGetScalar(prhs[2]));
+
 	Vec<size_t> imageDims;
 	HostPixelType* imageIn, * imageOut;
-	CudaProcessBuffer cudaBuffer;
+	CudaProcessBuffer cudaBuffer(device);
 	setupImagePointers(prhs[0],&imageIn,&imageDims);
 
 	double* reductionD = (double*)mxGetData(prhs[1]);
@@ -32,7 +37,7 @@ void ReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 
 std::string ReduceImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	if (nrhs!=2)
+	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
 
 	if (nlhs!=1)
@@ -54,7 +59,7 @@ std::string ReduceImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArr
 
 std::string ReduceImage::printUsage()
 {
-	return "imageOut = CudaMex('ReduceImage',imageIn,[reductionFactorX,reductionFactorY,reductionFactorZ]);";
+	return "imageOut = CudaMex('ReduceImage',imageIn,[reductionFactorX,reductionFactorY,reductionFactorZ],[device]);";
 }
 
 std::string ReduceImage::printHelp()
