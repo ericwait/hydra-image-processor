@@ -47,9 +47,8 @@
  	std::string errMsg = thisCommand->check(nlhs,plhs,nrhs-1,prhs+1);
  	if (errMsg.length()!=0)
  	{
-		char err[2048];
-		sprintf_s(err,"%s\n%s\n%s",errMsg.c_str(),thisCommand->printUsage().c_str(),thisCommand->printHelp().c_str());
- 		mexErrMsgTxt(err);
+		mexPrintf("%s\n%s",thisCommand->printUsage().c_str(),thisCommand->printHelp().c_str());
+ 		mexErrMsgTxt(errMsg.c_str());
  	}
  
  	try
