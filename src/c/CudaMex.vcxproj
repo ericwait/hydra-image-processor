@@ -33,7 +33,7 @@
     <ClCompile Include="CudaMex\Mask.cpp" />
     <ClCompile Include="CudaMex\MaxFilterNeighborHood.cpp" />
     <ClCompile Include="CudaMex\MaxFilterCircle.cpp" />
-    <ClCompile Include="CudaMex\MaxFilterKernal.cpp" />
+    <ClCompile Include="CudaMex\MaxFilterKernel.cpp" />
     <ClCompile Include="CudaMex\MaximumIntensityProjection.cpp" />
     <ClCompile Include="CudaMex\MeanFilter.cpp" />
     <ClCompile Include="CudaMex\MedianFilter.cpp" />

@@ -66,9 +66,6 @@
     <ClCompile Include="CudaMex\MaxFilterCircle.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MaxFilterKernal.cpp">
-      <Filter>Source Files\MexFiles</Filter>
-    </ClCompile>
     <ClCompile Include="CudaMex\MaxFilterNeighborHood.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
@@ -131,6 +128,9 @@
     </ClCompile>
     <ClCompile Include="Common\ImageContainer.cpp">
       <Filter>Source Files\HelperFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="CudaMex\MaxFilterKernel.cpp">
+      <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
