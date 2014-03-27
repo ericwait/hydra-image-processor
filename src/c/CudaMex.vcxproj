@@ -32,14 +32,14 @@
     <ClCompile Include="CudaMex\ImagePow.cpp" />
     <ClCompile Include="CudaMex\Mask.cpp" />
     <ClCompile Include="CudaMex\MaxFilterNeighborHood.cpp" />
-    <ClCompile Include="CudaMex\MaxFilterCircle.cpp" />
+    <ClCompile Include="CudaMex\MaxFilterEllipsoid.cpp" />
     <ClCompile Include="CudaMex\MaxFilterKernel.cpp" />
     <ClCompile Include="CudaMex\MaximumIntensityProjection.cpp" />
     <ClCompile Include="CudaMex\MeanFilter.cpp" />
     <ClCompile Include="CudaMex\MedianFilter.cpp" />
     <ClCompile Include="CudaMex\MexCommand.cpp" />
     <ClCompile Include="CudaMex\MinFilterNeighborhood.cpp" />
-    <ClCompile Include="CudaMex\MinFilterCircle.cpp" />
+    <ClCompile Include="CudaMex\MinFilterEllipsoid.cpp" />
     <ClCompile Include="CudaMex\MinFilterKernal.cpp" />
     <ClCompile Include="CudaMex\MorphClosure.cpp" />
     <ClCompile Include="CudaMex\MorphOpening.cpp" />

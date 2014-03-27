@@ -19,13 +19,13 @@ void MexCommand::init()
 // 	REGISTER_COMMAND(Mask);
  	REGISTER_COMMAND(MaxFilterEllipsoid);
  	REGISTER_COMMAND(MaxFilterKernel);
-// 	REGISTER_COMMAND(MaxFilterNeighborHood);
+ 	REGISTER_COMMAND(MaxFilterNeighborhood);
 // 	REGISTER_COMMAND(MaximumIntensityProjection);
  	REGISTER_COMMAND(MeanFilter);
  	REGISTER_COMMAND(MedianFilter);
-// 	REGISTER_COMMAND(MinFilterCircle);
-// 	REGISTER_COMMAND(MinFilterKernel);
-// 	REGISTER_COMMAND(MinFilterNeighborhood);
+ 	REGISTER_COMMAND(MinFilterEllipsoid);
+ 	REGISTER_COMMAND(MinFilterKernel);
+ 	REGISTER_COMMAND(MinFilterNeighborhood);
 // 	REGISTER_COMMAND(MorphClosure);
 // 	REGISTER_COMMAND(MorphOpening);
 // 	REGISTER_COMMAND(MultiplyImage);

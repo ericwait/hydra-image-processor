@@ -590,9 +590,45 @@ DevicePixelType* CudaProcessBuffer::medianFilter(const DevicePixelType* imageIn,
 	return imOut;
 }
 
-void CudaProcessBuffer::minFilter(Vec<size_t> neighborhood, double* kernel/*=NULL*/)
+DevicePixelType* CudaProcessBuffer::minFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernalDims, float* kernel/*=NULL*/,
+											  DevicePixelType** imageOut/*=NULL*/)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
+
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
+
+	if (kernel==NULL)
+	{
+		float* ones = new float[kernalDims.product()];
+		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, ones, sizeof(float)*kernalDims.product()));
+		delete[] ones;
+	} 
+	else
+	{
+		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, kernel, sizeof(float)*kernalDims.product()));
+	}
+
+	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,kernalDims);
+
+	setMaxDeviceDims(chunks, maxDeviceDims);
+
+	CudaDeviceImages deviceImages(2,maxDeviceDims,device);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
+		deviceImages.setNextDims(curChunk->getFullChunkSize());
+
+		cudaMinFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),kernalDims,
+			minVal,maxVal);
+
+		deviceImages.incrementBuffer();
+
+		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
+	}
+
+	return imOut;
 }
 
 void CudaProcessBuffer::morphClosure(Vec<size_t> neighborhood, double* kernel/*=NULL*/)

@@ -152,18 +152,18 @@ virtual std::string printHelp();
  virtual std::string printHelp();
  };
  
-// class MaxFilterNeighborHood : MexCommand
-// {
-// public:
-// 	MaxFilterNeighborHood(){}
-// 	virtual ~MaxFilterNeighborHood(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-// virtual std::string printHelp();
-// };
-// 
+ class MaxFilterNeighborhood : MexCommand
+ {
+ public:
+ 	MaxFilterNeighborhood(){}
+ 	virtual ~MaxFilterNeighborhood(){}
+ 
+ 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string printUsage();
+ virtual std::string printHelp();
+ };
+ 
 // class MaximumIntensityProjection : MexCommand
 // {
 // public:
@@ -200,42 +200,42 @@ public:
 	virtual std::string printHelp();
 };
 
-// class MinFilterCircle : MexCommand
-// {
-// public:
-// 	MinFilterCircle(){}
-// 	virtual ~MinFilterCircle(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-//virtual std::string printHelp();
-// };
-// 
-// class MinFilterKernel : MexCommand
-// {
-// public:
-// 	MinFilterKernel(){}
-// 	virtual ~MinFilterKernel(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-//virtual std::string printHelp();
-// };
-// 
-// class MinFilterNeighborhood : MexCommand
-// {
-// public:
-// 	MinFilterNeighborhood(){}
-// 	virtual ~MinFilterNeighborhood(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-//virtual std::string printHelp();
-// };
-// 
+ class MinFilterEllipsoid : MexCommand
+ {
+ public:
+ 	MinFilterEllipsoid(){}
+ 	virtual ~MinFilterEllipsoid(){}
+ 
+ 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string printUsage();
+virtual std::string printHelp();
+ };
+ 
+ class MinFilterKernel : MexCommand
+ {
+ public:
+ 	MinFilterKernel(){}
+ 	virtual ~MinFilterKernel(){}
+ 
+ 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string printUsage();
+virtual std::string printHelp();
+ };
+ 
+ class MinFilterNeighborhood : MexCommand
+ {
+ public:
+ 	MinFilterNeighborhood(){}
+ 	virtual ~MinFilterNeighborhood(){}
+ 
+ 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string printUsage();
+virtual std::string printHelp();
+ };
+ 
 // class MorphClosure : MexCommand
 // {
 // public:

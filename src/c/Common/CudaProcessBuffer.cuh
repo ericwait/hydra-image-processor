@@ -127,7 +127,8 @@ public:
 	*	Sets each pixel to the min value of its neighborhood
 	*	Erodes structures
 	*/ 
-	void minFilter(Vec<size_t> neighborhood, double* kernel=NULL);
+	DevicePixelType* minFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernalDims, float* kernel=NULL,
+		DevicePixelType** imageOut=NULL);
 
 	void morphClosure(Vec<size_t> neighborhood, double* kernel=NULL);
 

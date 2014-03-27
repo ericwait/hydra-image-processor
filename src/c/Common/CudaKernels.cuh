@@ -38,7 +38,8 @@ __global__ void cudaMedianFilter(CudaImageContainer imageIn, CudaImageContainer 
 
 __global__ void cudaMedianImageReduction(CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostReductions);
 
-__global__ void cudaMinFilter(CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostKernelDims);
+__global__ void cudaMinFilter( CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostKernelDims, DevicePixelType  minVal,
+							  DevicePixelType maxVal);
 
 __global__ void cudaMultAddFilter(CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostKernelDims, size_t kernelOffset=0);
 
