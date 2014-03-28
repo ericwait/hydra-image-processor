@@ -10,7 +10,8 @@ __global__ void cudaMultiplyImage( CudaImageContainer imageIn, CudaImageContaine
 
 	if (coordinate<imageIn.getDeviceDims())
 	{
-		imageOut[coordinate] = min((double)maxValue,max((double)minValue, factor*imageIn[coordinate]));
+		double outValue = factor*imageIn[coordinate];
+		imageOut[coordinate] = (outValue>maxValue) ? (maxValue) : ((outValue<minValue) ? (minValue) : (outValue));
 	}
 }
 

@@ -248,18 +248,18 @@ virtual std::string printHelp();
 virtual std::string printHelp();
  };
  
-// class MultiplyImage : MexCommand
-// {
-// public:
-// 	MultiplyImage(){}
-// 	virtual ~MultiplyImage(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-//virtual std::string printHelp();
-// };
-// 
+ class MultiplyImage : MexCommand
+ {
+ public:
+ 	MultiplyImage(){}
+ 	virtual ~MultiplyImage(){}
+ 
+ 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string printUsage();
+virtual std::string printHelp();
+ };
+ 
 // class MultiplyImageWith : MexCommand
 // {
 // public:
