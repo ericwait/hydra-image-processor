@@ -5,8 +5,8 @@
  {
 	 int device = 0;
 
-	 if (nrhs>2)
-		 device = mat_to_c((int)mxGetScalar(prhs[2]));
+	 if (nrhs>3)
+		 device = mat_to_c((int)mxGetScalar(prhs[3]));
 
 	 Vec<size_t> imageDims1, imageDims2;
 	 HostPixelType* imageIn1, * imageIn2, * imageOut;
@@ -33,13 +33,16 @@
  	if (!mxIsUint8(prhs[0]) || !mxIsUint8(prhs[1]))
  		return "Images has to be formated as a uint8!";
  
- 	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
- 	if (numDims>3 || numDims<2)
+ 	size_t numDims1 = mxGetNumberOfDimensions(prhs[0]);
+ 	if (numDims1>3 || numDims1<2)
  		return "Image can only be either 2D or 3D!";
  
- 	numDims = mxGetNumberOfDimensions(prhs[1]);
- 	if (numDims>3 || numDims<2)
+ 	size_t numDims2 = mxGetNumberOfDimensions(prhs[1]);
+ 	if (numDims2>3 || numDims2<2)
  		return "Image can only be either 2D or 3D!";
+
+	if (numDims1!=numDims2)
+		return "Image dimensions must agree!";
  
  	if (!mxIsDouble(prhs[2]))
  		return "Factor needs to be a double!";
