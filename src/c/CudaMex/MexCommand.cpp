@@ -27,7 +27,7 @@ void MexCommand::init()
  	REGISTER_COMMAND(MinFilterKernel);
  	REGISTER_COMMAND(MinFilterNeighborhood);
  	REGISTER_COMMAND(MultiplyImage);
-// 	REGISTER_COMMAND(MultiplyImageWith);
+	REGISTER_COMMAND(MultiplyTwoImages);
 // 	REGISTER_COMMAND(NormalizedCovariance);
  	REGISTER_COMMAND(NormalizedHistogram);
  	REGISTER_COMMAND(OtsuThresholdFilter);

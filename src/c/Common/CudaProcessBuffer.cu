@@ -659,9 +659,33 @@ DevicePixelType* CudaProcessBuffer::multiplyImage(const DevicePixelType* imageIn
 	return imOut;
 }
 
-void CudaProcessBuffer::multiplyImageWith(const DevicePixelType* image)
+DevicePixelType* CudaProcessBuffer::multiplyImageWith(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims,
+													  double factor, DevicePixelType** imageOut/*=NULL*/)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
+
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
+
+	std::vector<ImageChunk> chunks = calculateBuffers(dims,3,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
+
+	setMaxDeviceDims(chunks, maxDeviceDims);
+
+	CudaDeviceImages deviceImages(3,maxDeviceDims,device);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		deviceImages.setAllDims(curChunk->getFullChunkSize());
+		curChunk->sendROI(imageIn1,dims,deviceImages.getCurBuffer());
+		curChunk->sendROI(imageIn2,dims,deviceImages.getNextBuffer());
+
+		cudaMultiplyTwoImages<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
+			*(deviceImages.getThirdBuffer()),factor,minVal,maxVal);
+
+		curChunk->retriveROI(imOut,dims,deviceImages.getThirdBuffer());
+	}
+
+	return imOut;
 }
 
 double CudaProcessBuffer::normalizedCovariance(DevicePixelType* otherImage)

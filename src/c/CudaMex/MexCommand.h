@@ -260,18 +260,18 @@ virtual std::string printHelp();
 virtual std::string printHelp();
  };
  
-// class MultiplyImageWith : MexCommand
-// {
-// public:
-// 	MultiplyImageWith(){}
-// 	virtual ~MultiplyImageWith(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-//virtual std::string printHelp();
-// };
-// 
+ class MultiplyTwoImages : MexCommand
+ {
+ public:
+ 	MultiplyTwoImages(){}
+ 	virtual ~MultiplyTwoImages(){}
+ 
+ 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+ 	virtual std::string printUsage();
+virtual std::string printHelp();
+ };
+ 
 // class NormalizedCovariance : MexCommand
 // {
 // public:

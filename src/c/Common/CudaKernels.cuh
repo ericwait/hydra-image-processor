@@ -46,7 +46,8 @@ __global__ void cudaMultAddFilter(CudaImageContainer imageIn, CudaImageContainer
 __global__ void cudaMultiplyImage(CudaImageContainer imageIn, CudaImageContainer imageOut, double factor, DevicePixelType minValue,
 								  DevicePixelType maxValue);
 
-__global__ void cudaMultiplyTwoImages(CudaImageContainer imageIn1, CudaImageContainer imageIn2, CudaImageContainer imageOut);
+__global__ void cudaMultiplyTwoImages(CudaImageContainer imageIn1, CudaImageContainer imageIn2, CudaImageContainer imageOut,
+									  double factor, DevicePixelType minValue, DevicePixelType maxValue);
 
 __global__ void cudaNormalizeHistogram(size_t* histogram, double* normHistogram, Vec<size_t> imageDims);
 
