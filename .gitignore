@@ -33,3 +33,5 @@ src/MATLAB/CudaMex.mexw64
 src/MATLAB/cudart32_55.dll
 src/MATLAB/cudart64_55.dll
 src/c/CudaImageProccessing.opensdf
+src/c/CudaImageProccessing.sdf
+src/c/CudaImageProccessing.v11.suo
