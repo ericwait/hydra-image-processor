@@ -11,13 +11,6 @@ __global__ void cudaAddFactor( CudaImageContainer imageIn1, CudaImageContainer i
 	if (coordinate<imageIn1.getDeviceDims())
 	{
 		double outValue = imageIn1[coordinate] + factor;
-		//size_t idxIn1 = imageIn1.getDeviceDims().linearAddressAt(coordinate,imageIn1.isColumnMajor());
-		//size_t idxOut = imageOut.getDeviceDims().linearAddressAt(coordinate,imageOut.isColumnMajor());
-		imageOut[coordinate] = min((double)maxValue,max((double)minValue,outValue));
-// 		DevicePixelType* im = imageOut.getDeviceImagePointer();
-// 		size_t idx = coordinate.x+coordinate.y*imageOut.getWidth()+coordinate.z*imageOut.getHeight();
-// 		size_t calcIdx = imageOut.getDeviceDims().linearAddressAt(coordinate);
-// 		im[idx] = coordinate.x;
+		imageOut[coordinate] = (outValue>maxValue) ? (maxValue) : ((outValue<minValue) ? (minValue) : (outValue));
 	}
 }
-
