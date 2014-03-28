@@ -156,7 +156,7 @@ public:
 	/*
 	*	Raise each pixel to a power
 	*/
-	void imagePow(int p);
+	DevicePixelType* imagePow(const DevicePixelType* imageIn, Vec<size_t> dims, double power, DevicePixelType** imageOut=NULL);
 
 	/*
 	*	Calculates the total sum of the buffer's data

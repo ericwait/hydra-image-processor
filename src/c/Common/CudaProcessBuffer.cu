@@ -700,9 +700,33 @@ double CudaProcessBuffer::otsuThresholdValue(const DevicePixelType* imageIn, Vec
 	return thrsh;
 }
 
-void CudaProcessBuffer::imagePow(int p)
+DevicePixelType* CudaProcessBuffer::imagePow(const DevicePixelType* imageIn, Vec<size_t> dims, double power, DevicePixelType** imageOut/*=NULL*/)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
+
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
+
+	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
+
+	setMaxDeviceDims(chunks, maxDeviceDims);
+
+	CudaDeviceImages deviceImages(2,maxDeviceDims,device);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
+		deviceImages.setNextDims(curChunk->getFullChunkSize());
+
+		cudaPow<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
+			power,minVal,maxVal);
+
+		deviceImages.incrementBuffer();
+
+		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
+	}
+
+	return imOut;
 }
 
 void CudaProcessBuffer::sumArray(double& sum)

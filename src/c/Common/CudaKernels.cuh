@@ -53,7 +53,8 @@ __global__ void cudaNormalizeHistogram(size_t* histogram, double* normHistogram,
 __global__ void cudaPolyTransferFuncImage(CudaImageContainer imageIn, CudaImageContainer imageOut, double a, double b, double c,
 										  DevicePixelType minPixelValue, DevicePixelType maxPixelValue);
 
-__global__ void cudaPow(CudaImageContainer imageIn, CudaImageContainer imageOut, double p);
+__global__ void cudaPow(CudaImageContainer imageIn1, CudaImageContainer imageOut, double power, DevicePixelType minValue,
+						DevicePixelType maxValue);
 
 __global__ void cudaSumArray(CudaImageContainer arrayIn, double* arrayOut, size_t n);
 

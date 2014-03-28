@@ -116,6 +116,18 @@ public:
 virtual std::string printHelp();
 };
 
+class ImagePow : MexCommand
+{
+public:
+	ImagePow(){}
+	virtual ~ImagePow(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+	virtual std::string printHelp();
+};
+
 // class Mask :MexCommand
 // {
 // public:

@@ -15,7 +15,7 @@ void MexCommand::init()
  	REGISTER_COMMAND(ContrastEnhancement);
  	REGISTER_COMMAND(GaussianFilter);
  	REGISTER_COMMAND(Histogram);
-// 	REGISTER_COMMAND(ImagePow);
+ 	REGISTER_COMMAND(ImagePow);
 // 	REGISTER_COMMAND(Mask);
  	REGISTER_COMMAND(MaxFilterEllipsoid);
  	REGISTER_COMMAND(MaxFilterKernel);

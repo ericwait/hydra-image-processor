@@ -1,13 +1,16 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaPow( CudaImageContainer imageIn, CudaImageContainer imageOut, double p )
+__global__ void cudaPow( CudaImageContainer imageIn1, CudaImageContainer imageOut, double power, DevicePixelType minValue,
+							  DevicePixelType maxValue)
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDeviceDims())
-		imageOut[coordinate] = pow((double)imageIn[coordinate],p);
+	if (coordinate<imageIn1.getDeviceDims())
+	{
+		double outValue = pow((double)imageIn1[coordinate], power);
+		imageOut[coordinate] = (outValue>maxValue) ? (maxValue) : ((outValue<minValue) ? (minValue) : (outValue));
+	}
 }
-
