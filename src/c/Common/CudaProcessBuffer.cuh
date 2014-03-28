@@ -130,10 +130,6 @@ public:
 	DevicePixelType* minFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernalDims, float* kernel=NULL,
 		DevicePixelType** imageOut=NULL);
 
-	void morphClosure(Vec<size_t> neighborhood, double* kernel=NULL);
-
-	void morphOpening(Vec<size_t> neighborhood, double* kernel=NULL);
-
 	void multiplyImage(double factor);
 
 	/*

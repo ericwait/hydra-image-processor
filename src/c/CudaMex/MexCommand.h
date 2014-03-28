@@ -236,30 +236,6 @@ virtual std::string printHelp();
 virtual std::string printHelp();
  };
  
-// class MorphClosure : MexCommand
-// {
-// public:
-// 	MorphClosure(){}
-// 	virtual ~MorphClosure(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-//virtual std::string printHelp();
-// };
-// 
-// class MorphOpening : MexCommand
-// {
-// public:
-// 	MorphOpening(){}
-// 	virtual ~MorphOpening(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-//virtual std::string printHelp();
-// };
-// 
 // class MultiplyImage : MexCommand
 // {
 // public:

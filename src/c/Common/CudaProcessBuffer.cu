@@ -631,16 +631,6 @@ DevicePixelType* CudaProcessBuffer::minFilter(const DevicePixelType* imageIn, Ve
 	return imOut;
 }
 
-void CudaProcessBuffer::morphClosure(Vec<size_t> neighborhood, double* kernel/*=NULL*/)
-{
-	throw std::logic_error("The method or operation is not implemented.");
-}
-
-void CudaProcessBuffer::morphOpening(Vec<size_t> neighborhood, double* kernel/*=NULL*/)
-{
-	throw std::logic_error("The method or operation is not implemented.");
-}
-
 void CudaProcessBuffer::multiplyImage(double factor)
 {
 	throw std::logic_error("The method or operation is not implemented.");

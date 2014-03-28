@@ -84,12 +84,6 @@
     <ClCompile Include="CudaMex\MinFilterNeighborhood.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MorphClosure.cpp">
-      <Filter>Source Files\MexFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="CudaMex\MorphOpening.cpp">
-      <Filter>Source Files\MexFiles</Filter>
-    </ClCompile>
     <ClCompile Include="CudaMex\MultiplyImage.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>

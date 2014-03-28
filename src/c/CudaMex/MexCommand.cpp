@@ -26,8 +26,6 @@ void MexCommand::init()
  	REGISTER_COMMAND(MinFilterEllipsoid);
  	REGISTER_COMMAND(MinFilterKernel);
  	REGISTER_COMMAND(MinFilterNeighborhood);
-// 	REGISTER_COMMAND(MorphClosure);
-// 	REGISTER_COMMAND(MorphOpening);
 // 	REGISTER_COMMAND(MultiplyImage);
 // 	REGISTER_COMMAND(MultiplyImageWith);
 // 	REGISTER_COMMAND(NormalizedCovariance);
