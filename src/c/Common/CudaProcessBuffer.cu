@@ -349,8 +349,6 @@ DevicePixelType* CudaProcessBuffer::addImageWith(const DevicePixelType* imageIn1
 		cudaAddTwoImagesWithFactor<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			*(deviceImages.getThirdBuffer()),additive,minVal,maxVal);
 
-		deviceImages.incrementBuffer();
-
 		curChunk->retriveROI(imOut,dims,deviceImages.getThirdBuffer());
 	}
 
