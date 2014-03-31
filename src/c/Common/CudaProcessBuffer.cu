@@ -382,11 +382,6 @@ DevicePixelType* CudaProcessBuffer::applyPolyTransformation(const DevicePixelTyp
 	return imOut;
 }
 
-void CudaProcessBuffer::calculateMinMax(double& minValue, double& maxValue)
-{
-	throw std::logic_error("The method or operation is not implemented.");
-}
-
 DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
 														Vec<size_t> neighborhood, DevicePixelType** imageOut/*=NULL*/)
 {
@@ -487,11 +482,6 @@ DevicePixelType* CudaProcessBuffer::gaussianFilter(const DevicePixelType* imageI
 	return imOut;
 }
 
-void CudaProcessBuffer::mask(const DevicePixelType* imageMask, DevicePixelType threshold/*=1*/)
-{
-	throw std::logic_error("The method or operation is not implemented.");
-}
-
 DevicePixelType* CudaProcessBuffer::maxFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernalDims, float* kernel/*=NULL*/,
 						   DevicePixelType** imageOut/*=NULL*/)
 {
@@ -531,11 +521,6 @@ DevicePixelType* CudaProcessBuffer::maxFilter(const DevicePixelType* imageIn, Ve
 	}
 
 	return imOut;
-}
-
-void CudaProcessBuffer::maximumIntensityProjection()
-{
-	throw std::logic_error("The method or operation is not implemented.");
 }
 
 DevicePixelType* CudaProcessBuffer::meanFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood,

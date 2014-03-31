@@ -68,18 +68,6 @@ public:
 	virtual std::string printHelp();
 };
 
-// class CalculateMinMax : MexCommand
-// {
-// public:
-// 	CalculateMinMax(){}
-// 	virtual ~CalculateMinMax(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-//virtual std::string printHelp();
-// };
-
 class ContrastEnhancement : MexCommand
 {
 public:
@@ -128,18 +116,6 @@ public:
 	virtual std::string printHelp();
 };
 
-// class Mask :MexCommand
-// {
-// public:
-// 	Mask(){}
-// 	virtual ~Mask(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
- //virtual std::string printHelp();
-// };
-
 class MaxFilterEllipsoid : MexCommand
 {
 public:
@@ -176,18 +152,6 @@ virtual std::string printHelp();
  virtual std::string printHelp();
  };
  
-// class MaximumIntensityProjection : MexCommand
-// {
-// public:
-// 	MaximumIntensityProjection(){}
-// 	virtual ~MaximumIntensityProjection(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
- //virtual std::string printHelp();
-// };
-// 
  class MeanFilter : MexCommand
  {
  public:
@@ -319,18 +283,6 @@ public:
 	virtual std::string printUsage();
 	virtual std::string printHelp();
 };
-
-// class ImagePow : MexCommand
-// {
-// public:
-// 	ImagePow(){}
-// 	virtual ~ImagePow(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-//virtual std::string printHelp();
-// };
 
 class SumArray : MexCommand
 {

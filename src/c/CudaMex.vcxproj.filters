@@ -42,9 +42,6 @@
     <ClCompile Include="CudaMex\ApplyPolyTransformation.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\CalculateMinMax.cpp">
-      <Filter>Source Files\MexFiles</Filter>
-    </ClCompile>
     <ClCompile Include="CudaMex\ContrastEnhancement.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
@@ -60,13 +57,7 @@
     <ClCompile Include="CudaMex\ImagePow.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\Mask.cpp">
-      <Filter>Source Files\MexFiles</Filter>
-    </ClCompile>
     <ClCompile Include="CudaMex\MaxFilterNeighborHood.cpp">
-      <Filter>Source Files\MexFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="CudaMex\MaximumIntensityProjection.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
     <ClCompile Include="CudaMex\MeanFilter.cpp">

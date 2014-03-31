@@ -70,11 +70,6 @@ public:
 		DevicePixelType minValue, DevicePixelType maxValue, DevicePixelType** imageOut=NULL);
 
 	/*
-	*	This will find the min and max values of the image
-	*/ 
-	void calculateMinMax(double& minValue, double& maxValue);
-
-	/*
 	*	Contrast Enhancement will run the Michel High Pass Filter and then a mean filter
 	*	Pass in the sigmas that will be used for the Gaussian filter to subtract off and the mean neighborhood dimensions
 	*/
@@ -92,24 +87,11 @@ public:
 	DevicePixelType* gaussianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas, DevicePixelType** imageOut=NULL);
 
 	/*
-	*	Mask will mask out the pixels of this buffer given an image and a threshold.
-	*	The threshold it to allow the input image to be gray scale instead of logical.
-	*	This buffer will get zeroed out where the imageMask is less than or equal to the threshold.
-	*/
-	void mask(const DevicePixelType* imageMask, DevicePixelType threshold=1);
-
-	/*
 	*	Sets each pixel to the max value of its neighborhood
 	*	Dilates structures
 	*/ 
 	DevicePixelType* maxFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernalDims, float* kernel=NULL,
 		DevicePixelType** imageOut=NULL);
-
-	/*
-	*	produce an image that is the maximum value in z for each (x,y)
-	*	Images that are copied out of the buffer will have a z size of 1
-	*/
-	void maximumIntensityProjection();
 
 	/*
 	*	Filters image where each pixel is the mean of its neighborhood

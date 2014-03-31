@@ -24,17 +24,14 @@
     <ClCompile Include="CudaMex\AddConstant.cpp" />
     <ClCompile Include="CudaMex\AddImageWith.cpp" />
     <ClCompile Include="CudaMex\ApplyPolyTransformation.cpp" />
-    <ClCompile Include="CudaMex\CalculateMinMax.cpp" />
     <ClCompile Include="CudaMex\ContrastEnhancement.cpp" />
     <ClCompile Include="CudaMex\CudaMex.cpp" />
     <ClCompile Include="CudaMex\GaussianFilter.cpp" />
     <ClCompile Include="CudaMex\Histogram.cpp" />
     <ClCompile Include="CudaMex\ImagePow.cpp" />
-    <ClCompile Include="CudaMex\Mask.cpp" />
     <ClCompile Include="CudaMex\MaxFilterNeighborHood.cpp" />
     <ClCompile Include="CudaMex\MaxFilterEllipsoid.cpp" />
     <ClCompile Include="CudaMex\MaxFilterKernel.cpp" />
-    <ClCompile Include="CudaMex\MaximumIntensityProjection.cpp" />
     <ClCompile Include="CudaMex\MeanFilter.cpp" />
     <ClCompile Include="CudaMex\MedianFilter.cpp" />
     <ClCompile Include="CudaMex\MexCommand.cpp" />

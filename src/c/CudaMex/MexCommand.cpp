@@ -11,16 +11,13 @@ void MexCommand::init()
 	REGISTER_COMMAND(AddConstant);
 	REGISTER_COMMAND(AddImageWith);
  	REGISTER_COMMAND(ApplyPolyTransformation);
-// 	REGISTER_COMMAND(CalculateMinMax);
  	REGISTER_COMMAND(ContrastEnhancement);
  	REGISTER_COMMAND(GaussianFilter);
  	REGISTER_COMMAND(Histogram);
  	REGISTER_COMMAND(ImagePow);
-// 	REGISTER_COMMAND(Mask);
  	REGISTER_COMMAND(MaxFilterEllipsoid);
  	REGISTER_COMMAND(MaxFilterKernel);
  	REGISTER_COMMAND(MaxFilterNeighborhood);
-// 	REGISTER_COMMAND(MaximumIntensityProjection);
  	REGISTER_COMMAND(MeanFilter);
  	REGISTER_COMMAND(MedianFilter);
  	REGISTER_COMMAND(MinFilterEllipsoid);
