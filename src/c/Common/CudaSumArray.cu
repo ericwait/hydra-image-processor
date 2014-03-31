@@ -1,6 +1,6 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaSumArray(CudaImageContainer arrayIn, double* arrayOut, size_t n)
+__global__ void cudaSumArray(DevicePixelType* arrayIn, double* arrayOut, size_t n)
 {
 	//This algorithm was used from a this website:
 	// http://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_website/projects/reduction/doc/reduction.pdf
@@ -9,19 +9,17 @@ __global__ void cudaSumArray(CudaImageContainer arrayIn, double* arrayOut, size_
 	extern __shared__ double sdata[];
 
 	size_t tid = threadIdx.x;
-	size_t i = blockIdx.x*blockDim.x*2 + tid;
-	size_t gridSize = blockDim.x*2*gridDim.x;
-	sdata[tid] = 0;
+	size_t i = blockIdx.x*blockDim.x + tid;
+	size_t gridSize = blockDim.x*gridDim.x;
+	sdata[tid] = (double)(arrayIn[i]);
 
-	while (i<n)
+	do
 	{
-		sdata[tid] = arrayIn[i];
-
 		if (i+blockDim.x<n)
-			sdata[tid] += arrayIn[i+blockDim.x];
+			sdata[tid] += (double)(arrayIn[i+blockDim.x]);
 
 		i += gridSize;
-	}
+	}while (i<n);
 	__syncthreads();
 
 
@@ -31,23 +29,27 @@ __global__ void cudaSumArray(CudaImageContainer arrayIn, double* arrayOut, size_
 			sdata[tid] += sdata[tid + 1024];
 		__syncthreads();
 	}
+
 	if (blockDim.x >= 1024)
 	{
 		if (tid < 512) 
 			sdata[tid] += sdata[tid + 512];
 		__syncthreads();
 	}
+	
 	if (blockDim.x >= 512)
 	{
 		if (tid < 256) 
 			sdata[tid] += sdata[tid + 256];
 		__syncthreads();
 	}
+	
 	if (blockDim.x >= 256) {
 		if (tid < 128)
 			sdata[tid] += sdata[tid + 128];
 		__syncthreads(); 
 	}
+	
 	if (blockDim.x >= 128) 
 	{
 		if (tid < 64)

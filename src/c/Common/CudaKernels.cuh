@@ -57,7 +57,7 @@ __global__ void cudaPolyTransferFuncImage(CudaImageContainer imageIn, CudaImageC
 __global__ void cudaPow(CudaImageContainer imageIn1, CudaImageContainer imageOut, double power, DevicePixelType minValue,
 						DevicePixelType maxValue);
 
-__global__ void cudaSumArray(CudaImageContainer arrayIn, double* arrayOut, size_t n);
+__global__ void cudaSumArray(DevicePixelType* arrayIn, double* arrayOut, size_t n);
 
 __global__ void cudaThresholdImage(CudaImageContainer imageIn, CudaImageContainer imageOut, DevicePixelType threshold,
 								   DevicePixelType minValue, DevicePixelType maxValue);

@@ -33,7 +33,7 @@ void MexCommand::init()
  	REGISTER_COMMAND(OtsuThresholdFilter);
  	REGISTER_COMMAND(OtsuThesholdValue);
  	REGISTER_COMMAND(ReduceImage);
-// 	REGISTER_COMMAND(SumArray);
+ 	REGISTER_COMMAND(SumArray);
  	REGISTER_COMMAND(ThresholdFilter);
  }
  

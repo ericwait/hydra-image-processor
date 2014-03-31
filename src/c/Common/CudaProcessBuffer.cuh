@@ -162,7 +162,7 @@ public:
 	/*
 	*	Calculates the total sum of the buffer's data
 	*/
-	void sumArray(double& sum);
+	double sumArray(const DevicePixelType* imageIn, size_t n);
 
 	/*
 	*	Will reduce the size of the image by the factors passed in

@@ -776,9 +776,52 @@ DevicePixelType* CudaProcessBuffer::imagePow(const DevicePixelType* imageIn, Vec
 	return imOut;
 }
 
-void CudaProcessBuffer::sumArray(double& sum)
+double CudaProcessBuffer::sumArray(const DevicePixelType* imageIn, size_t n)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	double sum = 0.0;
+	double* deviceSum;
+	double* hostSum;
+	DevicePixelType* deviceImage;
+
+	unsigned int blocks = deviceProp.multiProcessorCount;
+	unsigned int threads = deviceProp.maxThreadsPerBlock;
+
+	Vec<size_t> maxDeviceDims(1,1,1);
+
+	maxDeviceDims.x = (n < sizeof(DevicePixelType)*deviceProp.totalGlobalMem*MAX_MEM_AVAIL) ? (n) :
+		((size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL/sizeof(DevicePixelType)));
+
+	HANDLE_ERROR(cudaMalloc((void**)&deviceImage,sizeof(DevicePixelType)*maxDeviceDims.x));
+
+	HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*blocks));
+	hostSum = new double[blocks];
+
+	for (int i=0; i<ceil((double)n/maxDeviceDims.x); ++i)
+	{
+		const DevicePixelType* imStart = imageIn + i*maxDeviceDims.x;
+		size_t numValues = ((i+1)*maxDeviceDims.x < n) ? (maxDeviceDims.x) : (n-i*maxDeviceDims.x);
+
+		HANDLE_ERROR(cudaMemcpy(deviceImage,imStart,sizeof(DevicePixelType)*numValues,cudaMemcpyHostToDevice));
+
+		cudaSumArray<<<blocks,threads,sizeof(double)*threads>>>(deviceImage,deviceSum,numValues);
+#ifdef _DEBUG
+		cudaThreadSynchronize();
+		gpuErrchk( cudaPeekAtLastError() );
+#endif // _DEBUG
+		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*blocks,cudaMemcpyDeviceToHost));
+
+		for (unsigned int i=0; i<blocks; ++i)
+		{
+			sum += hostSum[i];
+		}
+	}
+
+	HANDLE_ERROR(cudaFree(deviceSum));
+	HANDLE_ERROR(cudaFree(deviceImage));
+
+	delete[] hostSum;
+
+	return sum;
 }
 
 DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> reductions,
