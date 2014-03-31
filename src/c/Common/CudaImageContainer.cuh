@@ -52,11 +52,11 @@ public:
 
 	const DevicePixelType* getConstImagePointer() const {return image;}
 
-	DevicePixelType* getImagePointer(){return image;}
-
 	int getDeviceNumber() const {return device;}
 
 	DevicePixelType* getDeviceImagePointer(){return image;}
+
+	__device__ DevicePixelType* getImagePointer(){return image;}
 
 	__device__ DevicePixelType& operator[]( DeviceVec<size_t> coordinate )
 	{
