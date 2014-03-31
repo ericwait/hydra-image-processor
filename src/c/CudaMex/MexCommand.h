@@ -7,8 +7,6 @@
 
 #define REGISTER_COMMAND(cmd) {MexCommand::addCommand(#cmd,(MexCommand*)new cmd());}
 
-typedef unsigned char HostPixelType;
-
 class MexCommand
 {
 public:
@@ -236,17 +234,17 @@ virtual std::string printHelp();
 virtual std::string printHelp();
  };
  
-// class NormalizedCovariance : MexCommand
-// {
-// public:
-// 	NormalizedCovariance(){}
-// 	virtual ~NormalizedCovariance(){}
-// 
-// 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
-// 	virtual std::string printUsage();
-//virtual std::string printHelp();
-// };
+class NormalizedCovariance : MexCommand
+{
+public:
+	NormalizedCovariance(){}
+	virtual ~NormalizedCovariance(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+virtual std::string printHelp();
+};
 
 class NormalizedHistogram : MexCommand
 {

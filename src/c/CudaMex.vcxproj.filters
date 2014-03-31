@@ -105,9 +105,6 @@
     <ClCompile Include="Common\CHelpers.cpp">
       <Filter>Source Files\HelperFiles</Filter>
     </ClCompile>
-    <ClCompile Include="Common\ImageContainer.cpp">
-      <Filter>Source Files\HelperFiles</Filter>
-    </ClCompile>
     <ClCompile Include="CudaMex\MaxFilterKernel.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
@@ -223,9 +220,6 @@
       <Filter>Header Files\HelperFiles</Filter>
     </ClInclude>
     <ClInclude Include="Common\VecFuncs.h">
-      <Filter>Header Files\HelperFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\ImageContainer.h">
       <Filter>Header Files\HelperFiles</Filter>
     </ClInclude>
     <ClInclude Include="Common\CudaImageContainer.cuh">

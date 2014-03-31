@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common\CHelpers.cpp" />
-    <ClCompile Include="Common\ImageContainer.cpp" />
     <ClCompile Include="CudaMex\AddConstant.cpp" />
     <ClCompile Include="CudaMex\AddImageWith.cpp" />
     <ClCompile Include="CudaMex\ApplyPolyTransformation.cpp" />
@@ -216,9 +215,6 @@
     </ClInclude>
     <ClInclude Include="Common\Defines.h" />
     <ClInclude Include="Common\ImageChunk.cuh" />
-    <ClInclude Include="Common\ImageContainer.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="Common\Vec.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>

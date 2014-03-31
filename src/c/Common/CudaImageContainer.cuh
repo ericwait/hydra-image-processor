@@ -6,7 +6,6 @@
 #include "Vec.h"
 #include <string>
 #include "CudaUtilities.cuh"
-#include "ImageContainer.h"
 
 typedef unsigned char DevicePixelType;
 
@@ -27,14 +26,6 @@ public:
 		imageDims = dims;
 		maxImageDims = dims;
 		HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(DevicePixelType)*dims.product()));
-	}
-
-	CudaImageContainer(const ImageContainer* image)
-	{
-		defaults();
-		image = NULL;
-		maxImageDims = image->getDims();
-		loadImage(image->getConstMemoryPointer(),image->getDims());
 	}
 
 	~CudaImageContainer()
