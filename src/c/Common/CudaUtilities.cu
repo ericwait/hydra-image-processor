@@ -2,11 +2,11 @@
 
 void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads)
 {
-	if (dims.z==1)
+	if (dims.z<=1)
 	{
-		if (dims.y==1)
+		if (dims.y<=1)
 		{
-			if ((int)dims.x<prop.maxThreadsPerBlock)
+			if (dims.x<(size_t)prop.maxThreadsPerBlock)
 			{
 				threads.x = (unsigned int)dims.x;
 				threads.y = 1;
@@ -22,14 +22,14 @@ void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &
 				threads.y = 1;
 				threads.z = 1;
 
-				blocks.x = (int)ceil((float)dims.x/prop.maxThreadsPerBlock);
+				blocks.x = (unsigned int)ceil((float)dims.x/prop.maxThreadsPerBlock);
 				blocks.y = 1;
 				blocks.z = 1;
 			}
 		}
 		else
 		{
-			if ((int)(dims.x*dims.y)<prop.maxThreadsPerBlock)
+			if (dims.x*dims.y<(size_t)prop.maxThreadsPerBlock)
 			{
 				threads.x = (unsigned int)dims.x;
 				threads.y = (unsigned int)dims.y;
@@ -41,21 +41,21 @@ void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &
 			} 
 			else
 			{
-				int dim = (int)sqrt((double)prop.maxThreadsPerBlock);
+				int dim = (unsigned int)sqrt((double)prop.maxThreadsPerBlock);
 
 				threads.x = dim;
 				threads.y = dim;
 				threads.z = 1;
 
-				blocks.x = (int)ceil((float)dims.x/dim);
-				blocks.y = (int)ceil((float)dims.y/dim);
+				blocks.x = (unsigned int)ceil((float)dims.x/dim);
+				blocks.y = (unsigned int)ceil((float)dims.y/dim);
 				blocks.z = 1;
 			}
 		}
 	}
 	else
 	{
-		if((int)(dims.x*dims.y*dims.z)<prop.maxThreadsPerBlock)
+		if(dims.x*dims.y*dims.z<(size_t)prop.maxThreadsPerBlock)
 		{
 			threads.x = (unsigned int)dims.x;
 			threads.y = (unsigned int)dims.y;
@@ -67,16 +67,16 @@ void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &
 		}
 		else
 		{
-			int dim = (int)pow((float)prop.maxThreadsPerBlock,1/3.0f);
+			int dim = (unsigned int)pow((float)prop.maxThreadsPerBlock,1/3.0f);
 			float extra = (float)(prop.maxThreadsPerBlock-dim*dim*dim)/(dim*dim);
 
-			threads.x = dim + (int)extra;
+			threads.x = dim + (unsigned int)extra;
 			threads.y = dim;
 			threads.z = dim;
 
-			blocks.x = (size_t)ceil((float)dims.x/threads.x);
-			blocks.y = (size_t)ceil((float)dims.y/threads.y);
-			blocks.z = (size_t)ceil((float)dims.z/threads.z);
+			blocks.x = (unsigned int)ceil((float)dims.x/threads.x);
+			blocks.y = (unsigned int)ceil((float)dims.y/threads.y);
+			blocks.z = (unsigned int)ceil((float)dims.z/threads.z);
 		}
 	}
 }
