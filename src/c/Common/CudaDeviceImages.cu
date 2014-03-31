@@ -21,12 +21,18 @@ CudaDeviceImages::~CudaDeviceImages()
 
 CudaImageContainer* CudaDeviceImages::getCurBuffer()
 {
-	return deviceImages[curBuff];
+	if (curBuff<numBuffers)
+		return deviceImages[curBuff];
+
+	return NULL;
 }
 
 CudaImageContainer* CudaDeviceImages::getNextBuffer()
 {
-	return deviceImages[nextBuff];
+	if (nextBuff<numBuffers)
+		return deviceImages[nextBuff];
+	
+	return NULL;
 }
 
 CudaImageContainer* CudaDeviceImages::getThirdBuffer()
@@ -51,7 +57,8 @@ void CudaDeviceImages::setAllDims(Vec<size_t> dims)
 
 void CudaDeviceImages::setNextDims(Vec<size_t> dims)
 {
-	deviceImages[nextBuff]->setDims(dims);
+	if (nextBuff<numBuffers)
+		deviceImages[nextBuff]->setDims(dims);
 }
 
 void CudaDeviceImages::incrementBuffer()
