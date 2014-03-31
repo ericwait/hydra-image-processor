@@ -5,10 +5,11 @@
 #include "Vec.h"
 #undef DEVICE_VEC
 #include "Defines.h"
-#include "ImageContainer.h"
 #include "CudaImageContainerClean.cuh"
 #include <vector>
 #include "ImageChunk.cuh"
+
+typedef unsigned char HostPixelType;
 
 std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNeeded, size_t memAvailable, const cudaDeviceProp& prop,
 										 Vec<size_t> kernalDims=Vec<size_t>(0,0,0));
@@ -125,7 +126,7 @@ public:
 	*	returns (sum over all{(A-mu(A)) X (B-mu(B))}) / (sigma(A)Xsigma(B)
 	*	The images buffers will not change the original data 
 	*/
-	double normalizedCovariance(DevicePixelType* otherImage);
+	double normalizedCovariance(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims);
 
 	/*
 	*	Takes a histogram that is on the card and normalizes it
