@@ -276,7 +276,7 @@ void runMedianFilter(cudaDeviceProp& deviceProp, std::vector<ImageChunk>::iterat
 	blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y / threads.y);
 	blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z / threads.z);
 
-	size_t sharedMemorysize = neighborhood.product() * threads.x * threads.y * threads.z;
+	size_t sharedMemorysize = neighborhood.product()*sizeof(DevicePixelType) * threads.x * threads.y * threads.z;
 
 	cudaMedianFilter<<<blocks,threads,sharedMemorysize>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),neighborhood);
 	DEBUG_KERNEL_CHECK();
@@ -305,7 +305,7 @@ DevicePixelType* CudaProcessBuffer::addConstant(const DevicePixelType* imageIn, 
 {
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
 
-	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
 	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
 
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
@@ -336,7 +336,7 @@ DevicePixelType* CudaProcessBuffer::addImageWith(const DevicePixelType* imageIn1
 {
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
 
-	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
 	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
 
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,3,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
@@ -394,7 +394,7 @@ DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* i
 {
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
 
-	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
 	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
 
 	Vec<int> gaussIterations(0,0,0);
@@ -496,7 +496,7 @@ DevicePixelType* CudaProcessBuffer::maxFilter(const DevicePixelType* imageIn, Ve
 {
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
 
-	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
 	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
 
 	if (kernel==NULL)
@@ -589,7 +589,7 @@ DevicePixelType* CudaProcessBuffer::minFilter(const DevicePixelType* imageIn, Ve
 {
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
 
-	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
 	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
 
 	if (kernel==NULL)
@@ -631,7 +631,7 @@ DevicePixelType* CudaProcessBuffer::multiplyImage(const DevicePixelType* imageIn
 {
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
 
-	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
 	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
 
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
@@ -662,7 +662,7 @@ DevicePixelType* CudaProcessBuffer::multiplyImageWith(const DevicePixelType* ima
 {
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
 
-	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
 	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
 
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,3,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
@@ -776,7 +776,7 @@ DevicePixelType* CudaProcessBuffer::imagePow(const DevicePixelType* imageIn, Vec
 {
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
 
-	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
 	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
 
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
@@ -814,7 +814,7 @@ double CudaProcessBuffer::sumArray(const DevicePixelType* imageIn, size_t n)
 
 	Vec<size_t> maxDeviceDims(1,1,1);
 
-	maxDeviceDims.x = (n < sizeof(DevicePixelType)*deviceProp.totalGlobalMem*MAX_MEM_AVAIL) ? (n) :
+	maxDeviceDims.x = (n < (double)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL)/sizeof(DevicePixelType)) ? (n) :
 		((size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL/sizeof(DevicePixelType)));
 
 	HANDLE_ERROR(cudaMalloc((void**)&deviceImage,sizeof(DevicePixelType)*maxDeviceDims.x));
@@ -941,7 +941,7 @@ DevicePixelType* CudaProcessBuffer::thresholdFilter(const DevicePixelType* image
 {
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
 
-	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::min();
+	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
 	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
 
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);

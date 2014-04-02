@@ -12,7 +12,7 @@ __global__ void cudaHistogramCreate( CudaImageContainer imageIn, size_t* histogr
 
 	while (i < imageIn.getDeviceDims().product())
 	{
-		atomicAdd(&(tempHisto[imageIn[i]]), 1);
+		atomicAdd(&(tempHisto[(int)imageIn[i]]), 1);
 		i += stride;
 	}
 
