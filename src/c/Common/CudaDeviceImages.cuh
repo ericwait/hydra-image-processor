@@ -18,8 +18,8 @@ public:
 private:
 	CudaDeviceImages();
 	CudaImageContainerClean** deviceImages;
+	int getNextBuffNum();
 
 	int numBuffers;
 	int curBuff;
-	int nextBuff;
 };

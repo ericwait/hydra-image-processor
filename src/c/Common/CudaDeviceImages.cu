@@ -10,7 +10,6 @@ CudaDeviceImages::CudaDeviceImages(int numBuffers, Vec<size_t> maxDeviceDims, in
 
 	this->numBuffers = numBuffers;
 	curBuff = 0;
-	nextBuff = 1;
 }
 
 CudaDeviceImages::~CudaDeviceImages()
@@ -29,10 +28,10 @@ CudaImageContainer* CudaDeviceImages::getCurBuffer()
 
 CudaImageContainer* CudaDeviceImages::getNextBuffer()
 {
-	if (nextBuff<numBuffers)
-		return deviceImages[nextBuff];
-	
-	return NULL;
+	if (numBuffers<2)
+		return NULL;
+
+	return deviceImages[getNextBuffNum()];
 }
 
 CudaImageContainer* CudaDeviceImages::getThirdBuffer()
@@ -40,7 +39,7 @@ CudaImageContainer* CudaDeviceImages::getThirdBuffer()
 	if (numBuffers<3)
 		return NULL;
 
-	int trd = nextBuff + 1;
+	int trd = getNextBuffNum() + 1;
 
 	if (trd >= numBuffers)
 		trd = 0;
@@ -57,17 +56,14 @@ void CudaDeviceImages::setAllDims(Vec<size_t> dims)
 
 void CudaDeviceImages::setNextDims(Vec<size_t> dims)
 {
-	if (nextBuff<numBuffers)
-		deviceImages[nextBuff]->setDims(dims);
+	if (numBuffers>1)
+		deviceImages[getNextBuffNum()]->setDims(dims);
 }
 
 void CudaDeviceImages::incrementBuffer()
 {
 	if (++curBuff >= numBuffers)
 		curBuff = 0;
-
-	if (++nextBuff >= numBuffers)
-		nextBuff = 0;
 }
 
 bool CudaDeviceImages::setNthBuffCurent(int n)
@@ -87,4 +83,14 @@ bool CudaDeviceImages::setNthBuffCurent(int n)
 	curBuff = nth;
 
 	return true;
+}
+
+int CudaDeviceImages::getNextBuffNum()
+{
+	int next = curBuff + 1;
+
+	if (next>=numBuffers)
+		next = 0;
+
+	return next;
 }
