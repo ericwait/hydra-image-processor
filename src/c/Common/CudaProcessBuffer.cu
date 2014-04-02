@@ -238,6 +238,7 @@ void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iter
 	{
 		cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			Vec<size_t>(sizeconstKernelDims.x,1,1));
+		DEBUG_KERNEL_CHECK();
 		deviceImages.incrementBuffer();
 	}
 
@@ -245,6 +246,7 @@ void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iter
 	{
 		cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			Vec<size_t>(1,sizeconstKernelDims.y,1),	sizeconstKernelDims.x);
+		DEBUG_KERNEL_CHECK();
 		deviceImages.incrementBuffer();
 	}
 
@@ -252,6 +254,7 @@ void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iter
 	{
 		cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			Vec<size_t>(1,1,sizeconstKernelDims.z),	sizeconstKernelDims.y);
+		DEBUG_KERNEL_CHECK();
 		deviceImages.incrementBuffer();
 	}
 }
@@ -276,6 +279,7 @@ void runMedianFilter(cudaDeviceProp& deviceProp, std::vector<ImageChunk>::iterat
 	size_t sharedMemorysize = neighborhood.product() * threads.x * threads.y * threads.z;
 
 	cudaMedianFilter<<<blocks,threads,sharedMemorysize>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),neighborhood);
+	DEBUG_KERNEL_CHECK();
 	deviceImages.incrementBuffer();
 }
 
@@ -317,6 +321,7 @@ DevicePixelType* CudaProcessBuffer::addConstant(const DevicePixelType* imageIn, 
 
 		cudaAddFactor<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			additive,minVal,maxVal);
+		DEBUG_KERNEL_CHECK();
 
 		deviceImages.incrementBuffer();
 
@@ -348,6 +353,7 @@ DevicePixelType* CudaProcessBuffer::addImageWith(const DevicePixelType* imageIn1
 
 		cudaAddTwoImagesWithFactor<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			*(deviceImages.getThirdBuffer()),additive,minVal,maxVal);
+		DEBUG_KERNEL_CHECK();
 
 		curChunk->retriveROI(imOut,dims,deviceImages.getThirdBuffer());
 	}
@@ -373,6 +379,7 @@ DevicePixelType* CudaProcessBuffer::applyPolyTransformation(const DevicePixelTyp
 
 		cudaPolyTransferFuncImage<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			a,b,c,minValue,maxValue);
+		DEBUG_KERNEL_CHECK();
 
 		deviceImages.incrementBuffer();
 
@@ -414,6 +421,7 @@ DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* i
 
 		cudaAddTwoImagesWithFactor<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			*(deviceImages.getThirdBuffer()),-1.0,minVal,maxVal);
+		DEBUG_KERNEL_CHECK();
 
 		deviceImages.setNthBuffCurent(3);
 
@@ -444,6 +452,7 @@ size_t* CudaProcessBuffer::createHistogram(const DevicePixelType* imageIn, Vec<s
 		
 		cudaHistogramCreate<<<deviceProp.multiProcessorCount*2,arraySize,sizeof(size_t)*arraySize>>>(*(deviceImages.getCurBuffer()),
 			deviceHist);
+		DEBUG_KERNEL_CHECK();
 	}
 	HANDLE_ERROR(cudaMemcpy(hostHist,deviceHist,sizeof(size_t)*arraySize,cudaMemcpyDeviceToHost));
 	HANDLE_ERROR(cudaFree(deviceHist));
@@ -514,6 +523,7 @@ DevicePixelType* CudaProcessBuffer::maxFilter(const DevicePixelType* imageIn, Ve
 
 		cudaMaxFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),kernalDims,
 			minVal,maxVal);
+		DEBUG_KERNEL_CHECK();
 
 		deviceImages.incrementBuffer();
 
@@ -540,6 +550,7 @@ DevicePixelType* CudaProcessBuffer::meanFilter(const DevicePixelType* imageIn, V
 		deviceImages.setNextDims(curChunk->getFullChunkSize());
 		
 		cudaMeanFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),neighborhood);
+		DEBUG_KERNEL_CHECK();
 
 		deviceImages.incrementBuffer();
 		
@@ -605,6 +616,7 @@ DevicePixelType* CudaProcessBuffer::minFilter(const DevicePixelType* imageIn, Ve
 
 		cudaMinFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),kernalDims,
 			minVal,maxVal);
+		DEBUG_KERNEL_CHECK();
 
 		deviceImages.incrementBuffer();
 
@@ -635,6 +647,7 @@ DevicePixelType* CudaProcessBuffer::multiplyImage(const DevicePixelType* imageIn
 
 		cudaMultiplyImage<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			multiplier,minVal,maxVal);
+		DEBUG_KERNEL_CHECK();
 
 		deviceImages.incrementBuffer();
 
@@ -666,6 +679,7 @@ DevicePixelType* CudaProcessBuffer::multiplyImageWith(const DevicePixelType* ima
 
 		cudaMultiplyTwoImages<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			*(deviceImages.getThirdBuffer()),factor,minVal,maxVal);
+		DEBUG_KERNEL_CHECK();
 
 		curChunk->retriveROI(imOut,dims,deviceImages.getThirdBuffer());
 	}
@@ -724,9 +738,11 @@ double* CudaProcessBuffer::normalizeHistogram(const DevicePixelType* imageIn, Ve
 
 		cudaHistogramCreate<<<deviceProp.multiProcessorCount*2,arraySize,sizeof(size_t)*arraySize>>>(*(deviceImages.getCurBuffer()),
 			deviceHist);
+		DEBUG_KERNEL_CHECK();
 	}
 
 	cudaNormalizeHistogram<<<arraySize,1>>>(deviceHist,deviceHistNorm,dims);
+	DEBUG_KERNEL_CHECK();
 
 	HANDLE_ERROR(cudaMemcpy(hostHistNorm,deviceHistNorm,sizeof(double)*arraySize,cudaMemcpyDeviceToHost));
 	HANDLE_ERROR(cudaFree(deviceHist));
@@ -776,6 +792,7 @@ DevicePixelType* CudaProcessBuffer::imagePow(const DevicePixelType* imageIn, Vec
 
 		cudaPow<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			power,minVal,maxVal);
+		DEBUG_KERNEL_CHECK();
 
 		deviceImages.incrementBuffer();
 
@@ -813,10 +830,8 @@ double CudaProcessBuffer::sumArray(const DevicePixelType* imageIn, size_t n)
 		HANDLE_ERROR(cudaMemcpy(deviceImage,imStart,sizeof(DevicePixelType)*numValues,cudaMemcpyHostToDevice));
 
 		cudaSumArray<<<blocks,threads,sizeof(double)*threads>>>(deviceImage,deviceSum,numValues);
-#ifdef _DEBUG
-		cudaThreadSynchronize();
-		gpuErrchk( cudaPeekAtLastError() );
-#endif // _DEBUG
+		DEBUG_KERNEL_CHECK();
+
 		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*blocks,cudaMemcpyDeviceToHost));
 
 		for (unsigned int i=0; i<blocks; ++i)
@@ -905,6 +920,7 @@ DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, 
  		cudaMedianImageReduction<<<blocks,threads,sharedMemorysize>>>(*deviceImageIn, *deviceImageOut, reductions);
 
 		//cudaMeanImageReduction<<<blocks,threads>>>(*deviceImageIn,*deviceImageOut,reductions);
+		DEBUG_KERNEL_CHECK();
 
 		reducedIt->retriveROI(reducedImage,reducedDims,deviceImageOut);
 		
@@ -941,6 +957,7 @@ DevicePixelType* CudaProcessBuffer::thresholdFilter(const DevicePixelType* image
 
 		cudaThresholdImage<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			thresh,minVal,maxVal);
+		DEBUG_KERNEL_CHECK();
 
 		deviceImages.incrementBuffer();
 

@@ -8,6 +8,12 @@
 #include <vector>
 
 
+#ifdef _DEBUG
+#define DEBUG_KERNEL_CHECK() { cudaThreadSynchronize(); gpuErrchk( cudaPeekAtLastError() ); }
+#else
+#define DEBUG_KERNEL_CHECK() {}
+#endif // _DEBUG
+
 static void HandleError( cudaError_t err, const char *file, int line ) 
 {
 	char* errorMessage = new char[255];
