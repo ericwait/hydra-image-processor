@@ -7,8 +7,6 @@
 #include <string>
 #include "CudaUtilities.cuh"
 
-typedef unsigned char DevicePixelType;
-
 class CudaImageContainer
 {
 public:
@@ -17,6 +15,7 @@ public:
 		defaults();
 		image = NULL;
 		maxImageDims = dims;
+		this->device = device;
 		loadImage(imageIn, dims);
 	}
 
@@ -25,6 +24,8 @@ public:
 		defaults();
 		imageDims = dims;
 		maxImageDims = dims;
+		this->device = device;
+		HANDLE_ERROR(cudaSetDevice(device));
 		HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(DevicePixelType)*dims.product()));
 	}
 
@@ -104,7 +105,11 @@ public:
 	}
 
 protected:
-	CudaImageContainer();
+	CudaImageContainer()
+	{
+		defaults();
+		image = NULL;
+	}
 
 	void defaults() 
 	{
@@ -116,4 +121,5 @@ protected:
 	Vec<size_t> maxImageDims;
 	Vec<size_t> imageDims;
 	DevicePixelType*	image;
+
 };

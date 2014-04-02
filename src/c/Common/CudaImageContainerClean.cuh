@@ -6,26 +6,28 @@ class CudaImageContainerClean : public CudaImageContainer
 {
 public:
 	CudaImageContainerClean(const DevicePixelType* imageIn, Vec<size_t> dims, int device=0) : CudaImageContainer(imageIn,dims,device){};
-	CudaImageContainerClean(Vec<size_t> dims, int device=0) : CudaImageContainer(dims,device){};
+
+	CudaImageContainerClean(Vec<size_t> dims, int device=0) : CudaImageContainer(dims, device){};
 
 	~CudaImageContainerClean()
 	{
 		if (image!=NULL)
 		{
-// 			try
-// 			{
+			HANDLE_ERROR(cudaSetDevice(device));
+			try
+			{
 				HANDLE_ERROR(cudaFree(image));
-// 			}
-// 			catch (char* err)
-// 			{
-// 				if (err!=NULL)
-// 					err[0] = 'e';
-// 			}
+			}
+			catch (char* err)
+			{
+				if (err!=NULL)
+					err[0] = 'e';
+			}
 			image = NULL;
 		}
 	}
 
-	CudaImageContainerClean(const CudaImageContainer& other)
+	CudaImageContainerClean(const CudaImageContainerClean& other)
 	{
 		device = other.getDeviceNumber();
 		imageDims = other.getDims();
@@ -39,6 +41,6 @@ public:
 			HANDLE_ERROR(cudaMemcpy(image,other.getConstImagePointer(),sizeof(DevicePixelType)*imageDims.product(),cudaMemcpyDeviceToDevice));
 		}
 	};
-private:
+protected:
 	CudaImageContainerClean() : CudaImageContainer(){};
 };
