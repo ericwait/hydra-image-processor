@@ -9,3 +9,6 @@
 
 #define mat_to_c(x) (x-1)
 #define c_to_mat(x) (x+1)
+
+typedef float HostPixelType;
+typedef HostPixelType DevicePixelType;

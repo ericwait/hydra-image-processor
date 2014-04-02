@@ -14,6 +14,7 @@
 #define DEBUG_KERNEL_CHECK() {}
 #endif // _DEBUG
 
+
 static void HandleError( cudaError_t err, const char *file, int line ) 
 {
 	char* errorMessage = new char[255];
@@ -22,7 +23,6 @@ static void HandleError( cudaError_t err, const char *file, int line )
 		sprintf_s(errorMessage, 255, "%s in %s at line %d\n", cudaGetErrorString( err ),	file, line );
 		throw(errorMessage);
 	}
-	delete[] errorMessage;
 }
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 

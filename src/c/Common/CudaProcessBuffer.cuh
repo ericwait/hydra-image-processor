@@ -9,8 +9,6 @@
 #include <vector>
 #include "ImageChunk.cuh"
 
-typedef unsigned char HostPixelType;
-
 std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNeeded, size_t memAvailable, const cudaDeviceProp& prop,
 										 Vec<size_t> kernalDims=Vec<size_t>(0,0,0));
 
