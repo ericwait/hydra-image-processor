@@ -16,13 +16,13 @@ __global__ void cudaMeanFilter( CudaImageContainer imageIn, CudaImageContainer i
 
 		DeviceVec<size_t> curCoordIm = coordinate - halfKernal;
 		curCoordIm.z = (coordinate.z<halfKernal.z) ? 0 : coordinate.z-halfKernal.z;
-		for (; curCoordIm.z<coordinate.z+halfKernal.z && curCoordIm.z<imageIn.getDeviceDims().z; ++curCoordIm.z)
+		for (; curCoordIm.z<=coordinate.z+halfKernal.z && curCoordIm.z<imageIn.getDeviceDims().z; ++curCoordIm.z)
 		{
 			curCoordIm.y = (coordinate.y<halfKernal.y) ? 0 : coordinate.y-halfKernal.y/2;
-			for (; curCoordIm.y<coordinate.y+halfKernal.y && curCoordIm.y<imageIn.getDeviceDims().y; ++curCoordIm.y)
+			for (; curCoordIm.y<=coordinate.y+halfKernal.y && curCoordIm.y<imageIn.getDeviceDims().y; ++curCoordIm.y)
 			{
 				curCoordIm.x = (coordinate.x<halfKernal.x) ? 0 : coordinate.x-halfKernal.x/2;
-				for (; curCoordIm.x<coordinate.x+halfKernal.x && curCoordIm.x<imageIn.getDeviceDims().x; ++curCoordIm.x)
+				for (; curCoordIm.x<=coordinate.x+halfKernal.x && curCoordIm.x<imageIn.getDeviceDims().x; ++curCoordIm.x)
 				{
 					val += imageIn[curCoordIm];
 					++kernelVolume;
@@ -30,8 +30,7 @@ __global__ void cudaMeanFilter( CudaImageContainer imageIn, CudaImageContainer i
 			}
 		}
 
-		//imageOut[coordinate] = val/kernelVolume;
-		imageOut[coordinate] = coordinate.y;
+		imageOut[coordinate] = val/kernelVolume;
 	}
 }
 
