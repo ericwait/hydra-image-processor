@@ -57,9 +57,6 @@
     <ClCompile Include="CudaMex\ImagePow.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MaxFilterNeighborHood.cpp">
-      <Filter>Source Files\MexFiles</Filter>
-    </ClCompile>
     <ClCompile Include="CudaMex\MeanFilter.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
@@ -70,9 +67,6 @@
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
     <ClCompile Include="CudaMex\MinFilterKernal.cpp">
-      <Filter>Source Files\MexFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="CudaMex\MinFilterNeighborhood.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
     <ClCompile Include="CudaMex\MultiplyImage.cpp">
@@ -112,6 +106,12 @@
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
     <ClCompile Include="CudaMex\MaxFilterEllipsoid.cpp">
+      <Filter>Source Files\MexFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="CudaMex\MaxFilterNeighborhood.cpp">
+      <Filter>Source Files\MexFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="CudaMex\MinFilterNeighborhood.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
   </ItemGroup>
@@ -219,25 +219,25 @@
     <ClInclude Include="Common\VecFuncs.h">
       <Filter>Header Files\HelperFiles</Filter>
     </ClInclude>
+    <ClInclude Include="Common\ImageChunk.cuh">
+      <Filter>Header Files\HelperFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaKernels.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaDeviceImages.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
     <ClInclude Include="Common\CudaImageContainer.cuh">
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
     <ClInclude Include="Common\CudaImageContainerClean.cuh">
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
-    <ClInclude Include="Common\CudaKernels.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
     <ClInclude Include="Common\CudaProcessBuffer.cuh">
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
     <ClInclude Include="Common\CudaUtilities.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\ImageChunk.cuh">
-      <Filter>Header Files\HelperFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaDeviceImages.cuh">
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
   </ItemGroup>
