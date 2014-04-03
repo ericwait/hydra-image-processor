@@ -267,14 +267,20 @@ void runMedianFilter(cudaDeviceProp& deviceProp, std::vector<ImageChunk>::iterat
 	double threadVolume = threads.x * threads.y * threads.z;
 	double newThreadVolume = (double)deviceProp.sharedMemPerBlock/(sizeof(DevicePixelType)*neighborhood.product());
 
-	double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
-	threads.x = (unsigned int)(threads.x / alpha);
-	threads.y = (unsigned int)(threads.y / alpha);
-	threads.z = (unsigned int)(threads.z / alpha);
+	if (newThreadVolume<threadVolume)
+	{
+		double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
+		threads.x = (unsigned int)(threads.x / alpha);
+		threads.y = (unsigned int)(threads.y / alpha);
+		threads.z = (unsigned int)(threads.z / alpha);
+		threads.x = (threads.x>0) ? (threads.x) : (1);
+		threads.y = (threads.y>0) ? (threads.y) : (1);
+		threads.z = (threads.z>0) ? (threads.z) : (1);
 
-	blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x / threads.x);
-	blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y / threads.y);
-	blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z / threads.z);
+		blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x / threads.x);
+		blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y / threads.y);
+		blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z / threads.z);
+	}
 
 	size_t sharedMemorysize = neighborhood.product()*sizeof(DevicePixelType) * threads.x * threads.y * threads.z;
 
@@ -468,6 +474,10 @@ DevicePixelType* CudaProcessBuffer::gaussianFilter(const DevicePixelType* imageI
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
 
 	Vec<int> gaussIterations(0,0,0);
+	sigmas.x = (dims.x==1) ? (0) : (sigmas.x);
+	sigmas.y = (dims.y==1) ? (0) : (sigmas.y);
+	sigmas.z = (dims.z==1) ? (0) : (sigmas.z);
+
 	Vec<size_t> sizeconstKernelDims = createGaussianKernel(sigmas,hostKernel,gaussIterations);
 	HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)*
 		(sizeconstKernelDims.x+sizeconstKernelDims.y+sizeconstKernelDims.z)));
@@ -905,24 +915,31 @@ DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, 
  		double threadVolume = threads.x * threads.y * threads.z;
  		double newThreadVolume = (double)deviceProp.sharedMemPerBlock/(sizeof(DevicePixelType)*reductions.product());
  
- 		double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
-		threads.x = (unsigned int)(threads.x / alpha);
-		threads.y = (unsigned int)(threads.y / alpha);
-		threads.z = (unsigned int)(threads.z / alpha);
-
-		if (threads.x*threads.y*threads.z>(unsigned int)deviceProp.maxThreadsPerBlock)
+		if (newThreadVolume<threadVolume)
 		{
-			unsigned int maxThreads = (unsigned int)pow(deviceProp.maxThreadsPerBlock,1.0/3.0);
-			threads.x = maxThreads;
-			threads.y = maxThreads;
-			threads.z = maxThreads;
+			double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
+			threads.x = (unsigned int)(threads.x / alpha);
+			threads.y = (unsigned int)(threads.y / alpha);
+			threads.z = (unsigned int)(threads.z / alpha);
+			threads.x = (threads.x>0) ? (threads.x) : (1);
+			threads.y = (threads.y>0) ? (threads.y) : (1);
+			threads.z = (threads.z>0) ? (threads.z) : (1);
+
+			if (threads.x*threads.y*threads.z>(unsigned int)deviceProp.maxThreadsPerBlock)
+			{
+				unsigned int maxThreads = (unsigned int)pow(deviceProp.maxThreadsPerBlock,1.0/3.0);
+				threads.x = maxThreads;
+				threads.y = maxThreads;
+				threads.z = maxThreads;
+			}
+
+
+			blocks.x = (unsigned int)ceil((double)reducedIt->getFullChunkSize().x / threads.x);
+			blocks.y = (unsigned int)ceil((double)reducedIt->getFullChunkSize().y / threads.y);
+			blocks.z = (unsigned int)ceil((double)reducedIt->getFullChunkSize().z / threads.z);
 		}
  
- 		blocks.x = (unsigned int)ceil((double)reducedIt->getFullChunkSize().x / threads.x);
- 		blocks.y = (unsigned int)ceil((double)reducedIt->getFullChunkSize().y / threads.y);
- 		blocks.z = (unsigned int)ceil((double)reducedIt->getFullChunkSize().z / threads.z);
- 
- 		size_t sharedMemorysize = reductions.product() * threads.x * threads.y * threads.z;
+ 		size_t sharedMemorysize = reductions.product()*sizeof(DevicePixelType) * threads.x * threads.y * threads.z;
  
  		cudaMedianImageReduction<<<blocks,threads,sharedMemorysize>>>(*deviceImageIn, *deviceImageOut, reductions);
 		DEBUG_KERNEL_CHECK();

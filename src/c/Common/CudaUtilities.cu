@@ -157,9 +157,9 @@ Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, Vec<int>& iter
 	kernelDims.y = (size_t)(3*sigma.y);
 	kernelDims.z = (size_t)(3*sigma.z);
 
-	kernelDims.x = kernelDims.x%2==0 ? kernelDims.x+1 : kernelDims.x;
-	kernelDims.y = kernelDims.y%2==0 ? kernelDims.y+1 : kernelDims.y;
-	kernelDims.z = kernelDims.z%2==0 ? kernelDims.z+1 : kernelDims.z;
+	kernelDims.x = (kernelDims.x%2==0) ? (kernelDims.x+1) : (kernelDims.x);
+	kernelDims.y = (kernelDims.y%2==0) ? (kernelDims.y+1) : (kernelDims.y);
+	kernelDims.z = (kernelDims.z%2==0) ? (kernelDims.z+1) : (kernelDims.z);
 
 	Vec<size_t> mid;
 	mid.x = kernelDims.x/2;
