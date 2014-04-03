@@ -513,7 +513,9 @@ DevicePixelType* CudaProcessBuffer::maxFilter(const DevicePixelType* imageIn, Ve
 
 	if (kernel==NULL)
 	{
+		kernalDims = kernalDims.clamp(Vec<size_t>(1,1,1),dims);
 		float* ones = new float[kernalDims.product()];
+		memset(ones,1,kernalDims.product());
 		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, ones, sizeof(float)*kernalDims.product()));
 		delete[] ones;
 	} 
@@ -610,7 +612,9 @@ DevicePixelType* CudaProcessBuffer::minFilter(const DevicePixelType* imageIn, Ve
 
 	if (kernel==NULL)
 	{
+		kernalDims = kernalDims.clamp(Vec<size_t>(1,1,1),dims);
 		float* ones = new float[kernalDims.product()];
+		memset(ones,1,kernalDims.product());
 		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, ones, sizeof(float)*kernalDims.product()));
 		delete[] ones;
 	} 
@@ -740,6 +744,9 @@ double* CudaProcessBuffer::normalizeHistogram(const DevicePixelType* imageIn, Ve
 
 	size_t* deviceHist;
 	double* deviceHistNorm;
+	
+	checkFreeMemory(sizeof(size_t)*arraySize+sizeof(double)*arraySize,device,true);
+
 	HANDLE_ERROR(cudaMalloc((void**)&deviceHist,sizeof(size_t)*arraySize));
 	HANDLE_ERROR(cudaMalloc((void**)&deviceHistNorm,sizeof(double)*arraySize));
 	HANDLE_ERROR(cudaMemset(deviceHist,0,sizeof(size_t)*arraySize));
@@ -774,7 +781,6 @@ DevicePixelType* CudaProcessBuffer::otsuThresholdFilter(const DevicePixelType* i
 
 	return thresholdFilter(imageIn,dims,(DevicePixelType)thresh,imageOut);
 }
-
 
 double CudaProcessBuffer::otsuThresholdValue(const DevicePixelType* imageIn, Vec<size_t> dims)
 {
@@ -833,8 +839,8 @@ double CudaProcessBuffer::sumArray(const DevicePixelType* imageIn, size_t n)
 	maxDeviceDims.x = (n < (double)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL)/sizeof(DevicePixelType)) ? (n) :
 		((size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL/sizeof(DevicePixelType)));
 
+	checkFreeMemory(sizeof(DevicePixelType)*maxDeviceDims.x+sizeof(double)*blocks,device,true);
 	HANDLE_ERROR(cudaMalloc((void**)&deviceImage,sizeof(DevicePixelType)*maxDeviceDims.x));
-
 	HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*blocks));
 	hostSum = new double[blocks];
 

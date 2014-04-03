@@ -26,6 +26,10 @@ static void HandleError( cudaError_t err, const char *file, int line )
 }
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
+size_t memoryAvailable(int device, size_t* totalOut=NULL);
+
+bool checkFreeMemory(size_t needed, int device, bool throws=false);
+
 // Beginning of GPU Architecture definitions
 inline int _ConvertSMVer2Cores(int major, int minor)
 {

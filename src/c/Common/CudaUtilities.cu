@@ -187,3 +187,31 @@ Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, Vec<int>& iter
 
 	return kernelDims;
 }
+
+size_t memoryAvailable(int device, size_t* totalOut/*=NULL*/)
+{
+	HANDLE_ERROR(cudaSetDevice(device));
+	size_t free, total;
+	HANDLE_ERROR(cudaMemGetInfo(&free,&total));
+
+	if (totalOut!=NULL)
+		*totalOut = total;
+
+	return free;
+}
+
+bool checkFreeMemory(size_t needed, int device, bool throws/*=false*/)
+{
+	size_t free = memoryAvailable(device);
+	if (needed>free)
+	{
+		if (throws)
+		{
+			char buff[255];
+			sprintf_s(buff,"Out of CUDA Memory!\nNeed: %d\nHave: %d\n",needed,free);
+			throw std::runtime_error(buff);
+		}
+		return false;
+	}
+	return true;
+}
