@@ -22,6 +22,7 @@ public:
 	CudaImageContainer(Vec<size_t> dims, int device=0)
 	{
 		defaults();
+		image = NULL;
 		imageDims = dims;
 		maxImageDims = dims;
 		this->device = device;
