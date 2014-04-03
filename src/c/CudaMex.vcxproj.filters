@@ -202,9 +202,6 @@
     <None Include="CudaMex\CudaMex.def">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Common\CudaDeviceImages.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CudaMex\MexCommand.h">
@@ -239,6 +236,9 @@
     </ClInclude>
     <ClInclude Include="Common\ImageChunk.cuh">
       <Filter>Header Files\HelperFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaDeviceImages.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
