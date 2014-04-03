@@ -918,8 +918,6 @@ DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, 
  		size_t sharedMemorysize = reductions.product() * threads.x * threads.y * threads.z;
  
  		cudaMedianImageReduction<<<blocks,threads,sharedMemorysize>>>(*deviceImageIn, *deviceImageOut, reductions);
-
-		//cudaMeanImageReduction<<<blocks,threads>>>(*deviceImageIn,*deviceImageOut,reductions);
 		DEBUG_KERNEL_CHECK();
 
 		reducedIt->retriveROI(reducedImage,reducedDims,deviceImageOut);
