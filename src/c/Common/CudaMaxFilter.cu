@@ -46,6 +46,9 @@ __global__ void cudaMaxFilter( CudaImageContainer imageIn, CudaImageContainer im
 			{
  				for (offset.x=0; startCoord.x+offset.x<imageOut.getDeviceDims().x && offset.x<kernelDims.x; ++offset.x)
  				{
+					if (cudaConstKernel[kernelDims.linearAddressAt(offset)]==0)
+						continue;
+
  					float temp = imageIn[startCoord+offset] * cudaConstKernel[kernelDims.linearAddressAt(offset)];
  					if (temp>localMaxVal)
 					{
