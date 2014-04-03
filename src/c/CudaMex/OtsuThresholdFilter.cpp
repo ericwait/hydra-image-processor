@@ -44,7 +44,7 @@ std::string OtsuThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, con
 
 std::string OtsuThresholdFilter::printUsage()
 {
-	return "imageOut = CudaMex('OtsuThresholdFilter',imageIn,[alpha],[device])";
+	return "imageOut = CudaMex('OtsuThresholdFilter',imageIn,[alpha],[device]);";
 }
 
 std::string OtsuThresholdFilter::printHelp()

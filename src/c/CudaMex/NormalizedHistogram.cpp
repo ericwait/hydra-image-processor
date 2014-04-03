@@ -46,7 +46,7 @@ std::string NormalizedHistogram::check( int nlhs, mxArray* plhs[], int nrhs, con
 
 std::string NormalizedHistogram::printUsage()
 {
-	return "histogram = CudaMex('NormalizedHistogram',imageIn,[device])";
+	return "histogram = CudaMex('NormalizedHistogram',imageIn,[device]);";
 }
 
 std::string NormalizedHistogram::printHelp()

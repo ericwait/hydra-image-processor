@@ -43,7 +43,7 @@ std::string MinFilterNeighborhood::check( int nlhs, mxArray* plhs[], int nrhs, c
 
 std::string MinFilterNeighborhood::printUsage()
 {
-	return "imageOut = CudaMex('MinFilterNeighborhood',imageIn,[neighborhoodX,neighborhoodY,neighborhoodZ],[device]);";
+	return "imageOut = CudaMex('MinFilterNeighborhood',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ],[device]);";
 }
 
 

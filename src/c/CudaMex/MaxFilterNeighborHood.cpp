@@ -43,7 +43,7 @@
  
  std::string MaxFilterNeighborhood::printUsage()
  {
- 	return "imageOut = CudaMex('MaxFilterNeighborhood',imageIn,[neighborhoodX,neighborhoodY,neighborhoodZ],[device]);";
+ 	return "imageOut = CudaMex('MaxFilterNeighborhood',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ],[device]);";
  }
 
 

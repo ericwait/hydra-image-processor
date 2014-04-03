@@ -41,7 +41,7 @@ std::string ThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const m
 
 std::string ThresholdFilter::printUsage()
 {
-	return "imageOut = CudaMex('ThresholdFilter',imageIn,threshold,[device])";
+	return "imageOut = CudaMex('ThresholdFilter',imageIn,threshold,[device]);";
 }
 
 std::string ThresholdFilter::printHelp()

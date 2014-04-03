@@ -38,7 +38,7 @@
  
  std::string OtsuThesholdValue::printUsage()
  {
- 	return "threshold = CudaMex('OtsuThesholdValue',imageIn,[device])";
+ 	return "threshold = CudaMex('OtsuThesholdValue',imageIn,[device]);";
  }
 
  std::string OtsuThesholdValue::printHelp()
