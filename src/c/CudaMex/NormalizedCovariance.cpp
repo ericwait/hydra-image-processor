@@ -9,7 +9,7 @@ void NormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, const m
 		device = mat_to_c((int)mxGetScalar(prhs[2]));
 
 	Vec<size_t> imageDims1, imageDims2;
-	HostPixelType* imageIn1, * imageIn2, * imageOut;
+	HostPixelType* imageIn1, * imageIn2;
 	CudaProcessBuffer cudaBuffer(device);
 	setupImagePointers(prhs[0],&imageIn1,&imageDims1);
 	setupImagePointers(prhs[1],&imageIn2,&imageDims2);
