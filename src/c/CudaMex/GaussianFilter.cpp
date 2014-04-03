@@ -5,8 +5,8 @@
  {
 	 int device = 0;
 
-	 if (nrhs>1)
-		 device = mat_to_c((int)mxGetScalar(prhs[1]));
+	 if (nrhs>3)
+		 device = mat_to_c((int)mxGetScalar(prhs[3]));
 
 	 Vec<size_t> imageDims;
 	 HostPixelType* imageIn, * imageOut;
