@@ -153,6 +153,26 @@ public:
 		return outVec;
 	}
 
+	DEVICE_PREFIX VEC_THIS_CLASS<T> saturate(VEC_THIS_CLASS<T> maxVal)
+	{
+		VEC_THIS_CLASS<T> outVec;
+		outVec.x = (x<maxVal.x) ? (x) : (maxVal.x);
+		outVec.y = (y<maxVal.y) ? (y) : (maxVal.y);
+		outVec.z = (z<maxVal.z) ? (z) : (maxVal.z);
+
+		return outVec;
+	}
+
+	DEVICE_PREFIX VEC_THIS_CLASS<T> clamp(VEC_THIS_CLASS<T> minVal, VEC_THIS_CLASS<T> maxVal)
+	{
+		VEC_THIS_CLASS<T> outVec;
+		outVec.x = (x<maxVal.x) ? ((x>minVal.x) ? (x) : (minVal.x)) : (maxVal.x);
+		outVec.y = (y<maxVal.y) ? ((x>minVal.y) ? (y) : (minVal.y)) : (maxVal.y);
+		outVec.z = (z<maxVal.z) ? ((x>minVal.z) ? (z) : (minVal.z)) : (maxVal.z);
+
+		return outVec;
+	}
+
 #define EXTERN_TYPE VEC_THIS_CLASS
 #include "VecFuncs.h"
 #undef EXTERN_TYPE

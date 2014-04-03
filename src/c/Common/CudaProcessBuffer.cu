@@ -397,6 +397,8 @@ DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* i
 	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
 	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
 
+	neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);
+
 	Vec<int> gaussIterations(0,0,0);
 	Vec<size_t> sizeconstKernelDims = createGaussianKernel(sigmas,hostKernel,gaussIterations);
 	HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)*
@@ -538,6 +540,8 @@ DevicePixelType* CudaProcessBuffer::meanFilter(const DevicePixelType* imageIn, V
 {
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
 
+	neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);
+
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,neighborhood);
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
@@ -564,6 +568,8 @@ DevicePixelType* CudaProcessBuffer::medianFilter(const DevicePixelType* imageIn,
 												 DevicePixelType** imageOut/*=NULL*/)
 {
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
+
+	neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);
 
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,neighborhood);
 
@@ -851,6 +857,7 @@ double CudaProcessBuffer::sumArray(const DevicePixelType* imageIn, size_t n)
 DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> reductions,
 												Vec<size_t>& reducedDims, DevicePixelType** imageOut/*=NULL*/)
 {
+	reductions = reductions.clamp(Vec<size_t>(1,1,1),dims);
 	orgImageDims = dims;
 	reducedDims = orgImageDims / reductions;
 	DevicePixelType* reducedImage;
@@ -967,5 +974,6 @@ DevicePixelType* CudaProcessBuffer::thresholdFilter(const DevicePixelType* image
 
 void CudaProcessBuffer::unmix(const DevicePixelType* image, Vec<size_t> neighborhood)
 {
+	//neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);
 	throw std::logic_error("The method or operation is not implemented.");
 }
