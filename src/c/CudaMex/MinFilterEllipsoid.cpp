@@ -48,12 +48,12 @@ std::string MinFilterEllipsoid::check( int nlhs, mxArray* plhs[], int nrhs, cons
 
 std::string MinFilterEllipsoid::printUsage()
 {
-	return "imageOut = CudaMex('MaxFilterEllipsoid',imageIn,[radiusX,radiusY,radiusZ],[device]);";
+	return "imageOut = CudaMex('MinFilterEllipsoid',imageIn,[radiusX,radiusY,radiusZ],[device]);";
 }
 
 std::string MinFilterEllipsoid::printHelp()
 {
-	std::string msg = "\tThis will set each pixel/voxel to the max value of an ellipsoidal neighborhood with the radii given.\n";
+	std::string msg = "\tThis will set each pixel/voxel to the min value of an ellipsoidal neighborhood with the radii given.\n";
 	msg += "\n";
 	return msg;
 }

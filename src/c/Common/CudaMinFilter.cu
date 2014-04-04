@@ -14,40 +14,27 @@ __global__ void cudaMinFilter( CudaImageContainer imageIn, CudaImageContainer im
 		DeviceVec<size_t> kernelDims = hostKernelDims;
 		DeviceVec<size_t> kernalOffset(0,0,0);
 
-		DeviceVec<int> tmp = DeviceVec<int>(coordinate) - DeviceVec<int>((kernelDims+1)/2);
+		DeviceVec<int> startLimit = DeviceVec<int>(coordinate) - DeviceVec<int>((kernelDims)/2);
+		DeviceVec<size_t> endLimit = coordinate + (kernelDims+1)/2;
+		DeviceVec<size_t> kernelStart(DeviceVec<int>::max(-startLimit,DeviceVec<int>(0,0,0)));
 
-		if (tmp.x<0)
+		startLimit = DeviceVec<int>::max(startLimit,DeviceVec<int>(0,0,0));
+		endLimit = DeviceVec<size_t>::min(DeviceVec<size_t>(endLimit),imageIn.getDeviceDims());
+
+		DeviceVec<size_t> imageStart(coordinate-(kernelDims/2)+kernelStart);
+		DeviceVec<size_t> iterationEnd(endLimit-DeviceVec<size_t>(startLimit));
+
+		DeviceVec<size_t> i(0,0,0);
+		for (i.z=0; i.z<iterationEnd.z; ++i.z)
 		{
-			kernalOffset.x = -1 * tmp.x;
-			tmp.x = 0;
-		}
-
-		if (tmp.y<0)
-		{
-			kernalOffset.y = -1 * tmp.y;
-			tmp.y = 0;
-		}
-
-		if (tmp.z<0)
-		{
-			kernalOffset.z = -1 * tmp.z;
-			tmp.z = 0;
-		}
-
-		DeviceVec<size_t> startCoord = tmp;
-
-		//find if the kernel will go off the edge of the image
-		DeviceVec<size_t> offset(0,0,0);
-		for (offset.z=0; startCoord.z+offset.z<imageOut.getDeviceDims().z && offset.z<kernelDims.z; ++offset.z)
-		{
-			for (offset.y=0; startCoord.y+offset.y<imageOut.getDeviceDims().y && offset.y<kernelDims.y; ++offset.y)
+			for (i.y=0; i.y<iterationEnd.y; ++i.y)
 			{
-				for (offset.x=0; startCoord.x+offset.x<imageOut.getDeviceDims().x && offset.x<kernelDims.x; ++offset.x)
+				for (i.x=0; i.x<iterationEnd.x; ++i.x)
 				{
-					if (cudaConstKernel[kernelDims.linearAddressAt(offset)]==0)
+					if (cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)]==0)
 						continue;
 
-					float temp = imageIn[startCoord+offset] * cudaConstKernel[kernelDims.linearAddressAt(offset)];
+					DevicePixelType temp = imageIn[imageStart+i] * cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)];
 					if (temp<localMinVal)
 					{
 						localMinVal = temp;

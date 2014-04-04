@@ -8,14 +8,14 @@
 const double MAX_MEM_AVAIL = 0.95;
 
 std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNeeded, size_t memAvailable, const cudaDeviceProp& prop,
-										 Vec<size_t> kernalDims/*=Vec<size_t>(0,0,0)*/)
+										 Vec<size_t> kernelDims/*=Vec<size_t>(0,0,0)*/)
 {
 	size_t numVoxels = (size_t)(memAvailable / (sizeof(HostPixelType)*numBuffersNeeded));
 
 	Vec<size_t> overlapVolume;
-	overlapVolume.x = kernalDims.x * imageDims.y * imageDims.z;
-	overlapVolume.y = imageDims.x * kernalDims.y * imageDims.z;
-	overlapVolume.z = imageDims.x * imageDims.y * kernalDims.z;
+	overlapVolume.x = kernelDims.x * imageDims.y * imageDims.z;
+	overlapVolume.y = imageDims.x * kernelDims.y * imageDims.z;
+	overlapVolume.z = imageDims.x * imageDims.y * kernelDims.z;
 
 	Vec<size_t> deviceDims(0,0,0);
 
@@ -113,14 +113,14 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 		}
 	}
 
-	return calculateChunking(imageDims, deviceDims, prop, kernalDims);
+	return calculateChunking(imageDims, deviceDims, prop, kernelDims);
 }
 
 std::vector<ImageChunk> calculateChunking(Vec<size_t> orgImageDims, Vec<size_t> deviceDims, const cudaDeviceProp& prop,
-										  Vec<size_t> kernalDims/*=Vec<size_t>(0,0,0)*/)
+										  Vec<size_t> kernelDims/*=Vec<size_t>(0,0,0)*/)
 {
 	std::vector<ImageChunk> localChunks;
-	Vec<size_t> margin((kernalDims + 1)/2); //integer round
+	Vec<size_t> margin((kernelDims + 1)/2); //integer round
 	Vec<size_t> chunkDelta(deviceDims-margin*2);
 	Vec<size_t> numChunks(1,1,1);
 
@@ -503,7 +503,7 @@ DevicePixelType* CudaProcessBuffer::gaussianFilter(const DevicePixelType* imageI
 	return imOut;
 }
 
-DevicePixelType* CudaProcessBuffer::maxFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernalDims, float* kernel/*=NULL*/,
+DevicePixelType* CudaProcessBuffer::maxFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/,
 						   DevicePixelType** imageOut/*=NULL*/)
 {
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
@@ -513,18 +513,20 @@ DevicePixelType* CudaProcessBuffer::maxFilter(const DevicePixelType* imageIn, Ve
 
 	if (kernel==NULL)
 	{
-		kernalDims = kernalDims.clamp(Vec<size_t>(1,1,1),dims);
-		float* ones = new float[kernalDims.product()];
-		memset(ones,1,kernalDims.product());
-		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, ones, sizeof(float)*kernalDims.product()));
+		kernelDims = kernelDims.clamp(Vec<size_t>(1,1,1),dims);
+		float* ones = new float[kernelDims.product()];
+		for (int i=0; i<kernelDims.product(); ++i)
+			ones[i] = 1.0f;
+
+		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, ones, sizeof(float)*kernelDims.product()));
 		delete[] ones;
 	} 
 	else
 	{
-		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, kernel, sizeof(float)*kernalDims.product()));
+		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, kernel, sizeof(float)*kernelDims.product()));
 	}
 
-	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,kernalDims);
+	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,kernelDims);
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
@@ -535,7 +537,7 @@ DevicePixelType* CudaProcessBuffer::maxFilter(const DevicePixelType* imageIn, Ve
 		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
 		deviceImages.setNextDims(curChunk->getFullChunkSize());
 
-		cudaMaxFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),kernalDims,
+		cudaMaxFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),kernelDims,
 			minVal,maxVal);
 		DEBUG_KERNEL_CHECK();
 
@@ -602,7 +604,7 @@ DevicePixelType* CudaProcessBuffer::medianFilter(const DevicePixelType* imageIn,
 	return imOut;
 }
 
-DevicePixelType* CudaProcessBuffer::minFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernalDims, float* kernel/*=NULL*/,
+DevicePixelType* CudaProcessBuffer::minFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/,
 											  DevicePixelType** imageOut/*=NULL*/)
 {
 	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
@@ -612,18 +614,20 @@ DevicePixelType* CudaProcessBuffer::minFilter(const DevicePixelType* imageIn, Ve
 
 	if (kernel==NULL)
 	{
-		kernalDims = kernalDims.clamp(Vec<size_t>(1,1,1),dims);
-		float* ones = new float[kernalDims.product()];
-		memset(ones,1,kernalDims.product());
-		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, ones, sizeof(float)*kernalDims.product()));
+		kernelDims = kernelDims.clamp(Vec<size_t>(1,1,1),dims);
+		float* ones = new float[kernelDims.product()];
+		for (int i=0; i<kernelDims.product(); ++i)
+			ones[i] = 1.0f;
+
+		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, ones, sizeof(float)*kernelDims.product()));
 		delete[] ones;
 	} 
 	else
 	{
-		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, kernel, sizeof(float)*kernalDims.product()));
+		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, kernel, sizeof(float)*kernelDims.product()));
 	}
 
-	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,kernalDims);
+	std::vector<ImageChunk> chunks = calculateBuffers(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,kernelDims);
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
@@ -634,7 +638,7 @@ DevicePixelType* CudaProcessBuffer::minFilter(const DevicePixelType* imageIn, Ve
 		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
 		deviceImages.setNextDims(curChunk->getFullChunkSize());
 
-		cudaMinFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),kernalDims,
+		cudaMinFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),kernelDims,
 			minVal,maxVal);
 		DEBUG_KERNEL_CHECK();
 
