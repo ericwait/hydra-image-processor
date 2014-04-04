@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
  
- void MeanFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ void MexMeanFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
 	 int device = 0;
 
@@ -19,7 +19,7 @@
 	cudaBuffer.meanFilter(imageIn,imageDims,neighborhood,&imageOut);
  }
  
- std::string MeanFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ std::string MexMeanFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
  	if (nrhs<2 || nrhs>3)
  		return "Incorrect number of inputs!";
@@ -41,12 +41,12 @@
  	return "";
  }
  
- std::string MeanFilter::printUsage()
+ std::string MexMeanFilter::printUsage()
  {
  	return "imageOut = CudaMex('MeanFilter',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ],[device]);";
  }
 
- std::string MeanFilter::printHelp()
+ std::string MexMeanFilter::printHelp()
  {
 	 std::string msg = "\tNeighborhoodX, NeighborhoodY, and NeighborhoodZ are the directions and area to look for a given pixel.";
 	 msg += "\n";

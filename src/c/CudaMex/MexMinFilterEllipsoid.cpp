@@ -2,7 +2,7 @@
 #include "CudaProcessBuffer.cuh"
 #include "CHelpers.h"
 
-void MaxFilterEllipsoid::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexMinFilterEllipsoid::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	int device = 0;
 
@@ -19,12 +19,12 @@ void MaxFilterEllipsoid::execute( int nlhs, mxArray* plhs[], int nrhs, const mxA
 	Vec<size_t> radii((size_t)radiiD[0],(size_t)radiiD[1],(size_t)radiiD[2]);
 	Vec<size_t> kernDims;
 	float* circleKernel = createEllipsoidKernel(radii,kernDims);
-	cudaBuffer.maxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut);
+	cudaBuffer.minFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut);
 
 	delete[] circleKernel;
 }
 
-std::string MaxFilterEllipsoid::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexMinFilterEllipsoid::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -46,14 +46,14 @@ std::string MaxFilterEllipsoid::check( int nlhs, mxArray* plhs[], int nrhs, cons
 	return "";
 }
 
-std::string MaxFilterEllipsoid::printUsage()
+std::string MexMinFilterEllipsoid::printUsage()
 {
-	return "imageOut = CudaMex('MaxFilterEllipsoid',imageIn,[radiusX,radiusY,radiusZ],[device]);";
+	return "imageOut = CudaMex('MinFilterEllipsoid',imageIn,[radiusX,radiusY,radiusZ],[device]);";
 }
 
-std::string MaxFilterEllipsoid::printHelp()
+std::string MexMinFilterEllipsoid::printHelp()
 {
-	std::string msg = "\tThis will set each pixel/voxel to the max value of an ellipsoidal neighborhood with the radii given.\n";
+	std::string msg = "\tThis will set each pixel/voxel to the min value of an ellipsoidal neighborhood with the radii given.\n";
 	msg += "\n";
 	return msg;
 }

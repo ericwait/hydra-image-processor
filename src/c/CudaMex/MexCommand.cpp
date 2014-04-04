@@ -8,30 +8,30 @@ MexCommand::~MexCommand(){}
 void MexCommand::init()
 {
 // 	//TODO Put every class here!
-	REGISTER_COMMAND(AddConstant);
-	REGISTER_COMMAND(AddImageWith);
- 	REGISTER_COMMAND(ApplyPolyTransformation);
- 	REGISTER_COMMAND(ContrastEnhancement);
- 	REGISTER_COMMAND(GaussianFilter);
- 	REGISTER_COMMAND(Histogram);
- 	REGISTER_COMMAND(ImagePow);
- 	REGISTER_COMMAND(MaxFilterEllipsoid);
- 	REGISTER_COMMAND(MaxFilterKernel);
- 	REGISTER_COMMAND(MaxFilterNeighborhood);
- 	REGISTER_COMMAND(MeanFilter);
- 	REGISTER_COMMAND(MedianFilter);
- 	REGISTER_COMMAND(MinFilterEllipsoid);
- 	REGISTER_COMMAND(MinFilterKernel);
- 	REGISTER_COMMAND(MinFilterNeighborhood);
- 	REGISTER_COMMAND(MultiplyImage);
-	REGISTER_COMMAND(MultiplyTwoImages);
- 	REGISTER_COMMAND(NormalizedCovariance);
- 	REGISTER_COMMAND(NormalizedHistogram);
- 	REGISTER_COMMAND(OtsuThresholdFilter);
- 	REGISTER_COMMAND(OtsuThesholdValue);
- 	REGISTER_COMMAND(ReduceImage);
- 	REGISTER_COMMAND(SumArray);
- 	REGISTER_COMMAND(ThresholdFilter);
+	REGISTER_COMMAND(MexAddConstant);
+	REGISTER_COMMAND(MexAddImageWith);
+ 	REGISTER_COMMAND(MexApplyPolyTransformation);
+ 	REGISTER_COMMAND(MexContrastEnhancement);
+ 	REGISTER_COMMAND(MexGaussianFilter);
+ 	REGISTER_COMMAND(MexHistogram);
+ 	REGISTER_COMMAND(MexImagePow);
+ 	REGISTER_COMMAND(MexMaxFilterEllipsoid);
+ 	REGISTER_COMMAND(MexMaxFilterKernel);
+ 	REGISTER_COMMAND(MexMaxFilterNeighborhood);
+ 	REGISTER_COMMAND(MexMeanFilter);
+ 	REGISTER_COMMAND(MexMedianFilter);
+ 	REGISTER_COMMAND(MexMinFilterEllipsoid);
+ 	REGISTER_COMMAND(MexMinFilterKernel);
+ 	REGISTER_COMMAND(MexMinFilterNeighborhood);
+ 	REGISTER_COMMAND(MexMultiplyImage);
+	REGISTER_COMMAND(MexMultiplyTwoImages);
+ 	REGISTER_COMMAND(MexNormalizedCovariance);
+ 	REGISTER_COMMAND(MexNormalizedHistogram);
+ 	REGISTER_COMMAND(MexOtsuThresholdFilter);
+ 	REGISTER_COMMAND(MexOtsuThesholdValue);
+ 	REGISTER_COMMAND(MexReduceImage);
+ 	REGISTER_COMMAND(MexSumArray);
+ 	REGISTER_COMMAND(MexThresholdFilter);
  }
  
  MexCommand* MexCommand::getCommand(std::string cmd)

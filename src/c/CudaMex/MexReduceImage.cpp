@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
 
-void ReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	int device = 0;
 
@@ -35,7 +35,7 @@ void ReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	delete[] imageOut;
 }
 
-std::string ReduceImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexReduceImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -57,12 +57,12 @@ std::string ReduceImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArr
 	return "";
 }
 
-std::string ReduceImage::printUsage()
+std::string MexReduceImage::printUsage()
 {
 	return "imageOut = CudaMex('ReduceImage',imageIn,[reductionFactorX,reductionFactorY,reductionFactorZ],[device]);";
 }
 
-std::string ReduceImage::printHelp()
+std::string MexReduceImage::printHelp()
 {
 	std::string msg = "\treductionFactorX, reductionFactorY, and reductionFactorZ is the amount of\n";
 	msg += "\tpixels and direction to \"collapse\" into one pixel.";

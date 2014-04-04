@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
 
-void MedianFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexMedianFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	int device = 0;
 
@@ -19,7 +19,7 @@ void MedianFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* 
 	cudaBuffer.medianFilter(imageIn,imageDims,neighborhood,&imageOut);
 }
 
-std::string MedianFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexMedianFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -41,12 +41,12 @@ std::string MedianFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxAr
 	return "";
 }
 
-std::string MedianFilter::printUsage()
+std::string MexMedianFilter::printUsage()
 {
 	return "imageOut = CudaMex('MedianFilter',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ],[device]);";
 }
 
-std::string MedianFilter::printHelp()
+std::string MexMedianFilter::printHelp()
 {
 	std::string msg = "\tNeighborhoodX, NeighborhoodY, and NeighborhoodZ are the directions and area to look for a given pixel.";
 	msg += "\n";

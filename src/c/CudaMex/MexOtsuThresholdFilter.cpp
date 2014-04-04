@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
 
-void OtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexOtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	int device = 0;
 
@@ -20,7 +20,7 @@ void OtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mx
 	cudaBuffer.otsuThresholdFilter(imageIn,imageDims,alpha,&imageOut);
 }
 
-std::string OtsuThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexOtsuThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	if (nrhs<1 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -42,12 +42,12 @@ std::string OtsuThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, con
 	return "";
 }
 
-std::string OtsuThresholdFilter::printUsage()
+std::string MexOtsuThresholdFilter::printUsage()
 {
 	return "imageOut = CudaMex('OtsuThresholdFilter',imageIn,[alpha],[device]);";
 }
 
-std::string OtsuThresholdFilter::printHelp()
+std::string MexOtsuThresholdFilter::printHelp()
 {
 	std::string msg = "\tCalculates a two class threshold using Otsu's method.\n";
 	msg += "\tEach pixel/voxel >= the threshold is set to the max value of the image space.";

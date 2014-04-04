@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
  
- void AddImageWith::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ void MexAddImageWith::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
 	 int device = 0;
 
@@ -22,7 +22,7 @@
 	 cudaBuffer.addImageWith(imageIn1,imageIn2,imageDims1,additive,&imageOut);
  }
  
- std::string AddImageWith::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ std::string MexAddImageWith::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
  	if (nrhs<3 || nrhs>4)
  		return "Incorrect number of inputs!";
@@ -50,12 +50,12 @@
  	return "";
  }
  
- std::string AddImageWith::printUsage()
+ std::string MexAddImageWith::printUsage()
  {
 	 return "imageOut = CudaMex('AddImageWith',imageIn1,imageIn2,factor,[device]);";
  }
 
- std::string AddImageWith::printHelp()
+ std::string MexAddImageWith::printHelp()
  {
 	 std::string msg = "\tWhere factor is a multiplier on imageIn2.  Pixel = imageIn1 + factor*imageIn2.";
 	 msg += "\tfactor is used in place of a SubImageWith (e.g. factor = -1).\n";

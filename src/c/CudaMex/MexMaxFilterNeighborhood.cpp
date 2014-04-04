@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
  
- void MaxFilterNeighborhood::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ void MexMaxFilterNeighborhood::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
 	 int device = 0;
 
@@ -19,7 +19,7 @@
  	cudaBuffer.maxFilter(imageIn,imageDims,neighborhood,NULL,&imageOut);
  }
  
- std::string MaxFilterNeighborhood::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ std::string MexMaxFilterNeighborhood::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
  	if (nrhs<2 || nrhs>3)
  		return "Incorrect number of inputs!";
@@ -41,13 +41,13 @@
  	return "";
  }
  
- std::string MaxFilterNeighborhood::printUsage()
+ std::string MexMaxFilterNeighborhood::printUsage()
  {
  	return "imageOut = CudaMex('MaxFilterNeighborhood',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ],[device]);";
  }
 
 
- std::string MaxFilterNeighborhood::printHelp()
+ std::string MexMaxFilterNeighborhood::printHelp()
  {
 	 std::string msg = "\tThis will set each pixel/voxel to the max value within the neighborhood given.\n";
 	 msg += "\n";

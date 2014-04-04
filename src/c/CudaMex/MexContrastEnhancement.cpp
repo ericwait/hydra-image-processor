@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
 
-void ContrastEnhancement::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexContrastEnhancement::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	int device = 0;
 
@@ -22,7 +22,7 @@ void ContrastEnhancement::execute( int nlhs, mxArray* plhs[], int nrhs, const mx
 	cudaBuffer.contrastEnhancement(imageIn, imageDims, sigmas, neighborhood,&imageOut);
 }
 
-std::string ContrastEnhancement::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexContrastEnhancement::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	if (nrhs<3 || nrhs>4)
 		return "Incorrect number of inputs!";
@@ -48,12 +48,12 @@ std::string ContrastEnhancement::check( int nlhs, mxArray* plhs[], int nrhs, con
 	return "";
 }
 
-std::string ContrastEnhancement::printUsage()
+std::string MexContrastEnhancement::printUsage()
 {
 	return "imageOut = CudaMex('ContrastEnhancement',imageIn,[sigmaX,sigmaY,sigmaZ],[MedianNeighborhoodX,MedianNeighborhoodY,MedianNeighborhoodZ],[device]);";
 }
 
-std::string ContrastEnhancement::printHelp()
+std::string MexContrastEnhancement::printHelp()
 {
 	std::string msg = "\tContrastEnancement will do a high-pass background subtraction followed by a median smoothing.\n";
 	msg += "\tsigmaX, sigmaY, and sigmaZ correspond to the Gaussian smoothing kernel in those dimensions.\n";

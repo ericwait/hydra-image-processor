@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
 
-void NormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexNormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	int device = 0;
 
@@ -22,7 +22,7 @@ void NormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, const m
 	plhs[0] = mxCreateDoubleScalar(normCoVar);
 }
 
-std::string NormalizedCovariance::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexNormalizedCovariance::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	if (nrhs!=3)
 		return "Incorrect number of inputs!";
@@ -47,12 +47,12 @@ std::string NormalizedCovariance::check( int nlhs, mxArray* plhs[], int nrhs, co
 	return "";
 }
 
-std::string NormalizedCovariance::printUsage()
+std::string MexNormalizedCovariance::printUsage()
 {
 	return "normalizedCovariance = CudaMex('NormalizedCovariance',imageIn1,imageIn2,[device]);";
 }
 
-std::string NormalizedCovariance::printHelp()
+std::string MexNormalizedCovariance::printHelp()
 {
 	std::string msg = "\tThis will calculate how similar the images are to one another.\n";
 	msg += "\tThe return value will be between [-1,1].  Where 1 is exactly the same and -1 is exactly the opposite.\n";

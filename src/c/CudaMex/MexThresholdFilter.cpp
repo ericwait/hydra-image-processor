@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
 
-void ThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	int device = 0;
 
@@ -18,7 +18,7 @@ void ThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	cudaBuffer.thresholdFilter(imageIn,imageDims,(DevicePixelType)thresh,&imageOut);
 }
 
-std::string ThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -39,12 +39,12 @@ std::string ThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const m
 	return "";
 }
 
-std::string ThresholdFilter::printUsage()
+std::string MexThresholdFilter::printUsage()
 {
 	return "imageOut = CudaMex('ThresholdFilter',imageIn,threshold,[device]);";
 }
 
-std::string ThresholdFilter::printHelp()
+std::string MexThresholdFilter::printHelp()
 {
 	std::string msg = "\tMaps any value >= thresh to the max value of the image space.";
 	msg += "\tAll other values will be set at the minimum of the image space.\n";

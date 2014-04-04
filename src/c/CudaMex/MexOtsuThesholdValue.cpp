@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
  
- void OtsuThesholdValue::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ void MexOtsuThesholdValue::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
 	 int device = 0;
 
@@ -18,7 +18,7 @@
  	plhs[0] = mxCreateDoubleScalar(thresh);
  }
  
- std::string OtsuThesholdValue::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ std::string MexOtsuThesholdValue::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
  	if (nrhs<1 || nrhs>2)
  		return "Incorrect number of inputs!";
@@ -36,12 +36,12 @@
  	return "";
  }
  
- std::string OtsuThesholdValue::printUsage()
+ std::string MexOtsuThesholdValue::printUsage()
  {
  	return "threshold = CudaMex('OtsuThesholdValue',imageIn,[device]);";
  }
 
- std::string OtsuThesholdValue::printHelp()
+ std::string MexOtsuThesholdValue::printHelp()
  {
 	 std::string msg = "\tCalculates the optimal two class threshold using Otsu's method.\n";
 	 msg += "\n";

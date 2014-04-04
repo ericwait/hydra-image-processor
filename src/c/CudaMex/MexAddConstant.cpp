@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
 
-void AddConstant::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+void MexAddConstant::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
 	int device = 0;
 
@@ -18,7 +18,7 @@ void AddConstant::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* pr
 	cudaBuffer.addConstant(imageIn,imageDims,additive,&imageOut);
 }
 
-std::string AddConstant::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+std::string MexAddConstant::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
 	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -39,12 +39,12 @@ std::string AddConstant::check(int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	return "";
 }
 
-std::string AddConstant::printUsage()
+std::string MexAddConstant::printUsage()
 {
 	return "imageOut = CudaMex('AddConstant',imageIn,additive,[device]);";
 }
 
-std::string AddConstant::printHelp()
+std::string MexAddConstant::printHelp()
 {
 	std::string msg = "\tAdditive must be a double and will be floored if input is integer.\n";
 	msg += "\tImageOut will not roll over.  Values are clamped to the range of the image space.\n";

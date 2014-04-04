@@ -2,7 +2,7 @@
 #include "CudaProcessBuffer.cuh"
 #include "CHelpers.h"
 
-void MaxFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexMaxFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	int device = 0;
 
@@ -46,7 +46,7 @@ void MaxFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	delete[] kernel;
 }
 
-std::string MaxFilterKernel::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexMaxFilterKernel::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -68,12 +68,12 @@ std::string MaxFilterKernel::check( int nlhs, mxArray* plhs[], int nrhs, const m
 	return "";
 }
 
-std::string MaxFilterKernel::printUsage()
+std::string MexMaxFilterKernel::printUsage()
 {
 	return "imageOut = CudaMex('MaxFilterKernel',imageIn,kernel,[device]);";
 }
 
-std::string MaxFilterKernel::printHelp()
+std::string MexMaxFilterKernel::printHelp()
 {
 	std::string msg = "\tThis will set each pixel/voxel to the max value of the neighborhood defined by the given kernel.\n";
 	msg += "\n";

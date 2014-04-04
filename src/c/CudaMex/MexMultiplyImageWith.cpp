@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
 
-void MultiplyTwoImages::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexMultiplyTwoImages::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	int device = 0;
 
@@ -22,7 +22,7 @@ void MultiplyTwoImages::execute( int nlhs, mxArray* plhs[], int nrhs, const mxAr
 	cudaBuffer.multiplyImageWith(imageIn1,imageIn2,imageDims1,factor,&imageOut);
 }
 
-std::string MultiplyTwoImages::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexMultiplyTwoImages::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	if (nrhs<3 || nrhs>4)
 		return "Incorrect number of inputs!";
@@ -50,12 +50,12 @@ std::string MultiplyTwoImages::check( int nlhs, mxArray* plhs[], int nrhs, const
 	return "";
 }
 
-std::string MultiplyTwoImages::printUsage()
+std::string MexMultiplyTwoImages::printUsage()
 {
 	return "imageOut = CudaMex('MultiplyTwoImages',imageIn1,imageIn2,factor,[device]);";
 }
 
-std::string MultiplyTwoImages::printHelp()
+std::string MexMultiplyTwoImages::printHelp()
 {
 	std::string msg = "\tWhere factor is a multiplier.  Pixel = factor * imageIn1 * imageIn2.";
 	msg += "\tPixel value is floored at assignment only when integer.\n";

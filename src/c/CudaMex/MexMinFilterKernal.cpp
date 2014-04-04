@@ -2,7 +2,7 @@
 #include "CudaProcessBuffer.cuh"
 #include "CHelpers.h"
 
-void MinFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexMinFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	int device = 0;
 
@@ -46,7 +46,7 @@ void MinFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	delete[] kernel;
 }
 
-std::string MinFilterKernel::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexMinFilterKernel::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -68,12 +68,12 @@ std::string MinFilterKernel::check( int nlhs, mxArray* plhs[], int nrhs, const m
 	return "";
 }
 
-std::string MinFilterKernel::printUsage()
+std::string MexMinFilterKernel::printUsage()
 {
 	return "imageOut = CudaMex('MinFilterKernel',imageIn,kernel,[device]);";
 }
 
-std::string MinFilterKernel::printHelp()
+std::string MexMinFilterKernel::printHelp()
 {
 	std::string msg = "\tThis will set each pixel/voxel to the min value of the neighborhood defined by the given kernel.\n";
 	msg += "\n";

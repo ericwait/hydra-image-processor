@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
 
-void SumArray::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexSumArray::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	int device = 0;
 
@@ -18,7 +18,7 @@ void SumArray::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
 	plhs[0] = mxCreateDoubleScalar(sm);
 }
 
-std::string SumArray::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexSumArray::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	if (nrhs<1 || nrhs>2)
 		return "Incorrect number of inputs!";
@@ -36,12 +36,12 @@ std::string SumArray::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray*
 	return "";
 }
 
-std::string SumArray::printUsage()
+std::string MexSumArray::printUsage()
 {
 	return "sum = CudaMex('SumArray',imageIn,[device]);";
 }
 
-std::string SumArray::printHelp()
+std::string MexSumArray::printHelp()
 {
 	std::string msg = "\tSums up all the values in the given image.\n";
 	msg += "\n";

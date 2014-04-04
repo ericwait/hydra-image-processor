@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
 
-void ApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	int device = 0;
 
@@ -32,7 +32,7 @@ void ApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 	cudaBuffer.applyPolyTransformation(imageIn,imageDims,a,b,c,minVal,maxVal,&imageOut);
 }
 
-std::string ApplyPolyTransformation::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexApplyPolyTransformation::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	if (nrhs<4 && nrhs>7)
 		return "Incorrect number of inputs!";
@@ -53,12 +53,12 @@ std::string ApplyPolyTransformation::check( int nlhs, mxArray* plhs[], int nrhs,
 	return "";
 }
 
-std::string ApplyPolyTransformation::printUsage()
+std::string MexApplyPolyTransformation::printUsage()
 {
 	return "imageOut = CudaMex('ApplyPolyTransformation',imageIn,a,b,c,[min],[max],[device]);";
 }
 
-std::string ApplyPolyTransformation::printHelp()
+std::string MexApplyPolyTransformation::printHelp()
 {
 	std::string msg = "\ta, b, and c are the polynomial curve parameters for the transfer function which maps imageIn to imageOut.\n";
 	msg += "\tmin and max are optional clamping parameters that will clamp the output values between [min,max].\n";

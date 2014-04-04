@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
 
- void GaussianFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ void MexGaussianFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
 	 int device = 0;
 
@@ -19,7 +19,7 @@
 	 cudaBuffer.gaussianFilter(imageIn,imageDims,sigmas,&imageOut);
  }
  
- std::string GaussianFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ std::string MexGaussianFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
  	if (nrhs<2 || nrhs>3)
  		return "Incorrect number of inputs!";
@@ -41,13 +41,13 @@
  	return "";
  }
  
- std::string GaussianFilter::printUsage()
+ std::string MexGaussianFilter::printUsage()
  {
 	 return "imageOut = CudaMex('GaussianFilter',imageIn,[sigmaX,sigmaY,sigmaZ],[device]);";
 
  }
 
- std::string GaussianFilter::printHelp()
+ std::string MexGaussianFilter::printHelp()
  {
 	 std::string msg = "\tsigmaX, sigmaY, and sigmaZ are the parameters to set up the Gaussian smoothing kernel.\n";
 	 msg += "\n";

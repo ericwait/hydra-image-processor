@@ -26,8 +26,11 @@
  	if (!mxIsChar(prhs[0]))
  		mexErrMsgTxt(MexCommand::printUsageList().c_str());
  
- 	char cmd[255];
- 	mxGetString(prhs[0],cmd,255);
+ 	char cmdIn[255];
+ 	mxGetString(prhs[0],cmdIn,255);
+	char cmd[255];
+
+	sprintf_s(cmd,"Mex%s",cmdIn);
  
  	MexCommand* thisCommand = MexCommand::getCommand(cmd);
  	if (thisCommand==NULL)

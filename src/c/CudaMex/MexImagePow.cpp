@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
  
- void MultiplyImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ void MexImagePow::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
 	 int device = 0;
 
@@ -13,15 +13,14 @@
 	 CudaProcessBuffer cudaBuffer(device);
 	 setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
  
- 	double multiplier = mxGetScalar(prhs[1]);
- 
- 	cudaBuffer.multiplyImage(imageIn,imageDims,multiplier,&imageOut);
+ 	double p = mxGetScalar(prhs[1]);
+ 	cudaBuffer.imagePow(imageIn,imageDims,p,&imageOut);
  }
  
- std::string MultiplyImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ std::string MexImagePow::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
- 	if (nrhs<2 || nrhs>3)
- 		return "Incorrect number of inputs!";
+	 if (nrhs<2 || nrhs>3)
+		 return "Incorrect number of inputs!";
  
  	if (nlhs!=1)
  		return "Requires one output!";
@@ -34,19 +33,19 @@
  		return "Image can only be either 2D or 3D!";
  
  	if (!mxIsDouble(prhs[1]))
- 		return "Multiplier needs to be a single double!";
+ 		return "Power has to be a single double!";
  
  	return "";
  }
  
- std::string MultiplyImage::printUsage()
+ std::string MexImagePow::printUsage()
  {
- 	return "imageOut = CudaMex('MultiplyImage',imageIn,multiplier,[device]);";
+ 	return "imageOut = CudaMex('ImagePow',imageIn,power,[device]);";
  }
 
- std::string MultiplyImage::printHelp()
+ std::string MexImagePow::printHelp()
  {
-	 std::string msg = "\tMultiplier must be a double.\n";
+	 std::string msg = "\tPower must be a double and will be ceilinged if input is integer.\n";
 	 msg += "\tImageOut will not roll over.  Values are clamped to the range of the image space.\n";
 	 msg += "\tImageOut will have the same dimensions as imageIn.\n";
 	 msg += "\n";

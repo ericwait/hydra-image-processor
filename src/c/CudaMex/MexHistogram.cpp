@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
  
- void Histogram::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ void MexHistogram::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
 	 int device = 0;
 
@@ -26,7 +26,7 @@
  	delete[] hist;
  }
  
- std::string Histogram::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ std::string MexHistogram::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
  	if (nrhs<1 || nrhs>2)
  		return "Incorrect number of inputs!";
@@ -44,12 +44,12 @@
  	return "";
  }
  
- std::string Histogram::printUsage()
+ std::string MexHistogram::printUsage()
  {
  	return "histogram = CudaMex('Histogram',imageIn,[device]);";
  }
 
- std::string Histogram::printHelp()
+ std::string MexHistogram::printHelp()
  {
 	 std::string msg = "\tCreates a histogram array with 255 bins.\n";
 	 msg += "\n";

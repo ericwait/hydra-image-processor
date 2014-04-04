@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
 
-void NormalizedHistogram::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexNormalizedHistogram::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	int device = 0;
 
@@ -26,7 +26,7 @@ void NormalizedHistogram::execute( int nlhs, mxArray* plhs[], int nrhs, const mx
 	delete[] hist;
 }
 
-std::string NormalizedHistogram::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexNormalizedHistogram::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	if (nrhs<1 || nrhs>2)
 		return "Incorrect number of inputs!";
@@ -44,12 +44,12 @@ std::string NormalizedHistogram::check( int nlhs, mxArray* plhs[], int nrhs, con
 	return "";
 }
 
-std::string NormalizedHistogram::printUsage()
+std::string MexNormalizedHistogram::printUsage()
 {
 	return "histogram = CudaMex('NormalizedHistogram',imageIn,[device]);";
 }
 
-std::string NormalizedHistogram::printHelp()
+std::string MexNormalizedHistogram::printHelp()
 {
 	std::string msg = "\tCreates a histogram array with 255 bins\n";
 	msg += "\tEach bin is normalized over the total number of pixel/voxels.\n";
