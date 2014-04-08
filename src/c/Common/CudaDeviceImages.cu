@@ -62,7 +62,8 @@ void CudaDeviceImages::setNextDims(Vec<size_t> dims)
 
 void CudaDeviceImages::incrementBuffer()
 {
-	if (++curBuff >= numBuffers)
+	++curBuff;
+	if (curBuff >= numBuffers)
 		curBuff = 0;
 }
 
@@ -76,7 +77,7 @@ bool CudaDeviceImages::setNthBuffCurent(int n)
 	for (int i=1; i<n; ++i)
 	{
 		++nth;
-		if (nth > numBuffers)
+		if (nth >= numBuffers)
 			nth = 0;
 	}
 
