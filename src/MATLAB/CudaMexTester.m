@@ -9,7 +9,7 @@ additive = rand(1)*255;
 factor = 1.0;
 multiplier = 2.5;
 alpha = 1.0;
-a = 0.0;
+a = 0.1;
 b = 0.5;
 c = 0.2;
 sigmaX = 30;
@@ -17,7 +17,7 @@ sigmaY = 30;
 sigmaZ = 10;
 NeighborhoodX = 5;
 NeighborhoodY = 5;
-NeighborhoodZ = 5;
+NeighborhoodZ = 3;
 radiusX = 5;
 radiusY = 5;
 radiusZ = 3;
@@ -192,16 +192,4 @@ end
 clear mex
 end
 
-%% print out image
-function showIm(image,label)
-figure
-imagesc(max(image,[],3))
 
-set(gcf,'Units','normalized');
-set(gcf,'Position',[0 0 1 1]);
-
-colormap gray
-
-title(label)
-axis image
-end
