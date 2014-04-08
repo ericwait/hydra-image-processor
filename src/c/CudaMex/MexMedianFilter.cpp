@@ -10,7 +10,7 @@ void MexMedianFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 
 	Vec<size_t> imageDims;
 	HostPixelType* imageIn, * imageOut;
-	CudaProcessBuffer cudaBuffer;
+	CudaProcessBuffer cudaBuffer(device);
 	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
 	double* neighborhoodD = (double*)mxGetData(prhs[1]);
