@@ -3,10 +3,10 @@
 
 CudaDeviceImages::CudaDeviceImages(int numBuffers, Vec<size_t> maxDeviceDims, int device)
 {
-	deviceImages = new CudaImageContainerClean*[numBuffers];
+	deviceImages = new CudaImageContainerClean<DevicePixelType>*[numBuffers];
 
 	for (int i=0; i<numBuffers; ++i)
-		deviceImages[i] = new CudaImageContainerClean(maxDeviceDims,device);
+		deviceImages[i] = new CudaImageContainerClean<DevicePixelType>(maxDeviceDims,device);
 
 	this->numBuffers = numBuffers;
 	curBuff = 0;
@@ -18,7 +18,7 @@ CudaDeviceImages::~CudaDeviceImages()
 		delete deviceImages[i];
 }
 
-CudaImageContainer* CudaDeviceImages::getCurBuffer()
+CudaImageContainer<DevicePixelType>* CudaDeviceImages::getCurBuffer()
 {
 	if (curBuff<numBuffers)
 		return deviceImages[curBuff];
@@ -26,7 +26,7 @@ CudaImageContainer* CudaDeviceImages::getCurBuffer()
 	return NULL;
 }
 
-CudaImageContainer* CudaDeviceImages::getNextBuffer()
+CudaImageContainer<DevicePixelType>* CudaDeviceImages::getNextBuffer()
 {
 	if (numBuffers<2)
 		return NULL;
@@ -34,7 +34,7 @@ CudaImageContainer* CudaDeviceImages::getNextBuffer()
 	return deviceImages[getNextBuffNum()];
 }
 
-CudaImageContainer* CudaDeviceImages::getThirdBuffer()
+CudaImageContainer<DevicePixelType>* CudaDeviceImages::getThirdBuffer()
 {
 	if (numBuffers<3)
 		return NULL;

@@ -232,7 +232,7 @@ void CudaProcessBuffer::setMaxDeviceDims(std::vector<ImageChunk> &chunks, Vec<si
 }
 
 void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iterator& curChunk, CudaDeviceImages& deviceImages,
-						Vec<size_t> sizeconstKernelDims)
+						Vec<size_t> sizeconstKernelDims, int device)
 {
 // 	cudaDeviceProp props;
 // 	cudaGetDeviceProperties(&props,device);
@@ -945,8 +945,8 @@ DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, 
 		calcBlockThread(it->getFullChunkSize(),deviceProp,it->blocks,it->threads);
 	}
 
-	CudaImageContainerClean* deviceImageIn = new CudaImageContainerClean(orgChunks[0].getFullChunkSize(),device);
-	CudaImageContainerClean* deviceImageOut = new CudaImageContainerClean(reducedChunks[0].getFullChunkSize(),device);
+	CudaImageContainerClean<DevicePixelType>* deviceImageIn = new CudaImageContainerClean<DevicePixelType>(orgChunks[0].getFullChunkSize(),device);
+	CudaImageContainerClean<DevicePixelType>* deviceImageOut = new CudaImageContainerClean<DevicePixelType>(reducedChunks[0].getFullChunkSize(),device);
 
 	std::vector<ImageChunk>::iterator orgIt = orgChunks.begin();
 	std::vector<ImageChunk>::iterator reducedIt = reducedChunks.begin();

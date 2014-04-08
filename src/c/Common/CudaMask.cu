@@ -1,6 +1,6 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaMask( const CudaImageContainer imageIn1, const CudaImageContainer imageIn2, CudaImageContainer imageOut,
+__global__ void cudaMask( const CudaImageContainer<DevicePixelType> imageIn1, const CudaImageContainer<DevicePixelType> imageIn2, CudaImageContainer<DevicePixelType> imageOut,
 						 DevicePixelType threshold )
 {
 	DeviceVec<size_t> coordinate;

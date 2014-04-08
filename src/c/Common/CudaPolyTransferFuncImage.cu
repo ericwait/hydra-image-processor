@@ -1,6 +1,6 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaPolyTransferFuncImage( CudaImageContainer imageIn, CudaImageContainer imageOut, double a, double b, double c,
+__global__ void cudaPolyTransferFuncImage( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut, double a, double b, double c,
 										  DevicePixelType minPixelValue, DevicePixelType maxPixelValue )
 {
 	DeviceVec<size_t> coordinate;

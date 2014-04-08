@@ -1,6 +1,6 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaHistogramCreate( CudaImageContainer imageIn, size_t* histogram )
+__global__ void cudaHistogramCreate( CudaImageContainer<DevicePixelType> imageIn, size_t* histogram )
 {
 	//This code is modified from that of Sanders - Cuda by Example
 	__shared__ size_t tempHisto[NUM_BINS];

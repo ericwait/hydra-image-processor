@@ -1,6 +1,7 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaMeanImageReduction(CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostReductions)
+__global__ void cudaMeanImageReduction(CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut,
+									   Vec<size_t> hostReductions)
 {
 	DeviceVec<size_t> reductions = hostReductions;
 	DeviceVec<size_t> coordinateOut;

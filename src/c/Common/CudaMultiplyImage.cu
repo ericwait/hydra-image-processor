@@ -1,7 +1,7 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaMultiplyImage( CudaImageContainer imageIn, CudaImageContainer imageOut, double factor, DevicePixelType minValue,
-								  DevicePixelType maxValue )
+__global__ void cudaMultiplyImage( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut, double factor,
+								  DevicePixelType minValue, DevicePixelType maxValue )
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;

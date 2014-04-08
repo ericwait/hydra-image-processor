@@ -1,6 +1,7 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaGetROI( CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostStartPos, Vec<size_t> hostNewSize )
+__global__ void cudaGetROI( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut,
+						   Vec<size_t> hostStartPos, Vec<size_t> hostNewSize )
 {
 	DeviceVec<size_t> newSize = hostNewSize;
 	DeviceVec<size_t> startPos = hostStartPos;

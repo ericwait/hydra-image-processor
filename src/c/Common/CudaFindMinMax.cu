@@ -1,6 +1,6 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaFindMinMax( CudaImageContainer arrayIn, double* minArrayOut, double* maxArrayOut, size_t n )
+__global__ void cudaFindMinMax( CudaImageContainer<DevicePixelType> imageIn, double* minArrayOut, double* maxArrayOut, size_t n )
 {
 	extern __shared__ double maxData[];
 	extern __shared__ double minData[];
@@ -11,16 +11,16 @@ __global__ void cudaFindMinMax( CudaImageContainer arrayIn, double* minArrayOut,
 
 	while (i<n)
 	{
-		maxData[tid] = arrayIn[i];
-		minData[tid] = arrayIn[i];
+		maxData[tid] = imageIn[i];
+		minData[tid] = imageIn[i];
 
 		if (i+blockDim.x<n)
 		{
-			if(maxData[tid]<arrayIn[i+blockDim.x])
-				maxData[tid] = arrayIn[i+blockDim.x];
+			if(maxData[tid]<imageIn[i+blockDim.x])
+				maxData[tid] = imageIn[i+blockDim.x];
 
-			if(minData[tid]>arrayIn[i+blockDim.x])
-				minData[tid] = arrayIn[i+blockDim.x];
+			if(minData[tid]>imageIn[i+blockDim.x])
+				minData[tid] = imageIn[i+blockDim.x];
 		}
 
 		i += gridSize;

@@ -1,6 +1,7 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaMedianFilter( CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostKernelDims )
+__global__ void cudaMedianFilter( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut,
+								 Vec<size_t> hostKernelDims )
 {
 	extern __shared__ DevicePixelType vals[];
 	DeviceVec<size_t> kernelDims = hostKernelDims;

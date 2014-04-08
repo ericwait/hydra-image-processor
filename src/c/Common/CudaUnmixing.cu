@@ -1,7 +1,8 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaUnmixing( const CudaImageContainer imageIn1, const CudaImageContainer imageIn2, CudaImageContainer imageOut1,
-							 Vec<size_t> hostKernelDims, DevicePixelType minPixelValue, DevicePixelType maxPixelValue )
+__global__ void cudaUnmixing( const CudaImageContainer<DevicePixelType> imageIn1, const CudaImageContainer<DevicePixelType> imageIn2,
+							 CudaImageContainer<DevicePixelType> imageOut1, Vec<size_t> hostKernelDims, DevicePixelType minPixelValue,
+							 DevicePixelType maxPixelValue )
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;

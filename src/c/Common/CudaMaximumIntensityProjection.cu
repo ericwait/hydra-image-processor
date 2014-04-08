@@ -1,6 +1,6 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaMaximumIntensityProjection( CudaImageContainer imageIn, CudaImageContainer imageOut )
+__global__ void cudaMaximumIntensityProjection( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut )
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;

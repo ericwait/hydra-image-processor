@@ -1,7 +1,7 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaMultAddFilter( CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostKernelDims,
-								  size_t kernelOffset/*=0*/ )
+__global__ void cudaMultAddFilter( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut,
+								  Vec<size_t> hostKernelDims, size_t kernelOffset/*=0*/ )
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;

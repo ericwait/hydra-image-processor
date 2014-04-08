@@ -1,6 +1,7 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaMeanFilter( CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostKernelDims )
+__global__ void cudaMeanFilter( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut,
+							   Vec<size_t> hostKernelDims )
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;

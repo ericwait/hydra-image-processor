@@ -7,9 +7,9 @@ public:
 	CudaDeviceImages(int numBuffers, Vec<size_t> maxDeviceDims, int device);
 	~CudaDeviceImages();
 
-	CudaImageContainer* getCurBuffer();
-	CudaImageContainer* getNextBuffer();
-	CudaImageContainer* getThirdBuffer();
+	CudaImageContainer<DevicePixelType>* getCurBuffer();
+	CudaImageContainer<DevicePixelType>* getNextBuffer();
+	CudaImageContainer<DevicePixelType>* getThirdBuffer();
 	void incrementBuffer();
 	void setAllDims(Vec<size_t> dims);
 	void setNextDims(Vec<size_t> dims);
@@ -17,7 +17,7 @@ public:
 
 private:
 	CudaDeviceImages();
-	CudaImageContainerClean** deviceImages;
+	CudaImageContainerClean<DevicePixelType>** deviceImages;
 	int getNextBuffNum();
 
 	int numBuffers;

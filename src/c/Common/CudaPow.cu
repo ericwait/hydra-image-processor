@@ -1,6 +1,6 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaPow( CudaImageContainer imageIn1, CudaImageContainer imageOut, double power, DevicePixelType minValue,
+__global__ void cudaPow( CudaImageContainer<DevicePixelType> imageIn1, CudaImageContainer<DevicePixelType> imageOut, double power, DevicePixelType minValue,
 							  DevicePixelType maxValue)
 {
 	DeviceVec<size_t> coordinate;

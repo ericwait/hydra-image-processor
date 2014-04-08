@@ -1,6 +1,6 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaMinFilter( CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostKernelDims, DevicePixelType  minVal,
+__global__ void cudaMinFilter( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut, Vec<size_t> hostKernelDims, DevicePixelType minVal,
 							  DevicePixelType maxVal)
 {
 	DeviceVec<size_t> coordinate;
@@ -12,7 +12,6 @@ __global__ void cudaMinFilter( CudaImageContainer imageIn, CudaImageContainer im
 	{
 		DevicePixelType localMinVal = imageIn[coordinate];
 		DeviceVec<size_t> kernelDims = hostKernelDims;
-		DeviceVec<size_t> kernalOffset(0,0,0);
 
 		DeviceVec<int> startLimit = DeviceVec<int>(coordinate) - DeviceVec<int>((kernelDims)/2);
 		DeviceVec<size_t> endLimit = coordinate + (kernelDims+1)/2;

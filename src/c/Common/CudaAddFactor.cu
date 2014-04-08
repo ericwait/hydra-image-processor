@@ -1,6 +1,6 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaAddFactor( CudaImageContainer imageIn1, CudaImageContainer imageOut, double factor, DevicePixelType minValue,
+__global__ void cudaAddFactor( CudaImageContainer<DevicePixelType> imageIn1, CudaImageContainer<DevicePixelType> imageOut, double factor, DevicePixelType minValue,
 							  DevicePixelType maxValue )
 {
 	DeviceVec<size_t> coordinate;

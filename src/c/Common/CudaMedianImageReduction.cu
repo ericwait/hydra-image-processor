@@ -1,6 +1,6 @@
 #include "CudaKernels.cuh"
 
-__global__ void cudaMedianImageReduction( CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostReductions)
+__global__ void cudaMedianImageReduction( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut, Vec<size_t> hostReductions)
 {
 	extern __shared__ DevicePixelType vals[];
 	DeviceVec<size_t> reductions = hostReductions;

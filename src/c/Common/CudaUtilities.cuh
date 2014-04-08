@@ -14,6 +14,7 @@
 #define DEBUG_KERNEL_CHECK() {}
 #endif // _DEBUG
 
+__constant__ extern float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
 
 static void HandleError( cudaError_t err, const char *file, int line ) 
 {

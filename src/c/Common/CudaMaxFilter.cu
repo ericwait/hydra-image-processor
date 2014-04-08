@@ -2,7 +2,7 @@
 
 __constant__ float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
 
-__global__ void cudaMaxFilter( CudaImageContainer imageIn, CudaImageContainer imageOut, Vec<size_t> hostKernelDims, DevicePixelType  minVal,
+__global__ void cudaMaxFilter( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut, Vec<size_t> hostKernelDims, DevicePixelType minVal,
 							  DevicePixelType maxVal)
 {
 	DeviceVec<size_t> coordinate;
@@ -14,7 +14,6 @@ __global__ void cudaMaxFilter( CudaImageContainer imageIn, CudaImageContainer im
 	{
 		DevicePixelType localMaxVal = imageIn[coordinate];
 		DeviceVec<size_t> kernelDims = hostKernelDims;
-		DeviceVec<size_t> kernalOffset(0,0,0);
 
 		DeviceVec<int> startLimit = DeviceVec<int>(coordinate) - DeviceVec<int>((kernelDims)/2);
 		DeviceVec<size_t> endLimit = coordinate + (kernelDims+1)/2;

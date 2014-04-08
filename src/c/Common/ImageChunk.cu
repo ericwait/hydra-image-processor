@@ -1,7 +1,7 @@
 #include "ImageChunk.cuh"
 #include "cuda_runtime.h"
 
-bool ImageChunk::sendROI(const DevicePixelType* imageIn, Vec<size_t>orgImageDims, CudaImageContainer* deviceImage)
+bool ImageChunk::sendROI(const DevicePixelType* imageIn, Vec<size_t>orgImageDims, CudaImageContainer<DevicePixelType>* deviceImage)
 {
 	if (!deviceImage->setDims(getFullChunkSize()))
 		return false;
@@ -29,7 +29,7 @@ bool ImageChunk::sendROI(const DevicePixelType* imageIn, Vec<size_t>orgImageDims
 	return true;
 }
 
-void ImageChunk::retriveROI(DevicePixelType* outImage, Vec<size_t>dims, const CudaImageContainer* deviceImage)
+void ImageChunk::retriveROI(DevicePixelType* outImage, Vec<size_t>dims, const CudaImageContainer<DevicePixelType>* deviceImage)
 {
 	if (getFullChunkSize()==dims)
 	{
