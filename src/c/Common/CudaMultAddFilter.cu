@@ -13,32 +13,35 @@ __global__ void cudaMultAddFilter( CudaImageContainer imageIn, CudaImageContaine
 		double val = 0;
 		double kernFactor = 0;
 
+		DevicePixelType localMaxVal = imageIn[coordinate];
 		DeviceVec<size_t> kernelDims = hostKernelDims;
-		DeviceVec<size_t> kernelMidIdx = kernelDims/2;
-		DeviceVec<size_t> curCoordIm; 
-		DeviceVec<size_t> curCoordKrn;
 
-		//find if the kernel will go off the edge of the image
-		curCoordIm.z = (size_t) max(0,(int)coordinate.z-(int)kernelMidIdx.z);
-		curCoordKrn.z = ((int)coordinate.z-(int)kernelMidIdx.z>=0) ? (0) : (kernelMidIdx.z-coordinate.z);
-		for (; curCoordIm.z<imageIn.getDepth() && curCoordKrn.z<kernelDims.z; ++curCoordIm.z, ++curCoordKrn.z)
+		DeviceVec<int> startLimit = DeviceVec<int>(coordinate) - DeviceVec<int>((kernelDims)/2);
+		DeviceVec<size_t> endLimit = coordinate + (kernelDims+1)/2;
+		DeviceVec<size_t> kernelStart(DeviceVec<int>::max(-startLimit,DeviceVec<int>(0,0,0)));
+
+		startLimit = DeviceVec<int>::max(startLimit,DeviceVec<int>(0,0,0));
+		endLimit = DeviceVec<size_t>::min(DeviceVec<size_t>(endLimit),imageIn.getDeviceDims());
+
+		DeviceVec<size_t> imageStart(coordinate-(kernelDims/2)+kernelStart);
+		DeviceVec<size_t> iterationEnd(endLimit-DeviceVec<size_t>(startLimit));
+
+		DeviceVec<size_t> i(0,0,0);
+		for (i.z=0; i.z<iterationEnd.z; ++i.z)
 		{
-			curCoordIm.y = (size_t)max(0,(int)coordinate.y-(int)kernelMidIdx.y);
-			curCoordKrn.y = ((int)coordinate.y-(int)kernelMidIdx.y>=0) ? (0) : (kernelMidIdx.y-coordinate.y);
-			for (; curCoordIm.y<imageIn.getHeight() && curCoordKrn.y<kernelDims.y; ++curCoordIm.y, ++curCoordKrn.y)
+			for (i.y=0; i.y<iterationEnd.y; ++i.y)
 			{
-				curCoordIm.x = (size_t)max(0,(int)coordinate.x-(int)kernelMidIdx.x);
-				curCoordKrn.x = ((int)coordinate.x-(int)kernelMidIdx.x>=0) ? (0) : (kernelMidIdx.x-coordinate.x);		
-				for (; curCoordIm.x<imageIn.getWidth() && curCoordKrn.x<kernelDims.x; ++curCoordIm.x, ++curCoordKrn.x)
+				for (i.x=0; i.x<iterationEnd.x; ++i.x)
 				{
-					size_t kernIdx = kernelDims.linearAddressAt(curCoordKrn)+kernelOffset;
-					kernFactor += cudaConstKernel[kernIdx];
-					val += imageIn[curCoordIm] * cudaConstKernel[kernIdx];
+					float kernVal = cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)+kernelOffset];
+
+					kernFactor += kernVal;
+					val += (float)(imageIn[imageStart+i]) * kernVal;
 				}
 			}
 		}
 
-		imageOut[coordinate] = val/kernFactor;
+		imageOut[coordinate] = (DevicePixelType)(val/kernFactor);
 	}
 }
 

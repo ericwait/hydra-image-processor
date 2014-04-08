@@ -234,28 +234,64 @@ void CudaProcessBuffer::setMaxDeviceDims(std::vector<ImageChunk> &chunks, Vec<si
 void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iterator& curChunk, CudaDeviceImages& deviceImages,
 						Vec<size_t> sizeconstKernelDims)
 {
-	for (int x=0; x<gaussIterations.x; ++x)
+// 	cudaDeviceProp props;
+// 	cudaGetDeviceProperties(&props,device);
+// 	dim3 blocks, threads;
+
+	if (curChunk->getFullChunkSize().x>1)
 	{
-		cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
-			Vec<size_t>(sizeconstKernelDims.x,1,1));
-		DEBUG_KERNEL_CHECK();
-		deviceImages.incrementBuffer();
+// 		threads.x = MIN(props.maxThreadsPerBlock,curChunk->getFullChunkSize().x);
+// 		threads.y = MAX(1,threads.x/props.maxThreadsPerBlock);
+// 		threads.z = MAX(1,threads.x*threads.y/props.maxThreadsPerBlock);
+// 
+// 		blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x/threads.x);
+// 		blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y/threads.y);
+// 		blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z/threads.z);
+
+		for (int x=0; x<gaussIterations.x; ++x)
+		{
+			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),Vec<size_t>(sizeconstKernelDims.x,1,1));
+			DEBUG_KERNEL_CHECK();
+			deviceImages.incrementBuffer();
+		}
 	}
 
-	for (int y=0; y<gaussIterations.y; ++y)
+	if (curChunk->getFullChunkSize().y>1)
 	{
-		cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
-			Vec<size_t>(1,sizeconstKernelDims.y,1),	sizeconstKernelDims.x);
-		DEBUG_KERNEL_CHECK();
-		deviceImages.incrementBuffer();
+// 		threads.y = MIN(props.maxThreadsPerBlock,curChunk->getFullChunkSize().y);
+// 		threads.x = MAX(1,threads.y/props.maxThreadsPerBlock);
+// 		threads.z = MAX(1,threads.x*threads.y/props.maxThreadsPerBlock);
+// 
+// 		blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x/threads.x);
+// 		blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y/threads.y);
+// 		blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z/threads.z);
+
+		for (int y=0; y<gaussIterations.y; ++y)
+		{
+			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
+				Vec<size_t>(1,sizeconstKernelDims.y,1),	sizeconstKernelDims.x);
+			DEBUG_KERNEL_CHECK();
+			deviceImages.incrementBuffer();
+		}
 	}
 
-	for (int z=0; z<gaussIterations.z; ++z)
+	if (curChunk->getFullChunkSize().z>1)
 	{
-		cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
-			Vec<size_t>(1,1,sizeconstKernelDims.z),	sizeconstKernelDims.y);
-		DEBUG_KERNEL_CHECK();
-		deviceImages.incrementBuffer();
+// 		threads.z = MIN(props.maxThreadsPerBlock,curChunk->getFullChunkSize().z);
+// 		threads.x = MAX(1,threads.z/props.maxThreadsPerBlock);
+// 		threads.y = MAX(1,threads.x*threads.z/props.maxThreadsPerBlock);
+// 
+// 		blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x/threads.x);
+// 		blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y/threads.y);
+// 		blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z/threads.z);
+
+		for (int z=0; z<gaussIterations.z; ++z)
+		{
+			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
+				Vec<size_t>(1,1,sizeconstKernelDims.z),	sizeconstKernelDims.y+sizeconstKernelDims.x);
+			DEBUG_KERNEL_CHECK();
+			deviceImages.incrementBuffer();
+		}
 	}
 }
 
@@ -416,24 +452,24 @@ DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* i
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
 	CudaDeviceImages deviceImages(3,maxDeviceDims,device);
- 
+
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
 		deviceImages.setAllDims(curChunk->getFullChunkSize());
 
 		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
 
-		runGaussIterations(gaussIterations, curChunk, deviceImages, sizeconstKernelDims);
+		runGaussIterations(gaussIterations, curChunk, deviceImages, sizeconstKernelDims,device);
 
 		curChunk->sendROI(imageIn,dims,deviceImages.getNextBuffer());
 
-		cudaAddTwoImagesWithFactor<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
-			*(deviceImages.getThirdBuffer()),-1.0,minVal,maxVal);
-		DEBUG_KERNEL_CHECK();
-
-		deviceImages.setNthBuffCurent(3);
-
-		runMedianFilter(deviceProp, curChunk, neighborhood, deviceImages);
+ 		cudaAddTwoImagesWithFactor<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getNextBuffer()),*(deviceImages.getCurBuffer()),
+ 			*(deviceImages.getThirdBuffer()),-1.0,minVal,maxVal);
+ 		DEBUG_KERNEL_CHECK();
+ 
+ 		deviceImages.setNthBuffCurent(3);
+ 
+ 		runMedianFilter(deviceProp, curChunk, neighborhood, deviceImages);
 
 		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
 	}
@@ -495,7 +531,7 @@ DevicePixelType* CudaProcessBuffer::gaussianFilter(const DevicePixelType* imageI
 
 		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
 
-		runGaussIterations(gaussIterations, curChunk, deviceImages, sizeconstKernelDims);
+		runGaussIterations(gaussIterations, curChunk, deviceImages, sizeconstKernelDims,device);
 
 		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
 	}
