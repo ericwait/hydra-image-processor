@@ -1,4 +1,6 @@
 #pragma once
+#include "Vec.h"
+#include "CudaUtilities.cuh"
 
 template <class PixelType>
 __global__ void cudaSum(PixelType* arrayIn, double* arrayOut, size_t n)
@@ -93,4 +95,56 @@ __global__ void cudaSum(PixelType* arrayIn, double* arrayOut, size_t n)
 
 	if (tid==0)
 		arrayOut[blockIdx.x] = sdata[0];
+}
+
+template <class PixelType>
+double sumArray(const PixelType* imageIn, size_t n, int device=0)
+{
+	double sum = 0.0;
+	double* deviceSum;
+	double* hostSum;
+	PixelType* deviceImage;
+
+	cudaDeviceProp props;
+	cudaGetDeviceProperties(&props, device);
+
+	size_t availMem, total;
+	cudaMemGetInfo(&availMem,&total);
+
+	unsigned int blocks = props.multiProcessorCount;
+	unsigned int threads = props.maxThreadsPerBlock;
+
+	Vec<size_t> maxDeviceDims(1,1,1);
+
+	maxDeviceDims.x = (n < availMem*MAX_MEM_AVAIL/sizeof(PixelType)) ? (n) :
+		((size_t)(availMem*MAX_MEM_AVAIL/sizeof(PixelType)));
+
+	HANDLE_ERROR(cudaMalloc((void**)&deviceImage,sizeof(PixelType)*maxDeviceDims.x));
+	HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*blocks));
+	hostSum = new double[blocks];
+
+	for (int i=0; i<ceil((double)n/maxDeviceDims.x); ++i)
+	{
+		const PixelType* imStart = imageIn + i*maxDeviceDims.x;
+		size_t numValues = ((i+1)*maxDeviceDims.x < n) ? (maxDeviceDims.x) : (n-i*maxDeviceDims.x);
+
+		HANDLE_ERROR(cudaMemcpy(deviceImage,imStart,sizeof(PixelType)*numValues,cudaMemcpyHostToDevice));
+
+		cudaSum<<<blocks,threads,sizeof(double)*threads>>>(deviceImage,deviceSum,numValues);
+		DEBUG_KERNEL_CHECK();
+
+		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*blocks,cudaMemcpyDeviceToHost));
+
+		for (unsigned int i=0; i<blocks; ++i)
+		{
+			sum += hostSum[i];
+		}
+	}
+
+	HANDLE_ERROR(cudaFree(deviceSum));
+	HANDLE_ERROR(cudaFree(deviceImage));
+
+	delete[] hostSum;
+
+	return sum;
 }

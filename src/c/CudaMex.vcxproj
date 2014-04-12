@@ -52,17 +52,8 @@
     <ClCompile Include="CudaMex\MexThresholdFilter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Common\CudaDeviceImages.cu">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </CudaCompile>
+    <CudaCompile Include="Common\CudaDeviceImages.cu" />
     <CudaCompile Include="Common\CudaProcessBuffer.cu">
-      <GenerateRelocatableDeviceCode Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateRelocatableDeviceCode>
-      <GenerateRelocatableDeviceCode Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateRelocatableDeviceCode>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </CudaCompile>
-    <CudaCompile Include="Common\CudaUnmixing.cu">
       <GenerateRelocatableDeviceCode Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateRelocatableDeviceCode>
       <GenerateRelocatableDeviceCode Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateRelocatableDeviceCode>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -74,12 +65,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </CudaCompile>
-    <CudaCompile Include="Common\ImageChunk.cu">
-      <GenerateRelocatableDeviceCode Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateRelocatableDeviceCode>
-      <GenerateRelocatableDeviceCode Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateRelocatableDeviceCode>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </CudaCompile>
+    <CudaCompile Include="Common\CWrappers.cu" />
+    <CudaCompile Include="Common\ImageChunk.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\CHelpers.h">
@@ -135,7 +122,6 @@
       <FileType>Document</FileType>
     </ClInclude>
     <ClInclude Include="Common\CudaAddTwoImagesWithFactor.cuh">
-      <FileType>Document</FileType>
     </ClInclude>
     <None Include="Common\CudaGetMinMax.cuh" />
     <None Include="Common\CudaGetROI.cuh" />
@@ -154,6 +140,7 @@
     <None Include="Common\CudaSum.cuh" />
     <None Include="Common\CudaThreshold.cuh" />
     <None Include="Common\CudaUnmixing.cuh" />
+    <None Include="Common\CWrappers.cuh" />
     <None Include="CudaMex\CudaMex.def" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

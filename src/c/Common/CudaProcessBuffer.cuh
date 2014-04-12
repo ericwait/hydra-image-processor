@@ -143,11 +143,6 @@ public:
 	DevicePixelType* imagePow(const DevicePixelType* imageIn, Vec<size_t> dims, double power, DevicePixelType** imageOut=NULL);
 
 	/*
-	*	Calculates the total sum of the buffer's data
-	*/
-	double sumArray(const DevicePixelType* imageIn, size_t n);
-
-	/*
 	*	Will reduce the size of the image by the factors passed in
 	*/
 	DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* image, Vec<size_t> dims, Vec<size_t> reductions,

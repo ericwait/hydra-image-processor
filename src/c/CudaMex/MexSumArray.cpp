@@ -1,5 +1,5 @@
 #include "MexCommand.h"
-#include "CudaProcessBuffer.cuh"
+#include "CWrappers.cuh"
 
 void MexSumArray::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
@@ -13,7 +13,7 @@ void MexSumArray::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	CudaProcessBuffer cudaBuffer(device);
 	setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-	double sm = cudaBuffer.sumArray(imageIn,imageDims.product());
+	double sm = cSumArray(imageIn,imageDims.product());
 
 	plhs[0] = mxCreateDoubleScalar(sm);
 }
@@ -26,8 +26,8 @@ std::string MexSumArray::check( int nlhs, mxArray* plhs[], int nrhs, const mxArr
 	if (nlhs!=1)
 		return "Requires one outputs!";
 
-	if (!mxIsUint8(prhs[0]))
-		return "Image has to be formated as a uint8!";
+// 	if (!mxIsUint8(prhs[0]))
+// 		return "Image has to be formated as a uint8!";
 
 // 	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
 // 	if (numDims>3 || numDims<2)

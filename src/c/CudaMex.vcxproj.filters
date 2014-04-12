@@ -122,17 +122,17 @@
     <CudaCompile Include="Common\CudaProcessBuffer.cu">
       <Filter>Source Files\CudaFiles</Filter>
     </CudaCompile>
-    <CudaCompile Include="Common\ImageChunk.cu">
-      <Filter>Source Files\CudaFiles</Filter>
+    <CudaCompile Include="Common\CudaUtilities.cu">
+      <Filter>Source Files\HelperFiles</Filter>
     </CudaCompile>
-    <CudaCompile Include="Common\CudaUnmixing.cu">
+    <CudaCompile Include="Common\CWrappers.cu">
       <Filter>Source Files\CudaFiles</Filter>
     </CudaCompile>
     <CudaCompile Include="Common\CudaDeviceImages.cu">
       <Filter>Source Files\CudaFiles</Filter>
     </CudaCompile>
-    <CudaCompile Include="Common\CudaUtilities.cu">
-      <Filter>Source Files\HelperFiles</Filter>
+    <CudaCompile Include="Common\ImageChunk.cu">
+      <Filter>Source Files\CudaFiles</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
@@ -190,6 +190,9 @@
     <None Include="Common\CudaGetMinMax.cuh">
       <Filter>Header Files\CudaFiles</Filter>
     </None>
+    <None Include="Common\CWrappers.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CudaMex\MexCommand.h">
@@ -225,7 +228,11 @@
     <ClInclude Include="Common\CudaUtilities.cuh">
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
-    <ClInclude Include="Common\CudaAddFactor.cuh" />
-    <ClInclude Include="Common\CudaAddTwoImagesWithFactor.cuh" />
+    <ClInclude Include="Common\CudaAddTwoImagesWithFactor.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaAddFactor.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
