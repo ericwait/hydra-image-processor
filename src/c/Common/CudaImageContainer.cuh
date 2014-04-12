@@ -1,9 +1,13 @@
 #pragma once
+#include "Vec.h"
 
+#ifndef DEVICE_VEC
 #define DEVICE_VEC
 #include "Vec.h"
+#endif
 #undef DEVICE_VEC
 #include "Vec.h"
+
 #include <string>
 #include "CudaUtilities.cuh"
 
