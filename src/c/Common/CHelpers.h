@@ -11,9 +11,9 @@ int calcOtsuThreshold(const double* normHistogram, int numBins);
 template <class PixelType>
 PixelType* setUpOutIm(Vec<size_t> dims, PixelType** imageOut)
 {
-	DevicePixelType* imOut;
+	PixelType* imOut;
 	if (imageOut==NULL)
-		imOut = new DevicePixelType[dims.product()];
+		imOut = new PixelType[dims.product()];
 	else
 		imOut = *imageOut;
 
