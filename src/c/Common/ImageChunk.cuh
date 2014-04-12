@@ -74,3 +74,117 @@ public:
 	dim3 blocks, threads;
 };
 
+void setMaxDeviceDims(std::vector<ImageChunk> &chunks, Vec<size_t> &maxDeviceDims);
+
+std::vector<ImageChunk> calculateChunking(Vec<size_t> orgImageDims, Vec<size_t> deviceDims, const cudaDeviceProp& prop,
+										  Vec<size_t> kernalDims=Vec<size_t>(0,0,0));
+
+template <class PixelType>
+std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNeeded, size_t memAvailable, const cudaDeviceProp& prop,
+										 Vec<size_t> kernelDims=Vec<size_t>(0,0,0))
+{
+	size_t numVoxels = (size_t)(memAvailable / (sizeof(PixelType)*numBuffersNeeded));
+
+	Vec<size_t> overlapVolume;
+	overlapVolume.x = kernelDims.x * imageDims.y * imageDims.z;
+	overlapVolume.y = imageDims.x * kernelDims.y * imageDims.z;
+	overlapVolume.z = imageDims.x * imageDims.y * kernelDims.z;
+
+	Vec<size_t> deviceDims(0,0,0);
+
+	if (overlapVolume.x>overlapVolume.y && overlapVolume.x>overlapVolume.z) // chunking in X is the worst
+	{
+		deviceDims.x = imageDims.x;
+		double leftOver = (double)numVoxels/imageDims.x;
+		double squareDim = sqrt(leftOver);
+
+		if (overlapVolume.y<overlapVolume.z) // chunking in Y is second worst
+		{
+			if (squareDim>imageDims.y)
+				deviceDims.y = imageDims.y;
+			else 
+				deviceDims.y = (size_t)squareDim;
+
+			deviceDims.z = (size_t)(leftOver/deviceDims.y);
+
+			if (deviceDims.z>imageDims.z)
+				deviceDims.z = imageDims.z;
+		}
+		else // chunking in Z is second worst
+		{
+			if (squareDim>imageDims.z)
+				deviceDims.z = imageDims.z;
+			else 
+				deviceDims.z = (size_t)squareDim;
+
+			deviceDims.y = (size_t)(leftOver/deviceDims.z);
+
+			if (deviceDims.y>imageDims.y)
+				deviceDims.y = imageDims.y;
+		}
+	}
+	else if (overlapVolume.y>overlapVolume.z) // chunking in Y is the worst
+	{
+		deviceDims.y = imageDims.y;
+		double leftOver = (double)numVoxels/imageDims.y;
+		double squareDim = sqrt(leftOver);
+
+		if (overlapVolume.x<overlapVolume.z)
+		{
+			if (squareDim>imageDims.x)
+				deviceDims.x = imageDims.x;
+			else 
+				deviceDims.x = (size_t)squareDim;
+
+			deviceDims.z = (size_t)(leftOver/deviceDims.x);
+
+			if (deviceDims.z>imageDims.z)
+				deviceDims.z = imageDims.z;
+		}
+		else
+		{
+			if (squareDim>imageDims.z)
+				deviceDims.z = imageDims.z;
+			else 
+				deviceDims.z = (size_t)squareDim;
+
+			deviceDims.x = (size_t)(leftOver/deviceDims.z);
+
+			if (deviceDims.x>imageDims.x)
+				deviceDims.x = imageDims.x;
+		}
+	}
+	else // chunking in Z is the worst
+	{
+		deviceDims.z = imageDims.z;
+		double leftOver = (double)numVoxels/imageDims.z;
+		double squareDim = sqrt(leftOver);
+
+		if (overlapVolume.x<overlapVolume.y)
+		{
+			if (squareDim>imageDims.x)
+				deviceDims.x = imageDims.x;
+			else 
+				deviceDims.x = (size_t)squareDim;
+
+			deviceDims.y = (size_t)(leftOver/deviceDims.x);
+
+			if (deviceDims.y>imageDims.y)
+				deviceDims.y = imageDims.y;
+		}
+		else
+		{
+			if (squareDim>imageDims.y)
+				deviceDims.y = imageDims.y;
+			else 
+				deviceDims.y = (size_t)squareDim;
+
+			deviceDims.x = (size_t)(leftOver/deviceDims.z);
+
+			if (deviceDims.x>imageDims.x)
+				deviceDims.x = imageDims.x;
+		}
+	}
+
+	return calculateChunking(imageDims, deviceDims, prop, kernelDims);
+}

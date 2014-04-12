@@ -65,6 +65,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </CudaCompile>
     <CudaCompile Include="Common\CWrappers.cu" />
+    <CudaCompile Include="Common\ImageChunk.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\CHelpers.h">

@@ -9,11 +9,6 @@
 #include <vector>
 #include "ImageChunk.cuh"
 
-std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNeeded, size_t memAvailable, const cudaDeviceProp& prop,
-										 Vec<size_t> kernalDims=Vec<size_t>(0,0,0));
-
-std::vector<ImageChunk> calculateChunking(Vec<size_t> orgImageDims, Vec<size_t> deviceDims, const cudaDeviceProp& prop, Vec<size_t> kernalDims=Vec<size_t>(0,0,0));
-
 class CudaProcessBuffer
 {
 public:
@@ -168,10 +163,6 @@ private:
 	void deviceSetup();
 
 	void defaults();
-
-	void setMaxDeviceDims(std::vector<ImageChunk> &chunks, Vec<size_t> &maxDeviceDims);
-
-	DevicePixelType* setUpOutIm(Vec<size_t> dims, DevicePixelType** imageOut);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Private Member Variables
