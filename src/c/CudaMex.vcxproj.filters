@@ -128,12 +128,6 @@
     <CudaCompile Include="Common\CWrappers.cu">
       <Filter>Source Files\CudaFiles</Filter>
     </CudaCompile>
-    <CudaCompile Include="Common\CudaDeviceImages.cu">
-      <Filter>Source Files\CudaFiles</Filter>
-    </CudaCompile>
-    <CudaCompile Include="Common\ImageChunk.cu">
-      <Filter>Source Files\CudaFiles</Filter>
-    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="CudaMex\CudaMex.def">

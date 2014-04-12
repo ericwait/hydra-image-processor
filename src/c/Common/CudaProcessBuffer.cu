@@ -247,23 +247,11 @@ void CudaProcessBuffer::setMaxDeviceDims(std::vector<ImageChunk> &chunks, Vec<si
 	}
 }
 
-void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iterator& curChunk, CudaDeviceImages& deviceImages,
+void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iterator& curChunk, CudaDeviceImages<DevicePixelType>& deviceImages,
 						Vec<size_t> sizeconstKernelDims, int device)
 {
-// 	cudaDeviceProp props;
-// 	cudaGetDeviceProperties(&props,device);
-// 	dim3 blocks, threads;
-
 	if (curChunk->getFullChunkSize().x>1)
 	{
-// 		threads.x = MIN(props.maxThreadsPerBlock,curChunk->getFullChunkSize().x);
-// 		threads.y = MAX(1,threads.x/props.maxThreadsPerBlock);
-// 		threads.z = MAX(1,threads.x*threads.y/props.maxThreadsPerBlock);
-// 
-// 		blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x/threads.x);
-// 		blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y/threads.y);
-// 		blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z/threads.z);
-
 		for (int x=0; x<gaussIterations.x; ++x)
 		{
 			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
@@ -275,14 +263,6 @@ void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iter
 
 	if (curChunk->getFullChunkSize().y>1)
 	{
-// 		threads.y = MIN(props.maxThreadsPerBlock,curChunk->getFullChunkSize().y);
-// 		threads.x = MAX(1,threads.y/props.maxThreadsPerBlock);
-// 		threads.z = MAX(1,threads.x*threads.y/props.maxThreadsPerBlock);
-// 
-// 		blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x/threads.x);
-// 		blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y/threads.y);
-// 		blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z/threads.z);
-
 		for (int y=0; y<gaussIterations.y; ++y)
 		{
 			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
@@ -294,14 +274,6 @@ void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iter
 
 	if (curChunk->getFullChunkSize().z>1)
 	{
-// 		threads.z = MIN(props.maxThreadsPerBlock,curChunk->getFullChunkSize().z);
-// 		threads.x = MAX(1,threads.z/props.maxThreadsPerBlock);
-// 		threads.y = MAX(1,threads.x*threads.z/props.maxThreadsPerBlock);
-// 
-// 		blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x/threads.x);
-// 		blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y/threads.y);
-// 		blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z/threads.z);
-
 		for (int z=0; z<gaussIterations.z; ++z)
 		{
 			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
@@ -313,7 +285,7 @@ void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iter
 }
 
 void runMedianFilter(cudaDeviceProp& deviceProp, std::vector<ImageChunk>::iterator curChunk, Vec<size_t> &neighborhood, 
-					 CudaDeviceImages& deviceImages)
+					 CudaDeviceImages<DevicePixelType>& deviceImages)
 {
 	dim3 blocks(curChunk->blocks);
 	dim3 threads(curChunk->threads);
@@ -371,7 +343,7 @@ DevicePixelType* CudaProcessBuffer::addConstant(const DevicePixelType* imageIn, 
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages deviceImages(2,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -402,7 +374,7 @@ DevicePixelType* CudaProcessBuffer::addImageWith(const DevicePixelType* imageIn1
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages deviceImages(3,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(3,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -429,7 +401,7 @@ DevicePixelType* CudaProcessBuffer::applyPolyTransformation(const DevicePixelTyp
 	
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages deviceImages(2,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -468,7 +440,7 @@ DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* i
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages deviceImages(3,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(3,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -505,7 +477,7 @@ size_t* CudaProcessBuffer::createHistogram(const DevicePixelType* imageIn, Vec<s
 
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,1,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
 	setMaxDeviceDims(chunks, maxDeviceDims);
-	CudaDeviceImages deviceImages(1,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(1,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -596,7 +568,7 @@ DevicePixelType* CudaProcessBuffer::gaussianFilter(const DevicePixelType* imageI
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages deviceImages(2,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -639,7 +611,7 @@ DevicePixelType* CudaProcessBuffer::maxFilter(const DevicePixelType* imageIn, Ve
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages deviceImages(2,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -669,7 +641,7 @@ DevicePixelType* CudaProcessBuffer::meanFilter(const DevicePixelType* imageIn, V
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages deviceImages(2,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -698,7 +670,7 @@ DevicePixelType* CudaProcessBuffer::medianFilter(const DevicePixelType* imageIn,
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages deviceImages(2,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -740,7 +712,7 @@ DevicePixelType* CudaProcessBuffer::minFilter(const DevicePixelType* imageIn, Ve
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages deviceImages(2,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -771,7 +743,7 @@ DevicePixelType* CudaProcessBuffer::multiplyImage(const DevicePixelType* imageIn
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages deviceImages(2,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -802,7 +774,7 @@ DevicePixelType* CudaProcessBuffer::multiplyImageWith(const DevicePixelType* ima
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages deviceImages(3,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(3,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -866,7 +838,7 @@ double* CudaProcessBuffer::normalizeHistogram(const DevicePixelType* imageIn, Ve
 
 	std::vector<ImageChunk> chunks = calculateBuffers(dims,1,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
 	setMaxDeviceDims(chunks, maxDeviceDims);
-	CudaDeviceImages deviceImages(1,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(1,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -918,7 +890,7 @@ DevicePixelType* CudaProcessBuffer::imagePow(const DevicePixelType* imageIn, Vec
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages deviceImages(2,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
@@ -1043,7 +1015,7 @@ DevicePixelType* CudaProcessBuffer::thresholdFilter(const DevicePixelType* image
 
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages deviceImages(2,maxDeviceDims,device);
+	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{

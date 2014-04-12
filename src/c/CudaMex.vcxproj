@@ -52,7 +52,6 @@
     <ClCompile Include="CudaMex\MexThresholdFilter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Common\CudaDeviceImages.cu" />
     <CudaCompile Include="Common\CudaProcessBuffer.cu">
       <GenerateRelocatableDeviceCode Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateRelocatableDeviceCode>
       <GenerateRelocatableDeviceCode Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateRelocatableDeviceCode>
@@ -66,7 +65,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </CudaCompile>
     <CudaCompile Include="Common\CWrappers.cu" />
-    <CudaCompile Include="Common\ImageChunk.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\CHelpers.h">
