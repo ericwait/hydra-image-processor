@@ -1,7 +1,11 @@
-#include "CudaKernels.cuh"
+#pragma once
+#define DEVICE_VEC
+#include "Vec.h"
+#include "CudaImageContainer.cuh"
 
-__global__ void cudaPolyTransferFuncImage( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut, double a, double b, double c,
-										  DevicePixelType minPixelValue, DevicePixelType maxPixelValue )
+template <class PixelType>
+__global__ void cudaPolyTransferFunc( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, double a, double b,
+									 double c, PixelType minPixelValue, PixelType maxPixelValue )
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -17,9 +21,8 @@ __global__ void cudaPolyTransferFuncImage( CudaImageContainer<DevicePixelType> i
 		if (multiplier>1)
 			multiplier = 1;
 
-		DevicePixelType newPixelVal = min((double)maxPixelValue,max((double)minPixelValue, multiplier*maxPixelValue));
+		PixelType newPixelVal = min((double)maxPixelValue,max((double)minPixelValue, multiplier*maxPixelValue));
 
 		imageOut[coordinate] = newPixelVal;
 	}
 }
-

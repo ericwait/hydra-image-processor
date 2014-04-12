@@ -1,6 +1,10 @@
-#include "CudaKernels.cuh"
+#pragma once
+#define DEVICE_VEC
+#include "Vec.h"
+#include "CudaImageContainer.cuh"
 
-__global__ void cudaGetROI( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut,
+template <class PixelType>
+__global__ void cudaGetROI( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut,
 						   Vec<size_t> hostStartPos, Vec<size_t> hostNewSize )
 {
 	DeviceVec<size_t> newSize = hostNewSize;
@@ -15,4 +19,3 @@ __global__ void cudaGetROI( CudaImageContainer<DevicePixelType> imageIn, CudaIma
 		imageOut[coordinate-startPos] = imageIn[coordinate];
 	}
 }
-

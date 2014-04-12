@@ -1,6 +1,8 @@
-#include "CudaKernels.cuh"
+#pragma once
+#include "CudaImageContainer.cuh"
 
-__global__ void cudaFindMinMax( CudaImageContainer<DevicePixelType> imageIn, double* minArrayOut, double* maxArrayOut, size_t n )
+template <class PixelType>
+__global__ void cudaGetMinMax( PixelType* imageIn, double* minArrayOut, double* maxArrayOut, size_t n )
 {
 	extern __shared__ double maxData[];
 	extern __shared__ double minData[];
@@ -8,23 +10,22 @@ __global__ void cudaFindMinMax( CudaImageContainer<DevicePixelType> imageIn, dou
 	size_t tid = threadIdx.x;
 	size_t i = blockIdx.x*blockDim.x*2 + tid;
 	size_t gridSize = blockDim.x*2*gridDim.x;
+	maxData[tid] = (double)(imageIn[i]);
+	minData[tid] = (double)(imageIn[i]);
 
-	while (i<n)
+	do
 	{
-		maxData[tid] = imageIn[i];
-		minData[tid] = imageIn[i];
-
 		if (i+blockDim.x<n)
 		{
-			if(maxData[tid]<imageIn[i+blockDim.x])
-				maxData[tid] = imageIn[i+blockDim.x];
+			if(maxData[tid]<(double)(imageIn[i+blockDim.x]))
+				maxData[tid] = (double)(imageIn[i+blockDim.x]);
 
-			if(minData[tid]>imageIn[i+blockDim.x])
-				minData[tid] = imageIn[i+blockDim.x];
+			if(minData[tid]>(double)(imageIn[i+blockDim.x]))
+				minData[tid] = (double)(imageIn[i+blockDim.x]);
 		}
 
 		i += gridSize;
-	}
+	}while (i<n);
 	__syncthreads();
 
 
@@ -153,4 +154,3 @@ __global__ void cudaFindMinMax( CudaImageContainer<DevicePixelType> imageIn, dou
 		maxArrayOut[blockIdx.x] = maxData[0];
 	}
 }
-

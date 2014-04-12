@@ -1,7 +1,11 @@
-#include "CudaKernels.cuh"
+#pragma once
+#define DEVICE_VEC
+#include "Vec.h"
+#include "CudaImageContainer.cuh"
 
-__global__ void cudaMask( const CudaImageContainer<DevicePixelType> imageIn1, const CudaImageContainer<DevicePixelType> imageIn2, CudaImageContainer<DevicePixelType> imageOut,
-						 DevicePixelType threshold )
+template <class PixelType>
+__global__ void cudaMask( const CudaImageContainer<PixelType> imageIn1, const CudaImageContainer<PixelType> imageIn2,
+						 CudaImageContainer<PixelType> imageOut, PixelType threshold )
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -18,4 +22,3 @@ __global__ void cudaMask( const CudaImageContainer<DevicePixelType> imageIn1, co
 		imageOut[coordinate] = val;
 	}
 }
-

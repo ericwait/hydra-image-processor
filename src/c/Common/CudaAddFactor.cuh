@@ -1,7 +1,11 @@
-#include "CudaKernels.cuh"
+#pragma once
+#define DEVICE_VEC
+#include "Vec.h"
+#include "CudaImageContainer.cuh"
 
-__global__ void cudaAddFactor( CudaImageContainer<DevicePixelType> imageIn1, CudaImageContainer<DevicePixelType> imageOut, double factor, DevicePixelType minValue,
-							  DevicePixelType maxValue )
+template <class PixelType>
+__global__ void cudaAddFactor( CudaImageContainer<PixelType> imageIn1, CudaImageContainer<PixelType> imageOut, double factor, 
+							  PixelType minValue, DevicePixelType maxValue )
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;

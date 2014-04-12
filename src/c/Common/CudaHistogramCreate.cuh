@@ -1,6 +1,8 @@
-#include "CudaKernels.cuh"
+#pragma once
+#include "CudaImageContainer.cuh"
 
-__global__ void cudaHistogramCreate( CudaImageContainer<DevicePixelType> imageIn, size_t* histogram )
+template <class PixelType>
+__global__ void cudaHistogramCreate( CudaImageContainer<PixelType> imageIn, size_t* histogram )
 {
 	//This code is modified from that of Sanders - Cuda by Example
 	__shared__ size_t tempHisto[NUM_BINS];
@@ -20,3 +22,8 @@ __global__ void cudaHistogramCreate( CudaImageContainer<DevicePixelType> imageIn
 	atomicAdd(&(histogram[threadIdx.x]), tempHisto[threadIdx.x]);
 }
 
+__global__ void cudaNormalizeHistogram(size_t* histogram, double* normHistogram, Vec<size_t> imageDims)
+{
+	int x = blockIdx.x;
+	normHistogram[x] = (double)(histogram[x]) / (imageDims.x*imageDims.y*imageDims.z);
+}

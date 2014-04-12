@@ -127,10 +127,8 @@ try
     fprintf('%s took %f sec\n',kernelName,toc);
     showIm(imageOut,kernelName);
     
-    tic
-    kernelName = 'MinMax';
-    [minVal, maxVal] = CudaMex(sprintf('%s',kernelName),imageIn,device);
-    fprintf('%s took %f sec and returned Min=%f and Max=%f\n',kernelName,toc,minVal,maxVal);
+    ti
+    [min max] = CudaMex('MinMax',imageIn,[device]);
     
     tic
     kernelName = 'MultiplyImage';

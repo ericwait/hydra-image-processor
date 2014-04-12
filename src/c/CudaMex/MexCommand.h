@@ -90,6 +90,18 @@ public:
 	virtual std::string printHelp();
  };
 
+ class MexMinMax: MexCommand
+ {
+ public:
+	 MexMinMax(){}
+	 virtual ~MexMinMax(){}
+
+	 virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	 virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	 virtual std::string printUsage();
+	 virtual std::string printHelp();
+ };
+
 class MexHistogram : MexCommand
 {
 public:

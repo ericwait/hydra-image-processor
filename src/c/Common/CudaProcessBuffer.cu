@@ -1,11 +1,27 @@
 #include "CudaUtilities.cuh"
-#include "CudaKernels.cuh"
 #include "CudaProcessBuffer.cuh"
 #include "CudaDeviceImages.cuh"
 #include "CHelpers.h"
-
-//Percent of memory that can be used on the device
-const double MAX_MEM_AVAIL = 0.95;
+#include "CudaProcessBuffer.cuh"
+#include "CudaAddFactor.cuh"
+#include "CudaAddTwoImagesWithFactor.cuh"
+#include "CudaMedianFilter.cuh"
+#include "CudaGetMinMax.cuh"
+#include "CudaGetROI.cuh"
+#include "CudaHistogramCreate.cuh"
+#include "CudaMask.cuh"
+#include "CudaMaxFilter.cuh"
+#include "CudaIntensityProjection.cuh"
+#include "CudaMeanFilter.cuh"
+#include "CudaImageReduction.cuh"
+#include "CudaMinFilter.cuh"
+#include "CudaMultAddFilter.cuh"
+#include "CudaMultiplyImage.cuh"
+#include "CudaPolyTransferFunc.cuh"
+#include "CudaPow.cuh"
+#include "CudaSum.cuh"
+#include "CudaThreshold.cuh"
+#include "CudaUnmixing.cuh"
 
 std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNeeded, size_t memAvailable, const cudaDeviceProp& prop,
 										 Vec<size_t> kernelDims/*=Vec<size_t>(0,0,0)*/)
@@ -250,7 +266,8 @@ void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iter
 
 		for (int x=0; x<gaussIterations.x; ++x)
 		{
-			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),Vec<size_t>(sizeconstKernelDims.x,1,1));
+			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
+				Vec<size_t>(sizeconstKernelDims.x,1,1));
 			DEBUG_KERNEL_CHECK();
 			deviceImages.incrementBuffer();
 		}
@@ -419,7 +436,7 @@ DevicePixelType* CudaProcessBuffer::applyPolyTransformation(const DevicePixelTyp
 		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
 		deviceImages.setNextDims(curChunk->getFullChunkSize());
 
-		cudaPolyTransferFuncImage<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
+		cudaPolyTransferFunc<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			a,b,c,minValue,maxValue);
 		DEBUG_KERNEL_CHECK();
 
@@ -502,6 +519,62 @@ size_t* CudaProcessBuffer::createHistogram(const DevicePixelType* imageIn, Vec<s
 	HANDLE_ERROR(cudaFree(deviceHist));
 
 	return hostHist;
+}
+
+void CudaProcessBuffer::getMinMax(const DevicePixelType* imageIn, size_t n, DevicePixelType& minVal, DevicePixelType& maxVal)
+{
+	minVal = std::numeric_limits<DevicePixelType>::lowest();
+	maxVal= std::numeric_limits<DevicePixelType>::max();
+	double* deviceMin;
+	double* deviceMax;
+	double* hostMin;
+	double* hostMax;
+	DevicePixelType* deviceImage;
+
+	unsigned int blocks = deviceProp.multiProcessorCount;
+	unsigned int threads = deviceProp.maxThreadsPerBlock;
+
+	Vec<size_t> maxDeviceDims(1,1,1);
+
+	maxDeviceDims.x = (n < (double)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL)/sizeof(DevicePixelType)) ? (n) :
+		((size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL/sizeof(DevicePixelType)));
+
+	checkFreeMemory(sizeof(DevicePixelType)*maxDeviceDims.x+sizeof(double)*blocks,device,true);
+	HANDLE_ERROR(cudaMalloc((void**)&deviceImage,sizeof(DevicePixelType)*maxDeviceDims.x));
+	HANDLE_ERROR(cudaMalloc((void**)&deviceMin,sizeof(double)*blocks));
+	HANDLE_ERROR(cudaMalloc((void**)&deviceMax,sizeof(double)*blocks));
+	hostMin = new double[blocks];
+	hostMax = new double[blocks];
+
+	for (int i=0; i<ceil((double)n/maxDeviceDims.x); ++i)
+	{
+		const DevicePixelType* imStart = imageIn + i*maxDeviceDims.x;
+		size_t numValues = ((i+1)*maxDeviceDims.x < n) ? (maxDeviceDims.x) : (n-i*maxDeviceDims.x);
+
+		HANDLE_ERROR(cudaMemcpy(deviceImage,imStart,sizeof(DevicePixelType)*numValues,cudaMemcpyHostToDevice));
+
+		cudaGetMinMax<<<blocks,threads,sizeof(double)*threads*2>>>(deviceImage,deviceMin,deviceMax,numValues);
+		DEBUG_KERNEL_CHECK();
+
+		HANDLE_ERROR(cudaMemcpy(hostMin,deviceMin,sizeof(double)*blocks,cudaMemcpyDeviceToHost));
+		HANDLE_ERROR(cudaMemcpy(hostMax,deviceMax,sizeof(double)*blocks,cudaMemcpyDeviceToHost));
+
+		for (unsigned int i=0; i<blocks; ++i)
+		{
+			if (minVal> hostMin[i])
+				minVal = (DevicePixelType)(hostMin[i]);
+
+			if (maxVal< hostMax[i])
+				maxVal = (DevicePixelType)(hostMax[i]);
+		}
+	}
+
+	HANDLE_ERROR(cudaFree(deviceMin));
+	HANDLE_ERROR(cudaFree(deviceMax));
+	HANDLE_ERROR(cudaFree(deviceImage));
+
+	delete[] hostMin;
+	delete[] hostMax;
 }
 
 DevicePixelType* CudaProcessBuffer::gaussianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
@@ -705,7 +778,7 @@ DevicePixelType* CudaProcessBuffer::multiplyImage(const DevicePixelType* imageIn
 		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
 		deviceImages.setNextDims(curChunk->getFullChunkSize());
 
-		cudaMultiplyImage<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
+		cudaMultiplyImageScaler<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			multiplier,minVal,maxVal);
 		DEBUG_KERNEL_CHECK();
 
@@ -891,7 +964,7 @@ double CudaProcessBuffer::sumArray(const DevicePixelType* imageIn, size_t n)
 
 		HANDLE_ERROR(cudaMemcpy(deviceImage,imStart,sizeof(DevicePixelType)*numValues,cudaMemcpyHostToDevice));
 
-		cudaSumArray<<<blocks,threads,sizeof(double)*threads>>>(deviceImage,deviceSum,numValues);
+		cudaSum<<<blocks,threads,sizeof(double)*threads>>>(deviceImage,deviceSum,numValues);
 		DEBUG_KERNEL_CHECK();
 
 		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*blocks,cudaMemcpyDeviceToHost));
@@ -1023,7 +1096,7 @@ DevicePixelType* CudaProcessBuffer::thresholdFilter(const DevicePixelType* image
 		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
 		deviceImages.setNextDims(curChunk->getFullChunkSize());
 
-		cudaThresholdImage<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
+		cudaThreshold<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			thresh,minVal,maxVal);
 		DEBUG_KERNEL_CHECK();
 

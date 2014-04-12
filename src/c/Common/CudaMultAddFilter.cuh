@@ -1,7 +1,11 @@
-#include "CudaKernels.cuh"
+#pragma once
+#define DEVICE_VEC
+#include "Vec.h"
+#include "CudaImageContainer.cuh"
 
-__global__ void cudaMultAddFilter( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut,
-								  Vec<size_t> hostKernelDims, size_t kernelOffset/*=0*/ )
+template <class PixelType>
+__global__ void cudaMultAddFilter( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut,
+								  Vec<size_t> hostKernelDims, size_t kernelOffset=0)
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -13,7 +17,7 @@ __global__ void cudaMultAddFilter( CudaImageContainer<DevicePixelType> imageIn, 
 		double val = 0;
 		double kernFactor = 0;
 
-		DevicePixelType localMaxVal = imageIn[coordinate];
+		PixelType localMaxVal = imageIn[coordinate];
 		DeviceVec<size_t> kernelDims = hostKernelDims;
 
 		DeviceVec<int> startLimit = DeviceVec<int>(coordinate) - DeviceVec<int>((kernelDims)/2);
@@ -41,7 +45,6 @@ __global__ void cudaMultAddFilter( CudaImageContainer<DevicePixelType> imageIn, 
 			}
 		}
 
-		imageOut[coordinate] = (DevicePixelType)(val/kernFactor);
+		imageOut[coordinate] = (PixelType)(val/kernFactor);
 	}
 }
-

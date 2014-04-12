@@ -85,6 +85,8 @@ public:
 	*/ 
 	DevicePixelType* gaussianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas, DevicePixelType** imageOut=NULL);
 
+	void getMinMax(const DevicePixelType* imageIn, size_t n, DevicePixelType& minVal, DevicePixelType& maxVal);
+
 	/*
 	*	Sets each pixel to the max value of its neighborhood
 	*	Dilates structures

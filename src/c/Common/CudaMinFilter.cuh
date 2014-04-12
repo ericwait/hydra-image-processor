@@ -1,9 +1,11 @@
-#include "CudaKernels.cuh"
+#pragma once
+#define DEVICE_VEC
+#include "Vec.h"
+#include "CudaImageContainer.cuh"
 
-__constant__ float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
-
-__global__ void cudaMaxFilter( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut, Vec<size_t> hostKernelDims, DevicePixelType minVal,
-							  DevicePixelType maxVal)
+template <class PixelType>
+__global__ void cudaMinFilter( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, Vec<size_t> hostKernelDims, 
+							  PixelType minVal, PixelType maxVal)
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -12,7 +14,7 @@ __global__ void cudaMaxFilter( CudaImageContainer<DevicePixelType> imageIn, Cuda
 
 	if (coordinate<imageIn.getDeviceDims())
 	{
-		DevicePixelType localMaxVal = imageIn[coordinate];
+		double localMinVal = imageIn[coordinate];
 		DeviceVec<size_t> kernelDims = hostKernelDims;
 
 		DeviceVec<int> startLimit = DeviceVec<int>(coordinate) - DeviceVec<int>((kernelDims)/2);
@@ -35,15 +37,15 @@ __global__ void cudaMaxFilter( CudaImageContainer<DevicePixelType> imageIn, Cuda
 					if (cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)]==0)
 						continue;
 
-					float temp = imageIn[imageStart+i] * cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)];
-					if (temp>localMaxVal)
+					double temp = imageIn[imageStart+i] * cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)];
+					if (temp<localMinVal)
 					{
-						localMaxVal = temp;
+						localMinVal = temp;
 					}
 				}
 			}
 		}
 
-		imageOut[coordinate] = (localMaxVal>maxVal) ? (maxVal) : (localMaxVal);
+		imageOut[coordinate] = (localMinVal<minVal) ? (minVal) : (localMinVal);
 	}
 }

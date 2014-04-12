@@ -1,6 +1,7 @@
-#include "CudaKernels.cuh"
+#pragma once
 
-__global__ void cudaSumArray(DevicePixelType* arrayIn, double* arrayOut, size_t n)
+template <class PixelType>
+__global__ void cudaSum(PixelType* arrayIn, double* arrayOut, size_t n)
 {
 	//This algorithm was used from a this website:
 	// http://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_website/projects/reduction/doc/reduction.pdf
@@ -36,20 +37,20 @@ __global__ void cudaSumArray(DevicePixelType* arrayIn, double* arrayOut, size_t 
 			sdata[tid] += sdata[tid + 512];
 		__syncthreads();
 	}
-	
+
 	if (blockDim.x >= 512)
 	{
 		if (tid < 256) 
 			sdata[tid] += sdata[tid + 256];
 		__syncthreads();
 	}
-	
+
 	if (blockDim.x >= 256) {
 		if (tid < 128)
 			sdata[tid] += sdata[tid + 128];
 		__syncthreads(); 
 	}
-	
+
 	if (blockDim.x >= 128) 
 	{
 		if (tid < 64)
@@ -93,4 +94,3 @@ __global__ void cudaSumArray(DevicePixelType* arrayIn, double* arrayOut, size_t 
 	if (tid==0)
 		arrayOut[blockIdx.x] = sdata[0];
 }
-

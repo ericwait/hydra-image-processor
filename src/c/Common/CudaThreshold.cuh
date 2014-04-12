@@ -1,7 +1,11 @@
-#include "CudaKernels.cuh"
+#pragma once
+#define DEVICE_VEC
+#include "Vec.h"
+#include "CudaImageContainer.cuh"
 
-__global__ void cudaThresholdImage( CudaImageContainer<DevicePixelType> imageIn, CudaImageContainer<DevicePixelType> imageOut,
-								   DevicePixelType threshold, DevicePixelType minValue, DevicePixelType maxValue )
+template <class PixelType>
+__global__ void cudaThreshold( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, PixelType threshold,
+							  PixelType minValue, PixelType maxValue )
 {
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -13,4 +17,3 @@ __global__ void cudaThresholdImage( CudaImageContainer<DevicePixelType> imageIn,
 		imageOut[coordinate] = (imageIn[coordinate]>=threshold) ? (maxValue) : (minValue);
 	}
 }
-

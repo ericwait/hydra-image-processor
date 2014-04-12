@@ -12,3 +12,6 @@
 
 typedef unsigned char HostPixelType;
 typedef HostPixelType DevicePixelType;
+
+//Percent of memory that can be used on the device
+const double MAX_MEM_AVAIL = 0.95;
