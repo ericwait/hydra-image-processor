@@ -1,7 +1,10 @@
-function CudaMexTester(imageIn,device)
+function CudaMexTester(imageIn,device,image2)
 
 %% set optional paramaters
-imageRand = uint8(rand(size(imageIn))*255);
+if (~exist('image2','var') || isempty(image2))
+    image2 = uint8(rand(size(imageIn))*255);
+end
+
 imageIn1 = imageIn;
 min = 0;
 max = 255;
@@ -29,6 +32,7 @@ kernel(:,:,3) = [0 1 0; 1 1 1; 0 1 0];
 %% run Kernels
 
 showIm(imageIn,'Original');
+showIm(image2,'Second Image');
 
 try
     tic
@@ -39,7 +43,7 @@ try
     
     tic
     kernelName = 'AddImageWith';
-    imageIn2 = imageRand;
+    imageIn2 = image2;
     imageOut = CudaMex(sprintf('%s',kernelName),imageIn1,imageIn2,factor,device);
     fprintf('%s took %f sec\n',kernelName,toc);
     showIm(imageOut,kernelName);
