@@ -117,10 +117,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
     </ClInclude>
-    <ClInclude Include="Common\CudaAddFactor.cuh">
+    <ClInclude Include="Common\CudaAdd.cuh">
       <FileType>Document</FileType>
-    </ClInclude>
-    <ClInclude Include="Common\CudaAddTwoImagesWithFactor.cuh">
     </ClInclude>
     <None Include="Common\CudaGetMinMax.cuh" />
     <None Include="Common\CudaGetROI.cuh" />

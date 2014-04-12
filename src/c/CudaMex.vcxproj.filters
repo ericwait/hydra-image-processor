@@ -225,10 +225,7 @@
     <ClInclude Include="Common\CudaUtilities.cuh">
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
-    <ClInclude Include="Common\CudaAddTwoImagesWithFactor.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaAddFactor.cuh">
+    <ClInclude Include="Common\CudaAdd.cuh">
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
   </ItemGroup>

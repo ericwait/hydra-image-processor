@@ -3,8 +3,7 @@
 #include "CudaDeviceImages.cuh"
 #include "CHelpers.h"
 #include "CudaProcessBuffer.cuh"
-#include "CudaAddFactor.cuh"
-#include "CudaAddTwoImagesWithFactor.cuh"
+#include "CudaAdd.cuh"
 #include "CudaMedianFilter.cuh"
 #include "CudaGetMinMax.cuh"
 #include "CudaGetROI.cuh"
@@ -143,7 +142,7 @@ DevicePixelType* CudaProcessBuffer::addConstant(const DevicePixelType* imageIn, 
 		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
 		deviceImages.setNextDims(curChunk->getFullChunkSize());
 
-		cudaAddFactor<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
+		cudaAddScaler<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
 			additive,minVal,maxVal);
 		DEBUG_KERNEL_CHECK();
 
