@@ -1,5 +1,6 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
+#include "Vec.h"
 
 void MexMultiplyTwoImages::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {

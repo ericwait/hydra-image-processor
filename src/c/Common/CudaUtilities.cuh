@@ -1,15 +1,10 @@
 #pragma once
 
-#ifndef DEVICE_VEC
-#define DEVICE_VEC
-#include "Vec.h"
-#endif
-#undef DEVICE_VEC
-
 #include "cuda_runtime.h"
 #include <stdio.h>
 #include <stdexcept>
 #include <vector>
+#include "Vec.h"
 
 
 #ifdef _DEBUG

@@ -1,5 +1,6 @@
 #include "MexCommand.h"
 #include "CWrappers.cuh"
+#include "Vec.h"
 
 void MexSumArray::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {

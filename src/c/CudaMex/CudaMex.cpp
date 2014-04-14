@@ -1,6 +1,5 @@
 #include "mex.h"
 #include <string>
-#include "Vec.h"
  #include "Process.h"
  #include "MexCommand.h"
  

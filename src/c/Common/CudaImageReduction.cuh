@@ -1,9 +1,7 @@
 #pragma once
 
-#ifndef DEVICE_VEC
 #define DEVICE_VEC
 #include "Vec.h"
-#endif
 #undef DEVICE_VEC
 
 #include "CudaImageContainer.cuh"

@@ -1,6 +1,7 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
 #include "CHelpers.h"
+#include "Vec.h"
 
 void MexMinFilterEllipsoid::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
