@@ -62,9 +62,6 @@ std::string MexAddConstant::check(int nlhs, mxArray* plhs[], int nrhs, const mxA
 	if (nlhs!=1)
 		return "Requires one output!";
 
-// 	if (!mxIsUint8(prhs[0]))
-// 		return "Image has to be formated as a uint8!";
-
 	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
 	if (numDims>3)
 		return "Image can have a maximum of three dimensions!";
