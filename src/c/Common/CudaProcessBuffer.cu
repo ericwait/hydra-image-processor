@@ -1,4 +1,5 @@
 #include "CudaUtilities.cuh"
+#include "Vec.h"
 #include "CudaProcessBuffer.cuh"
 #include "CudaDeviceImages.cuh"
 #include "CHelpers.h"
@@ -21,6 +22,7 @@
 #include "CudaSum.cuh"
 #include "CudaThreshold.cuh"
 #include "CudaUnmixing.cuh"
+#include "CudaPow.cuh"
 
 CudaProcessBuffer::CudaProcessBuffer(int device/*=0*/)
 {
@@ -122,37 +124,6 @@ void runMedianFilter(cudaDeviceProp& deviceProp, std::vector<ImageChunk>::iterat
 //////////////////////////////////////////////////////////////////////////
 //Cuda Operators (Alphabetical order)
 //////////////////////////////////////////////////////////////////////////
-
-DevicePixelType* CudaProcessBuffer::addConstant(const DevicePixelType* imageIn, Vec<size_t> dims, double additive,
-												DevicePixelType** imageOut/*=NULL*/)
-{
-	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
-
-	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
-	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
-
-	std::vector<ImageChunk> chunks = calculateBuffers<DevicePixelType>(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
-
-	setMaxDeviceDims(chunks, maxDeviceDims);
-
-	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
-
-	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-	{
-		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
-		deviceImages.setNextDims(curChunk->getFullChunkSize());
-
-		cudaAddScaler<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
-			additive,minVal,maxVal);
-		DEBUG_KERNEL_CHECK();
-
-		deviceImages.incrementBuffer();
-
-		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
-	}
-
-	return imOut;
-}
 
 DevicePixelType* CudaProcessBuffer::addImageWith(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims,
 													  double additive, DevicePixelType** imageOut/*=NULL*/)
@@ -669,36 +640,6 @@ double CudaProcessBuffer::otsuThresholdValue(const DevicePixelType* imageIn, Vec
 	delete[] hist;
 
 	return thrsh;
-}
-
-DevicePixelType* CudaProcessBuffer::imagePow(const DevicePixelType* imageIn, Vec<size_t> dims, double power, DevicePixelType** imageOut/*=NULL*/)
-{
-	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
-
-	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
-	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
-
-	std::vector<ImageChunk> chunks = calculateBuffers<DevicePixelType>(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
-
-	setMaxDeviceDims(chunks, maxDeviceDims);
-
-	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
-
-	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-	{
-		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
-		deviceImages.setNextDims(curChunk->getFullChunkSize());
-
-		cudaPow<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
-			power,minVal,maxVal);
-		DEBUG_KERNEL_CHECK();
-
-		deviceImages.incrementBuffer();
-
-		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
-	}
-
-	return imOut;
 }
 
 DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> reductions,

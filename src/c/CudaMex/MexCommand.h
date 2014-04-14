@@ -24,8 +24,14 @@ public:
 protected:
 	MexCommand(){}
 	static void addCommand(const std::string commandText, MexCommand* commandObject);
-	void setupImagePointers( const mxArray* imageIn, HostPixelType** image, Vec<size_t>* dims, mxArray** argOut=NULL,
-		HostPixelType** imageOut=NULL);
+	
+	void setupImagePointers( const mxArray* imageIn, unsigned char** image, Vec<size_t>* dims, mxArray** argOut=NULL,
+		unsigned char** imageOut=NULL);
+	void setupImagePointers( const mxArray* imageIn, unsigned int** image, Vec<size_t>* dims, mxArray** argOut=NULL,
+		unsigned int** imageOut=NULL);
+	void setupImagePointers( const mxArray* imageIn, int** image, Vec<size_t>* dims, mxArray** argOut=NULL, int** imageOut=NULL);
+	void setupImagePointers( const mxArray* imageIn, float** image, Vec<size_t>* dims, mxArray** argOut=NULL, float** imageOut=NULL);
+	void setupImagePointers( const mxArray* imageIn, double** image, Vec<size_t>* dims, mxArray** argOut=NULL, double** imageOut=NULL);
 
 private:
 	static std::map<std::string,MexCommand*> commandList;

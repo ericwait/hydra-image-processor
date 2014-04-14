@@ -105,7 +105,7 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 			else 
 				deviceDims.y = (size_t)squareDim;
 
-			deviceDims.z = (size_t)(leftOver/deviceDims.y);
+			deviceDims.z = (size_t)(numVoxels/(deviceDims.y*deviceDims.x));
 
 			if (deviceDims.z>imageDims.z)
 				deviceDims.z = imageDims.z;
@@ -117,7 +117,7 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 			else 
 				deviceDims.z = (size_t)squareDim;
 
-			deviceDims.y = (size_t)(leftOver/deviceDims.z);
+			deviceDims.y = (size_t)(numVoxels/(deviceDims.z*deviceDims.x));
 
 			if (deviceDims.y>imageDims.y)
 				deviceDims.y = imageDims.y;
@@ -136,7 +136,7 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 			else 
 				deviceDims.x = (size_t)squareDim;
 
-			deviceDims.z = (size_t)(leftOver/deviceDims.x);
+			deviceDims.z = (size_t)(numVoxels/(deviceDims.x*deviceDims.y));
 
 			if (deviceDims.z>imageDims.z)
 				deviceDims.z = imageDims.z;
@@ -148,7 +148,7 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 			else 
 				deviceDims.z = (size_t)squareDim;
 
-			deviceDims.x = (size_t)(leftOver/deviceDims.z);
+			deviceDims.x = (size_t)(numVoxels/(deviceDims.z*deviceDims.y));
 
 			if (deviceDims.x>imageDims.x)
 				deviceDims.x = imageDims.x;
@@ -167,7 +167,7 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 			else 
 				deviceDims.x = (size_t)squareDim;
 
-			deviceDims.y = (size_t)(leftOver/deviceDims.x);
+			deviceDims.y = (size_t)(numVoxels/(deviceDims.x*deviceDims.z));
 
 			if (deviceDims.y>imageDims.y)
 				deviceDims.y = imageDims.y;
@@ -179,7 +179,7 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 			else 
 				deviceDims.y = (size_t)squareDim;
 
-			deviceDims.x = (size_t)(leftOver/deviceDims.z);
+			deviceDims.x = (size_t)(numVoxels/(deviceDims.y*deviceDims.z));
 
 			if (deviceDims.x>imageDims.x)
 				deviceDims.x = imageDims.x;

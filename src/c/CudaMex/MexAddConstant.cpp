@@ -1,5 +1,6 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
+#include "CWrappers.cuh"
 
 void MexAddConstant::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {
@@ -8,14 +9,48 @@ void MexAddConstant::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray*
 	if (nrhs>2)
 		device = mat_to_c((int)mxGetScalar(prhs[2]));
 
-	Vec<size_t> imageDims;
-	HostPixelType* imageIn, * imageOut;
-	CudaProcessBuffer cudaBuffer(device);
-	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
-
 	double additive = mxGetScalar(prhs[1]);
 
-	cudaBuffer.addConstant(imageIn,imageDims,additive,&imageOut);
+	Vec<size_t> imageDims;
+	if (mxIsUint8(prhs[0]))
+	{
+		unsigned char* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cAddConstant(imageIn,imageDims,additive,&imageOut,device);
+	}
+	else if (mxIsUint16(prhs[0]))
+	{
+		unsigned int* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cAddConstant(imageIn,imageDims,additive,&imageOut,device);
+	}
+	else if (mxIsInt16(prhs[0]))
+	{
+		int* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cAddConstant(imageIn,imageDims,additive,&imageOut,device);
+	}
+	else if (mxIsSingle(prhs[0]))
+	{
+		float* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cAddConstant(imageIn,imageDims,additive,&imageOut,device);
+	}
+	else if (mxIsDouble(prhs[0]))
+	{
+		double* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cAddConstant(imageIn,imageDims,additive,&imageOut,device);
+	}
+	else
+	{
+		throw std::runtime_error("Image type not supported!");
+	}
 }
 
 std::string MexAddConstant::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
@@ -26,12 +61,12 @@ std::string MexAddConstant::check(int nlhs, mxArray* plhs[], int nrhs, const mxA
 	if (nlhs!=1)
 		return "Requires one output!";
 
-	if (!mxIsUint8(prhs[0]))
-		return "Image has to be formated as a uint8!";
+// 	if (!mxIsUint8(prhs[0]))
+// 		return "Image has to be formated as a uint8!";
 
 	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
-	if (numDims>3 || numDims<2)
-		return "Image can only be either 2D or 3D!";
+	if (numDims>3)
+		return "Image can have a maximum of three dimensions!";
 
 	if (!mxIsDouble(prhs[1]))
 		return "Additive needs to be a single double!";

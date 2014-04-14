@@ -44,11 +44,6 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 
 	/*
-	*	Add a constant to all pixel values
-	*/
-	DevicePixelType* addConstant(const DevicePixelType* imageIn, Vec<size_t> dims, double additive, DevicePixelType** imageOut=NULL);
-
-	/*
 	*	Adds this image to the passed in one.  You can apply a factor
 	*	which is multiplied to the passed in image prior to adding
 	*/
@@ -131,11 +126,6 @@ public:
 	DevicePixelType* otsuThresholdFilter(const DevicePixelType* imageIn, Vec<size_t> dims, double alpha=1.0, DevicePixelType** imageOut=NULL);
 
 	double otsuThresholdValue(const DevicePixelType* imageIn, Vec<size_t> dims);
-
-	/*
-	*	Raise each pixel to a power
-	*/
-	DevicePixelType* imagePow(const DevicePixelType* imageIn, Vec<size_t> dims, double power, DevicePixelType** imageOut=NULL);
 
 	/*
 	*	Will reduce the size of the image by the factors passed in

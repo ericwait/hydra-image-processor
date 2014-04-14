@@ -8,12 +8,48 @@ void MexSumArray::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	if (nrhs>1)
 		device = mat_to_c((int)mxGetScalar(prhs[1]));
 
-	Vec<size_t> imageDims;
-	HostPixelType* imageIn;
-	CudaProcessBuffer cudaBuffer(device);
-	setupImagePointers(prhs[0],&imageIn,&imageDims);
+	double sm;
 
-	double sm = cSumArray(imageIn,imageDims.product());
+	Vec<size_t> imageDims;
+	if (mxIsUint8(prhs[0]))
+	{
+		unsigned char* imageIn;
+		setupImagePointers(prhs[0],&imageIn,&imageDims);
+
+		sm = cSumArray(imageIn,imageDims.product(),device);
+	}
+	else if (mxIsUint16(prhs[0]))
+	{
+		unsigned int* imageIn;
+		setupImagePointers(prhs[0],&imageIn,&imageDims);
+
+		sm = cSumArray(imageIn,imageDims.product(),device);
+	}
+	else if (mxIsInt16(prhs[0]))
+	{
+		int* imageIn;
+		setupImagePointers(prhs[0],&imageIn,&imageDims);
+
+		sm = cSumArray(imageIn,imageDims.product(),device);
+	}
+	else if (mxIsSingle(prhs[0]))
+	{
+		float* imageIn;
+		setupImagePointers(prhs[0],&imageIn,&imageDims);
+
+		sm = cSumArray(imageIn,imageDims.product(),device);
+	}
+	else if (mxIsDouble(prhs[0]))
+	{
+		double* imageIn;
+		setupImagePointers(prhs[0],&imageIn,&imageDims);
+
+		sm = cSumArray(imageIn,imageDims.product(),device);
+	}
+	else
+	{
+		throw std::runtime_error("Image type not supported!");
+	}
 
 	plhs[0] = mxCreateDoubleScalar(sm);
 }
@@ -29,9 +65,9 @@ std::string MexSumArray::check( int nlhs, mxArray* plhs[], int nrhs, const mxArr
 // 	if (!mxIsUint8(prhs[0]))
 // 		return "Image has to be formated as a uint8!";
 
-// 	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
-// 	if (numDims>3 || numDims<2)
-// 		return "Image can only be either 2D or 3D!";
+	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
+	if (numDims>3)
+		return "Image can have a maximum of three dimensions!";
 
 	return "";
 }
