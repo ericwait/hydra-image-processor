@@ -50,7 +50,7 @@
 	 }
 	 else
 	 {
-		 throw std::runtime_error("Image type not supported!");
+		 mexErrMsgTxt("Image type not supported!");
 	 }
  }
  

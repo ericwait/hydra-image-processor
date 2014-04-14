@@ -49,7 +49,7 @@ void MexSumArray::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	}
 	else
 	{
-		throw std::runtime_error("Image type not supported!");
+		mexErrMsgTxt("Image type not supported!");
 	}
 
 	plhs[0] = mxCreateDoubleScalar(sm);

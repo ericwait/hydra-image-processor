@@ -50,7 +50,7 @@ void MexAddConstant::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray*
 	}
 	else
 	{
-		throw std::runtime_error("Image type not supported!");
+		mexErrMsgTxt("Image type not supported!");
 	}
 }
 
