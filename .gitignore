@@ -35,3 +35,5 @@ src/MATLAB/cudart64_55.dll
 src/c/CudaImageProccessing.opensdf
 src/c/CudaImageProccessing.sdf
 src/c/CudaImageProccessing.v11.suo
+*.asv
+*.~
