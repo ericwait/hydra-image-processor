@@ -10,7 +10,19 @@ public:
 		deviceImages = new CudaImageContainerClean<PixelType>*[numBuffers];
 
 		for (int i=0; i<numBuffers; ++i)
-			deviceImages[i] = new CudaImageContainerClean<PixelType>(maxDeviceDims,device);
+		{
+			try
+			{
+				deviceImages[i] = new CudaImageContainerClean<PixelType>(maxDeviceDims,device);
+			}
+			catch (std::runtime_error e)
+			{
+				for (int j=0; j<i; ++j)
+					delete deviceImages[j];
+
+				throw std::runtime_error(e.what());
+			}
+		}	
 
 		this->numBuffers = numBuffers;
 		curBuff = 0;
