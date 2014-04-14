@@ -188,7 +188,7 @@
       <Filter>Header Files\CudaFiles</Filter>
     </None>
     <None Include="Common\CWrappers.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
+      <Filter>Header Files\HelperFiles</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -222,11 +222,11 @@
     <ClInclude Include="Common\CudaProcessBuffer.cuh">
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
-    <ClInclude Include="Common\CudaUtilities.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
     <ClInclude Include="Common\CudaAdd.cuh">
       <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaUtilities.cuh">
+      <Filter>Header Files\HelperFiles</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
