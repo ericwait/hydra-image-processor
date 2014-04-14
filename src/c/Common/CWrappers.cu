@@ -28,6 +28,35 @@ double* cAddConstant(const double* imageIn, Vec<size_t> dims, double additive, d
 	return addConstant(imageIn,dims,additive,imageOut,device);
 }
 
+unsigned char* cAddImageWith(const unsigned char* imageIn1, const unsigned char* imageIn2, Vec<size_t> dims, double additive,
+							 unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return addImageWith(imageIn1,imageIn2,dims,additive,imageOut,device);
+}
+
+unsigned int* cAddImageWith(const unsigned int* imageIn1, const unsigned int* imageIn2, Vec<size_t> dims, double additive,
+							unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return addImageWith(imageIn1,imageIn2,dims,additive,imageOut,device);
+}
+
+int* cAddImageWith(const int* imageIn1, const int* imageIn2, Vec<size_t> dims, double additive, int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return addImageWith(imageIn1,imageIn2,dims,additive,imageOut,device);
+}
+
+float* cAddImageWith(const float* imageIn1, const float* imageIn2, Vec<size_t> dims, double additive, float** imageOut/*=NULL*/,
+					 int device/*=0*/)
+{
+	return addImageWith(imageIn1,imageIn2,dims,additive,imageOut,device);
+}
+
+double* cAddImageWith(const double* imageIn1, const double* imageIn2, Vec<size_t> dims, double additive, double** imageOut/*=NULL*/,
+					  int device/*=0*/)
+{
+	return addImageWith(imageIn1,imageIn2,dims,additive,imageOut,device);
+}
+
 unsigned char* cImagePow(const unsigned char* imageIn, Vec<size_t> dims, double additive, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return addConstant(imageIn,dims,additive,imageOut,device);
@@ -77,3 +106,5 @@ double cSumArray(const double* imageIn, size_t n, int device/*=0*/)
 {
 	return sumArray(imageIn,n,device);
 }
+
+

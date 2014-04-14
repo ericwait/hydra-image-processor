@@ -125,36 +125,6 @@ void runMedianFilter(cudaDeviceProp& deviceProp, std::vector<ImageChunk>::iterat
 //Cuda Operators (Alphabetical order)
 //////////////////////////////////////////////////////////////////////////
 
-DevicePixelType* CudaProcessBuffer::addImageWith(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims,
-													  double additive, DevicePixelType** imageOut/*=NULL*/)
-{
-	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
-
-	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
-	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
-
-	std::vector<ImageChunk> chunks = calculateBuffers<DevicePixelType>(dims,3,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
-
-	setMaxDeviceDims(chunks, maxDeviceDims);
-
-	CudaDeviceImages<DevicePixelType> deviceImages(3,maxDeviceDims,device);
-
-	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-	{
-		deviceImages.setAllDims(curChunk->getFullChunkSize());
-		curChunk->sendROI(imageIn1,dims,deviceImages.getCurBuffer());
-		curChunk->sendROI(imageIn2,dims,deviceImages.getNextBuffer());
-
-		cudaAddTwoImagesWithFactor<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
-			*(deviceImages.getThirdBuffer()),additive,minVal,maxVal);
-		DEBUG_KERNEL_CHECK();
-
-		curChunk->retriveROI(imOut,dims,deviceImages.getThirdBuffer());
-	}
-
-	return imOut;
-}
-
 DevicePixelType* CudaProcessBuffer::applyPolyTransformation(const DevicePixelType* imageIn, Vec<size_t> dims, double a, double b, double c,
 												DevicePixelType minValue, DevicePixelType maxValue, DevicePixelType** imageOut/*=NULL*/)
 {

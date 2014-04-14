@@ -1,5 +1,6 @@
 #include "MexCommand.h"
 #include "CudaProcessBuffer.cuh"
+#include "CWrappers.cuh"
 #include "Vec.h"
  
  void MexAddImageWith::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
@@ -9,18 +10,73 @@
 	 if (nrhs>3)
 		 device = mat_to_c((int)mxGetScalar(prhs[3]));
 
-	 Vec<size_t> imageDims1, imageDims2;
-	 HostPixelType* imageIn1, * imageIn2, * imageOut;
-	 CudaProcessBuffer cudaBuffer(device);
-	 setupImagePointers(prhs[0],&imageIn1,&imageDims1,&plhs[0],&imageOut);
-	 setupImagePointers(prhs[1],&imageIn2,&imageDims2);
-
-	 if (imageDims1!=imageDims2)
-		 mexErrMsgTxt("Image dimensions must agree!");
-
 	 double additive = mxGetScalar(prhs[2]);
 
-	 cudaBuffer.addImageWith(imageIn1,imageIn2,imageDims1,additive,&imageOut);
+	 Vec<size_t> imageDims, imageDims2;
+	 if (mxIsUint8(prhs[0]))
+	 {
+		 unsigned char* imageIn,* imageOut;
+		 unsigned char* imageIn2;
+		 setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+		 setupImagePointers(prhs[1],&imageIn2,&imageDims2);
+
+		 if (imageDims!=imageDims2)
+			 mexErrMsgTxt("Image dimensions must agree!");
+
+		 cAddImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
+	 }
+	 else if (mxIsUint16(prhs[0]))
+	 {
+		 unsigned int* imageIn,* imageOut;
+		 unsigned int* imageIn2;
+		 setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+		 setupImagePointers(prhs[1],&imageIn2,&imageDims2);
+
+		 if (imageDims!=imageDims2)
+			 mexErrMsgTxt("Image dimensions must agree!");
+
+		 cAddImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
+	 }
+	 else if (mxIsInt16(prhs[0]))
+	 {
+		 int* imageIn,* imageOut;
+		 int* imageIn2;
+		 setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+		 setupImagePointers(prhs[1],&imageIn2,&imageDims2);
+
+		 if (imageDims!=imageDims2)
+			 mexErrMsgTxt("Image dimensions must agree!");
+
+		 cAddImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
+	 }
+	 else if (mxIsSingle(prhs[0]))
+	 {
+		 float* imageIn,* imageOut;
+		 float* imageIn2;
+		 setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+		 setupImagePointers(prhs[1],&imageIn2,&imageDims2);
+
+		 if (imageDims!=imageDims2)
+			 mexErrMsgTxt("Image dimensions must agree!");
+
+		 cAddImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
+	 }
+	 else if (mxIsDouble(prhs[0]))
+	 {
+		 double* imageIn,* imageOut;
+		 double* imageIn2;
+		 setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+		 setupImagePointers(prhs[1],&imageIn2,&imageDims2);
+
+		 if (imageDims!=imageDims2)
+			 mexErrMsgTxt("Image dimensions must agree!");
+
+		 cAddImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
+	 }
+	 else
+	 {
+		 mexErrMsgTxt("Image type not supported!");
+	 }
  }
  
  std::string MexAddImageWith::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
@@ -31,16 +87,13 @@
  	if (nlhs!=1)
  		return "Requires one output!";
  
- 	if (!mxIsUint8(prhs[0]) || !mxIsUint8(prhs[1]))
- 		return "Images has to be formated as a uint8!";
- 
  	size_t numDims1 = mxGetNumberOfDimensions(prhs[0]);
- 	if (numDims1>3 || numDims1<2)
- 		return "Image can only be either 2D or 3D!";
+	if (numDims1>3)
+		return "Image can have a maximum of three dimensions!";
  
  	size_t numDims2 = mxGetNumberOfDimensions(prhs[1]);
- 	if (numDims2>3 || numDims2<2)
- 		return "Image can only be either 2D or 3D!";
+	if (numDims2>3)
+		return "Image can have a maximum of three dimensions!";
 
 	if (numDims1!=numDims2)
 		return "Image dimensions must agree!";

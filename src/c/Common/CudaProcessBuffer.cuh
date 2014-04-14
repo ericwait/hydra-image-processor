@@ -44,13 +44,6 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 
 	/*
-	*	Adds this image to the passed in one.  You can apply a factor
-	*	which is multiplied to the passed in image prior to adding
-	*/
-	DevicePixelType* addImageWith(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims, double additive,
-		DevicePixelType** imageOut=NULL);
-
-	/*
 	*	New pixel values will be a*x^2 + b*x + c where x is the original
 	*	pixel value.  This new value will be clamped between the min and
 	*	max values.

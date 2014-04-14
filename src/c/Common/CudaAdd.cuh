@@ -1,6 +1,8 @@
 #pragma once
 #define DEVICE_VEC
 #include "Vec.h"
+#undef DEVICE_VEC
+#include "Vec.h"
 #include "CudaImageContainer.cuh"
 #include "CHelpers.h"
 #include "ImageChunk.cuh"
@@ -73,6 +75,48 @@ PixelType* addConstant(const PixelType* imageIn, Vec<size_t> dims, double additi
 		deviceImages.incrementBuffer();
 
 		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
+	}
+
+	return imOut;
+}
+
+/*
+*	Adds this image to the passed in one.  You can apply a factor
+*	which is multiplied to the passed in image prior to adding
+*/
+template <class PixelType>
+PixelType* addImageWith(const PixelType* imageIn1, const PixelType* imageIn2, Vec<size_t> dims, double additive,
+						PixelType** imageOut=NULL, int device=0)
+{
+	PixelType* imOut = setUpOutIm(dims, imageOut);
+
+	PixelType minVal = std::numeric_limits<PixelType>::lowest();
+	PixelType maxVal = std::numeric_limits<PixelType>::max();
+
+	cudaDeviceProp props;
+	cudaGetDeviceProperties(&props,device);
+
+	size_t availMem, total;
+	cudaMemGetInfo(&availMem,&total);
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,3,(size_t)(availMem*MAX_MEM_AVAIL),props);
+
+	Vec<size_t> maxDeviceDims;
+	setMaxDeviceDims(chunks, maxDeviceDims);
+
+	CudaDeviceImages<PixelType> deviceImages(3,maxDeviceDims,device);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		deviceImages.setAllDims(curChunk->getFullChunkSize());
+		curChunk->sendROI(imageIn1,dims,deviceImages.getCurBuffer());
+		curChunk->sendROI(imageIn2,dims,deviceImages.getNextBuffer());
+
+		cudaAddTwoImagesWithFactor<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
+			*(deviceImages.getThirdBuffer()),additive,minVal,maxVal);
+		DEBUG_KERNEL_CHECK();
+
+		curChunk->retriveROI(imOut,dims,deviceImages.getThirdBuffer());
 	}
 
 	return imOut;
