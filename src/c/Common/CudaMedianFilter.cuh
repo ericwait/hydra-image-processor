@@ -5,6 +5,11 @@
 #undef DEVICE_VEC
 
 #include "CudaImageContainer.cuh"
+#include "Vec.h"
+#include <vector>
+#include "CHelpers.h"
+#include "ImageChunk.cuh"
+#include "CudaDeviceImages.cuh"
 
 template <class PixelType>
 __device__ PixelType* SubDivide(PixelType* pB, PixelType* pE)
@@ -97,4 +102,68 @@ __global__ void cudaMedianFilter( CudaImageContainer<PixelType> imageIn, CudaIma
 		imageOut[coordinate] = cudaFindMedian(vals+offset,kernelVolume);
 	}
 	__syncthreads();
+}
+
+template <class PixelType>
+void runMedianFilter(cudaDeviceProp& props, std::vector<ImageChunk>::iterator curChunk, Vec<size_t> &neighborhood, 
+					 CudaDeviceImages<PixelType>& deviceImages)
+{
+	dim3 blocks(curChunk->blocks);
+	dim3 threads(curChunk->threads);
+	double threadVolume = threads.x * threads.y * threads.z;
+	double newThreadVolume = (double)props.sharedMemPerBlock/(sizeof(PixelType)*neighborhood.product());
+
+	if (newThreadVolume<threadVolume)
+	{
+		double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
+		threads.x = (unsigned int)(threads.x / alpha);
+		threads.y = (unsigned int)(threads.y / alpha);
+		threads.z = (unsigned int)(threads.z / alpha);
+		threads.x = (threads.x>0) ? (threads.x) : (1);
+		threads.y = (threads.y>0) ? (threads.y) : (1);
+		threads.z = (threads.z>0) ? (threads.z) : (1);
+
+		blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x / threads.x);
+		blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y / threads.y);
+		blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z / threads.z);
+	}
+
+	size_t sharedMemorysize = neighborhood.product()*sizeof(PixelType) * threads.x * threads.y * threads.z;
+
+	cudaMedianFilter<<<blocks,threads,sharedMemorysize>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),neighborhood);
+	DEBUG_KERNEL_CHECK();
+	deviceImages.incrementBuffer();
+}
+
+template <class PixelType>
+PixelType* medianFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, PixelType** imageOut=NULL, int device=0)
+{
+	PixelType* imOut = setUpOutIm(dims, imageOut);
+
+	neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);
+
+	cudaDeviceProp props;
+	cudaGetDeviceProperties(&props,device);
+
+	size_t memAvail, total;
+	cudaMemGetInfo(&memAvail,&total);
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(memAvail*MAX_MEM_AVAIL),props,neighborhood);
+
+	Vec<size_t> maxDeviceDims;
+	setMaxDeviceDims(chunks, maxDeviceDims);
+
+	CudaDeviceImages<PixelType> deviceImages(2,maxDeviceDims,device);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
+		deviceImages.setNextDims(curChunk->getFullChunkSize());
+
+		runMedianFilter(props, curChunk, neighborhood, deviceImages);
+
+		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
+	}
+
+	return imOut;
 }

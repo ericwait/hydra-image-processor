@@ -80,11 +80,6 @@ public:
 	DevicePixelType* meanFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, DevicePixelType** imageOut=NULL);
 
 	/*
-	*	Filters image where each pixel is the median of its neighborhood
-	*/
-	DevicePixelType* medianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, DevicePixelType** imageOut=NULL);
-
-	/*
 	*	Sets each pixel to the min value of its neighborhood
 	*	Erodes structures
 	*/ 

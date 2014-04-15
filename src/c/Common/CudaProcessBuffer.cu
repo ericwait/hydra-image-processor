@@ -55,37 +55,6 @@ void CudaProcessBuffer::defaults()
 
 
 
-void runMedianFilter(cudaDeviceProp& deviceProp, std::vector<ImageChunk>::iterator curChunk, Vec<size_t> &neighborhood, 
-					 CudaDeviceImages<DevicePixelType>& deviceImages)
-{
-	dim3 blocks(curChunk->blocks);
-	dim3 threads(curChunk->threads);
-	double threadVolume = threads.x * threads.y * threads.z;
-	double newThreadVolume = (double)deviceProp.sharedMemPerBlock/(sizeof(DevicePixelType)*neighborhood.product());
-
-	if (newThreadVolume<threadVolume)
-	{
-		double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
-		threads.x = (unsigned int)(threads.x / alpha);
-		threads.y = (unsigned int)(threads.y / alpha);
-		threads.z = (unsigned int)(threads.z / alpha);
-		threads.x = (threads.x>0) ? (threads.x) : (1);
-		threads.y = (threads.y>0) ? (threads.y) : (1);
-		threads.z = (threads.z>0) ? (threads.z) : (1);
-
-		blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x / threads.x);
-		blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y / threads.y);
-		blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z / threads.z);
-	}
-
-	size_t sharedMemorysize = neighborhood.product()*sizeof(DevicePixelType) * threads.x * threads.y * threads.z;
-
-	cudaMedianFilter<<<blocks,threads,sharedMemorysize>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),neighborhood);
-	DEBUG_KERNEL_CHECK();
-	deviceImages.incrementBuffer();
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 //Cuda Operators (Alphabetical order)
 //////////////////////////////////////////////////////////////////////////
@@ -323,32 +292,6 @@ DevicePixelType* CudaProcessBuffer::meanFilter(const DevicePixelType* imageIn, V
 		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
 	}
 	
-	return imOut;
-}
-
-DevicePixelType* CudaProcessBuffer::medianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood,
-												 DevicePixelType** imageOut/*=NULL*/)
-{
-	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
-
-	neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);
-
-	std::vector<ImageChunk> chunks = calculateBuffers<DevicePixelType>(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,neighborhood);
-
-	setMaxDeviceDims(chunks, maxDeviceDims);
-
-	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
-
-	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-	{
-		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
-		deviceImages.setNextDims(curChunk->getFullChunkSize());
-
-		runMedianFilter(deviceProp, curChunk, neighborhood, deviceImages);
-
-		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
-	}
-
 	return imOut;
 }
 

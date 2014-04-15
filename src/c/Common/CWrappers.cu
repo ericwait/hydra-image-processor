@@ -1,7 +1,8 @@
 #include "CWrappers.cuh"
 #include "CudaAdd.cuh"
-#include "CudaPow.cuh"
 #include "CudaGaussianFilter.cuh"
+#include "CudaMedianFilter.cuh"
+#include "CudaPow.cuh"
 #include "CudaSum.cuh"
 
 unsigned char* cAddConstant(const unsigned char* imageIn, Vec<size_t> dims, double additive, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
@@ -58,6 +59,31 @@ double* cAddImageWith(const double* imageIn1, const double* imageIn2, Vec<size_t
 	return addImageWith(imageIn1,imageIn2,dims,additive,imageOut,device);
 }
 
+unsigned char* cGaussianFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<float> sigmas, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+}
+
+unsigned int* cGaussianFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<float> sigmas, unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+}
+
+int* cGaussianFilter(const int* imageIn, Vec<size_t> dims, Vec<float> sigmas, int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+}
+
+float* cGaussianFilter(const float* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+}
+
+double* cGaussianFilter(const double* imageIn, Vec<size_t> dims, Vec<float> sigmas, double** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+}
+
 unsigned char* cImagePow(const unsigned char* imageIn, Vec<size_t> dims, double additive, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return addConstant(imageIn,dims,additive,imageOut,device);
@@ -83,29 +109,31 @@ double* cImagePow(const double* imageIn, Vec<size_t> dims, double power, double*
 	return imagePow(imageIn,dims,power,imageOut,device);
 }
 
-unsigned char* cGaussianFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<float> sigmas, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+unsigned char* cMedianFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, unsigned char** imageOut/*=NULL*/,
+							 int device/*=0*/)
 {
-	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+	return medianFilter(imageIn,dims,neighborhood,imageOut,device);
 }
 
-unsigned int* cGaussianFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<float> sigmas, unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+unsigned int* cMedianFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, unsigned int** imageOut/*=NULL*/,
+							int device/*=0*/)
 {
-	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+	return medianFilter(imageIn,dims,neighborhood,imageOut,device);
 }
 
-int* cGaussianFilter(const int* imageIn, Vec<size_t> dims, Vec<float> sigmas, int** imageOut/*=NULL*/, int device/*=0*/)
+int* cMedianFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, int** imageOut/*=NULL*/, int device/*=0*/)
 {
-	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+	return medianFilter(imageIn,dims,neighborhood,imageOut,device);
 }
 
-float* cGaussianFilter(const float* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut/*=NULL*/, int device/*=0*/)
+float* cMedianFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, float** imageOut/*=NULL*/, int device/*=0*/)
 {
-	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+	return medianFilter(imageIn,dims,neighborhood,imageOut,device);
 }
 
-double* cGaussianFilter(const double* imageIn, Vec<size_t> dims, Vec<float> sigmas, double** imageOut/*=NULL*/, int device/*=0*/)
+double* cMedianFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, double** imageOut/*=NULL*/, int device/*=0*/)
 {
-	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+	return medianFilter(imageIn,dims,neighborhood,imageOut,device);
 }
 
 double cSumArray(const unsigned char* imageIn, size_t n, int device/*=0*/)
@@ -132,4 +160,3 @@ double cSumArray(const double* imageIn, size_t n, int device/*=0*/)
 {
 	return sumArray(imageIn,n,device);
 }
-
