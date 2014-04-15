@@ -1,6 +1,7 @@
 #include "CWrappers.cuh"
 #include "CudaAdd.cuh"
 #include "CudaGaussianFilter.cuh"
+#include "CudaMaxFilter.cuh"
 #include "CudaMedianFilter.cuh"
 #include "CudaMultiplyImage.cuh"
 #include "CudaPow.cuh"
@@ -121,6 +122,32 @@ unsigned int* cMedianFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<s
 {
 	return medianFilter(imageIn,dims,neighborhood,imageOut,device);
 }
+
+unsigned char* cMaxFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return maxFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+unsigned int* cMaxFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return maxFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+int* cMaxFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return maxFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+float* cMaxFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, float** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return maxFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+double* cMaxFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, double** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return maxFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
 
 int* cMedianFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, int** imageOut/*=NULL*/, int device/*=0*/)
 {

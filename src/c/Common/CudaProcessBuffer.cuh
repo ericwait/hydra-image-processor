@@ -66,13 +66,6 @@ public:
 	void getMinMax(const DevicePixelType* imageIn, size_t n, DevicePixelType& minVal, DevicePixelType& maxVal);
 
 	/*
-	*	Sets each pixel to the max value of its neighborhood
-	*	Dilates structures
-	*/ 
-	DevicePixelType* maxFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernalDims, float* kernel=NULL,
-		DevicePixelType** imageOut=NULL);
-
-	/*
 	*	Filters image where each pixel is the mean of its neighborhood
 	*  If imageOut is null, then a new image pointer will be created and returned.
 	*  In either case the caller must clean up the the return image correctly
