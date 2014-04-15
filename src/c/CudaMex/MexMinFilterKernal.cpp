@@ -1,7 +1,6 @@
 #include "MexCommand.h"
-#include "CudaProcessBuffer.cuh"
-#include "CHelpers.h"
 #include "Vec.h"
+#include "CWrappers.cuh"
 
 void MexMinFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
@@ -9,11 +8,6 @@ void MexMinFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxA
 
 	if (nrhs>2)
 		device = mat_to_c((int)mxGetScalar(prhs[2]));
-
-	Vec<size_t> imageDims;
-	HostPixelType* imageIn, * imageOut;
-	CudaProcessBuffer cudaBuffer(device);
-	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
 	size_t numDims = mxGetNumberOfDimensions(prhs[1]);
 	const mwSize* DIMS = mxGetDimensions(prhs[1]);
@@ -42,7 +36,46 @@ void MexMinFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxA
 	for (int i=0; i<kernDims.product(); ++i)
 		kernel[i] = (float)matKernel[i];
 
-	cudaBuffer.minFilter(imageIn,imageDims,kernDims,kernel,&imageOut);
+	Vec<size_t> imageDims;
+	if (mxIsUint8(prhs[0]))
+	{
+		unsigned char* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cMinFilter(imageIn,imageDims,kernDims,kernel,&imageOut,device);
+	}
+	else if (mxIsUint16(prhs[0]))
+	{
+		unsigned int* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cMinFilter(imageIn,imageDims,kernDims,kernel,&imageOut,device);
+	}
+	else if (mxIsInt16(prhs[0]))
+	{
+		int* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cMinFilter(imageIn,imageDims,kernDims,kernel,&imageOut,device);
+	}
+	else if (mxIsSingle(prhs[0]))
+	{
+		float* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cMinFilter(imageIn,imageDims,kernDims,kernel,&imageOut,device);
+	}
+	else if (mxIsDouble(prhs[0]))
+	{
+		double* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cMinFilter(imageIn,imageDims,kernDims,kernel,&imageOut,device);
+	}
+	else
+	{
+		mexErrMsgTxt("Image type not supported!");
+	}
 
 	delete[] kernel;
 }
@@ -55,12 +88,9 @@ std::string MexMinFilterKernel::check( int nlhs, mxArray* plhs[], int nrhs, cons
 	if (nlhs!=1)
 		return "Requires one output!";
 
-	if (!mxIsUint8(prhs[0]))
-		return "Image has to be formated as a uint8!";
-
 	size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
-	if (imgNumDims>3 || imgNumDims<2)
-		return "Image can only be either 2-D or 3-D!";
+	if (imgNumDims>3)
+		return "Image can have a maximum of three dimensions!";
 
 	size_t kernDims = mxGetNumberOfDimensions(prhs[0]);
 	if (kernDims<1 || kernDims>3)

@@ -73,13 +73,6 @@ public:
 	DevicePixelType* meanFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, DevicePixelType** imageOut=NULL);
 
 	/*
-	*	Sets each pixel to the min value of its neighborhood
-	*	Erodes structures
-	*/ 
-	DevicePixelType* minFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernalDims, float* kernel=NULL,
-		DevicePixelType** imageOut=NULL);
-
-	/*
 	*	This will calculate the normalized covariance between the two images A and B
 	*	returns (sum over all{(A-mu(A)) X (B-mu(B))}) / (sigma(A)Xsigma(B)
 	*	The images buffers will not change the original data 

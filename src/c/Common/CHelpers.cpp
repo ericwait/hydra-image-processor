@@ -20,7 +20,6 @@ float* createEllipsoidKernel(Vec<size_t> radii, Vec<size_t>& kernelDims)
 				Vec<float> tmp = dimScale * Vec<float>((cur-mid).pwr(2));
 				if (tmp.x+tmp.y+tmp.z<=1.0f)
 				{
-					size_t ind = kernelDims.linearAddressAt(cur);
 					kernel[kernelDims.linearAddressAt(cur)] = 1.0f;
 				}
 			}

@@ -45,6 +45,16 @@ int* cMedianFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> neighborhoo
 float* cMedianFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, float** imageOut=NULL, int device=0);
 double* cMedianFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, double** imageOut=NULL, int device=0);
 
+
+unsigned char* cMinFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL,
+						  unsigned char** imageOut=NULL, int device=0);
+unsigned int* cMinFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL,
+						 unsigned int** imageOut=NULL, int device=0);
+int* cMinFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, int** imageOut=NULL, int device=0);
+float* cMinFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, float** imageOut=NULL,
+				  int device=0);
+double* cMinFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, double** imageOut=NULL, int device=0);
+
 unsigned char* cMultiplyImage(const unsigned char* imageIn, Vec<size_t> dims, double multiplier, unsigned char** imageOut=NULL, int device=0);
 unsigned int* cMultiplyImage(const unsigned int* imageIn, Vec<size_t> dims, double multiplier, unsigned int** imageOut=NULL, int device=0);
 int* cMultiplyImage(const int* imageIn, Vec<size_t> dims, double multiplier, int** imageOut=NULL, int device=0);

@@ -15,6 +15,7 @@ void MexMaxFilterEllipsoid::execute( int nlhs, mxArray* plhs[], int nrhs, const 
 	Vec<size_t> radii((size_t)radiiD[0],(size_t)radiiD[1],(size_t)radiiD[2]);
 	Vec<size_t> kernDims;
 	float* circleKernel = createEllipsoidKernel(radii,kernDims);
+
 	Vec<size_t> imageDims;
 	if (mxIsUint8(prhs[0]))
 	{

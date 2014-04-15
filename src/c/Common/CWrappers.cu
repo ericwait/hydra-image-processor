@@ -3,11 +3,13 @@
 #include "CudaGaussianFilter.cuh"
 #include "CudaMaxFilter.cuh"
 #include "CudaMedianFilter.cuh"
+#include "CudaMinFilter.cuh"
 #include "CudaMultiplyImage.cuh"
 #include "CudaPow.cuh"
 #include "CudaSum.cuh"
 
-unsigned char* cAddConstant(const unsigned char* imageIn, Vec<size_t> dims, double additive, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+unsigned char* cAddConstant(const unsigned char* imageIn, Vec<size_t> dims, double additive, unsigned char** imageOut/*=NULL*/,
+							int device/*=0*/)
 {
 	return addConstant(imageIn,dims,additive,imageOut,device);
 }
@@ -61,12 +63,14 @@ double* cAddImageWith(const double* imageIn1, const double* imageIn2, Vec<size_t
 	return addImageWith(imageIn1,imageIn2,dims,additive,imageOut,device);
 }
 
-unsigned char* cGaussianFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<float> sigmas, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+unsigned char* cGaussianFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<float> sigmas, unsigned char** imageOut/*=NULL*/,
+							   int device/*=0*/)
 {
 	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
 }
 
-unsigned int* cGaussianFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<float> sigmas, unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+unsigned int* cGaussianFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<float> sigmas, unsigned int** imageOut/*=NULL*/,
+							  int device/*=0*/)
 {
 	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
 }
@@ -123,31 +127,35 @@ unsigned int* cMedianFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<s
 	return medianFilter(imageIn,dims,neighborhood,imageOut,device);
 }
 
-unsigned char* cMaxFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+unsigned char* cMaxFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/,
+						  unsigned char** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return maxFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
 }
 
-unsigned int* cMaxFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+unsigned int* cMaxFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/,
+						 unsigned int** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return maxFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
 }
 
-int* cMaxFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, int** imageOut/*=NULL*/, int device/*=0*/)
+int* cMaxFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, int** imageOut/*=NULL*/,
+				int device/*=0*/)
 {
 	return maxFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
 }
 
-float* cMaxFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, float** imageOut/*=NULL*/, int device/*=0*/)
+float* cMaxFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, float** imageOut/*=NULL*/,
+				  int device/*=0*/)
 {
 	return maxFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
 }
 
-double* cMaxFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, double** imageOut/*=NULL*/, int device/*=0*/)
+double* cMaxFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, double** imageOut/*=NULL*/,
+				   int device/*=0*/)
 {
 	return maxFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
 }
-
 
 int* cMedianFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, int** imageOut/*=NULL*/, int device/*=0*/)
 {
@@ -162,6 +170,34 @@ float* cMedianFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> neighbo
 double* cMedianFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, double** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return medianFilter(imageIn,dims,neighborhood,imageOut,device);
+}
+
+unsigned char* cMinFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/,
+						  unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return minFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+unsigned int* cMinFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/,
+						 unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return minFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+int* cMinFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, int** imageOut/*=NULL*/,
+				int device/*=0*/)
+{
+	return minFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+float* cMinFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, float** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return minFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+double* cMinFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, double** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return minFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
 }
 
 unsigned char* cMultiplyImage(const unsigned char* imageIn, Vec<size_t> dims, double multiplier, unsigned char** imageOut/*=NULL*/, int device/*=0*/)

@@ -247,52 +247,6 @@ DevicePixelType* CudaProcessBuffer::meanFilter(const DevicePixelType* imageIn, V
 	return imOut;
 }
 
-DevicePixelType* CudaProcessBuffer::minFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/,
-											  DevicePixelType** imageOut/*=NULL*/)
-{
-	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
-
-	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
-	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
-
-	if (kernel==NULL)
-	{
-		kernelDims = kernelDims.clamp(Vec<size_t>(1,1,1),dims);
-		float* ones = new float[kernelDims.product()];
-		for (int i=0; i<kernelDims.product(); ++i)
-			ones[i] = 1.0f;
-
-		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, ones, sizeof(float)*kernelDims.product()));
-		delete[] ones;
-	} 
-	else
-	{
-		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, kernel, sizeof(float)*kernelDims.product()));
-	}
-
-	std::vector<ImageChunk> chunks = calculateBuffers<DevicePixelType>(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,kernelDims);
-
-	setMaxDeviceDims(chunks, maxDeviceDims);
-
-	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
-
-	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-	{
-		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
-		deviceImages.setNextDims(curChunk->getFullChunkSize());
-
-		cudaMinFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),kernelDims,
-			minVal,maxVal);
-		DEBUG_KERNEL_CHECK();
-
-		deviceImages.incrementBuffer();
-
-		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
-	}
-
-	return imOut;
-}
-
 double CudaProcessBuffer::normalizedCovariance(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims)
 {
 // 	double im1Mean = sumArray(imageIn1,dims.product()) / dims.product();
