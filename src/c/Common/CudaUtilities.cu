@@ -81,7 +81,7 @@ void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &
 	}
 }
 
-Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, int& iterations)
+Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernelOut, int& iterations)
 {
 	Vec<size_t> kernelDims(1,1,1);
 	iterations = 1;
@@ -104,6 +104,9 @@ Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, int& iteration
 	kernelDims.x = kernelDims.x%2==0 ? kernelDims.x+1 : kernelDims.x;
 	kernelDims.y = kernelDims.y%2==0 ? kernelDims.y+1 : kernelDims.y;
 	kernelDims.z = kernelDims.z%2==0 ? kernelDims.z+1 : kernelDims.z;
+
+	*kernelOut = new float[kernelDims.product()];
+	float* kernel = *kernelOut;
 
 	Vec<size_t> mid;
 	mid.x = kernelDims.x/2;
@@ -136,7 +139,7 @@ Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, int& iteration
 	return kernelDims;
 }
 
-Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, Vec<int>& iterations)
+Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernelOut, Vec<int>& iterations)
 {
 	Vec<size_t> kernelDims(1,1,1);
 	iterations = Vec<int>(1,1,1);
@@ -165,6 +168,9 @@ Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, Vec<int>& iter
 	mid.x = kernelDims.x/2;
 	mid.y = kernelDims.y/2;
 	mid.z = kernelDims.z/2;
+
+	*kernelOut = new float[kernelDims.product()];
+	float* kernel = *kernelOut;
 
 	float total = 0.0;
 	for (size_t x=0; x<kernelDims.x ; ++x)

@@ -3,7 +3,6 @@
 #include "CudaProcessBuffer.cuh"
 #include "CudaDeviceImages.cuh"
 #include "CHelpers.h"
-#include "CudaProcessBuffer.cuh"
 #include "CudaAdd.cuh"
 #include "CudaMedianFilter.cuh"
 #include "CudaGetMinMax.cuh"
@@ -23,6 +22,7 @@
 #include "CudaThreshold.cuh"
 #include "CudaUnmixing.cuh"
 #include "CudaPow.cuh"
+#include "CudaGaussianFilter.cuh"
 
 CudaProcessBuffer::CudaProcessBuffer(int device/*=0*/)
 {
@@ -53,42 +53,7 @@ void CudaProcessBuffer::defaults()
 // Helper Functions
 //////////////////////////////////////////////////////////////////////////
 
-void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iterator& curChunk, CudaDeviceImages<DevicePixelType>& deviceImages,
-						Vec<size_t> sizeconstKernelDims, int device)
-{
-	if (curChunk->getFullChunkSize().x>1)
-	{
-		for (int x=0; x<gaussIterations.x; ++x)
-		{
-			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
-				Vec<size_t>(sizeconstKernelDims.x,1,1));
-			DEBUG_KERNEL_CHECK();
-			deviceImages.incrementBuffer();
-		}
-	}
 
-	if (curChunk->getFullChunkSize().y>1)
-	{
-		for (int y=0; y<gaussIterations.y; ++y)
-		{
-			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
-				Vec<size_t>(1,sizeconstKernelDims.y,1),	sizeconstKernelDims.x);
-			DEBUG_KERNEL_CHECK();
-			deviceImages.incrementBuffer();
-		}
-	}
-
-	if (curChunk->getFullChunkSize().z>1)
-	{
-		for (int z=0; z<gaussIterations.z; ++z)
-		{
-			cudaMultAddFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
-				Vec<size_t>(1,1,sizeconstKernelDims.z),	sizeconstKernelDims.y+sizeconstKernelDims.x);
-			DEBUG_KERNEL_CHECK();
-			deviceImages.incrementBuffer();
-		}
-	}
-}
 
 void runMedianFilter(cudaDeviceProp& deviceProp, std::vector<ImageChunk>::iterator curChunk, Vec<size_t> &neighborhood, 
 					 CudaDeviceImages<DevicePixelType>& deviceImages)
@@ -163,8 +128,10 @@ DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* i
 
 	neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);
 
+	float* hostKernel;
+
 	Vec<int> gaussIterations(0,0,0);
-	Vec<size_t> sizeconstKernelDims = createGaussianKernel(sigmas,hostKernel,gaussIterations);
+	Vec<size_t> sizeconstKernelDims = createGaussianKernel(sigmas,&hostKernel,gaussIterations);
 	HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)*
 		(sizeconstKernelDims.x+sizeconstKernelDims.y+sizeconstKernelDims.z)));
 
@@ -282,40 +249,7 @@ void CudaProcessBuffer::getMinMax(const DevicePixelType* imageIn, size_t n, Devi
 	delete[] hostMax;
 }
 
-DevicePixelType* CudaProcessBuffer::gaussianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
-												   DevicePixelType** imageOut/*=NULL*/)
-{
-	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
 
-	Vec<int> gaussIterations(0,0,0);
-	sigmas.x = (dims.x==1) ? (0) : (sigmas.x);
-	sigmas.y = (dims.y==1) ? (0) : (sigmas.y);
-	sigmas.z = (dims.z==1) ? (0) : (sigmas.z);
-
-	Vec<size_t> sizeconstKernelDims = createGaussianKernel(sigmas,hostKernel,gaussIterations);
-	HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)*
-		(sizeconstKernelDims.x+sizeconstKernelDims.y+sizeconstKernelDims.z)));
-
-	std::vector<ImageChunk> chunks = calculateBuffers<DevicePixelType>(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,
-		sizeconstKernelDims);
-
-	setMaxDeviceDims(chunks, maxDeviceDims);
-
-	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
-
-	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-	{
-		deviceImages.setAllDims(curChunk->getFullChunkSize());
-
-		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
-
-		runGaussIterations(gaussIterations, curChunk, deviceImages, sizeconstKernelDims,device);
-
-		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
-	}
-
-	return imOut;
-}
 
 DevicePixelType* CudaProcessBuffer::maxFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/,
 						   DevicePixelType** imageOut/*=NULL*/)

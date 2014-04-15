@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <vector>
 #include "Vec.h"
+#include "Defines.h"
 
 
 #ifdef _DEBUG
@@ -117,6 +118,6 @@ struct Lock
 	}
 };
 
-Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, int& iterations);
+Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernel, int& iterations);
 
-Vec<size_t> createGaussianKernel(Vec<float> sigma, float* kernel, Vec<int>& iterations);
+Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernel, Vec<int>& iterations);

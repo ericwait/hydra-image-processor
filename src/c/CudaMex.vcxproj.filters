@@ -190,6 +190,9 @@
     <None Include="Common\CWrappers.cuh">
       <Filter>Header Files\HelperFiles</Filter>
     </None>
+    <None Include="Common\CudaGaussianFilter.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CudaMex\MexCommand.h">

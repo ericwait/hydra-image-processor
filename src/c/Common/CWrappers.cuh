@@ -22,6 +22,13 @@ int* cImagePow(const int* imageIn, Vec<size_t> dims, double power, int** imageOu
 float* cImagePow(const float* imageIn, Vec<size_t> dims, double power, float** imageOut=NULL, int device=0);
 double* cImagePow(const double* imageIn, Vec<size_t> dims, double power, double** imageOut=NULL, int device=0);
 
+unsigned char* cGaussianFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<float> sigmas, unsigned char** imageOut=NULL,
+							   int device=0);
+unsigned int* cGaussianFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<float> sigmas, unsigned int** imageOut=NULL, int device=0);
+int* cGaussianFilter(const int* imageIn, Vec<size_t> dims, Vec<float> sigmas, int** imageOut=NULL, int device=0);
+float* cGaussianFilter(const float* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut=NULL, int device=0);
+double* cGaussianFilter(const double* imageIn, Vec<size_t> dims, Vec<float> sigmas, double** imageOut=NULL, int device=0);
+
 double cSumArray(const unsigned char* imageIn, size_t n, int device=0);
 double cSumArray(const unsigned int* imageIn, size_t n, int device=0);
 double cSumArray(const int* imageIn, size_t n, int device=0);

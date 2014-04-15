@@ -59,8 +59,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </CudaCompile>
     <CudaCompile Include="Common\CudaUtilities.cu">
-      <GenerateRelocatableDeviceCode Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateRelocatableDeviceCode>
-      <GenerateRelocatableDeviceCode Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateRelocatableDeviceCode>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </CudaCompile>
@@ -120,6 +118,7 @@
     <ClInclude Include="Common\CudaAdd.cuh">
       <FileType>Document</FileType>
     </ClInclude>
+    <None Include="Common\CudaGaussianFilter.cuh" />
     <None Include="Common\CudaGetMinMax.cuh" />
     <None Include="Common\CudaGetROI.cuh" />
     <None Include="Common\CudaHistogramCreate.cuh" />

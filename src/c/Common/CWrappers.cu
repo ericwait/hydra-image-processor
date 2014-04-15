@@ -1,6 +1,7 @@
 #include "CWrappers.cuh"
 #include "CudaAdd.cuh"
 #include "CudaPow.cuh"
+#include "CudaGaussianFilter.cuh"
 #include "CudaSum.cuh"
 
 unsigned char* cAddConstant(const unsigned char* imageIn, Vec<size_t> dims, double additive, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
@@ -82,6 +83,31 @@ double* cImagePow(const double* imageIn, Vec<size_t> dims, double power, double*
 	return imagePow(imageIn,dims,power,imageOut,device);
 }
 
+unsigned char* cGaussianFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<float> sigmas, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+}
+
+unsigned int* cGaussianFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<float> sigmas, unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+}
+
+int* cGaussianFilter(const int* imageIn, Vec<size_t> dims, Vec<float> sigmas, int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+}
+
+float* cGaussianFilter(const float* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+}
+
+double* cGaussianFilter(const double* imageIn, Vec<size_t> dims, Vec<float> sigmas, double** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+}
+
 double cSumArray(const unsigned char* imageIn, size_t n, int device/*=0*/)
 {
 	return sumArray(imageIn,n,device);
@@ -106,5 +132,4 @@ double cSumArray(const double* imageIn, size_t n, int device/*=0*/)
 {
 	return sumArray(imageIn,n,device);
 }
-
 

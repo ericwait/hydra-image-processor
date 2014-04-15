@@ -63,11 +63,6 @@ public:
 	*/
 	size_t* createHistogram(const DevicePixelType* imageIn, Vec<size_t> dims, int& arraySize);
 
-	/*
-	*	Will smooth the image using the given sigmas for each dimension
-	*/ 
-	DevicePixelType* gaussianFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas, DevicePixelType** imageOut=NULL);
-
 	void getMinMax(const DevicePixelType* imageIn, size_t n, DevicePixelType& minVal, DevicePixelType& maxVal);
 
 	/*
@@ -157,10 +152,6 @@ private:
 
 	// This is the size that the input and output images will be
 	Vec<size_t> orgImageDims;
-
-	// This is the maximum size that we are allowing a constant kernel to exit
-	// on the device
-	float hostKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
 
 	Vec<size_t> maxDeviceDims;
 };
