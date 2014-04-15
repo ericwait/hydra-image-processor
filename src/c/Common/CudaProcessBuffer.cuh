@@ -86,8 +86,6 @@ public:
 	DevicePixelType* minFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernalDims, float* kernel=NULL,
 		DevicePixelType** imageOut=NULL);
 
-	DevicePixelType* multiplyImage(const DevicePixelType* imageIn, Vec<size_t> dims, double additive, DevicePixelType** imageOut=NULL);
-
 	/*
 	*	Multiplies this image to the passed in one.
 	*/

@@ -36,6 +36,12 @@ int* cMedianFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> neighborhoo
 float* cMedianFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, float** imageOut=NULL, int device=0);
 double* cMedianFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, double** imageOut=NULL, int device=0);
 
+unsigned char* cMultiplyImage(const unsigned char* imageIn, Vec<size_t> dims, double multiplier, unsigned char** imageOut=NULL, int device=0);
+unsigned int* cMultiplyImage(const unsigned int* imageIn, Vec<size_t> dims, double multiplier, unsigned int** imageOut=NULL, int device=0);
+int* cMultiplyImage(const int* imageIn, Vec<size_t> dims, double multiplier, int** imageOut=NULL, int device=0);
+float* cMultiplyImage(const float* imageIn, Vec<size_t> dims, double multiplier, float** imageOut=NULL, int device=0);
+double* cMultiplyImage(const double* imageIn, Vec<size_t> dims, double multiplier, double** imageOut=NULL, int device=0);
+
 double cSumArray(const unsigned char* imageIn, size_t n, int device=0);
 double cSumArray(const unsigned int* imageIn, size_t n, int device=0);
 double cSumArray(const int* imageIn, size_t n, int device=0);

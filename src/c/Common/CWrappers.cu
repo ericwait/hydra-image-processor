@@ -2,6 +2,7 @@
 #include "CudaAdd.cuh"
 #include "CudaGaussianFilter.cuh"
 #include "CudaMedianFilter.cuh"
+#include "CudaMultiplyImage.cuh"
 #include "CudaPow.cuh"
 #include "CudaSum.cuh"
 
@@ -134,6 +135,31 @@ float* cMedianFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> neighbo
 double* cMedianFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, double** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return medianFilter(imageIn,dims,neighborhood,imageOut,device);
+}
+
+unsigned char* cMultiplyImage(const unsigned char* imageIn, Vec<size_t> dims, double multiplier, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return multiplyImage(imageIn,dims,multiplier,imageOut,device);
+}
+
+unsigned int* cMultiplyImage(const unsigned int* imageIn, Vec<size_t> dims, double multiplier, unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return multiplyImage(imageIn,dims,multiplier,imageOut,device);
+}
+
+int* cMultiplyImage(const int* imageIn, Vec<size_t> dims, double multiplier, int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return multiplyImage(imageIn,dims,multiplier,imageOut,device);
+}
+
+float* cMultiplyImage(const float* imageIn, Vec<size_t> dims, double multiplier, float** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return multiplyImage(imageIn,dims,multiplier,imageOut,device);
+}
+
+double* cMultiplyImage(const double* imageIn, Vec<size_t> dims, double multiplier, double** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return multiplyImage(imageIn,dims,multiplier,imageOut,device);
 }
 
 double cSumArray(const unsigned char* imageIn, size_t n, int device/*=0*/)
