@@ -1,7 +1,5 @@
 #include "CudaUtilities.cuh"
 
-__constant__ float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
-
 void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads)
 {
 	if (dims.z<=1)
