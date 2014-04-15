@@ -162,6 +162,35 @@ double* cMultiplyImage(const double* imageIn, Vec<size_t> dims, double multiplie
 	return multiplyImage(imageIn,dims,multiplier,imageOut,device);
 }
 
+unsigned char* cMultiplyImageWith(const unsigned char* imageIn1, const unsigned char* imageIn2, Vec<size_t> dims, double factor,
+								  unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return multiplyImageWith(imageIn1,imageIn2,dims,factor,imageOut,device);
+}
+
+unsigned int* cMultiplyImageWith(const unsigned int* imageIn1, const unsigned int* imageIn2, Vec<size_t> dims, double factor,
+								 unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return multiplyImageWith(imageIn1,imageIn2,dims,factor,imageOut,device);
+}
+
+int* cMultiplyImageWith(const int* imageIn1, const int* imageIn2, Vec<size_t> dims, double factor, int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return multiplyImageWith(imageIn1,imageIn2,dims,factor,imageOut,device);
+}
+
+float* cMultiplyImageWith(const float* imageIn1, const float* imageIn2, Vec<size_t> dims, double factor, float** imageOut/*=NULL*/,
+						  int device/*=0*/)
+{
+	return multiplyImageWith(imageIn1,imageIn2,dims,factor,imageOut,device);
+}
+
+double* cMultiplyImageWith(const double* imageIn1, const double* imageIn2, Vec<size_t> dims, double factor, double** imageOut/*=NULL*/,
+						   int device/*=0*/)
+{
+	return multiplyImageWith(imageIn1,imageIn2,dims,factor,imageOut,device);
+}
+
 double cSumArray(const unsigned char* imageIn, size_t n, int device/*=0*/)
 {
 	return sumArray(imageIn,n,device);

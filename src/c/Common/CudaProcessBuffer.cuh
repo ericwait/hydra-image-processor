@@ -87,12 +87,6 @@ public:
 		DevicePixelType** imageOut=NULL);
 
 	/*
-	*	Multiplies this image to the passed in one.
-	*/
-	DevicePixelType* multiplyImageWith(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims, double factor,
-		DevicePixelType** imageOut=NULL);
-
-	/*
 	*	This will calculate the normalized covariance between the two images A and B
 	*	returns (sum over all{(A-mu(A)) X (B-mu(B))}) / (sigma(A)Xsigma(B)
 	*	The images buffers will not change the original data 

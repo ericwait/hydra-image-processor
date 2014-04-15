@@ -81,3 +81,41 @@ PixelType* multiplyImage(const PixelType* imageIn, Vec<size_t> dims, double mult
 
 	return imOut;
 }
+
+template <class PixelType>
+PixelType* multiplyImageWith(const PixelType* imageIn1, const PixelType* imageIn2, Vec<size_t> dims, double factor, PixelType** imageOut=NULL,
+							int device=0)
+{
+	PixelType* imOut = setUpOutIm(dims, imageOut);
+
+	PixelType minVal = std::numeric_limits<PixelType>::lowest();
+	PixelType maxVal = std::numeric_limits<PixelType>::max();
+
+	cudaDeviceProp props;
+	cudaGetDeviceProperties(&props,device);
+
+	size_t availMem, total;
+	cudaMemGetInfo(&availMem,&total);
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,3,(size_t)(availMem*MAX_MEM_AVAIL),props);
+
+	Vec<size_t> maxDeviceDims;
+	setMaxDeviceDims(chunks, maxDeviceDims);
+
+	CudaDeviceImages<PixelType> deviceImages(3,maxDeviceDims,device);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		deviceImages.setAllDims(curChunk->getFullChunkSize());
+		curChunk->sendROI(imageIn1,dims,deviceImages.getCurBuffer());
+		curChunk->sendROI(imageIn2,dims,deviceImages.getNextBuffer());
+
+		cudaMultiplyTwoImages<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
+			*(deviceImages.getThirdBuffer()),factor,minVal,maxVal);
+		DEBUG_KERNEL_CHECK();
+
+		curChunk->retriveROI(imOut,dims,deviceImages.getThirdBuffer());
+	}
+
+	return imOut;
+}
