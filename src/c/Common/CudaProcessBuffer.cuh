@@ -58,11 +58,6 @@ public:
 	DevicePixelType* contrastEnhancement(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
 		Vec<size_t> medianNeighborhood, DevicePixelType** imageOut=NULL);
 
-	/*
-	*	Creates Histogram on the card using the #define NUM_BINS
-	*/
-	size_t* createHistogram(const DevicePixelType* imageIn, Vec<size_t> dims, int& arraySize);
-
 	void getMinMax(const DevicePixelType* imageIn, size_t n, DevicePixelType& minVal, DevicePixelType& maxVal);
 
 	/*
@@ -78,11 +73,6 @@ public:
 	*	The images buffers will not change the original data 
 	*/
 	double normalizedCovariance(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims);
-
-	/*
-	*	Takes a histogram that is on the card and normalizes it
-	*/
-	double* normalizeHistogram(const DevicePixelType* imageIn, Vec<size_t> dims, int& arraySize);
 
 	DevicePixelType* otsuThresholdFilter(const DevicePixelType* imageIn, Vec<size_t> dims, double alpha=1.0, DevicePixelType** imageOut=NULL);
 

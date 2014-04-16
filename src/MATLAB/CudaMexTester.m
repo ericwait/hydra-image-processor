@@ -6,6 +6,7 @@ if (~exist('image2','var') || isempty(image2))
 end
 
 imageIn1 = imageIn;
+imageIn2 = image2;
 min = 0;
 max = 255;
 additive = rand(1)*255;
@@ -43,7 +44,6 @@ try
     
     tic
     kernelName = 'AddImageWith';
-    imageIn2 = image2;
     imageOut = CudaMex(sprintf('%s',kernelName),imageIn1,imageIn2,factor,device);
     fprintf('%s took %f sec\n',kernelName,toc);
     showIm(imageOut,kernelName);
@@ -71,10 +71,11 @@ try
     
     tic
     kernelName = 'Histogram';
-    histogram = CudaMex(sprintf('%s',kernelName),imageIn,device);
-    fprintf('%s took %f sec\n',kernelName,toc);
+    histogram = CudaMex(sprintf('%s',kernelName),imageIn,255,0,255,device);
+    dif = sum(histogram)-length(imageIn(:));
+    fprintf('%s took %f sec and has a dif of %d\n',kernelName,toc,dif);
     figure
-    plot(2:254,histogram(3:end),'-');
+    plot(1:255,histogram,'-');
     title('Histogram');
     
     tic
@@ -155,8 +156,9 @@ try
     
     tic
     kernelName = 'NormalizedHistogram';
-    histogram = CudaMex(sprintf('%s',kernelName),imageIn,device);
-    fprintf('%s took %f sec\n',kernelName,toc);
+    histogram = CudaMex(sprintf('%s',kernelName),imageIn,255,0,255,device);
+    totalVal = sum(histogram);
+    fprintf('%s took %f sec and sums to %f\n',kernelName,toc,totalVal);
     figure
     plot(1:255,histogram,'-');
     title('Normalized Histogram');

@@ -67,37 +67,47 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common\CHelpers.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Common\Defines.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Common\ImageChunk.cuh">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Common\Vec.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Common\VecFuncs.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="CudaMex\MexCommand.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Common\CudaUtilities.cuh">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
     </ClInclude>
     <ClInclude Include="Common\CudaProcessBuffer.cuh">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
       <FileType>Document</FileType>
     </ClInclude>
     <ClInclude Include="Common\CudaImageContainer.cuh">
@@ -118,25 +128,25 @@
     <ClInclude Include="Common\CudaAdd.cuh">
       <FileType>Document</FileType>
     </ClInclude>
-    <None Include="Common\CudaGaussianFilter.cuh" />
-    <None Include="Common\CudaGetMinMax.cuh" />
-    <None Include="Common\CudaGetROI.cuh" />
-    <None Include="Common\CudaHistogramCreate.cuh" />
-    <None Include="Common\CudaImageReduction.cuh" />
-    <None Include="Common\CudaMask.cuh" />
-    <None Include="Common\CudaMaxFilter.cuh" />
-    <None Include="Common\CudaIntensityProjection.cuh" />
-    <None Include="Common\CudaMeanFilter.cuh" />
-    <None Include="Common\CudaMedianFilter.cuh" />
-    <None Include="Common\CudaMinFilter.cuh" />
-    <None Include="Common\CudaMultAddFilter.cuh" />
-    <None Include="Common\CudaMultiplyImage.cuh" />
-    <None Include="Common\CudaPolyTransferFunc.cuh" />
-    <None Include="Common\CudaPow.cuh" />
-    <None Include="Common\CudaSum.cuh" />
-    <None Include="Common\CudaThreshold.cuh" />
-    <None Include="Common\CudaUnmixing.cuh" />
-    <None Include="Common\CWrappers.cuh" />
+    <ClInclude Include="Common\CudaGaussianFilter.cuh" />
+    <ClInclude Include="Common\CudaGetMinMax.cuh" />
+    <ClInclude Include="Common\CudaGetROI.cuh" />
+    <ClInclude Include="Common\CudaHistogram.cuh" />
+    <ClInclude Include="Common\CudaImageReduction.cuh" />
+    <ClInclude Include="Common\CudaMask.cuh" />
+    <ClInclude Include="Common\CudaMaxFilter.cuh" />
+    <ClInclude Include="Common\CudaIntensityProjection.cuh" />
+    <ClInclude Include="Common\CudaMeanFilter.cuh" />
+    <ClInclude Include="Common\CudaMedianFilter.cuh" />
+    <ClInclude Include="Common\CudaMinFilter.cuh" />
+    <ClInclude Include="Common\CudaMultAddFilter.cuh" />
+    <ClInclude Include="Common\CudaMultiplyImage.cuh" />
+    <ClInclude Include="Common\CudaPolyTransferFunc.cuh" />
+    <ClInclude Include="Common\CudaPow.cuh" />
+    <ClInclude Include="Common\CudaSum.cuh" />
+    <ClInclude Include="Common\CudaThreshold.cuh" />
+    <ClInclude Include="Common\CudaUnmixing.cuh" />
+    <ClInclude Include="Common\CWrappers.cuh" />
     <None Include="CudaMex\CudaMex.def" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -220,16 +230,16 @@
       <ModuleDefinitionFile>$(SolutionDir)CudaMex\CudaMex.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>echo copy" $(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)"
-copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)"
+      <Command>echo copy" $(CudaToolkitBinDir)\cudart64*.dll" "$(ProjectDir)"
+copy "$(CudaToolkitBinDir)\cudart64*.dll" "$(ProjectDir)"
 echo copy "$(OutDir)CudaMex.pdb" "$(ProjectDir)"
 copy "$(OutDir)CudaMex.pdb" "$(ProjectDir)"
 echo move "$(OutDir)CudaMex.dll" "$(ProjectDir)CudaMex.mexw64"
 move "$(OutDir)CudaMex.dll" "$(ProjectDir)CudaMex.mexw64"
 echo copy "$(ProjectDir)CudaMex.mexw64" "$(ProjectDir)..\MATLAB\."
 copy "$(ProjectDir)CudaMex.mexw64" "$(ProjectDir)..\MATLAB\."
-echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\MATLAB\."
-copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\MATLAB\."</Command>
+echo copy "$(CudaToolkitBinDir)\cudart64*.dll" "$(ProjectDir)..\MATLAB\."
+copy "$(CudaToolkitBinDir)\cudart64*.dll" "$(ProjectDir)..\MATLAB\."</Command>
     </PostBuildEvent>
     <CudaLink>
       <AdditionalLibraryDirectories>$(CUDA_PATH)lib\x64</AdditionalLibraryDirectories>
@@ -273,19 +283,19 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\MATLAB\."</Command>
       <ModuleDefinitionFile>$(SolutionDir)CudaMex\CudaMex.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>echo copy" $(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)"
-copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)"
+      <Command>echo copy" $(CudaToolkitBinDir)\cudart64*.dll" "$(ProjectDir)"
+copy "$(CudaToolkitBinDir)\cudart64*.dll" "$(ProjectDir)"
 echo copy "$(OutDir)CudaMex.pdb" "$(ProjectDir)"
 copy "$(OutDir)CudaMex.pdb" "$(ProjectDir)"
 echo move "$(OutDir)CudaMex.dll" "$(ProjectDir)CudaMex.mexw64"
 move "$(OutDir)CudaMex.dll" "$(ProjectDir)CudaMex.mexw64"
 echo copy "$(ProjectDir)CudaMex.mexw64" "$(ProjectDir)..\MATLAB\."
 copy "$(ProjectDir)CudaMex.mexw64" "$(ProjectDir)..\MATLAB\."
-echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\MATLAB\."
-copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\MATLAB\."
+echo copy "$(CudaToolkitBinDir)\cudart64*.dll" "$(ProjectDir)..\MATLAB\."
+copy "$(CudaToolkitBinDir)\cudart64*.dll" "$(ProjectDir)..\MATLAB\."
 echo copy "$(ProjectDir)CudaMex.mexw64" "$(ProjectDir)..\..\bin\."
 copy "$(ProjectDir)CudaMex.mexw64" "$(ProjectDir)..\..\bin\."
-echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\..\bin\."
+echo copy "$(CudaToolkitBinDir)\cudart64*.dll" "$(ProjectDir)..\..\bin\."
 copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\..\bin\."</Command>
     </PostBuildEvent>
     <CudaLink>

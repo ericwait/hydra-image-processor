@@ -1,5 +1,6 @@
 #pragma once
 #include "Vec.h"
+#include <limits>
 
 unsigned char* cAddConstant(const unsigned char* imageIn, Vec<size_t> dims, double additive, unsigned char** imageOut=NULL, int device=0);
 unsigned int* cAddConstant(const unsigned int* imageIn, Vec<size_t> dims, double additive, unsigned int** imageOut=NULL, int device=0);
@@ -15,6 +16,19 @@ int* cAddImageWith(const int* imageIn1, const int* imageIn2, Vec<size_t> dims, d
 float* cAddImageWith(const float* imageIn1, const float* imageIn2, Vec<size_t> dims, double additive, float** imageOut=NULL, int device=0);
 double* cAddImageWith(const double* imageIn1, const double* imageIn2, Vec<size_t> dims, double additive, double** imageOut=NULL,
 					  int device=0);
+
+size_t* cHistogram(const unsigned char* imageIn, Vec<size_t> dims, unsigned int arraySize,
+				   unsigned char minVal=std::numeric_limits<unsigned char>::lowest(),
+				   unsigned char maxVal=std::numeric_limits<unsigned char>::max(), int device=0);
+size_t* cHistogram(const unsigned int* imageIn, Vec<size_t> dims, unsigned int arraySize,
+				   unsigned int minVal=std::numeric_limits<unsigned int>::lowest(),
+				   unsigned int maxVal=std::numeric_limits<unsigned int>::max(), int device=0);
+size_t* cHistogram(const int* imageIn, Vec<size_t> dims, unsigned int arraySize, int minVal=std::numeric_limits<int>::lowest(),
+				   int maxVal=std::numeric_limits<int>::max(), int device=0);
+size_t* cHistogram(const float* imageIn, Vec<size_t> dims, unsigned int arraySize, float minVal=std::numeric_limits<float>::lowest(),
+				   float maxVal=std::numeric_limits<float>::max(), int device=0);
+size_t* cHistogram(const double* imageIn, Vec<size_t> dims, unsigned int arraySize, double minVal=std::numeric_limits<double>::lowest(),
+				   double maxVal=std::numeric_limits<double>::max(), int device=0);
 
 unsigned char* cGaussianFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<float> sigmas, unsigned char** imageOut=NULL,
 							   int device=0);
@@ -68,6 +82,20 @@ int* cMultiplyImageWith(const int* imageIn1, const int* imageIn2, Vec<size_t> di
 float* cMultiplyImageWith(const float* imageIn1, const float* imageIn2, Vec<size_t> dims, double factor, float** imageOut=NULL, int device=0);
 double* cMultiplyImageWith(const double* imageIn1, const double* imageIn2, Vec<size_t> dims, double factor, double** imageOut=NULL,
 						 int device=0);
+
+double* cNormalizeHistogram(const unsigned char* imageIn, Vec<size_t> dims, unsigned int arraySize,
+						   unsigned char minVal=std::numeric_limits<unsigned char>::lowest(),
+						   unsigned char maxVal=std::numeric_limits<unsigned char>::max(), int device=0);
+double* cNormalizeHistogram(const unsigned int* imageIn, Vec<size_t> dims, unsigned int arraySize,
+						   unsigned int minVal=std::numeric_limits<unsigned int>::lowest(),
+						   unsigned int maxVal=std::numeric_limits<unsigned int>::max(), int device=0);
+double* cNormalizeHistogram(const int* imageIn, Vec<size_t> dims, unsigned int arraySize, int minVal=std::numeric_limits<int>::lowest(),
+						   int maxVal=std::numeric_limits<int>::max(), int device=0);
+double* cNormalizeHistogram(const float* imageIn, Vec<size_t> dims, unsigned int arraySize, float minVal=std::numeric_limits<float>::lowest(),
+						   float maxVal=std::numeric_limits<float>::max(), int device=0);
+double* cNormalizeHistogram(const double* imageIn, Vec<size_t> dims, unsigned int arraySize,
+						   double minVal=std::numeric_limits<double>::lowest(), double maxVal=std::numeric_limits<double>::max(),
+						   int device=0);
 
 double cSumArray(const unsigned char* imageIn, size_t n, int device=0);
 double cSumArray(const unsigned int* imageIn, size_t n, int device=0);

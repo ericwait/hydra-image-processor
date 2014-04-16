@@ -7,7 +7,6 @@
 #include "CudaMedianFilter.cuh"
 #include "CudaGetMinMax.cuh"
 #include "CudaGetROI.cuh"
-#include "CudaHistogramCreate.cuh"
 #include "CudaMask.cuh"
 #include "CudaMaxFilter.cuh"
 #include "CudaIntensityProjection.cuh"
@@ -48,12 +47,6 @@ void CudaProcessBuffer::defaults()
 	orgImageDims = Vec<size_t>(0,0,0);
 	maxDeviceDims = Vec<size_t>(0,0,0);
 }
-
-//////////////////////////////////////////////////////////////////////////
-// Helper Functions
-//////////////////////////////////////////////////////////////////////////
-
-
 
 //////////////////////////////////////////////////////////////////////////
 //Cuda Operators (Alphabetical order)
@@ -133,33 +126,6 @@ DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* i
 	}
 
 	return imOut;
-}
-
-size_t* CudaProcessBuffer::createHistogram(const DevicePixelType* imageIn, Vec<size_t> dims, int& arraySize)
-{
-	arraySize = NUM_BINS;
-	size_t* hostHist = new size_t[arraySize];
-
-	size_t* deviceHist;
-	HANDLE_ERROR(cudaMalloc((void**)&deviceHist,sizeof(size_t)*arraySize));
-	HANDLE_ERROR(cudaMemset(deviceHist,0,sizeof(size_t)*arraySize));
-
-	std::vector<ImageChunk> chunks = calculateBuffers<DevicePixelType>(dims,1,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
-	setMaxDeviceDims(chunks, maxDeviceDims);
-	CudaDeviceImages<DevicePixelType> deviceImages(1,maxDeviceDims,device);
-
-	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-	{
-		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
-		
-		cudaHistogramCreate<<<deviceProp.multiProcessorCount*2,arraySize,sizeof(size_t)*arraySize>>>(*(deviceImages.getCurBuffer()),
-			deviceHist);
-		DEBUG_KERNEL_CHECK();
-	}
-	HANDLE_ERROR(cudaMemcpy(hostHist,deviceHist,sizeof(size_t)*arraySize,cudaMemcpyDeviceToHost));
-	HANDLE_ERROR(cudaFree(deviceHist));
-
-	return hostHist;
 }
 
 void CudaProcessBuffer::getMinMax(const DevicePixelType* imageIn, size_t n, DevicePixelType& minVal, DevicePixelType& maxVal)
@@ -277,42 +243,6 @@ double CudaProcessBuffer::normalizedCovariance(const DevicePixelType* imageIn1, 
 	return 0.0;
 }
 
-double* CudaProcessBuffer::normalizeHistogram(const DevicePixelType* imageIn, Vec<size_t> dims, int& arraySize)
-{
-	arraySize = NUM_BINS;
-	double* hostHistNorm = new double[arraySize];
-
-	size_t* deviceHist;
-	double* deviceHistNorm;
-	
-	checkFreeMemory(sizeof(size_t)*arraySize+sizeof(double)*arraySize,device,true);
-
-	HANDLE_ERROR(cudaMalloc((void**)&deviceHist,sizeof(size_t)*arraySize));
-	HANDLE_ERROR(cudaMalloc((void**)&deviceHistNorm,sizeof(double)*arraySize));
-	HANDLE_ERROR(cudaMemset(deviceHist,0,sizeof(size_t)*arraySize));
-
-	std::vector<ImageChunk> chunks = calculateBuffers<DevicePixelType>(dims,1,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
-	setMaxDeviceDims(chunks, maxDeviceDims);
-	CudaDeviceImages<DevicePixelType> deviceImages(1,maxDeviceDims,device);
-
-	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-	{
-		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
-
-		cudaHistogramCreate<<<deviceProp.multiProcessorCount*2,arraySize,sizeof(size_t)*arraySize>>>(*(deviceImages.getCurBuffer()),
-			deviceHist);
-		DEBUG_KERNEL_CHECK();
-	}
-
-	cudaNormalizeHistogram<<<arraySize,1>>>(deviceHist,deviceHistNorm,dims);
-	DEBUG_KERNEL_CHECK();
-
-	HANDLE_ERROR(cudaMemcpy(hostHistNorm,deviceHistNorm,sizeof(double)*arraySize,cudaMemcpyDeviceToHost));
-	HANDLE_ERROR(cudaFree(deviceHist));
-
-	return hostHistNorm;
-}
-
 DevicePixelType* CudaProcessBuffer::otsuThresholdFilter(const DevicePixelType* imageIn, Vec<size_t> dims, double alpha/*=1.0*/,
 														DevicePixelType** imageOut/*=NULL*/)
 {
@@ -324,14 +254,15 @@ DevicePixelType* CudaProcessBuffer::otsuThresholdFilter(const DevicePixelType* i
 
 double CudaProcessBuffer::otsuThresholdValue(const DevicePixelType* imageIn, Vec<size_t> dims)
 {
-	int arraySize;
-	double* hist = normalizeHistogram(imageIn,dims,arraySize);
-
-	double thrsh = calcOtsuThreshold(hist,arraySize);
-
-	delete[] hist;
-
-	return thrsh;
+// 	int arraySize = NUM_BINS;
+// 	double* hist = normalizeHistogram(imageIn,dims,arraySize);
+// 
+// 	double thrsh = calcOtsuThreshold(hist,arraySize);
+// 
+// 	delete[] hist;
+// 
+// 	return thrsh;
+	return 0.0;
 }
 
 DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> reductions,

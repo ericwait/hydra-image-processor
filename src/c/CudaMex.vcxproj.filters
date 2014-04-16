@@ -136,63 +136,6 @@
     <None Include="CudaMex\CudaMex.def">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Common\CudaMedianFilter.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaGetROI.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaHistogramCreate.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaMask.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaMaxFilter.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaMeanFilter.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaImageReduction.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaMinFilter.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaMultAddFilter.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaIntensityProjection.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaMultiplyImage.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaPolyTransferFunc.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaPow.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaSum.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaThreshold.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaUnmixing.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CudaGetMinMax.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
-    <None Include="Common\CWrappers.cuh">
-      <Filter>Header Files\HelperFiles</Filter>
-    </None>
-    <None Include="Common\CudaGaussianFilter.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CudaMex\MexCommand.h">
@@ -230,6 +173,63 @@
     </ClInclude>
     <ClInclude Include="Common\CudaUtilities.cuh">
       <Filter>Header Files\HelperFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaGaussianFilter.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaGetMinMax.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaGetROI.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaHistogram.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaImageReduction.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaIntensityProjection.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaMask.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaMaxFilter.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaMeanFilter.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaMedianFilter.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaMinFilter.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaMultAddFilter.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaMultiplyImage.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaPolyTransferFunc.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaPow.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaSum.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaThreshold.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaUnmixing.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CWrappers.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
