@@ -228,5 +228,8 @@
     <ClInclude Include="Common\CWrappers.cuh">
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
+    <ClInclude Include="Common\CudaContrastEnhancement.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

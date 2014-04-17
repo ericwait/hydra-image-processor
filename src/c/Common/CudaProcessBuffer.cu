@@ -35,53 +35,6 @@ void CudaProcessBuffer::defaults()
 //Cuda Operators (Alphabetical order)
 //////////////////////////////////////////////////////////////////////////
 
-DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
-														Vec<size_t> neighborhood, DevicePixelType** imageOut/*=NULL*/)
-{
-	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
-
-// 	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
-// 	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
-// 
-// 	neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);
-// 
-// 	float* hostKernel;
-// 
-// 	Vec<int> gaussIterations(0,0,0);
-// 	Vec<size_t> sizeconstKernelDims = createGaussianKernel(sigmas,&hostKernel,gaussIterations);
-// 	HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)*
-// 		(sizeconstKernelDims.x+sizeconstKernelDims.y+sizeconstKernelDims.z)));
-// 
-// 	std::vector<ImageChunk> chunks = calculateBuffers<DevicePixelType>(dims,3,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,
-// 		sizeconstKernelDims);
-// 
-// 	setMaxDeviceDims(chunks, maxDeviceDims);
-// 
-// 	CudaDeviceImages<DevicePixelType> deviceImages(3,maxDeviceDims,device);
-// 
-// 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-// 	{
-// 		deviceImages.setAllDims(curChunk->getFullChunkSize());
-// 
-// 		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
-// 
-// 		runGaussIterations(gaussIterations, curChunk, deviceImages, sizeconstKernelDims,device);
-// 
-// 		curChunk->sendROI(imageIn,dims,deviceImages.getNextBuffer());
-// 
-//  		cudaAddTwoImagesWithFactor<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getNextBuffer()),*(deviceImages.getCurBuffer()),
-//  			*(deviceImages.getThirdBuffer()),-1.0,minVal,maxVal);
-//  		DEBUG_KERNEL_CHECK();
-//  
-//  		deviceImages.setNthBuffCurent(3);
-//  
-//  		runMedianFilter(deviceProp, curChunk, neighborhood, deviceImages);
-// 
-// 		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
-// 	}
-
-	return imOut;
-}
 
 double CudaProcessBuffer::normalizedCovariance(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims)
 {

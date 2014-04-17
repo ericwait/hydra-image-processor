@@ -44,32 +44,12 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 
 	/*
-	*	New pixel values will be a*x^2 + b*x + c where x is the original
-	*	pixel value.  This new value will be clamped between the min and
-	*	max values.
-	*/
-	DevicePixelType* applyPolyTransformation(const DevicePixelType* imageIn, Vec<size_t> dims, double a, double b, double c,
-		DevicePixelType minValue, DevicePixelType maxValue, DevicePixelType** imageOut=NULL);
-
-	/*
-	*	Contrast Enhancement will run the Michel High Pass Filter and then a mean filter
-	*	Pass in the sigmas that will be used for the Gaussian filter to subtract off and the mean neighborhood dimensions
-	*/
-	DevicePixelType* contrastEnhancement(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
-		Vec<size_t> medianNeighborhood, DevicePixelType** imageOut=NULL);
-
-	/*
 	*	This will calculate the normalized covariance between the two images A and B
 	*	returns (sum over all{(A-mu(A)) X (B-mu(B))}) / (sigma(A)Xsigma(B)
 	*	The images buffers will not change the original data 
 	*/
 	double normalizedCovariance(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims);
 
-	/*
-	*	Will reduce the size of the image by the factors passed in
-	*/
-	DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* image, Vec<size_t> dims, Vec<size_t> reductions,
-		Vec<size_t>& reducedDims, DevicePixelType** imageOut=NULL);
 
 private:
 

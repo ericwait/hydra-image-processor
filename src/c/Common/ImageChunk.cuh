@@ -37,6 +37,36 @@ public:
 		return true;
 	}
 
+	template <typename PixelTypeIn, typename PixelTypeOut>
+	bool sendROI(const PixelTypeIn* imageIn, Vec<size_t> dims, CudaImageContainer<PixelTypeOut>* deviceImage)
+	{
+		if (!deviceImage->setDims(getFullChunkSize()))
+			return false;
+
+		PixelTypeOut* tempBuffer = new PixelTypeOut[getFullChunkSize().x];
+
+		Vec<size_t> curIdx(0,0,0);
+		for (curIdx.z=0; curIdx.z<getFullChunkSize().z; ++curIdx.z)
+		{
+			for (curIdx.y=0; curIdx.y<getFullChunkSize().y; ++curIdx.y)
+			{
+				Vec<size_t> curHostIdx = imageStart + curIdx;
+				Vec<size_t> curDeviceIdx = curIdx;
+
+				const PixelTypeIn* hostPtr = imageIn + dims.linearAddressAt(curHostIdx);
+				PixelTypeOut* buffPtr = deviceImage->getDeviceImagePointer() + getFullChunkSize().linearAddressAt(curDeviceIdx);
+
+				for (size_t i=0; i<getFullChunkSize().x; ++i)
+					tempBuffer[i] = (PixelTypeOut)(hostPtr[i]);
+
+				HANDLE_ERROR(cudaMemcpy(buffPtr,tempBuffer,sizeof(PixelTypeOut)*getFullChunkSize().x,cudaMemcpyHostToDevice));
+			}
+		}
+
+		delete[] tempBuffer;
+		return true;
+	}
+
 	template <typename PixelType>
 	void retriveROI(PixelType* outImage, Vec<size_t>dims, const CudaImageContainer<PixelType>* deviceImage)
 	{
@@ -62,6 +92,43 @@ public:
 				}
 			}
 		}
+	}
+
+	template <typename PixelTypeIn, typename PixelTypeOut>
+	void retriveROI(PixelTypeOut* outImage, Vec<size_t>dims, const CudaImageContainer<PixelTypeIn>* deviceImage)
+	{
+		PixelTypeIn* tempBuffer;
+		if (getFullChunkSize()==dims)
+		{
+			tempBuffer = new PixelTypeIn[getFullChunkSize().product()];
+			HANDLE_ERROR(cudaMemcpy(tempBuffer, deviceImage->getConstImagePointer(), sizeof(PixelTypeIn)*getFullChunkSize().product(),
+				cudaMemcpyDeviceToHost));
+
+			for (size_t i=0; i<getFullChunkSize().product(); ++i)
+				outImage[i] = (PixelTypeOut)(tempBuffer[i]);
+		}
+		else
+		{
+			tempBuffer = new PixelTypeIn[getROIsize().x];
+			Vec<size_t> roiIdx = Vec<size_t>(0,0,0);
+			for (roiIdx.z=0; roiIdx.z<getROIsize().z; ++roiIdx.z)
+			{
+				for (roiIdx.y=0; roiIdx.y<getROIsize().y; ++roiIdx.y)
+				{
+					Vec<size_t> chunkIdx(chunkROIstart+roiIdx);
+					Vec<size_t> outIdx(imageROIstart+roiIdx);
+
+					PixelTypeOut* outPtr = outImage + dims.linearAddressAt(outIdx);
+					const PixelTypeIn* chunkPtr = deviceImage->getConstImagePointer() + deviceImage->getDims().linearAddressAt(chunkIdx);
+
+					HANDLE_ERROR(cudaMemcpy(tempBuffer,chunkPtr,sizeof(PixelTypeIn)*getROIsize().x,cudaMemcpyDeviceToHost));
+
+					for (size_t i=0; i<getROIsize().x; ++i)
+						outPtr[i] = (PixelTypeOut)tempBuffer[i];
+				}
+			}
+		}
+		delete[] tempBuffer;
 	}
 
 	Vec<size_t> imageStart;

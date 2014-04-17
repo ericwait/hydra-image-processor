@@ -1,5 +1,6 @@
 #include "CWrappers.cuh"
 #include "CudaAdd.cuh"
+#include "CudaContrastEnhancement.cuh"
 #include "CudaHistogram.cuh"
 #include "CudaGaussianFilter.cuh"
 #include "CudaGetMinMax.cuh"
@@ -106,6 +107,37 @@ double* cAddImageWith(const double* imageIn1, const double* imageIn2, Vec<size_t
 					  int device/*=0*/)
 {
 	return addImageWith(imageIn1,imageIn2,dims,additive,imageOut,device);
+}
+
+
+unsigned char* cContrastEnhancement(const unsigned char* imageIn, Vec<size_t> dims, Vec<float> sigmas, Vec<size_t> neighborhood,
+									unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return contrastEnhancement(imageIn,dims,sigmas,neighborhood,imageOut,device);
+}
+
+unsigned int* cContrastEnhancement(const unsigned int* imageIn, Vec<size_t> dims, Vec<float> sigmas, Vec<size_t> neighborhood,
+								   unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return contrastEnhancement(imageIn,dims,sigmas,neighborhood,imageOut,device);
+}
+
+int* cContrastEnhancement(const int* imageIn, Vec<size_t> dims, Vec<float> sigmas, Vec<size_t> neighborhood, int** imageOut/*=NULL*/,
+						  int device/*=0*/)
+{
+	return contrastEnhancement(imageIn,dims,sigmas,neighborhood,imageOut,device);
+}
+
+float* cContrastEnhancement(const float* imageIn, Vec<size_t> dims, Vec<float> sigmas, Vec<size_t> neighborhood, float** imageOut/*=NULL*/,
+							int device/*=0*/)
+{
+	return contrastEnhancement(imageIn,dims,sigmas,neighborhood,imageOut,device);
+}
+
+double* cContrastEnhancement(const double* imageIn, Vec<size_t> dims, Vec<float> sigmas, Vec<size_t> neighborhood, double** imageOut/*=NULL*/,
+							 int device/*=0*/)
+{
+	return contrastEnhancement(imageIn,dims,sigmas,neighborhood,imageOut,device);
 }
 
 

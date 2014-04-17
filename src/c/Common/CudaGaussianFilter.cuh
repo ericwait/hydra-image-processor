@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Vec.h"
 #include <vector>
 #include "ImageChunk.cuh"

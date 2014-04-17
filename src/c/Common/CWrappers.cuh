@@ -36,6 +36,17 @@ double* cApplyPolyTransferFunction(const double* imageIn, Vec<size_t> dims, doub
 								   double minValue=std::numeric_limits<double>::lowest(),
 								   double maxValue=std::numeric_limits<double>::max(),double** imageOut=NULL, int device=0);
 
+unsigned char* cContrastEnhancement(const unsigned char* imageIn, Vec<size_t> dims, Vec<float> sigmas, Vec<size_t> neighborhood,
+									unsigned char** imageOut=NULL, int device=0);
+unsigned int* cContrastEnhancement(const unsigned int* imageIn, Vec<size_t> dims, Vec<float> sigmas, Vec<size_t> neighborhood,
+								   unsigned int** imageOut=NULL, int device=0);
+int* cContrastEnhancement(const int* imageIn, Vec<size_t> dims, Vec<float> sigmas, Vec<size_t> neighborhood, int** imageOut=NULL,
+						  int device=0);
+float* cContrastEnhancement(const float* imageIn, Vec<size_t> dims, Vec<float> sigmas, Vec<size_t> neighborhood, float** imageOut=NULL,
+							int device=0);
+double* cContrastEnhancement(const double* imageIn, Vec<size_t> dims, Vec<float> sigmas, Vec<size_t> neighborhood, double** imageOut=NULL,
+							 int device=0);
+
 size_t* cHistogram(const unsigned char* imageIn, Vec<size_t> dims, unsigned int arraySize,
 				   unsigned char minVal=std::numeric_limits<unsigned char>::lowest(),
 				   unsigned char maxVal=std::numeric_limits<unsigned char>::max(), int device=0);
