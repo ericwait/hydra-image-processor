@@ -59,13 +59,6 @@ public:
 		Vec<size_t> medianNeighborhood, DevicePixelType** imageOut=NULL);
 
 	/*
-	*	Filters image where each pixel is the mean of its neighborhood
-	*  If imageOut is null, then a new image pointer will be created and returned.
-	*  In either case the caller must clean up the the return image correctly
-	*/
-	DevicePixelType* meanFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, DevicePixelType** imageOut=NULL);
-
-	/*
 	*	This will calculate the normalized covariance between the two images A and B
 	*	returns (sum over all{(A-mu(A)) X (B-mu(B))}) / (sigma(A)Xsigma(B)
 	*	The images buffers will not change the original data 

@@ -4,6 +4,7 @@
 #include "CudaGaussianFilter.cuh"
 #include "CudaGetMinMax.cuh"
 #include "CudaMaxFilter.cuh"
+#include "CudaMeanFilter.cuh"
 #include "CudaMedianFilter.cuh"
 #include "CudaMinFilter.cuh"
 #include "CudaMultiplyImage.cuh"
@@ -222,6 +223,34 @@ double* cMaxFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDi
 				   int device/*=0*/)
 {
 	return maxFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+
+unsigned char* cMeanFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, unsigned char** imageOut/*=NULL*/,
+						   int device/*=0*/)
+{
+	return meanFilter(imageIn,dims,neighborhood,imageOut,device);
+}
+
+unsigned int* cMeanFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, unsigned int** imageOut/*=NULL*/,
+						  int device/*=0*/)
+{
+	return meanFilter(imageIn,dims,neighborhood,imageOut,device);
+}
+
+int* cMeanFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return meanFilter(imageIn,dims,neighborhood,imageOut,device);
+}
+
+float* cMeanFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, float** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return meanFilter(imageIn,dims,neighborhood,imageOut,device);
+}
+
+double* cMeanFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, double** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return meanFilter(imageIn,dims,neighborhood,imageOut,device);
 }
 
 

@@ -5,6 +5,11 @@
 #undef DEVICE_VEC
 
 #include "CudaImageContainer.cuh"
+#include "Vec.h"
+#include <vector>
+#include "CHelpers.h"
+#include "ImageChunk.cuh"
+#include "CudaDeviceImages.cuh"
 
 template <class PixelType>
 __global__ void cudaMeanFilter( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, Vec<size_t> hostKernelDims )
@@ -39,4 +44,40 @@ __global__ void cudaMeanFilter( CudaImageContainer<PixelType> imageIn, CudaImage
 
 		imageOut[coordinate] = val/kernelVolume;
 	}
+}
+
+template <class PixelType>
+PixelType* meanFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, PixelType** imageOut=NULL, int device=0)
+{
+	PixelType* imOut = setUpOutIm(dims, imageOut);
+
+	neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);
+
+	cudaDeviceProp props;
+	cudaGetDeviceProperties(&props,device);
+
+	size_t memAvail, total;
+	cudaMemGetInfo(&memAvail,&total);
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(memAvail*MAX_MEM_AVAIL),props,neighborhood);
+
+	Vec<size_t> maxDeviceDims;
+	setMaxDeviceDims(chunks, maxDeviceDims);
+
+	CudaDeviceImages<PixelType> deviceImages(2,maxDeviceDims,device);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
+		deviceImages.setNextDims(curChunk->getFullChunkSize());
+
+		cudaMeanFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),neighborhood);
+		DEBUG_KERNEL_CHECK();
+
+		deviceImages.incrementBuffer();
+
+		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
+	}
+
+	return imOut;
 }

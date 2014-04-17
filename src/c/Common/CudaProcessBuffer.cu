@@ -111,35 +111,6 @@ DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* i
 	return imOut;
 }
 
-DevicePixelType* CudaProcessBuffer::meanFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood,
-											 DevicePixelType** imageOut/*=NULL*/)
-{
-	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
-
-// 	neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);
-// 
-// 	std::vector<ImageChunk> chunks = calculateBuffers<DevicePixelType>(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp,neighborhood);
-// 
-// 	setMaxDeviceDims(chunks, maxDeviceDims);
-// 
-// 	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
-// 
-// 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-// 	{
-// 		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
-// 		deviceImages.setNextDims(curChunk->getFullChunkSize());
-// 		
-// 		cudaMeanFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),neighborhood);
-// 		DEBUG_KERNEL_CHECK();
-// 
-// 		deviceImages.incrementBuffer();
-// 		
-// 		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
-// 	}
-	
-	return imOut;
-}
-
 double CudaProcessBuffer::normalizedCovariance(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims)
 {
 // 	double im1Mean = sumArray(imageIn1,dims.product()) / dims.product();
