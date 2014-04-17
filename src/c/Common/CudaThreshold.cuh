@@ -10,6 +10,7 @@
 #include "ImageChunk.cuh"
 #include "CudaDeviceImages.cuh"
 #include "CHelpers.h"
+#include "CudaHistogram.cuh"
 
 template <class PixelType>
 __global__ void cudaThreshold( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, PixelType threshold,
@@ -62,4 +63,13 @@ PixelType* thresholdFilter(const PixelType* imageIn, Vec<size_t> dims, PixelType
 	}
 
 	return imOut;
+}
+
+template <class PixelType>
+PixelType* otsuThresholdFilter(const PixelType* imageIn, Vec<size_t> dims, double alpha=1.0, PixelType** imageOut=NULL, int device=0)
+{
+	PixelType thresh = otsuThresholdValue(imageIn,dims,device);
+	thresh = (PixelType)(thresh*alpha);
+
+	return thresholdFilter(imageIn,dims,thresh,imageOut,device);
 }

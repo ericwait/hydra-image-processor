@@ -37,6 +37,7 @@ double* cAddConstant(const double* imageIn, Vec<size_t> dims, double additive, d
 	return addConstant(imageIn,dims,additive,imageOut,device);
 }
 
+
 unsigned char* cAddImageWith(const unsigned char* imageIn1, const unsigned char* imageIn2, Vec<size_t> dims, double additive,
 							 unsigned char** imageOut/*=NULL*/, int device/*=0*/)
 {
@@ -65,6 +66,7 @@ double* cAddImageWith(const double* imageIn1, const double* imageIn2, Vec<size_t
 {
 	return addImageWith(imageIn1,imageIn2,dims,additive,imageOut,device);
 }
+
 
 size_t* cHistogram(const unsigned char* imageIn, Vec<size_t> dims, unsigned int arraySize,
 				   unsigned char minVal/*=std::numeric_limits<unsigned char>::lowest()*/,
@@ -98,6 +100,7 @@ size_t* cHistogram(const double* imageIn, Vec<size_t> dims, unsigned int arraySi
 	return calculateHistogram(imageIn,dims,arraySize,minVal,maxVal,device);
 }
 
+
 unsigned char* cGaussianFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<float> sigmas, unsigned char** imageOut/*=NULL*/,
 							   int device/*=0*/)
 {
@@ -125,6 +128,7 @@ double* cGaussianFilter(const double* imageIn, Vec<size_t> dims, Vec<float> sigm
 	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
 }
 
+
 void cGetMinMax(const unsigned char* imageIn, Vec<size_t> dims, unsigned char& minVal, unsigned char& maxVal, int device/*=0*/)
 {
 	getMinMax(imageIn,dims,minVal,maxVal,device);
@@ -149,6 +153,7 @@ void cGetMinMax(const double* imageIn, Vec<size_t> dims, double& minVal, double&
 {
 	getMinMax(imageIn,dims,minVal,maxVal,device);
 }
+
 
 unsigned char* cImagePow(const unsigned char* imageIn, Vec<size_t> dims, double additive, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
 {
@@ -175,6 +180,7 @@ double* cImagePow(const double* imageIn, Vec<size_t> dims, double power, double*
 	return imagePow(imageIn,dims,power,imageOut,device);
 }
 
+
 unsigned char* cMedianFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, unsigned char** imageOut/*=NULL*/,
 							 int device/*=0*/)
 {
@@ -192,6 +198,7 @@ unsigned char* cMaxFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<si
 {
 	return maxFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
 }
+
 
 unsigned int* cMaxFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/,
 						 unsigned int** imageOut/*=NULL*/, int device/*=0*/)
@@ -217,6 +224,7 @@ double* cMaxFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDi
 	return maxFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
 }
 
+
 int* cMedianFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, int** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return medianFilter(imageIn,dims,neighborhood,imageOut,device);
@@ -231,6 +239,7 @@ double* cMedianFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> neigh
 {
 	return medianFilter(imageIn,dims,neighborhood,imageOut,device);
 }
+
 
 unsigned char* cMinFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/,
 						  unsigned char** imageOut/*=NULL*/, int device/*=0*/)
@@ -260,6 +269,7 @@ double* cMinFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDi
 	return minFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
 }
 
+
 unsigned char* cMultiplyImage(const unsigned char* imageIn, Vec<size_t> dims, double multiplier, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return multiplyImage(imageIn,dims,multiplier,imageOut,device);
@@ -284,6 +294,7 @@ double* cMultiplyImage(const double* imageIn, Vec<size_t> dims, double multiplie
 {
 	return multiplyImage(imageIn,dims,multiplier,imageOut,device);
 }
+
 
 unsigned char* cMultiplyImageWith(const unsigned char* imageIn1, const unsigned char* imageIn2, Vec<size_t> dims, double factor,
 								  unsigned char** imageOut/*=NULL*/, int device/*=0*/)
@@ -313,6 +324,7 @@ double* cMultiplyImageWith(const double* imageIn1, const double* imageIn2, Vec<s
 {
 	return multiplyImageWith(imageIn1,imageIn2,dims,factor,imageOut,device);
 }
+
 
 double* cNormalizeHistogram(const unsigned char* imageIn, Vec<size_t> dims, unsigned int arraySize,
 							unsigned char minVal/*=std::numeric_limits<unsigned char>::lowest()*/,
@@ -348,6 +360,35 @@ double* cNormalizeHistogram(const double* imageIn, Vec<size_t> dims, unsigned in
 	return normalizeHistogram(imageIn,dims,arraySize,minVal,maxVal,device);
 }
 
+
+unsigned char* cOtsuThresholdFilter(const unsigned char* imageIn, Vec<size_t> dims, double alpha/*=1.0*/, unsigned char** imageOut/*=NULL*/,
+									int device/*=0*/)
+{
+	return otsuThresholdFilter(imageIn,dims,alpha,imageOut,device);
+}
+
+unsigned int* cOtsuThresholdFilter(const unsigned int* imageIn, Vec<size_t> dims, double alpha/*=1.0*/, unsigned int** imageOut/*=NULL*/,
+								   int device/*=0*/)
+{
+	return otsuThresholdFilter(imageIn,dims,alpha,imageOut,device);
+}
+
+int* cOtsuThresholdFilter(const int* imageIn, Vec<size_t> dims, double alpha/*=1.0*/, int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return otsuThresholdFilter(imageIn,dims,alpha,imageOut,device);
+}
+
+float* cOtsuThresholdFilter(const float* imageIn, Vec<size_t> dims, double alpha/*=1.0*/, float** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return otsuThresholdFilter(imageIn,dims,alpha,imageOut,device);
+}
+
+double* cOtsuThresholdFilter(const double* imageIn, Vec<size_t> dims, double alpha/*=1.0*/, double** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return otsuThresholdFilter(imageIn,dims,alpha,imageOut,device);
+}
+
+
 unsigned char cOtsuThresholdValue(const unsigned char* imageIn, Vec<size_t> dims, int device/*=0*/)
 {
 	return otsuThresholdValue(imageIn,dims,device);
@@ -373,6 +414,7 @@ double cOtsuThresholdValue(const double* imageIn, Vec<size_t> dims, int device/*
 	return otsuThresholdValue(imageIn,dims,device);
 }
 
+
 double cSumArray(const unsigned char* imageIn, size_t n, int device/*=0*/)
 {
 	return sumArray(imageIn,n,device);
@@ -397,6 +439,7 @@ double cSumArray(const double* imageIn, size_t n, int device/*=0*/)
 {
 	return sumArray(imageIn,n,device);
 }
+
 
 unsigned char* cThresholdFilter(const unsigned char* imageIn, Vec<size_t> dims, unsigned char thresh, unsigned char** imageOut/*=NULL*/,
 							   int device/*=0*/)

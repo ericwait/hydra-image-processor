@@ -103,6 +103,14 @@ double* cNormalizeHistogram(const double* imageIn, Vec<size_t> dims, unsigned in
 						   double minVal=std::numeric_limits<double>::lowest(), double maxVal=std::numeric_limits<double>::max(),
 						   int device=0);
 
+unsigned char* cOtsuThresholdFilter(const unsigned char* imageIn, Vec<size_t> dims, double alpha=1.0, unsigned char** imageOut=NULL,
+									int device=0);
+unsigned int* cOtsuThresholdFilter(const unsigned int* imageIn, Vec<size_t> dims, double alpha=1.0, unsigned int** imageOut=NULL,
+								   int device=0);
+int* cOtsuThresholdFilter(const int* imageIn, Vec<size_t> dims, double alpha=1.0, int** imageOut=NULL, int device=0);
+float* cOtsuThresholdFilter(const float* imageIn, Vec<size_t> dims, double alpha=1.0, float** imageOut=NULL, int device=0);
+double* cOtsuThresholdFilter(const double* imageIn, Vec<size_t> dims, double alpha=1.0, double** imageOut=NULL, int device=0);
+
 unsigned char cOtsuThresholdValue(const unsigned char* imageIn, Vec<size_t> dims, int device=0);
 unsigned int cOtsuThresholdValue(const unsigned int* imageIn, Vec<size_t> dims, int device=0);
 int cOtsuThresholdValue(const int* imageIn, Vec<size_t> dims, int device=0);

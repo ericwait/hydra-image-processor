@@ -72,8 +72,6 @@ public:
 	*/
 	double normalizedCovariance(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims);
 
-	DevicePixelType* otsuThresholdFilter(const DevicePixelType* imageIn, Vec<size_t> dims, double alpha=1.0, DevicePixelType** imageOut=NULL);
-
 	/*
 	*	Will reduce the size of the image by the factors passed in
 	*/

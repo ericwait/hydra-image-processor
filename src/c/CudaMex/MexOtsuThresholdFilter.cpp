@@ -1,6 +1,6 @@
 #include "MexCommand.h"
-#include "CudaProcessBuffer.cuh"
 #include "Vec.h"
+#include "CWrappers.cuh"
 
 void MexOtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
@@ -9,16 +9,50 @@ void MexOtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const
 	if (nrhs>2)
 		device = mat_to_c((int)mxGetScalar(prhs[2]));
 
-	Vec<size_t> imageDims;
-	HostPixelType* imageIn, * imageOut;
-	CudaProcessBuffer cudaBuffer(device);
-	setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
-
 	double alpha = 1.0;
 	if (nrhs==2)
 		alpha = mxGetScalar(prhs[1]);
 
-	cudaBuffer.otsuThresholdFilter(imageIn,imageDims,alpha,&imageOut);
+	Vec<size_t> imageDims;
+	if (mxIsUint8(prhs[0]))
+	{
+		unsigned char* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cOtsuThresholdFilter(imageIn,imageDims,alpha,&imageOut,device);
+	}
+	else if (mxIsUint16(prhs[0]))
+	{
+		unsigned int* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cOtsuThresholdFilter(imageIn,imageDims,alpha,&imageOut,device);
+	}
+	else if (mxIsInt16(prhs[0]))
+	{
+		int* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cOtsuThresholdFilter(imageIn,imageDims,alpha,&imageOut,device);
+	}
+	else if (mxIsSingle(prhs[0]))
+	{
+		float* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cOtsuThresholdFilter(imageIn,imageDims,alpha,&imageOut,device);
+	}
+	else if (mxIsDouble(prhs[0]))
+	{
+		double* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cOtsuThresholdFilter(imageIn,imageDims,alpha,&imageOut,device);
+	}
+	else
+	{
+		mexErrMsgTxt("Image type not supported!");
+	}
 }
 
 std::string MexOtsuThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
@@ -29,12 +63,9 @@ std::string MexOtsuThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, 
 	if (nlhs!=1)
 		return "Requires one output!";
 
-	if (!mxIsUint8(prhs[0]))
-		return "Image has to be formated as a uint8!";
-
 	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
-	if (numDims>3 || numDims<2)
-		return "Image can only be either 2D or 3D!";
+	if (numDims>3)
+		return "Image can have a maximum of three dimensions!";
 
 	if (nrhs==2)
 		if (!mxIsDouble(prhs[1]))
