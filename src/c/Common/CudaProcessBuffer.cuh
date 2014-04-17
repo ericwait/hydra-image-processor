@@ -78,8 +78,6 @@ public:
 	DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* image, Vec<size_t> dims, Vec<size_t> reductions,
 		Vec<size_t>& reducedDims, DevicePixelType** imageOut=NULL);
 
-	void unmix(const DevicePixelType* image, Vec<size_t> neighborhood);
-
 private:
 
 	//////////////////////////////////////////////////////////////////////////

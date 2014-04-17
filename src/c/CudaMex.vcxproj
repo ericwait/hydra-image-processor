@@ -145,7 +145,6 @@
     <ClInclude Include="Common\CudaPow.cuh" />
     <ClInclude Include="Common\CudaSum.cuh" />
     <ClInclude Include="Common\CudaThreshold.cuh" />
-    <ClInclude Include="Common\CudaUnmixing.cuh" />
     <ClInclude Include="Common\CWrappers.cuh" />
     <None Include="CudaMex\CudaMex.def" />
   </ItemGroup>

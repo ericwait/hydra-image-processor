@@ -225,9 +225,6 @@
     <ClInclude Include="Common\CudaThreshold.cuh">
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
-    <ClInclude Include="Common\CudaUnmixing.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
     <ClInclude Include="Common\CWrappers.cuh">
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>

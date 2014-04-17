@@ -264,9 +264,3 @@ DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, 
 
  	return reducedImage;
 }
-
-void CudaProcessBuffer::unmix(const DevicePixelType* image, Vec<size_t> neighborhood)
-{
-	//neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);
-	throw std::logic_error("The method or operation is not implemented.");
-}
