@@ -80,16 +80,6 @@ public:
 	DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* image, Vec<size_t> dims, Vec<size_t> reductions,
 		Vec<size_t>& reducedDims, DevicePixelType** imageOut=NULL);
 
-	/*
-	*	This creates a image with values of 0 where the pixels fall below
-	*	the threshold and 1 where equal or greater than the threshold
-	*	
-	*	If you want a viewable image after this, you may want to use the
-	*	multiplyImage routine to turn the 1 values to the max values of
-	*	the type
-	*/
-	DevicePixelType* thresholdFilter(const DevicePixelType* image, Vec<size_t> dims, DevicePixelType threshold, DevicePixelType** imageOut=NULL);
-
 	void unmix(const DevicePixelType* image, Vec<size_t> neighborhood);
 
 private:

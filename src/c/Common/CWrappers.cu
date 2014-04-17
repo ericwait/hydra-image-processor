@@ -9,6 +9,7 @@
 #include "CudaMultiplyImage.cuh"
 #include "CudaPow.cuh"
 #include "CudaSum.cuh"
+#include "CudaThreshold.cuh"
 
 unsigned char* cAddConstant(const unsigned char* imageIn, Vec<size_t> dims, double additive, unsigned char** imageOut/*=NULL*/,
 							int device/*=0*/)
@@ -395,4 +396,31 @@ double cSumArray(const float* imageIn, size_t n, int device/*=0*/)
 double cSumArray(const double* imageIn, size_t n, int device/*=0*/)
 {
 	return sumArray(imageIn,n,device);
+}
+
+unsigned char* cThresholdFilter(const unsigned char* imageIn, Vec<size_t> dims, unsigned char thresh, unsigned char** imageOut/*=NULL*/,
+							   int device/*=0*/)
+{
+	return thresholdFilter(imageIn,dims,thresh,imageOut,device);
+}
+
+unsigned int* cThresholdFilter(const unsigned int* imageIn, Vec<size_t> dims, unsigned int thresh, unsigned int** imageOut/*=NULL*/,
+								int device/*=0*/)
+{
+	return thresholdFilter(imageIn,dims,thresh,imageOut,device);
+}
+
+int* cThresholdFilter(const int* imageIn, Vec<size_t> dims, int thresh, int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return thresholdFilter(imageIn,dims,thresh,imageOut,device);
+}
+
+float* cThresholdFilter(const float* imageIn, Vec<size_t> dims, float thresh, float** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return thresholdFilter(imageIn,dims,thresh,imageOut,device);
+}
+
+double* cThresholdFilter(const double* imageIn, Vec<size_t> dims, double thresh, double** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return thresholdFilter(imageIn,dims,thresh,imageOut,device);
 }

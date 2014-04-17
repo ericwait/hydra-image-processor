@@ -50,7 +50,7 @@ try
     
     tic
     kernelName = 'ApplyPolyTransformation';
-    imageOut = CudaMex(sprintf('%s',kernelName),imageIn,a,b,c,min,max,device);
+    imageOut = CudaMex(sprintf('%s',kernelName),imageIn,a,b,c,lowest,highest,device);
     fprintf('%s took %f sec\n',kernelName,toc);
     showIm(imageOut,kernelName);
     

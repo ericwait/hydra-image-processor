@@ -291,37 +291,6 @@ DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, 
  	return reducedImage;
 }
 
-DevicePixelType* CudaProcessBuffer::thresholdFilter(const DevicePixelType* imageIn, Vec<size_t> dims, DevicePixelType thresh,
-													DevicePixelType** imageOut/*=NULL*/)
-{
-	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
-
-	DevicePixelType minVal = std::numeric_limits<DevicePixelType>::lowest();
-	DevicePixelType maxVal = std::numeric_limits<DevicePixelType>::max();
-
-	std::vector<ImageChunk> chunks = calculateBuffers<DevicePixelType>(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
-
-	setMaxDeviceDims(chunks, maxDeviceDims);
-
-	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
-
-	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-	{
-		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
-		deviceImages.setNextDims(curChunk->getFullChunkSize());
-
-		cudaThreshold<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
-			thresh,minVal,maxVal);
-		DEBUG_KERNEL_CHECK();
-
-		deviceImages.incrementBuffer();
-
-		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
-	}
-
-	return imOut;
-}
-
 void CudaProcessBuffer::unmix(const DevicePixelType* image, Vec<size_t> neighborhood)
 {
 	//neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);

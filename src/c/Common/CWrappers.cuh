@@ -114,3 +114,11 @@ double cSumArray(const unsigned int* imageIn, size_t n, int device=0);
 double cSumArray(const int* imageIn, size_t n, int device=0);
 double cSumArray(const float* imageIn, size_t n, int device=0);
 double cSumArray(const double* imageIn, size_t n, int device=0);
+
+unsigned char* cThresholdFilter(const unsigned char* imageIn, Vec<size_t> dims, unsigned char thresh, unsigned char** imageOut=NULL,
+							   int device=0);
+unsigned int* cThresholdFilter(const unsigned int* imageIn, Vec<size_t> dims, unsigned int thresh, unsigned int** imageOut=NULL,
+							   int device=0);
+int* cThresholdFilter(const int* imageIn, Vec<size_t> dims, int thresh, int** imageOut=NULL, int device=0);
+float* cThresholdFilter(const float* imageIn, Vec<size_t> dims, float thresh, float** imageOut=NULL, int device=0);
+double* cThresholdFilter(const double* imageIn, Vec<size_t> dims, double thresh, double** imageOut=NULL, int device=0);
