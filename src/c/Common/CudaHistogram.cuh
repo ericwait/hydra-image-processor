@@ -69,27 +69,26 @@ size_t* createHistogram(int device, unsigned int arraySize, Vec<size_t> dims, Pi
 
 	size_t numValsPerChunk = (size_t)((availMem*MAX_MEM_AVAIL)/sizeof(PixelType));
 
+	size_t maxThreads = MIN(numValsPerChunk,(size_t)props.maxThreadsPerBlock);
+
 	PixelType* deviceBuffer;
 
 	HANDLE_ERROR(cudaMalloc((void**)&deviceBuffer,sizeof(PixelType)*numValsPerChunk));
 
 	double binSize = (maxVal-minVal)/arraySize;
-	int i = 0;
-	size_t startIdx = 0;
 
-	while (startIdx<dims.product())
+	for (size_t startIdx=0; startIdx<dims.product(); startIdx+=numValsPerChunk)
 	{
 		size_t numValues = MIN(numValsPerChunk,dims.product()-startIdx);
 
 		HANDLE_ERROR(cudaMemcpy(deviceBuffer,imageIn+startIdx,sizeof(PixelType)*numValues,cudaMemcpyHostToDevice));
 
-		cudaHistogramCreate<<<props.multiProcessorCount,props.maxThreadsPerBlock,sizeof(size_t)*arraySize>>>(deviceBuffer,
-			numValues, deviceHist, minVal, binSize, arraySize);
+		int threads = (int)MIN(numValues,maxThreads);
+		int blocks = (int)MIN(numValues/threads,(size_t)props.multiProcessorCount);
+
+		cudaHistogramCreate<<<blocks,threads,sizeof(size_t)*arraySize>>>(deviceBuffer, numValues, deviceHist, minVal, binSize, arraySize);
 		DEBUG_KERNEL_CHECK();
 		cudaThreadSynchronize();
-
-		++i;
-		startIdx = i*numValsPerChunk;
 	}
 
 	HANDLE_ERROR(cudaFree(deviceBuffer));
@@ -127,8 +126,8 @@ double* normalizeHistogram(const PixelType* imageIn, Vec<size_t> dims, unsigned 
 
 	HANDLE_ERROR(cudaMalloc((void**)&deviceHistNorm,sizeof(double)*arraySize));
 
-	int threads = MIN(arraySize,props.maxThreadsPerBlock);
-	int blocks = (int)MAX((double)arraySize/threads,(double)props.multiProcessorCount);
+	int threads = MIN(arraySize,(unsigned int)props.maxThreadsPerBlock);
+	int blocks = (int)MAX((int)ceil((double)arraySize/threads),props.multiProcessorCount);
 
 	cudaNormalizeHistogram<<<blocks,threads>>>(deviceHist,deviceHistNorm,arraySize,(double)(dims.product()));
 	DEBUG_KERNEL_CHECK();
@@ -138,4 +137,24 @@ double* normalizeHistogram(const PixelType* imageIn, Vec<size_t> dims, unsigned 
 	HANDLE_ERROR(cudaFree(deviceHistNorm));
 
 	return hostHistNorm;
+}
+
+template <class PixelType>
+PixelType otsuThresholdValue(const PixelType* imageIn, Vec<size_t> dims, int device=0)
+{
+	PixelType minVal, maxVal;
+	getMinMax(imageIn,dims,minVal,maxVal,device);
+	unsigned int arraySize = NUM_BINS;
+
+	double* hist = normalizeHistogram(imageIn,dims,arraySize,minVal,maxVal,device);
+
+	int theshIdx = calcOtsuThreshold(hist,arraySize);
+
+	delete[] hist;
+
+	double binSize = (maxVal-minVal)/arraySize;
+
+	PixelType thrsh = (PixelType)(minVal + binSize*theshIdx);
+
+	return thrsh;
 }

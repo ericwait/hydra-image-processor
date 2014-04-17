@@ -190,24 +190,12 @@ double CudaProcessBuffer::normalizedCovariance(const DevicePixelType* imageIn1, 
 DevicePixelType* CudaProcessBuffer::otsuThresholdFilter(const DevicePixelType* imageIn, Vec<size_t> dims, double alpha/*=1.0*/,
 														DevicePixelType** imageOut/*=NULL*/)
 {
-	double thresh = otsuThresholdValue(imageIn,dims);
+	double thresh = 0.0;// = otsuThresholdValue(imageIn,dims);
 	thresh *= alpha;
 
 	return thresholdFilter(imageIn,dims,(DevicePixelType)thresh,imageOut);
 }
 
-double CudaProcessBuffer::otsuThresholdValue(const DevicePixelType* imageIn, Vec<size_t> dims)
-{
-// 	int arraySize = NUM_BINS;
-// 	double* hist = normalizeHistogram(imageIn,dims,arraySize);
-// 
-// 	double thrsh = calcOtsuThreshold(hist,arraySize);
-// 
-// 	delete[] hist;
-// 
-// 	return thrsh;
-	return 0.0;
-}
 
 DevicePixelType* CudaProcessBuffer::reduceImage(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> reductions,
 												Vec<size_t>& reducedDims, DevicePixelType** imageOut/*=NULL*/)

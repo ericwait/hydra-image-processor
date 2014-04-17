@@ -347,6 +347,31 @@ double* cNormalizeHistogram(const double* imageIn, Vec<size_t> dims, unsigned in
 	return normalizeHistogram(imageIn,dims,arraySize,minVal,maxVal,device);
 }
 
+unsigned char cOtsuThresholdValue(const unsigned char* imageIn, Vec<size_t> dims, int device/*=0*/)
+{
+	return otsuThresholdValue(imageIn,dims,device);
+}
+
+unsigned int cOtsuThresholdValue(const unsigned int* imageIn, Vec<size_t> dims, int device/*=0*/)
+{
+	return otsuThresholdValue(imageIn,dims,device);
+}
+
+int cOtsuThresholdValue(const int* imageIn, Vec<size_t> dims, int device/*=0*/)
+{
+	return otsuThresholdValue(imageIn,dims,device);
+}
+
+float cOtsuThresholdValue(const float* imageIn, Vec<size_t> dims, int device/*=0*/)
+{
+	return otsuThresholdValue(imageIn,dims,device);
+}
+
+double cOtsuThresholdValue(const double* imageIn, Vec<size_t> dims, int device/*=0*/)
+{
+	return otsuThresholdValue(imageIn,dims,device);
+}
+
 double cSumArray(const unsigned char* imageIn, size_t n, int device/*=0*/)
 {
 	return sumArray(imageIn,n,device);

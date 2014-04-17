@@ -74,8 +74,6 @@ public:
 
 	DevicePixelType* otsuThresholdFilter(const DevicePixelType* imageIn, Vec<size_t> dims, double alpha=1.0, DevicePixelType** imageOut=NULL);
 
-	double otsuThresholdValue(const DevicePixelType* imageIn, Vec<size_t> dims);
-
 	/*
 	*	Will reduce the size of the image by the factors passed in
 	*/

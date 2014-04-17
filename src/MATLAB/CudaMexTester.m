@@ -7,8 +7,8 @@ end
 
 imageIn1 = imageIn;
 imageIn2 = image2;
-min = 0;
-max = 255;
+lowest = 0;
+highest= 255;
 additive = rand(1)*255;
 factor = 1.0;
 multiplier = 2.5;
