@@ -5,6 +5,11 @@
 #undef DEVICE_VEC
 
 #include "CudaImageContainer.cuh"
+#include "Vec.h"
+#include <vector>
+#include "ImageChunk.cuh"
+#include "CHelpers.h"
+#include "CudaDeviceImages.cuh"
 
 template <class PixelType>
 __global__ void cudaPolyTransferFunc( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, double a, double b,
@@ -28,4 +33,41 @@ __global__ void cudaPolyTransferFunc( CudaImageContainer<PixelType> imageIn, Cud
 
 		imageOut[coordinate] = newPixelVal;
 	}
+}
+
+template <class PixelType>
+PixelType* applyPolyTransferFunction(const PixelType* imageIn, Vec<size_t> dims, double a, double b, double c,
+									 PixelType minValue=std::numeric_limits<PixelType>::lowest(),
+									 PixelType maxValue=std::numeric_limits<PixelType>::max(), PixelType** imageOut=NULL, int device=0)
+{
+	PixelType* imOut = setUpOutIm(dims, imageOut);
+
+	cudaDeviceProp props;
+	cudaGetDeviceProperties(&props,device);
+
+	size_t memAvail, total;
+	cudaMemGetInfo(&memAvail,&total);
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(memAvail*MAX_MEM_AVAIL),props);
+
+	Vec<size_t> maxDeviceDims;
+	setMaxDeviceDims(chunks, maxDeviceDims);
+
+	CudaDeviceImages<PixelType> deviceImages(2,maxDeviceDims,device);
+
+	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	{
+		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
+		deviceImages.setNextDims(curChunk->getFullChunkSize());
+
+		cudaPolyTransferFunc<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
+			a,b,c,minValue,maxValue);
+		DEBUG_KERNEL_CHECK();
+
+		deviceImages.incrementBuffer();
+
+		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
+	}
+
+	return imOut;
 }

@@ -8,6 +8,7 @@
 #include "CudaMedianFilter.cuh"
 #include "CudaMinFilter.cuh"
 #include "CudaMultiplyImage.cuh"
+#include "CudaPolyTransferFunc.cuh"
 #include "CudaPow.cuh"
 #include "CudaSum.cuh"
 #include "CudaThreshold.cuh"
@@ -36,6 +37,44 @@ float* cAddConstant(const float* imageIn, Vec<size_t> dims, double additive, flo
 double* cAddConstant(const double* imageIn, Vec<size_t> dims, double additive, double** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return addConstant(imageIn,dims,additive,imageOut,device);
+}
+
+
+unsigned char* cApplyPolyTransferFunction(const unsigned char* imageIn, Vec<size_t> dims, double a, double b, double c,
+										  unsigned char minValue/*=std::numeric_limits<PixelType>::lowest()*/,
+										  unsigned char maxValue/*=std::numeric_limits<PixelType>::max()*/,
+										  unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return applyPolyTransferFunction(imageIn,dims,a,b,c,minValue,maxValue,imageOut,device);
+}
+
+unsigned int* cApplyPolyTransferFunction(const unsigned int* imageIn, Vec<size_t> dims, double a, double b, double c,
+										 unsigned int minValue/*=std::numeric_limits<PixelType>::lowest()*/,
+										 unsigned int maxValue/*=std::numeric_limits<PixelType>::max()*/,
+										 unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return applyPolyTransferFunction(imageIn,dims,a,b,c,minValue,maxValue,imageOut,device);
+}
+
+int* cApplyPolyTransferFunction(const int* imageIn, Vec<size_t> dims, double a, double b, double c,
+								int minValue/*=std::numeric_limits<PixelType>::lowest()*/,
+								int maxValue/*=std::numeric_limits<PixelType>::max()*/, int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return applyPolyTransferFunction(imageIn,dims,a,b,c,minValue,maxValue,imageOut,device);
+}
+
+float* cApplyPolyTransferFunction(const float* imageIn, Vec<size_t> dims, double a, double b, double c,
+								  float minValue/*=std::numeric_limits<PixelType>::lowest()*/,
+								  float maxValue/*=std::numeric_limits<PixelType>::max()*/, float** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return applyPolyTransferFunction(imageIn,dims,a,b,c,minValue,maxValue,imageOut,device);
+}
+
+double* cApplyPolyTransferFunction(const double* imageIn, Vec<size_t> dims, double a, double b, double c,
+								   double minValue/*=std::numeric_limits<PixelType>::lowest()*/,
+								   double maxValue/*=std::numeric_limits<PixelType>::max()*/,double** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return applyPolyTransferFunction(imageIn,dims,a,b,c,minValue,maxValue,imageOut,device);
 }
 
 

@@ -35,34 +35,6 @@ void CudaProcessBuffer::defaults()
 //Cuda Operators (Alphabetical order)
 //////////////////////////////////////////////////////////////////////////
 
-DevicePixelType* CudaProcessBuffer::applyPolyTransformation(const DevicePixelType* imageIn, Vec<size_t> dims, double a, double b, double c,
-												DevicePixelType minValue, DevicePixelType maxValue, DevicePixelType** imageOut/*=NULL*/)
-{
-	DevicePixelType* imOut = setUpOutIm(dims, imageOut);
-
-// 	std::vector<ImageChunk> chunks = calculateBuffers<DevicePixelType>(dims,2,(size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL),deviceProp);
-// 	
-// 	setMaxDeviceDims(chunks, maxDeviceDims);
-// 
-// 	CudaDeviceImages<DevicePixelType> deviceImages(2,maxDeviceDims,device);
-// 
-// 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-// 	{
-// 		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
-// 		deviceImages.setNextDims(curChunk->getFullChunkSize());
-// 
-// 		cudaPolyTransferFunc<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
-// 			a,b,c,minValue,maxValue);
-// 		DEBUG_KERNEL_CHECK();
-// 
-// 		deviceImages.incrementBuffer();
-// 
-// 		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
-// 	}
-
-	return imOut;
-}
-
 DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
 														Vec<size_t> neighborhood, DevicePixelType** imageOut/*=NULL*/)
 {

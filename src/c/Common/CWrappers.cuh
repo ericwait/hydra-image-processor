@@ -17,6 +17,24 @@ float* cAddImageWith(const float* imageIn1, const float* imageIn2, Vec<size_t> d
 double* cAddImageWith(const double* imageIn1, const double* imageIn2, Vec<size_t> dims, double additive, double** imageOut=NULL,
 					  int device=0);
 
+unsigned char* cApplyPolyTransferFunction(const unsigned char* imageIn, Vec<size_t> dims, double a, double b, double c,
+										  unsigned char minValue=std::numeric_limits<unsigned char>::lowest(),
+										  unsigned char maxValue=std::numeric_limits<unsigned char>::max(),
+										  unsigned char** imageOut=NULL, int device=0);
+unsigned int* cApplyPolyTransferFunction(const unsigned int* imageIn, Vec<size_t> dims, double a, double b, double c,
+										 unsigned int minValue=std::numeric_limits<unsigned int>::lowest(),
+										 unsigned int maxValue=std::numeric_limits<unsigned int>::max(), unsigned int** imageOut=NULL,
+										 int device=0);
+int* cApplyPolyTransferFunction(const int* imageIn, Vec<size_t> dims, double a, double b, double c,
+								int minValue=std::numeric_limits<int>::lowest(), int maxValue=std::numeric_limits<int>::max(),
+								int** imageOut=NULL, int device=0);
+float* cApplyPolyTransferFunction(const float* imageIn, Vec<size_t> dims, double a, double b, double c,
+								  float minValue=std::numeric_limits<float>::lowest(), float maxValue=std::numeric_limits<float>::max(),
+								  float** imageOut=NULL, int device=0);
+double* cApplyPolyTransferFunction(const double* imageIn, Vec<size_t> dims, double a, double b, double c,
+								   double minValue=std::numeric_limits<double>::lowest(),
+								   double maxValue=std::numeric_limits<double>::max(),double** imageOut=NULL, int device=0);
+
 size_t* cHistogram(const unsigned char* imageIn, Vec<size_t> dims, unsigned int arraySize,
 				   unsigned char minVal=std::numeric_limits<unsigned char>::lowest(),
 				   unsigned char maxVal=std::numeric_limits<unsigned char>::max(), int device=0);

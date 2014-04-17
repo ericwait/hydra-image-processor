@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.cuh"
 
-void MexApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexPolyTransferFunction::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
 	int device = 0;
 
@@ -20,80 +20,80 @@ void MexApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, c
 		unsigned char* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		unsigned char mn = std::numeric_limits<unsigned char>::lowest();
-		unsigned char mx = std::numeric_limits<unsigned char>::max();
+		unsigned char mn = (unsigned char)std::numeric_limits<unsigned char>::min();
+		unsigned char mx = (unsigned char)std::numeric_limits<unsigned char>::max();
 
 		if (nrhs>5)
-			mx = MIN((unsigned char)mxGetScalar(prhs[5]),mx);
+			mx = (unsigned char)MIN(mxGetScalar(prhs[5]),mx);
 
 		if (nrhs>4)
-			mn = MAX((unsigned char)mxGetScalar(prhs[4]),mn);
+			mn = (unsigned char)MAX(mxGetScalar(prhs[4]),mn);
 
-		cApplyPolyTransferFunction(imageIn,imageDims,a,b,c,mn,mx,&imageOut,device);
+		cPolyTransferFunction(imageIn,imageDims,a,b,c,mn,mx,&imageOut,device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
 		unsigned int* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		unsigned int mn = std::numeric_limits<unsigned int>::lowest();
-		unsigned int mx = std::numeric_limits<unsigned int>::max();
+		unsigned int mn = (unsigned int)std::numeric_limits<unsigned int>::min();
+		unsigned int mx = (unsigned int)std::numeric_limits<unsigned int>::max();
 
 		if (nrhs>5)
-			mx = MIN((unsigned int)mxGetScalar(prhs[5]),mx);
+			mx = (unsigned int)MIN(mxGetScalar(prhs[5]),mx);
 
 		if (nrhs>4)
-			mn = MAX((unsigned int)mxGetScalar(prhs[4]),mn);
+			mn = (unsigned int)MAX(mxGetScalar(prhs[4]),mn);
 
-		cApplyPolyTransferFunction(imageIn,imageDims,a,b,c,mn,mx,&imageOut,device);
+		cPolyTransferFunction(imageIn,imageDims,a,b,c,mn,mx,&imageOut,device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
 		int* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		int mn = std::numeric_limits<int>::lowest();
-		int mx = std::numeric_limits<int>::max();
+		int mn = (int)std::numeric_limits<int>::min();
+		int mx = (int)std::numeric_limits<int>::max();
 
 		if (nrhs>5)
-			mx = MIN((int)mxGetScalar(prhs[5]),mx);
+			mx = (int)MIN(mxGetScalar(prhs[5]),mx);
 
 		if (nrhs>4)
-			mn = MAX((int)mxGetScalar(prhs[4]),mn);
+			mn = (int)MAX(mxGetScalar(prhs[4]),mn);
 
-		cApplyPolyTransferFunction(imageIn,imageDims,a,b,c,mn,mx,&imageOut,device);
+		cPolyTransferFunction(imageIn,imageDims,a,b,c,mn,mx,&imageOut,device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
 		float* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		float mn = std::numeric_limits<float>::lowest();
-		float mx = std::numeric_limits<float>::max();
+		float mn = (float)std::numeric_limits<float>::min();
+		float mx = (float)std::numeric_limits<float>::max();
 
 		if (nrhs>5)
-			mx = MIN((float)mxGetScalar(prhs[5]),mx);
+			mx = (float)MIN(mxGetScalar(prhs[5]),mx);
 
 		if (nrhs>4)
-			mn = MAX((float)mxGetScalar(prhs[4]),mn);
+			mn = (float)MAX(mxGetScalar(prhs[4]),mn);
 
-		cApplyPolyTransferFunction(imageIn,imageDims,a,b,c,mn,mx,&imageOut,device);
+		cPolyTransferFunction(imageIn,imageDims,a,b,c,mn,mx,&imageOut,device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
 		double* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		double mn = (double)std::numeric_limits<double>::lowest();
+		double mn = (double)std::numeric_limits<double>::min();
 		double mx = (double)std::numeric_limits<double>::max();
 
 		if (nrhs>5)
-			mx = MIN(mxGetScalar(prhs[5]),mx);
+			mx = (double)MIN(mxGetScalar(prhs[5]),mx);
 
 		if (nrhs>4)
-			mn = MAX(mxGetScalar(prhs[4]),mn);
+			mn = (double)MAX(mxGetScalar(prhs[4]),mn);
 
-		cApplyPolyTransferFunction(imageIn,imageDims,a,b,c,mn,mx,&imageOut,device);
+		cPolyTransferFunction(imageIn,imageDims,a,b,c,mn,mx,&imageOut,device);
 	}
 	else
 	{
@@ -101,9 +101,9 @@ void MexApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, c
 	}
 }
 
-std::string MexApplyPolyTransformation::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexPolyTransferFunction::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	if (nrhs<4 && nrhs>7)
+	if (nrhs<4 && nrhs>8)
 		return "Incorrect number of inputs!";
 
 	if (nlhs!=1)
@@ -119,12 +119,12 @@ std::string MexApplyPolyTransformation::check( int nlhs, mxArray* plhs[], int nr
 	return "";
 }
 
-std::string MexApplyPolyTransformation::printUsage()
+std::string MexPolyTransferFunction::printUsage()
 {
 	return "imageOut = CudaMex('ApplyPolyTransformation',imageIn,a,b,c,[min],[max],[device]);";
 }
 
-std::string MexApplyPolyTransformation::printHelp()
+std::string MexPolyTransferFunction::printHelp()
 {
 	std::string msg = "\ta, b, and c are the polynomial curve parameters for the transfer function which maps imageIn to imageOut.\n";
 	msg += "\tmin and max are optional clamping parameters that will clamp the output values between [min,max].\n";
