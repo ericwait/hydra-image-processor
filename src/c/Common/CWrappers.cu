@@ -2,6 +2,7 @@
 #include "CudaAdd.cuh"
 #include "CudaHistogram.cuh"
 #include "CudaGaussianFilter.cuh"
+#include "CudaGetMinMax.cuh"
 #include "CudaMaxFilter.cuh"
 #include "CudaMedianFilter.cuh"
 #include "CudaMinFilter.cuh"
@@ -121,6 +122,31 @@ float* cGaussianFilter(const float* imageIn, Vec<size_t> dims, Vec<float> sigmas
 double* cGaussianFilter(const double* imageIn, Vec<size_t> dims, Vec<float> sigmas, double** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return gaussianFilter(imageIn,dims,sigmas,imageOut,device);
+}
+
+void cGetMinMax(const unsigned char* imageIn, Vec<size_t> dims, unsigned char& minVal, unsigned char& maxVal, int device/*=0*/)
+{
+	getMinMax(imageIn,dims,minVal,maxVal,device);
+}
+
+void cGetMinMax(const unsigned int* imageIn, Vec<size_t> dims, unsigned int& minVal, unsigned int& maxVal, int device/*=0*/)
+{
+	getMinMax(imageIn,dims,minVal,maxVal,device);
+}
+
+void cGetMinMax(const int* imageIn, Vec<size_t> dims, int& minVal, int& maxVal, int device/*=0*/)
+{
+	getMinMax(imageIn,dims,minVal,maxVal,device);
+}
+
+void cGetMinMax(const float* imageIn, Vec<size_t> dims, float& minVal, float& maxVal, int device/*=0*/)
+{
+	getMinMax(imageIn,dims,minVal,maxVal,device);
+}
+
+void cGetMinMax(const double* imageIn, Vec<size_t> dims, double& minVal, double& maxVal, int device/*=0*/)
+{
+	getMinMax(imageIn,dims,minVal,maxVal,device);
 }
 
 unsigned char* cImagePow(const unsigned char* imageIn, Vec<size_t> dims, double additive, unsigned char** imageOut/*=NULL*/, int device/*=0*/)

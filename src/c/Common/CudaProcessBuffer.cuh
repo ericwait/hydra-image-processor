@@ -58,8 +58,6 @@ public:
 	DevicePixelType* contrastEnhancement(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
 		Vec<size_t> medianNeighborhood, DevicePixelType** imageOut=NULL);
 
-	void getMinMax(const DevicePixelType* imageIn, size_t n, DevicePixelType& minVal, DevicePixelType& maxVal);
-
 	/*
 	*	Filters image where each pixel is the mean of its neighborhood
 	*  If imageOut is null, then a new image pointer will be created and returned.

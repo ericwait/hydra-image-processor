@@ -185,8 +185,9 @@ try
     
     tic
     kernelName = 'SumArray';
-    sum = CudaMex(sprintf('%s',kernelName),imageIn,device);
-    fprintf('%s took %f sec and returned %f\n',kernelName,toc,sum);
+    sumVal = CudaMex(sprintf('%s',kernelName),imageIn,device);
+    dif = sumVal - sum(imageIn(:));
+    fprintf('%s took %f sec and returned a dif of %f\n',kernelName,toc,dif);
     
     threshold = additive;
     tic

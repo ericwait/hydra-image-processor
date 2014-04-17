@@ -1,6 +1,6 @@
 #include "MexCommand.h"
-#include "CudaProcessBuffer.cuh"
 #include "Vec.h"
+#include "CWrappers.cuh"
 
 void MexMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
@@ -10,16 +10,61 @@ void MexMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prh
 		device = mat_to_c((int)mxGetScalar(prhs[1]));
 
 	Vec<size_t> imageDims;
-	HostPixelType* imageIn;
-	CudaProcessBuffer cudaBuffer(device);
-	setupImagePointers(prhs[0],&imageIn,&imageDims);
+	if (mxIsUint8(prhs[0]))
+	{
+		unsigned char* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-	HostPixelType minVal, maxVal;
+		unsigned char minVal, maxVal;
+		cGetMinMax(imageIn,imageDims,minVal,maxVal,device);
+		plhs[0] = mxCreateDoubleScalar(minVal);
+		plhs[1] = mxCreateDoubleScalar(maxVal);
+	}
+	else if (mxIsUint16(prhs[0]))
+	{
+		unsigned int* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-	cudaBuffer.getMinMax(imageIn,imageDims.product(),minVal,maxVal);
+		unsigned int minVal, maxVal;
+		cGetMinMax(imageIn,imageDims,minVal,maxVal,device);
+		plhs[0] = mxCreateDoubleScalar(minVal);
+		plhs[1] = mxCreateDoubleScalar(maxVal);
+	}
+	else if (mxIsInt16(prhs[0]))
+	{
+		int* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-	plhs[0] = mxCreateDoubleScalar(minVal);
-	plhs[1] = mxCreateDoubleScalar(maxVal);
+		int minVal, maxVal;
+
+		cGetMinMax(imageIn,imageDims,minVal,maxVal,device);
+		plhs[0] = mxCreateDoubleScalar(minVal);
+		plhs[1] = mxCreateDoubleScalar(maxVal);
+	}
+	else if (mxIsSingle(prhs[0]))
+	{
+		float* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		float minVal, maxVal;
+		cGetMinMax(imageIn,imageDims,minVal,maxVal,device);
+		plhs[0] = mxCreateDoubleScalar(minVal);
+		plhs[1] = mxCreateDoubleScalar(maxVal);
+	}
+	else if (mxIsDouble(prhs[0]))
+	{
+		double* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		double minVal, maxVal;
+		cGetMinMax(imageIn,imageDims,minVal,maxVal,device);
+		plhs[0] = mxCreateDoubleScalar(minVal);
+		plhs[1] = mxCreateDoubleScalar(maxVal);
+	}
+	else
+	{
+		mexErrMsgTxt("Image type not supported!");
+	}
 }
 
 std::string MexMinMax::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
@@ -30,12 +75,9 @@ std::string MexMinMax::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	if (nlhs!=2)
 		return "Requires two outputs!";
 
-	if (!mxIsUint8(prhs[0]))
-		return "Image has to be formated as a uint8!";
-
-	// 	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
-	// 	if (numDims>3 || numDims<2)
-	// 		return "Image can only be either 2D or 3D!";
+	 	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
+	 	if (numDims>3)
+	 		return "Image can have a maximum of three dimensions!";
 
 	return "";
 }

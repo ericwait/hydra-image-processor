@@ -1,156 +1,109 @@
 #pragma once
 #include "CudaImageContainer.cuh"
+#include "Vec.h"
 
 template <class PixelType>
-__global__ void cudaGetMinMax( PixelType* imageIn, double* minArrayOut, double* maxArrayOut, size_t n )
+__global__ void cudaGetMinMax(PixelType* arrayIn, double* minsOut, double* maxsOut, size_t n)
 {
-	extern __shared__ double maxData[];
-	extern __shared__ double minData[];
+	extern __shared__ double mins[];
+	double* maxs = mins+blockDim.x;
 
-	size_t tid = threadIdx.x;
-	size_t i = blockIdx.x*blockDim.x*2 + tid;
-	size_t gridSize = blockDim.x*2*gridDim.x;
-	maxData[tid] = (double)(imageIn[i]);
-	minData[tid] = (double)(imageIn[i]);
-
-	do
+	size_t i = threadIdx.x + blockIdx.x*blockDim.x;
+	size_t stride = blockDim.x*gridDim.x;
+	if (i<n)
 	{
-		if (i+blockDim.x<n)
+		mins[threadIdx.x] = (double)(arrayIn[i]);
+		maxs[threadIdx.x] = (double)(arrayIn[i]);
+
+		while (i<n)
 		{
-			if(maxData[tid]<(double)(imageIn[i+blockDim.x]))
-				maxData[tid] = (double)(imageIn[i+blockDim.x]);
+			if (mins[threadIdx.x] > (double)(arrayIn[i]))
+				mins[threadIdx.x] = (double)(arrayIn[i]);
+			if (maxs[threadIdx.x] < (double)(arrayIn[i]))
+				maxs[threadIdx.x] = (double)(arrayIn[i]);
 
-			if(minData[tid]>(double)(imageIn[i+blockDim.x]))
-				minData[tid] = (double)(imageIn[i+blockDim.x]);
-		}
-
-		i += gridSize;
-	}while (i<n);
-	__syncthreads();
-
-
-	if (blockDim.x >= 2048)
-	{
-		if (tid < 1024) 
-		{
-			if(maxData[tid]<maxData[tid + 1024])
-				maxData[tid] = maxData[tid + 1024];
-
-			if(minData[tid]>minData[tid + 1024])
-				minData[tid] = minData[tid + 1024];
+			i += stride;
 		}
 		__syncthreads();
-	}
-	if (blockDim.x >= 1024)
-	{
-		if (tid < 512) 
-		{
-			if(maxData[tid]<maxData[tid + 512])
-				maxData[tid] = maxData[tid + 512];
 
-			if(minData[tid]>minData[tid + 512])
-				minData[tid] = minData[tid + 512];
-		}
-		__syncthreads();
-	}
-	if (blockDim.x >= 512)
-	{
-		if (tid < 256) 
-		{
-			if(maxData[tid]<maxData[tid + 256])
-				maxData[tid] = maxData[tid + 256];
 
-			if(minData[tid]>minData[tid + 256])
-				minData[tid] = minData[tid + 256];
-		}
-		__syncthreads();
-	}
-	if (blockDim.x >= 256) {
-		if (tid < 128)
+		for (int reduceUpTo = blockDim.x/2; reduceUpTo>0; reduceUpTo /= 2)
 		{
-			if(maxData[tid]<maxData[tid + 128])
-				maxData[tid] = maxData[tid + 128];
-
-			if(minData[tid]>minData[tid + 128])
-				minData[tid] = minData[tid + 128];
-		}
-		__syncthreads(); 
-	}
-	if (blockDim.x >= 128) 
-	{
-		if (tid < 64)
-		{
-			if(maxData[tid]<maxData[tid + 64])
-				maxData[tid] = maxData[tid + 64];
-
-			if(minData[tid]>minData[tid + 64])
-				minData[tid] = minData[tid + 64];
-		}
-		__syncthreads(); 
-	}
-
-	if (tid < 32) {
-		if (blockDim.x >= 64) 
-		{
+			if (threadIdx.x<reduceUpTo)
 			{
-				if(maxData[tid]<maxData[tid + 64])
-					maxData[tid] = maxData[tid + 64];
-
-				if(minData[tid]>minData[tid + 64])
-					minData[tid] = minData[tid + 64];
-			}
-			__syncthreads(); 
+				if (mins[threadIdx.x] > mins[threadIdx.x+reduceUpTo])
+					mins[threadIdx.x] = mins[threadIdx.x+reduceUpTo];
+				if (maxs[threadIdx.x] < maxs[threadIdx.x+reduceUpTo])
+					maxs[threadIdx.x] = maxs[threadIdx.x+reduceUpTo];
+			}else 
+				break;
+			__syncthreads();
 		}
-		if (blockDim.x >= 32)
-		{
-			if(maxData[tid]<maxData[tid + 16])
-				maxData[tid] = maxData[tid + 16];
 
-			if(minData[tid]>minData[tid + 16])
-				minData[tid] = minData[tid + 16];
-			__syncthreads(); 
-		}
-		if (blockDim.x >= 16)
+		if (threadIdx.x==0)
 		{
-			if(maxData[tid]<maxData[tid + 8])
-				maxData[tid] = maxData[tid + 8];
-
-			if(minData[tid]>minData[tid + 8])
-				minData[tid] = minData[tid + 8];
-			__syncthreads(); 
-		}
-		if (blockDim.x >= 8)
-		{
-			if(maxData[tid]<maxData[tid + 4])
-				maxData[tid] = maxData[tid + 4];
-
-			if(minData[tid]>minData[tid + 4])
-				minData[tid] = minData[tid + 4];
-			__syncthreads(); 
-		}
-		if (blockDim.x >= 4)
-		{
-			if(maxData[tid]<maxData[tid + 2])
-				maxData[tid] = maxData[tid + 2];
-
-			if(minData[tid]>minData[tid + 2])
-				minData[tid] = minData[tid + 2];
-			__syncthreads(); 
-		}
-		if (blockDim.x >= 2)
-		{
-			if(maxData[tid]<maxData[tid + 1])
-				maxData[tid] = maxData[tid + 1];
-
-			if(minData[tid]>minData[tid + 1])
-				minData[tid] = minData[tid + 1];
-			__syncthreads(); 
+			minsOut[blockIdx.x] = mins[0];
+			maxsOut[blockIdx.x] = maxs[0];
 		}
 	}
+	__syncthreads();
+}
 
-	if (tid==0)
+template <class PixelType>
+void getMinMax(const PixelType* imageIn, Vec<size_t> dims, PixelType& minVal, PixelType& maxVal, int device=0)
+{
+	size_t n = dims.product();
+	minVal = std::numeric_limits<PixelType>::max();
+	maxVal = std::numeric_limits<PixelType>::lowest();
+	double* deviceMins;
+	double* deviceMaxs;
+	double* hostMins;
+	double* hostMaxs;
+	PixelType* deviceBuffer;
+
+	cudaDeviceProp props;
+	cudaGetDeviceProperties(&props, device);
+
+	size_t availMem, total;
+	cudaMemGetInfo(&availMem,&total);
+
+	size_t numValsPerChunk = MIN(n,(size_t)((availMem*MAX_MEM_AVAIL)/sizeof(PixelType)));
+
+	HANDLE_ERROR(cudaMalloc((void**)&deviceBuffer,sizeof(PixelType)*numValsPerChunk));
+	HANDLE_ERROR(cudaMalloc((void**)&deviceMins,sizeof(double)*props.multiProcessorCount));
+	HANDLE_ERROR(cudaMalloc((void**)&deviceMaxs,sizeof(double)*props.multiProcessorCount));
+
+	hostMins = new double[props.multiProcessorCount];
+	hostMaxs = new double[props.multiProcessorCount];
+
+	for (size_t startIdx=0; startIdx<n; startIdx += numValsPerChunk)
 	{
-		minArrayOut[blockIdx.x] = minData[0];
-		maxArrayOut[blockIdx.x] = maxData[0];
+		size_t curNumVals = MIN(numValsPerChunk,n-startIdx);
+
+		HANDLE_ERROR(cudaMemcpy(deviceBuffer,imageIn+startIdx,sizeof(PixelType)*curNumVals,cudaMemcpyHostToDevice));
+
+		int threads = (int)MIN((size_t)props.maxThreadsPerBlock,curNumVals);
+		int blocks = MIN(props.multiProcessorCount,(int)ceil((double)curNumVals/threads));
+
+		cudaGetMinMax<<<blocks,threads,sizeof(double)*threads*2>>>(deviceBuffer,deviceMins,deviceMaxs,curNumVals);
+		DEBUG_KERNEL_CHECK();
+
+		HANDLE_ERROR(cudaMemcpy(hostMins,deviceMins,sizeof(double)*blocks,cudaMemcpyDeviceToHost));
+		HANDLE_ERROR(cudaMemcpy(hostMaxs,deviceMaxs,sizeof(double)*blocks,cudaMemcpyDeviceToHost));
+
+		for (int i=0; i<blocks; ++i)
+		{
+			if (minVal > (PixelType)hostMins[i])
+				minVal = (PixelType)hostMins[i];
+			if (maxVal < (PixelType)hostMaxs[i])
+				maxVal = (PixelType)hostMaxs[i];
+		}
 	}
+
+	HANDLE_ERROR(cudaFree(deviceMins));
+	HANDLE_ERROR(cudaFree(deviceMaxs));
+	HANDLE_ERROR(cudaFree(deviceBuffer));
+
+	delete[] hostMins;
+	delete[] hostMaxs;
 }

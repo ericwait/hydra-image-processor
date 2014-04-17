@@ -128,62 +128,6 @@ DevicePixelType* CudaProcessBuffer::contrastEnhancement(const DevicePixelType* i
 	return imOut;
 }
 
-void CudaProcessBuffer::getMinMax(const DevicePixelType* imageIn, size_t n, DevicePixelType& minVal, DevicePixelType& maxVal)
-{
-	minVal = std::numeric_limits<DevicePixelType>::lowest();
-	maxVal= std::numeric_limits<DevicePixelType>::max();
-	double* deviceMin;
-	double* deviceMax;
-	double* hostMin;
-	double* hostMax;
-	DevicePixelType* deviceImage;
-
-	unsigned int blocks = deviceProp.multiProcessorCount;
-	unsigned int threads = deviceProp.maxThreadsPerBlock;
-
-	Vec<size_t> maxDeviceDims(1,1,1);
-
-	maxDeviceDims.x = (n < (double)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL)/sizeof(DevicePixelType)) ? (n) :
-		((size_t)(deviceProp.totalGlobalMem*MAX_MEM_AVAIL/sizeof(DevicePixelType)));
-
-	checkFreeMemory(sizeof(DevicePixelType)*maxDeviceDims.x+sizeof(double)*blocks,device,true);
-	HANDLE_ERROR(cudaMalloc((void**)&deviceImage,sizeof(DevicePixelType)*maxDeviceDims.x));
-	HANDLE_ERROR(cudaMalloc((void**)&deviceMin,sizeof(double)*blocks));
-	HANDLE_ERROR(cudaMalloc((void**)&deviceMax,sizeof(double)*blocks));
-	hostMin = new double[blocks];
-	hostMax = new double[blocks];
-
-	for (int i=0; i<ceil((double)n/maxDeviceDims.x); ++i)
-	{
-		const DevicePixelType* imStart = imageIn + i*maxDeviceDims.x;
-		size_t numValues = ((i+1)*maxDeviceDims.x < n) ? (maxDeviceDims.x) : (n-i*maxDeviceDims.x);
-
-		HANDLE_ERROR(cudaMemcpy(deviceImage,imStart,sizeof(DevicePixelType)*numValues,cudaMemcpyHostToDevice));
-
-		cudaGetMinMax<<<blocks,threads,sizeof(double)*threads*2>>>(deviceImage,deviceMin,deviceMax,numValues);
-		DEBUG_KERNEL_CHECK();
-
-		HANDLE_ERROR(cudaMemcpy(hostMin,deviceMin,sizeof(double)*blocks,cudaMemcpyDeviceToHost));
-		HANDLE_ERROR(cudaMemcpy(hostMax,deviceMax,sizeof(double)*blocks,cudaMemcpyDeviceToHost));
-
-		for (unsigned int i=0; i<blocks; ++i)
-		{
-			if (minVal> hostMin[i])
-				minVal = (DevicePixelType)(hostMin[i]);
-
-			if (maxVal< hostMax[i])
-				maxVal = (DevicePixelType)(hostMax[i]);
-		}
-	}
-
-	HANDLE_ERROR(cudaFree(deviceMin));
-	HANDLE_ERROR(cudaFree(deviceMax));
-	HANDLE_ERROR(cudaFree(deviceImage));
-
-	delete[] hostMin;
-	delete[] hostMax;
-}
-
 DevicePixelType* CudaProcessBuffer::meanFilter(const DevicePixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood,
 											 DevicePixelType** imageOut/*=NULL*/)
 {

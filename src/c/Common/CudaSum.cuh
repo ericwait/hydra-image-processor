@@ -5,96 +5,36 @@
 template <class PixelType>
 __global__ void cudaSum(PixelType* arrayIn, double* arrayOut, size_t n)
 {
-	//This algorithm was used from a this website:
-	// http://developer.download.nvidia.com/compute/cuda/1.1-Beta/x86_website/projects/reduction/doc/reduction.pdf
-	// accessed 4/28/2013
+	extern __shared__ double sums[];
 
-	extern __shared__ double sdata[];
-
-	size_t tid = threadIdx.x;
-	size_t i = blockIdx.x*blockDim.x + tid;
-	size_t gridSize = blockDim.x*gridDim.x;
-	sdata[tid] = (double)(arrayIn[i]);
-
-	do
+	size_t i = threadIdx.x + blockIdx.x*blockDim.x;
+	size_t stride = blockDim.x*gridDim.x;
+	if (i<n)
 	{
-		if (i+blockDim.x<n)
-			sdata[tid] += (double)(arrayIn[i+blockDim.x]);
+		sums[threadIdx.x] = (double)(arrayIn[i]);
 
-		i += gridSize;
-	}while (i<n);
+		while (i<n)
+		{
+			sums[threadIdx.x] += (double)(arrayIn[i]);
+
+			i += stride;
+		}
+		__syncthreads();
+
+
+		for (int reduceUpTo = blockDim.x/2; reduceUpTo>0; reduceUpTo /= 2)
+		{
+			if (threadIdx.x<reduceUpTo)
+				sums[threadIdx.x] += sums[threadIdx.x+reduceUpTo];
+			__syncthreads();
+		}
+
+		if (threadIdx.x==0)
+		{
+			arrayOut[blockIdx.x] = sums[0];
+		}
+	}
 	__syncthreads();
-
-
-	if (blockDim.x >= 2048)
-	{
-		if (tid < 1024) 
-			sdata[tid] += sdata[tid + 1024];
-		__syncthreads();
-	}
-
-	if (blockDim.x >= 1024)
-	{
-		if (tid < 512) 
-			sdata[tid] += sdata[tid + 512];
-		__syncthreads();
-	}
-
-	if (blockDim.x >= 512)
-	{
-		if (tid < 256) 
-			sdata[tid] += sdata[tid + 256];
-		__syncthreads();
-	}
-
-	if (blockDim.x >= 256) {
-		if (tid < 128)
-			sdata[tid] += sdata[tid + 128];
-		__syncthreads(); 
-	}
-
-	if (blockDim.x >= 128) 
-	{
-		if (tid < 64)
-			sdata[tid] += sdata[tid + 64];
-		__syncthreads(); 
-	}
-
-	if (tid < 32) {
-		if (blockDim.x >= 64) 
-		{
-			sdata[tid] += sdata[tid + 32];
-			__syncthreads(); 
-		}
-		if (blockDim.x >= 32)
-		{
-			sdata[tid] += sdata[tid + 16];
-			__syncthreads(); 
-		}
-		if (blockDim.x >= 16)
-		{
-			sdata[tid] += sdata[tid + 8];
-			__syncthreads(); 
-		}
-		if (blockDim.x >= 8)
-		{
-			sdata[tid] += sdata[tid + 4];
-			__syncthreads(); 
-		}
-		if (blockDim.x >= 4)
-		{
-			sdata[tid] += sdata[tid + 2];
-			__syncthreads(); 
-		}
-		if (blockDim.x >= 2)
-		{
-			sdata[tid] += sdata[tid + 1];
-			__syncthreads(); 
-		}
-	}
-
-	if (tid==0)
-		arrayOut[blockIdx.x] = sdata[0];
 }
 
 template <class PixelType>
@@ -103,7 +43,7 @@ double sumArray(const PixelType* imageIn, size_t n, int device=0)
 	double sum = 0.0;
 	double* deviceSum;
 	double* hostSum;
-	PixelType* deviceImage;
+	PixelType* deviceBuffer;
 
 	cudaDeviceProp props;
 	cudaGetDeviceProperties(&props, device);
@@ -111,38 +51,35 @@ double sumArray(const PixelType* imageIn, size_t n, int device=0)
 	size_t availMem, total;
 	cudaMemGetInfo(&availMem,&total);
 
-	unsigned int blocks = props.multiProcessorCount;
-	unsigned int threads = props.maxThreadsPerBlock;
+	size_t numValsPerChunk = MIN(n,(size_t)((availMem*MAX_MEM_AVAIL)/sizeof(PixelType)));
 
-	Vec<size_t> maxDeviceDims(1,1,1);
+	HANDLE_ERROR(cudaMalloc((void**)&deviceBuffer,sizeof(PixelType)*numValsPerChunk));
+	HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*props.multiProcessorCount));
 
-	maxDeviceDims.x = (n < availMem*MAX_MEM_AVAIL/sizeof(PixelType)) ? (n) :
-		((size_t)(availMem*MAX_MEM_AVAIL/sizeof(PixelType)));
+	hostSum = new double[props.multiProcessorCount];
 
-	HANDLE_ERROR(cudaMalloc((void**)&deviceImage,sizeof(PixelType)*maxDeviceDims.x));
-	HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*blocks));
-	hostSum = new double[blocks];
-
-	for (int i=0; i<ceil((double)n/maxDeviceDims.x); ++i)
+	for (size_t startIdx=0; startIdx<n; startIdx += numValsPerChunk)
 	{
-		const PixelType* imStart = imageIn + i*maxDeviceDims.x;
-		size_t numValues = ((i+1)*maxDeviceDims.x < n) ? (maxDeviceDims.x) : (n-i*maxDeviceDims.x);
+		size_t curNumVals = MIN(numValsPerChunk,n-startIdx);
 
-		HANDLE_ERROR(cudaMemcpy(deviceImage,imStart,sizeof(PixelType)*numValues,cudaMemcpyHostToDevice));
+		HANDLE_ERROR(cudaMemcpy(deviceBuffer,imageIn+startIdx,sizeof(PixelType)*curNumVals,cudaMemcpyHostToDevice));
 
-		cudaSum<<<blocks,threads,sizeof(double)*threads>>>(deviceImage,deviceSum,numValues);
+		int threads = (int)MIN((size_t)props.maxThreadsPerBlock,curNumVals);
+		int blocks = MIN(props.multiProcessorCount,(int)ceil((double)curNumVals/threads));
+
+		cudaSum<<<blocks,threads,sizeof(double)*threads>>>(deviceBuffer,deviceSum,curNumVals);
 		DEBUG_KERNEL_CHECK();
 
 		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*blocks,cudaMemcpyDeviceToHost));
 
-		for (unsigned int i=0; i<blocks; ++i)
+		for (int i=0; i<blocks; ++i)
 		{
-			sum += hostSum[i];
+			sum += (PixelType)hostSum[i];
 		}
 	}
 
 	HANDLE_ERROR(cudaFree(deviceSum));
-	HANDLE_ERROR(cudaFree(deviceImage));
+	HANDLE_ERROR(cudaFree(deviceBuffer));
 
 	delete[] hostSum;
 

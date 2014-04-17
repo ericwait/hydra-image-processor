@@ -37,6 +37,12 @@ int* cGaussianFilter(const int* imageIn, Vec<size_t> dims, Vec<float> sigmas, in
 float* cGaussianFilter(const float* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut=NULL, int device=0);
 double* cGaussianFilter(const double* imageIn, Vec<size_t> dims, Vec<float> sigmas, double** imageOut=NULL, int device=0);
 
+void cGetMinMax(const unsigned char* imageIn, Vec<size_t> dims, unsigned char& minVal, unsigned char& maxVal, int device=0);
+void cGetMinMax(const unsigned int* imageIn, Vec<size_t> dims, unsigned int& minVal, unsigned int& maxVal, int device=0);
+void cGetMinMax(const int* imageIn, Vec<size_t> dims, int& minVal, int& maxVal, int device=0);
+void cGetMinMax(const float* imageIn, Vec<size_t> dims, float& minVal, float& maxVal, int device=0);
+void cGetMinMax(const double* imageIn, Vec<size_t> dims, double& minVal, double& maxVal, int device=0);
+
 unsigned char* cImagePow(const unsigned char* imageIn, Vec<size_t> dims, double power, unsigned char** imageOut=NULL, int device=0);
 unsigned int* cImagePow(const unsigned int* imageIn, Vec<size_t> dims, double power, unsigned int** imageOut=NULL, int device=0);
 int* cImagePow(const int* imageIn, Vec<size_t> dims, double power, int** imageOut=NULL, int device=0);

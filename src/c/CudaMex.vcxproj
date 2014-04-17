@@ -247,7 +247,6 @@ copy "$(CudaToolkitBinDir)\cudart64*.dll" "$(ProjectDir)..\MATLAB\."</Command>
     <CudaCompile>
       <CodeGeneration>compute_20,sm_20;compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
       <TargetMachinePlatform>64</TargetMachinePlatform>
-      <Warning>InheritFromHost</Warning>
     </CudaCompile>
     <Bscmake>
       <PreserveSBR>true</PreserveSBR>
