@@ -10,6 +10,7 @@
 #include "CudaMultiplyImage.cuh"
 #include "CudaPolyTransferFunc.cuh"
 #include "CudaPow.cuh"
+#include "CudaImageReduction.cuh"
 #include "CudaSum.cuh"
 #include "CudaThreshold.cuh"
 
@@ -480,6 +481,37 @@ float cOtsuThresholdValue(const float* imageIn, Vec<size_t> dims, int device/*=0
 double cOtsuThresholdValue(const double* imageIn, Vec<size_t> dims, int device/*=0*/)
 {
 	return otsuThresholdValue(imageIn,dims,device);
+}
+
+
+unsigned char* cReduceImage(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims,
+							ReductionMethods method/*=MEAN*/, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return reduceImage(imageIn,dims,reductions,reducedDims,method,imageOut,device);
+}
+
+unsigned int* cReduceImage(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims,
+						   ReductionMethods method/*=MEAN*/, unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return reduceImage(imageIn,dims,reductions,reducedDims,method,imageOut,device);
+}
+
+int* cReduceImage(const int* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/,
+				  int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return reduceImage(imageIn,dims,reductions,reducedDims,method,imageOut,device);
+}
+
+float* cReduceImage(const float* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims,
+					ReductionMethods method/*=MEAN*/, float** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return reduceImage(imageIn,dims,reductions,reducedDims,method,imageOut,device);
+}
+
+double* cReduceImage(const double* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims,
+					 ReductionMethods method/*=MEAN*/, double** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return reduceImage(imageIn,dims,reductions,reducedDims,method,imageOut,device);
 }
 
 

@@ -15,3 +15,8 @@ typedef HostPixelType DevicePixelType;
 
 //Percent of memory that can be used on the device
 const double MAX_MEM_AVAIL = 0.95;
+
+enum ReductionMethods
+{
+	REDUC_MEAN, REDUC_MEDIAN, REDUC_MIN, REDUC_MAX
+};

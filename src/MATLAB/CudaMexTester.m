@@ -179,9 +179,15 @@ try
     reductionFactorZ = NeighborhoodZ;
     tic
     kernelName = 'ReduceImage';
-    imageOut = CudaMex(sprintf('%s',kernelName),imageIn,[reductionFactorX,reductionFactorY,reductionFactorZ],device);
+    imageOut = CudaMex(sprintf('%s',kernelName),imageIn,[reductionFactorX,reductionFactorY,reductionFactorZ],'mean',device);
     fprintf('%s took %f sec\n',kernelName,toc);
-    showIm(imageOut,kernelName);
+    showIm(imageOut,[kernelName ' Mean']);
+    
+    tic
+    kernelName = 'ReduceImage';
+    imageOut = CudaMex(sprintf('%s',kernelName),imageIn,[reductionFactorX,reductionFactorY,reductionFactorZ],'median',device);
+    fprintf('%s took %f sec\n',kernelName,toc);
+    showIm(imageOut,[kernelName ' Median']);
     
     tic
     kernelName = 'SumArray';

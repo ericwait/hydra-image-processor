@@ -1,6 +1,7 @@
 #pragma once
 #include "Vec.h"
 #include <limits>
+#include "Defines.h"
 
 unsigned char* cAddConstant(const unsigned char* imageIn, Vec<size_t> dims, double additive, unsigned char** imageOut=NULL, int device=0);
 unsigned int* cAddConstant(const unsigned int* imageIn, Vec<size_t> dims, double additive, unsigned int** imageOut=NULL, int device=0);
@@ -86,7 +87,7 @@ float* cMeanFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> neighborh
 double* cMeanFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, double** imageOut=NULL, int device=0);
 
 unsigned char* cMedianFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, unsigned char** imageOut=NULL,
-							int device=0);
+							 int device=0);
 unsigned int* cMedianFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, unsigned int** imageOut=NULL,
 							int device=0);
 int* cMedianFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, int** imageOut=NULL, int device=0);
@@ -110,26 +111,26 @@ float* cMultiplyImage(const float* imageIn, Vec<size_t> dims, double multiplier,
 double* cMultiplyImage(const double* imageIn, Vec<size_t> dims, double multiplier, double** imageOut=NULL, int device=0);
 
 unsigned char* cMultiplyImageWith(const unsigned char* imageIn1, const unsigned char* imageIn2, Vec<size_t> dims, double factor,
-								unsigned char** imageOut=NULL, int device=0);
+								  unsigned char** imageOut=NULL, int device=0);
 unsigned int* cMultiplyImageWith(const unsigned int* imageIn1, const unsigned int* imageIn2, Vec<size_t> dims, double factor, unsigned int** imageOut=NULL, int device=0);
 int* cMultiplyImageWith(const int* imageIn1, const int* imageIn2, Vec<size_t> dims, double factor, int** imageOut=NULL, int device=0);
 float* cMultiplyImageWith(const float* imageIn1, const float* imageIn2, Vec<size_t> dims, double factor, float** imageOut=NULL, int device=0);
 double* cMultiplyImageWith(const double* imageIn1, const double* imageIn2, Vec<size_t> dims, double factor, double** imageOut=NULL,
-						 int device=0);
+						   int device=0);
 
 double* cNormalizeHistogram(const unsigned char* imageIn, Vec<size_t> dims, unsigned int arraySize,
-						   unsigned char minVal=std::numeric_limits<unsigned char>::lowest(),
-						   unsigned char maxVal=std::numeric_limits<unsigned char>::max(), int device=0);
+							unsigned char minVal=std::numeric_limits<unsigned char>::lowest(),
+							unsigned char maxVal=std::numeric_limits<unsigned char>::max(), int device=0);
 double* cNormalizeHistogram(const unsigned int* imageIn, Vec<size_t> dims, unsigned int arraySize,
-						   unsigned int minVal=std::numeric_limits<unsigned int>::lowest(),
-						   unsigned int maxVal=std::numeric_limits<unsigned int>::max(), int device=0);
+							unsigned int minVal=std::numeric_limits<unsigned int>::lowest(),
+							unsigned int maxVal=std::numeric_limits<unsigned int>::max(), int device=0);
 double* cNormalizeHistogram(const int* imageIn, Vec<size_t> dims, unsigned int arraySize, int minVal=std::numeric_limits<int>::lowest(),
-						   int maxVal=std::numeric_limits<int>::max(), int device=0);
+							int maxVal=std::numeric_limits<int>::max(), int device=0);
 double* cNormalizeHistogram(const float* imageIn, Vec<size_t> dims, unsigned int arraySize, float minVal=std::numeric_limits<float>::lowest(),
-						   float maxVal=std::numeric_limits<float>::max(), int device=0);
+							float maxVal=std::numeric_limits<float>::max(), int device=0);
 double* cNormalizeHistogram(const double* imageIn, Vec<size_t> dims, unsigned int arraySize,
-						   double minVal=std::numeric_limits<double>::lowest(), double maxVal=std::numeric_limits<double>::max(),
-						   int device=0);
+							double minVal=std::numeric_limits<double>::lowest(), double maxVal=std::numeric_limits<double>::max(),
+							int device=0);
 
 unsigned char* cOtsuThresholdFilter(const unsigned char* imageIn, Vec<size_t> dims, double alpha=1.0, unsigned char** imageOut=NULL,
 									int device=0);
@@ -145,6 +146,18 @@ int cOtsuThresholdValue(const int* imageIn, Vec<size_t> dims, int device=0);
 float cOtsuThresholdValue(const float* imageIn, Vec<size_t> dims, int device=0);
 double cOtsuThresholdValue(const double* imageIn, Vec<size_t> dims, int device=0);
 
+unsigned char* cReduceImage(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims,
+							ReductionMethods method=REDUC_MEAN, unsigned char** imageOut=NULL, int device=0);
+unsigned int* cReduceImage(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims,
+						   ReductionMethods method=REDUC_MEAN, unsigned int** imageOut=NULL, int device=0);
+int* cReduceImage(const int* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method=REDUC_MEAN,
+				  int** imageOut=NULL, int device=0);
+float* cReduceImage(const float* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method=REDUC_MEAN,
+					float** imageOut=NULL, int device=0);
+double* cReduceImage(const double* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims,
+					 ReductionMethods method=REDUC_MEAN, double** imageOut=NULL, int device=0);
+
+
 double cSumArray(const unsigned char* imageIn, size_t n, int device=0);
 double cSumArray(const unsigned int* imageIn, size_t n, int device=0);
 double cSumArray(const int* imageIn, size_t n, int device=0);
@@ -152,7 +165,7 @@ double cSumArray(const float* imageIn, size_t n, int device=0);
 double cSumArray(const double* imageIn, size_t n, int device=0);
 
 unsigned char* cThresholdFilter(const unsigned char* imageIn, Vec<size_t> dims, unsigned char thresh, unsigned char** imageOut=NULL,
-							   int device=0);
+								int device=0);
 unsigned int* cThresholdFilter(const unsigned int* imageIn, Vec<size_t> dims, unsigned int thresh, unsigned int** imageOut=NULL,
 							   int device=0);
 int* cThresholdFilter(const int* imageIn, Vec<size_t> dims, int thresh, int** imageOut=NULL, int device=0);
