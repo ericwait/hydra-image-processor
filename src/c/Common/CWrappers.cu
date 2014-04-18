@@ -9,6 +9,7 @@
 #include "CudaMedianFilter.cuh"
 #include "CudaMinFilter.cuh"
 #include "CudaMultiplyImage.cuh"
+#include "CudaNormalizedCovariance.cuh"
 #include "CudaPolyTransferFunc.cuh"
 #include "CudaPow.cuh"
 #include "CudaImageReduction.cuh"
@@ -424,6 +425,32 @@ double* cMultiplyImageWith(const double* imageIn1, const double* imageIn2, Vec<s
 						   int device/*=0*/)
 {
 	return multiplyImageWith(imageIn1,imageIn2,dims,factor,imageOut,device);
+}
+
+
+double cNormalizedCovariance(const unsigned char* imageIn1, const unsigned char* imageIn2, Vec<size_t> dims, int device/*=0*/)
+{
+	return normalizedCovariance(imageIn1,imageIn2,dims,device);
+}
+
+double cNormalizedCovariance(const unsigned int* imageIn1, const unsigned int* imageIn2, Vec<size_t> dims, int device/*=0*/)
+{
+	return normalizedCovariance(imageIn1,imageIn2,dims,device);
+}
+
+double cNormalizedCovariance(const int* imageIn1, const int* imageIn2, Vec<size_t> dims, int device/*=0*/)
+{
+	return normalizedCovariance(imageIn1,imageIn2,dims,device);
+}
+
+double cNormalizedCovariance(const float* imageIn1, const float* imageIn2, Vec<size_t> dims, int device/*=0*/)
+{
+	return normalizedCovariance(imageIn1,imageIn2,dims,device);
+}
+
+double cNormalizedCovariance(const double* imageIn1, const double* imageIn2, Vec<size_t> dims, int device/*=0*/)
+{
+	return normalizedCovariance(imageIn1,imageIn2,dims,device);
 }
 
 

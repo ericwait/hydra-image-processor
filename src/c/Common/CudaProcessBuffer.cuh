@@ -43,12 +43,6 @@ public:
 	// Cuda Operators (Alphabetical order)
 	//////////////////////////////////////////////////////////////////////////
 
-	/*
-	*	This will calculate the normalized covariance between the two images A and B
-	*	returns (sum over all{(A-mu(A)) X (B-mu(B))}) / (sigma(A)Xsigma(B)
-	*	The images buffers will not change the original data 
-	*/
-	double normalizedCovariance(const DevicePixelType* imageIn1, const DevicePixelType* imageIn2, Vec<size_t> dims);
 
 
 private:

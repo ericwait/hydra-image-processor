@@ -129,6 +129,12 @@ float* cMultiplyImageWith(const float* imageIn1, const float* imageIn2, Vec<size
 double* cMultiplyImageWith(const double* imageIn1, const double* imageIn2, Vec<size_t> dims, double factor, double** imageOut=NULL,
 						   int device=0);
 
+double cNormalizedCovariance(const unsigned char* imageIn1, const unsigned char* imageIn2, Vec<size_t> dims, int device=0);
+double cNormalizedCovariance(const unsigned int* imageIn1, const unsigned int* imageIn2, Vec<size_t> dims, int device=0);
+double cNormalizedCovariance(const int* imageIn1, const int* imageIn2, Vec<size_t> dims, int device=0);
+double cNormalizedCovariance(const float* imageIn1, const float* imageIn2, Vec<size_t> dims, int device=0);
+double cNormalizedCovariance(const double* imageIn1, const double* imageIn2, Vec<size_t> dims, int device=0);
+
 double* cNormalizeHistogram(const unsigned char* imageIn, Vec<size_t> dims, unsigned int arraySize,
 							unsigned char minVal=std::numeric_limits<unsigned char>::lowest(),
 							unsigned char maxVal=std::numeric_limits<unsigned char>::max(), int device=0);

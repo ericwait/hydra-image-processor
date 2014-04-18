@@ -42,13 +42,13 @@ __global__ void cudaAddTwoImagesWithFactor( CudaImageContainer<PixelType> imageI
 	}
 }
 
-template <class PixelType>
-PixelType* addConstant(const PixelType* imageIn, Vec<size_t> dims, double additive, PixelType** imageOut=NULL, int device=0)
+template <class PixelTypeIn, class PixelTypeOut>
+PixelTypeOut* addConstant(const PixelTypeIn* imageIn, Vec<size_t> dims, double additive, PixelTypeOut** imageOut=NULL, int device=0)
 {
-	PixelType* imOut = setUpOutIm(dims, imageOut);
+	PixelTypeOut* imOut = setUpOutIm(dims, imageOut);
 
-	PixelType minVal = std::numeric_limits<PixelType>::lowest();
-	PixelType maxVal = std::numeric_limits<PixelType>::max();
+	PixelTypeOut minVal = std::numeric_limits<PixelTypeOut>::lowest();
+	PixelTypeOut maxVal = std::numeric_limits<PixelTypeOut>::max();
 
 	cudaDeviceProp props;
 	cudaGetDeviceProperties(&props,device);
@@ -56,12 +56,12 @@ PixelType* addConstant(const PixelType* imageIn, Vec<size_t> dims, double additi
 	size_t availMem, total;
 	cudaMemGetInfo(&availMem,&total);
 
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props);
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelTypeOut>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages<PixelType> deviceImages(2,maxDeviceDims,device);
+	CudaDeviceImages<PixelTypeOut> deviceImages(2,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{

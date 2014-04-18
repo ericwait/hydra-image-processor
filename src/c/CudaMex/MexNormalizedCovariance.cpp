@@ -1,6 +1,6 @@
 #include "MexCommand.h"
-#include "CudaProcessBuffer.cuh"
 #include "Vec.h"
+#include "CWrappers.cuh"
 
 void MexNormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
@@ -9,16 +9,68 @@ void MexNormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 	if (nrhs>2)
 		device = mat_to_c((int)mxGetScalar(prhs[2]));
 
+	double normCoVar;
+
 	Vec<size_t> imageDims1, imageDims2;
-	HostPixelType* imageIn1, * imageIn2;
-	CudaProcessBuffer cudaBuffer(device);
-	setupImagePointers(prhs[0],&imageIn1,&imageDims1);
-	setupImagePointers(prhs[1],&imageIn2,&imageDims2);
+	if (mxIsUint8(prhs[0]))
+	{
+		unsigned char* imageIn1,* imageIn2;
+		setupImagePointers(prhs[0],&imageIn1,&imageDims1);
+		setupImagePointers(prhs[1],&imageIn2,&imageDims2);
 
-	if (imageDims1!=imageDims2)
-		mexErrMsgTxt("Image Dimensions Must Match!\n");
+		if (imageDims1!=imageDims2)
+			mexErrMsgTxt("Image Dimensions Must Match!\n");
 
-	double normCoVar = cudaBuffer.normalizedCovariance(imageIn1,imageIn2,imageDims1);
+		normCoVar = cNormalizedCovariance(imageIn1,imageIn2,imageDims1,device);
+	}
+	else if (mxIsUint16(prhs[0]))
+	{
+		unsigned int* imageIn1,* imageIn2;
+		setupImagePointers(prhs[0],&imageIn1,&imageDims1);
+		setupImagePointers(prhs[1],&imageIn2,&imageDims2);
+
+		if (imageDims1!=imageDims2)
+			mexErrMsgTxt("Image Dimensions Must Match!\n");
+
+		normCoVar = cNormalizedCovariance(imageIn1,imageIn2,imageDims1,device);
+	}
+	else if (mxIsInt16(prhs[0]))
+	{
+		int* imageIn1,* imageIn2;
+		setupImagePointers(prhs[0],&imageIn1,&imageDims1);
+		setupImagePointers(prhs[1],&imageIn2,&imageDims2);
+
+		if (imageDims1!=imageDims2)
+			mexErrMsgTxt("Image Dimensions Must Match!\n");
+
+		normCoVar = cNormalizedCovariance(imageIn1,imageIn2,imageDims1,device);
+	}
+	else if (mxIsSingle(prhs[0]))
+	{
+		float* imageIn1,* imageIn2;
+		setupImagePointers(prhs[0],&imageIn1,&imageDims1);
+		setupImagePointers(prhs[1],&imageIn2,&imageDims2);
+
+		if (imageDims1!=imageDims2)
+			mexErrMsgTxt("Image Dimensions Must Match!\n");
+
+		normCoVar = cNormalizedCovariance(imageIn1,imageIn2,imageDims1,device);
+	}
+	else if (mxIsDouble(prhs[0]))
+	{
+		double* imageIn1,* imageIn2;
+		setupImagePointers(prhs[0],&imageIn1,&imageDims1);
+		setupImagePointers(prhs[1],&imageIn2,&imageDims2);
+
+		if (imageDims1!=imageDims2)
+			mexErrMsgTxt("Image Dimensions Must Match!\n");
+
+		normCoVar = cNormalizedCovariance(imageIn1,imageIn2,imageDims1,device);
+	}
+	else
+	{
+		mexErrMsgTxt("Image type not supported!");
+	}
 
 	plhs[0] = mxCreateDoubleScalar(normCoVar);
 }
@@ -31,16 +83,16 @@ std::string MexNormalizedCovariance::check( int nlhs, mxArray* plhs[], int nrhs,
 	if (nlhs!=1)
 		return "Requires one output!";
 
-// 	if (!mxIsUint8(prhs[0]) || !mxIsUint8(prhs[1]))
-// 		return "Images has to be formated as a uint8!";
+	size_t numDims1 = mxGetNumberOfDimensions(prhs[0]);
+	if (numDims1>3)
+		return "Image can have a maximum of three dimensions!";
 
-	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
-	if (numDims>3 || numDims<2)
-		return "Image can only be either 2D or 3D!";
+	size_t numDims2= mxGetNumberOfDimensions(prhs[1]);
+	if (numDims2>3)
+		return "Image can have a maximum of three dimensions!";
 
-	numDims = mxGetNumberOfDimensions(prhs[1]);
-	if (numDims>3 || numDims<2)
-		return "Image can only be either 2D or 3D!";
+	if (numDims1!=numDims2)
+		return "Images must have the same dimensions!";
 
 	if (!mxIsDouble(prhs[2]))
 		return "Factor needs to be a double!";
