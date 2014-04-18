@@ -34,3 +34,32 @@ double normalizedCovariance(const PixelType* imageIn1, const PixelType* imageIn2
 
 	return coVar;
 }
+
+double normalizedCovariance(const double* imageIn1, const double* imageIn2, Vec<size_t> dims, int device=0)
+{
+	double im1Mean = sumArray(imageIn1,dims.product(),device) / (double)dims.product();
+	double im2Mean = sumArray(imageIn2,dims.product(),device) / (double)dims.product();
+
+	double* im1Sub = addConstant<double,double>(imageIn1,dims,-1.0*im1Mean,NULL,device);
+	double* im2Sub = addConstant<double,double>(imageIn2,dims,-1.0*im2Mean,NULL,device);
+
+	double* im1P = imagePow<double>(im1Sub,dims,2.0,NULL,device);
+	double* im2P = imagePow<double>(im2Sub,dims,2.0,NULL,device);
+
+	double sigma1 = sqrt(sumArray(im1P,dims.product(),device)/(double)dims.product());
+	double sigma2 = sqrt(sumArray(im2P,dims.product(),device)/(double)dims.product());
+
+	delete[] im1P;
+	delete[] im2P;
+
+	double* imMul = multiplyImageWith<double>(im1Sub,im2Sub,dims,1.0,NULL,device);
+	double numerator = sumArray(imMul,dims.product(),device);
+
+	double coVar = numerator/(dims.product()*sigma1*sigma2);
+
+	delete[] im1Sub;
+	delete[] im2Sub;
+	delete[] imMul;
+
+	return coVar;
+}
