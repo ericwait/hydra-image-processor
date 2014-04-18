@@ -190,6 +190,18 @@ try
     showIm(imageOut,[kernelName ' Median']);
     
     tic
+    kernelName = 'ReduceImage';
+    imageOut = CudaMex(sprintf('%s',kernelName),imageIn,[reductionFactorX,reductionFactorY,reductionFactorZ],'min',device);
+    fprintf('%s took %f sec\n',kernelName,toc);
+    showIm(imageOut,[kernelName ' Min']);
+    
+    tic
+    kernelName = 'ReduceImage';
+    imageOut = CudaMex(sprintf('%s',kernelName),imageIn,[reductionFactorX,reductionFactorY,reductionFactorZ],'max',device);
+    fprintf('%s took %f sec\n',kernelName,toc);
+    showIm(imageOut,[kernelName ' Max']);
+    
+    tic
     kernelName = 'SumArray';
     sumVal = CudaMex(sprintf('%s',kernelName),imageIn,device);
     dif = sumVal - sum(imageIn(:));
