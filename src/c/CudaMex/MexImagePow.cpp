@@ -1,5 +1,4 @@
 #include "MexCommand.h"
-#include "CudaProcessBuffer.cuh"
 #include "CWrappers.cuh"
 #include "Vec.h"
  

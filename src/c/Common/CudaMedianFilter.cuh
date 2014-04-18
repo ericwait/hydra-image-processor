@@ -68,7 +68,7 @@ template <class PixelType>
 __global__ void cudaMedianFilter( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut,
 								 Vec<size_t> hostKernelDims )
 {
-	extern __shared__ DevicePixelType vals[];
+	extern __shared__ double vals[];
 	DeviceVec<size_t> kernelDims = hostKernelDims;
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -93,13 +93,13 @@ __global__ void cudaMedianFilter( CudaImageContainer<PixelType> imageIn, CudaIma
 				curCoordIm.x = (coordinate.x<halfKernal.x) ? 0 : coordinate.x-halfKernal.x/2;
 				for (; curCoordIm.x<=coordinate.x+halfKernal.x && curCoordIm.x<imageIn.getDeviceDims().x; ++curCoordIm.x)
 				{
-					vals[kernelVolume+offset] = imageIn[curCoordIm];
+					vals[kernelVolume+offset] = (double)imageIn[curCoordIm];
 					++kernelVolume;
 				}
 			}
 		}
 
-		imageOut[coordinate] = cudaFindMedian(vals+offset,kernelVolume);
+		imageOut[coordinate] = (PixelType)cudaFindMedian(vals+offset,kernelVolume);
 	}
 	__syncthreads();
 }

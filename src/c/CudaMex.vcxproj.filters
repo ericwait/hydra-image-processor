@@ -119,9 +119,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Common\CudaProcessBuffer.cu">
-      <Filter>Source Files\CudaFiles</Filter>
-    </CudaCompile>
     <CudaCompile Include="Common\CudaUtilities.cu">
       <Filter>Source Files\HelperFiles</Filter>
     </CudaCompile>
@@ -163,9 +160,6 @@
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
     <ClInclude Include="Common\CudaImageContainerClean.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaProcessBuffer.cuh">
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
     <ClInclude Include="Common\CudaAdd.cuh">

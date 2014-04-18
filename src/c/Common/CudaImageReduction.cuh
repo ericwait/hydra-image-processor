@@ -51,7 +51,7 @@ template <class PixelType>
 __global__ void cudaMedianImageReduction( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut,
 										 Vec<size_t> hostReductions)
 {
-	extern __shared__ DevicePixelType vals[];
+	extern __shared__ double vals[];
 	DeviceVec<size_t> reductions = hostReductions;
 	DeviceVec<size_t> coordinateOut;
 	coordinateOut.x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -73,12 +73,12 @@ __global__ void cudaMedianImageReduction( CudaImageContainer<PixelType> imageIn,
 			{
 				for (currCorrdIn.x=mins.x; currCorrdIn.x<maxs.x; ++currCorrdIn.x)
 				{
-					vals[offset+kernelVolume] = imageIn[currCorrdIn];
+					vals[offset+kernelVolume] = (double)imageIn[currCorrdIn];
 					++kernelVolume;
 				}
 			}
 		}
-		imageOut[coordinateOut] = cudaFindMedian(vals+offset,kernelVolume);
+		imageOut[coordinateOut] = (PixelType)cudaFindMedian(vals+offset,kernelVolume);
 	}
 	__syncthreads();
 }

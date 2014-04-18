@@ -10,9 +10,6 @@
 #define mat_to_c(x) (x-1)
 #define c_to_mat(x) (x+1)
 
-typedef unsigned char HostPixelType;
-typedef HostPixelType DevicePixelType;
-
 //Percent of memory that can be used on the device
 const double MAX_MEM_AVAIL = 0.95;
 

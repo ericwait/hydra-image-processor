@@ -3,7 +3,6 @@
 #include <string>
 #include "mex.h"
 #include "Vec.h"
-#include "CudaProcessBuffer.cuh"
 
 #define REGISTER_COMMAND(cmd) {MexCommand::addCommand(#cmd,(MexCommand*)new cmd());}
 

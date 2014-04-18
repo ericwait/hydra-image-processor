@@ -17,7 +17,7 @@ __global__ void cudaMask( const CudaImageContainer<PixelType> imageIn1, const Cu
 
 	if (coordinate<imageIn1.getDeviceDims())
 	{
-		DevicePixelType val=0;
+		PixelType val=0;
 
 		if (imageIn2[coordinate] <= threshold)
 			val = imageIn1[coordinate];
