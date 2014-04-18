@@ -74,7 +74,7 @@ double sumArray(const PixelType* imageIn, size_t n, int device=0)
 
 		for (int i=0; i<blocks; ++i)
 		{
-			sum += (PixelType)hostSum[i];
+			sum += hostSum[i];
 		}
 	}
 
