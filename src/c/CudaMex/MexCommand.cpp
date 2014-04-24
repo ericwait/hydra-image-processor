@@ -99,6 +99,60 @@ void MexCommand::init()
 	 }
  }
 
+ void MexCommand::setupImagePointers(const mxArray* imageIn, unsigned short** image, Vec<size_t>* dims, mxArray** argOut/*=NULL*/, unsigned short** imageOut/*=NULL*/)
+ {
+	 size_t numDims = mxGetNumberOfDimensions(imageIn);
+	 const mwSize* DIMS = mxGetDimensions(imageIn);
+
+	 if (numDims>2)
+		 dims->z = (size_t)DIMS[2];
+	 else
+		 dims->z = 1;
+
+	 if (numDims>1)
+		 dims->y = dims->y = (size_t)DIMS[1];
+	 else
+		 dims->y = 1;
+
+	 dims->x = (size_t)DIMS[0];
+
+	 *image = (unsigned short*)mxGetData(imageIn);
+
+	 if (argOut!=NULL && imageOut!=NULL)
+	 {
+		 *argOut = mxCreateNumericArray(numDims,DIMS,mxUINT16_CLASS,mxREAL);
+		 *imageOut = (unsigned short*)mxGetData(*argOut);
+		 memset(*imageOut,0,sizeof(unsigned int)*dims->product());
+	 }
+ }
+
+ void MexCommand::setupImagePointers(const mxArray* imageIn, short** image, Vec<size_t>* dims, mxArray** argOut/*=NULL*/, short** imageOut/*=NULL*/)
+ {
+	 size_t numDims = mxGetNumberOfDimensions(imageIn);
+	 const mwSize* DIMS = mxGetDimensions(imageIn);
+
+	 if (numDims>2)
+		 dims->z = (size_t)DIMS[2];
+	 else
+		 dims->z = 1;
+
+	 if (numDims>1)
+		 dims->y = dims->y = (size_t)DIMS[1];
+	 else
+		 dims->y = 1;
+
+	 dims->x = (size_t)DIMS[0];
+
+	 *image = (short*)mxGetData(imageIn);
+
+	 if (argOut!=NULL && imageOut!=NULL)
+	 {
+		 *argOut = mxCreateNumericArray(numDims,DIMS,mxINT16_CLASS,mxREAL);
+		 *imageOut = (short*)mxGetData(*argOut);
+		 memset(*imageOut,0,sizeof(int)*dims->product());
+	 }
+ }
+
  void MexCommand::setupImagePointers(const mxArray* imageIn, unsigned int** image, Vec<size_t>* dims, mxArray** argOut/*=NULL*/, unsigned int** imageOut/*=NULL*/)
  {
 	 size_t numDims = mxGetNumberOfDimensions(imageIn);
@@ -120,7 +174,7 @@ void MexCommand::init()
 
 	 if (argOut!=NULL && imageOut!=NULL)
 	 {
-		 *argOut = mxCreateNumericArray(numDims,DIMS,mxUINT16_CLASS,mxREAL);
+		 *argOut = mxCreateNumericArray(numDims,DIMS,mxUINT32_CLASS,mxREAL);
 		 *imageOut = (unsigned int*)mxGetData(*argOut);
 		 memset(*imageOut,0,sizeof(unsigned int)*dims->product());
 	 }
@@ -147,7 +201,7 @@ void MexCommand::init()
 
 	 if (argOut!=NULL && imageOut!=NULL)
 	 {
-		 *argOut = mxCreateNumericArray(numDims,DIMS,mxINT16_CLASS,mxREAL);
+		 *argOut = mxCreateNumericArray(numDims,DIMS,mxINT32_CLASS,mxREAL);
 		 *imageOut = (int*)mxGetData(*argOut);
 		 memset(*imageOut,0,sizeof(int)*dims->product());
 	 }

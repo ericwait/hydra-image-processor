@@ -1,5 +1,7 @@
 function CudaMexTester(metadataFile,showOut)
 
+totalTime = tic;
+
 device =2;
 [~, systemview] = memory;
 imageMaxSize = systemview.PhysicalMemory.Available/3 * 0.8;
@@ -28,7 +30,8 @@ kernel(:,:,2) = [1 1 1; 1 1 1; 1 1 1];
 kernel(:,:,3) = [0 1 0; 1 1 1; 0 1 0];
 
 %% run Kernels
-for i=1:5
+for i=1:7
+    typeTime = tic;
     switch (i)
         case 1
             typ = 'uint8';
@@ -37,8 +40,12 @@ for i=1:5
         case 3
             typ = 'int16';
         case 4
-            typ = 'single';
+            typ = 'uint32';
         case 5
+            typ = 'int32';
+        case 6
+            typ = 'single';
+        case 7
             typ = 'double';
     end
     
@@ -54,9 +61,9 @@ for i=1:5
         clear imTemp;
     end
     
-    image2 = tiffReader(typ,2,[],[],metadataFile);
+    image2 = tiffReader(typ,4,[],[],metadataFile);
     imData = whos('image2');
-    redc = imData.bytes-imageMaxSize;
+    redc = imageMaxSize-imData.bytes;
     if (redc<0)
         imTemp = image2(:,:,1);
         imData = whos('imTemp');
@@ -66,8 +73,10 @@ for i=1:5
         clear imTemp;
     end
     
-    showIm(image1,'Original');
-    showIm(image2,'Second Image');
+    if (showOut)
+        showIm(image1,'Original');
+        showIm(image2,'Second Image');
+    end
     
     try
         tic
@@ -333,9 +342,13 @@ for i=1:5
         clear mex
         return
     end
+    
+    fprintf('\n%s took %f min total\n\n',typ,toc(typeTime)/60.0);
 end
 
 clear mex
+
+fprintf('\n\nEntire test took a total of %f min\n\n',toc(totalTime)/60);
 end
 
 

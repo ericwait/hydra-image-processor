@@ -46,12 +46,26 @@ void MexMaxFilterKernel::execute( int nlhs, mxArray* plhs[], int nrhs, const mxA
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
-		unsigned int* imageIn,* imageOut;
+		unsigned short* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
 		cMaxFilter(imageIn,imageDims,kernDims,kernel,&imageOut,device);
 	}
 	else if (mxIsInt16(prhs[0]))
+	{
+		short* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cMaxFilter(imageIn,imageDims,kernDims,kernel,&imageOut,device);
+	}
+	else if (mxIsUint32(prhs[0]))
+	{
+		unsigned int* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		cMaxFilter(imageIn,imageDims,kernDims,kernel,&imageOut,device);
+	}
+	else if (mxIsInt32(prhs[0]))
 	{
 		int* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);

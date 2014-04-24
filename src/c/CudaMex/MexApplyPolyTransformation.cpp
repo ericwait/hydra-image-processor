@@ -33,6 +33,38 @@ void MexApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, c
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
+		unsigned short* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		unsigned short mn = std::numeric_limits<unsigned short>::lowest();
+		unsigned short mx = std::numeric_limits<unsigned short>::max();
+
+		if (nrhs>5)
+			mx = MIN((unsigned short)mxGetScalar(prhs[5]),mx);
+
+		if (nrhs>4)
+			mn = MAX((unsigned short)mxGetScalar(prhs[4]),mn);
+
+		cApplyPolyTransferFunction(imageIn,imageDims,a,b,c,mn,mx,&imageOut,device);
+	}
+	else if (mxIsInt16(prhs[0]))
+	{
+		short* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		short mn = std::numeric_limits<short>::lowest();
+		short mx = std::numeric_limits<short>::max();
+
+		if (nrhs>5)
+			mx = MIN((short)mxGetScalar(prhs[5]),mx);
+
+		if (nrhs>4)
+			mn = MAX((short)mxGetScalar(prhs[4]),mn);
+
+		cApplyPolyTransferFunction(imageIn,imageDims,a,b,c,mn,mx,&imageOut,device);
+	}
+	else if (mxIsUint32(prhs[0]))
+	{
 		unsigned int* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
@@ -47,7 +79,7 @@ void MexApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, c
 
 		cApplyPolyTransferFunction(imageIn,imageDims,a,b,c,mn,mx,&imageOut,device);
 	}
-	else if (mxIsInt16(prhs[0]))
+	else if (mxIsInt32(prhs[0]))
 	{
 		int* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);

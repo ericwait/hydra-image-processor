@@ -26,6 +26,30 @@ void MexMultiplyTwoImages::execute( int nlhs, mxArray* plhs[], int nrhs, const m
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
+		unsigned short* imageIn,* imageOut;
+		unsigned short* imageIn2;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+		setupImagePointers(prhs[1],&imageIn2,&imageDims2);
+
+		if (imageDims!=imageDims2)
+			mexErrMsgTxt("Image dimensions must agree!");
+
+		cMultiplyImageWith(imageIn,imageIn2,imageDims,factor,&imageOut,device);
+	}
+	else if (mxIsInt16(prhs[0]))
+	{
+		short* imageIn,* imageOut;
+		short* imageIn2;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+		setupImagePointers(prhs[1],&imageIn2,&imageDims2);
+
+		if (imageDims!=imageDims2)
+			mexErrMsgTxt("Image dimensions must agree!");
+
+		cMultiplyImageWith(imageIn,imageIn2,imageDims,factor,&imageOut,device);
+	}
+	else if (mxIsUint32(prhs[0]))
+	{
 		unsigned int* imageIn,* imageOut;
 		unsigned int* imageIn2;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
@@ -36,7 +60,7 @@ void MexMultiplyTwoImages::execute( int nlhs, mxArray* plhs[], int nrhs, const m
 
 		cMultiplyImageWith(imageIn,imageIn2,imageDims,factor,&imageOut,device);
 	}
-	else if (mxIsInt16(prhs[0]))
+	else if (mxIsInt32(prhs[0]))
 	{
 		int* imageIn,* imageOut;
 		int* imageIn2;

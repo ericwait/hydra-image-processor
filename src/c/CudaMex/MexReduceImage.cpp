@@ -56,6 +56,46 @@ void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
+		unsigned short* imageIn;
+		setupImagePointers(prhs[0],&imageIn,&imageDims);
+
+		unsigned short* imageOut = cReduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
+
+		size_t numDims = mxGetNumberOfDimensions(prhs[0]);
+		dims = new mwSize[numDims];
+
+		dims[0] = reducedDims.x;
+		dims[1] = reducedDims.y;
+		if (numDims==3)
+			dims[2] = reducedDims.z;
+
+		plhs[0] = mxCreateNumericArray(numDims,dims,mxUINT16_CLASS,mxREAL);
+		unsigned short* mexImageOut = (unsigned short*)mxGetData(plhs[0]);
+		memcpy(mexImageOut,imageOut,sizeof(unsigned short)*reducedDims.product());
+		delete[] imageOut;
+	}
+	else if (mxIsInt16(prhs[0]))
+	{
+		short* imageIn;
+		setupImagePointers(prhs[0],&imageIn,&imageDims);
+
+		short* imageOut = cReduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
+
+		size_t numDims = mxGetNumberOfDimensions(prhs[0]);
+		dims = new mwSize[numDims];
+
+		dims[0] = reducedDims.x;
+		dims[1] = reducedDims.y;
+		if (numDims==3)
+			dims[2] = reducedDims.z;
+
+		plhs[0] = mxCreateNumericArray(numDims,dims,mxINT16_CLASS,mxREAL);
+		short* mexImageOut = (short*)mxGetData(plhs[0]);
+		memcpy(mexImageOut,imageOut,sizeof(short)*reducedDims.product());
+		delete[] imageOut;
+	}
+	else if (mxIsUint32(prhs[0]))
+	{
 		unsigned int* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
@@ -69,12 +109,12 @@ void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 		if (numDims==3)
 			dims[2] = reducedDims.z;
 
-		plhs[0] = mxCreateNumericArray(numDims,dims,mxUINT16_CLASS,mxREAL);
+		plhs[0] = mxCreateNumericArray(numDims,dims,mxUINT32_CLASS,mxREAL);
 		unsigned int* mexImageOut = (unsigned int*)mxGetData(plhs[0]);
 		memcpy(mexImageOut,imageOut,sizeof(unsigned int)*reducedDims.product());
 		delete[] imageOut;
 	}
-	else if (mxIsInt16(prhs[0]))
+	else if (mxIsInt32(prhs[0]))
 	{
 		int* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
@@ -89,7 +129,7 @@ void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 		if (numDims==3)
 			dims[2] = reducedDims.z;
 
-		plhs[0] = mxCreateNumericArray(numDims,dims,mxINT16_CLASS,mxREAL);
+		plhs[0] = mxCreateNumericArray(numDims,dims,mxINT32_CLASS,mxREAL);
 		int* mexImageOut = (int*)mxGetData(plhs[0]);
 		memcpy(mexImageOut,imageOut,sizeof(int)*reducedDims.product());
 		delete[] imageOut;

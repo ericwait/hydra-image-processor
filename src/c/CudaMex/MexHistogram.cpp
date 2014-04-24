@@ -31,6 +31,38 @@
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
+		unsigned short* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		unsigned short mn = std::numeric_limits<unsigned short>::lowest();
+		unsigned short mx = std::numeric_limits<unsigned short>::max();
+
+		if (nrhs>2)
+			mn = MAX(mn,(unsigned short)mxGetScalar(prhs[2]));
+
+		if (nrhs>3)
+			mx = MIN(mx,(unsigned short)mxGetScalar(prhs[3]));
+
+		hist = cHistogram(imageIn,imageDims,arraySize,mn,mx,device);
+	}
+	else if (mxIsInt16(prhs[0]))
+	{
+		short* imageIn,* imageOut;
+		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
+
+		short mn = std::numeric_limits<short>::lowest();
+		short mx = std::numeric_limits<short>::max();
+
+		if (nrhs>2)
+			mn = MAX(mn,(short)mxGetScalar(prhs[2]));
+
+		if (nrhs>3)
+			mx = MIN(mx,(short)mxGetScalar(prhs[3]));
+
+		hist = cHistogram(imageIn,imageDims,arraySize,mn,mx,device);
+	}
+	else if (mxIsUint32(prhs[0]))
+	{
 		unsigned int* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
@@ -45,7 +77,7 @@
 
 		hist = cHistogram(imageIn,imageDims,arraySize,mn,mx,device);
 	}
-	else if (mxIsInt16(prhs[0]))
+	else if (mxIsInt32(prhs[0]))
 	{
 		int* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);

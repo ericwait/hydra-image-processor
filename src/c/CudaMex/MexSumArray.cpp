@@ -21,12 +21,26 @@ void MexSumArray::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
-		unsigned int* imageIn;
+		unsigned short* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
 		sm = cSumArray(imageIn,imageDims.product(),device);
 	}
 	else if (mxIsInt16(prhs[0]))
+	{
+		short* imageIn;
+		setupImagePointers(prhs[0],&imageIn,&imageDims);
+
+		sm = cSumArray(imageIn,imageDims.product(),device);
+	}
+	else if (mxIsUint32(prhs[0]))
+	{
+		unsigned int* imageIn;
+		setupImagePointers(prhs[0],&imageIn,&imageDims);
+
+		sm = cSumArray(imageIn,imageDims.product(),device);
+	}
+	else if (mxIsInt32(prhs[0]))
 	{
 		int* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
