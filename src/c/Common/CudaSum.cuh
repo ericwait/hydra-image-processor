@@ -3,20 +3,21 @@
 #include "CudaUtilities.cuh"
 #include "cuda_runtime.h"
 
-template <class PixelType>
-__global__ void cudaSum(PixelType* arrayIn, double* arrayOut, size_t n)
+template <class PixelTypeIn, class OutType>
+__global__ void cudaSum(PixelTypeIn* arrayIn, OutType* arrayOut, size_t n)
 {
-	extern __shared__ double sums[];
+	extern __shared__ unsigned char sharedMem[];
+	OutType* sums = (OutType*)sharedMem;
 
 	size_t i = threadIdx.x + blockIdx.x*blockDim.x;
 	size_t imStride = blockDim.x*gridDim.x;
 
 	if (i<n)
 	{
-		sums[threadIdx.x] = (double)(arrayIn[i]);
+		sums[threadIdx.x] = (OutType)(arrayIn[i]);
 		while (i+imStride<n)
 		{
-			sums[threadIdx.x] += (double)(arrayIn[i+imStride]);
+			sums[threadIdx.x] += (OutType)(arrayIn[i+imStride]);
 			i += imStride;
 		}
 	}
@@ -31,8 +32,7 @@ __global__ void cudaSum(PixelType* arrayIn, double* arrayOut, size_t n)
 	{
 		if (threadIdx.x<localStride)
 			sums[threadIdx.x] += sums[threadIdx.x+localStride];
-		else
-			break;
+
 		__syncthreads();
 	}
 
@@ -43,13 +43,13 @@ __global__ void cudaSum(PixelType* arrayIn, double* arrayOut, size_t n)
 	__syncthreads();
 }
 
-template <class PixelType>
-double sumArray(const PixelType* imageIn, size_t n, int device=0)
+template < class OutType, class PixelTypeIn>
+OutType sumArray(const PixelTypeIn* imageIn, size_t n, int device=0)
 {
-	double sum = 0.0;
-	double* deviceSum;
-	double* hostSum;
-	PixelType* deviceBuffer;
+	OutType sum = 0;
+	OutType* deviceSum;
+	OutType* hostSum;
+	PixelTypeIn* deviceBuffer;
 
 	cudaDeviceProp props;
 	cudaGetDeviceProperties(&props, device);
@@ -57,36 +57,36 @@ double sumArray(const PixelType* imageIn, size_t n, int device=0)
 	size_t availMem, total;
 	cudaMemGetInfo(&availMem,&total);
 
-	size_t numValsPerChunk = MIN(n,(size_t)((availMem*MAX_MEM_AVAIL)/sizeof(PixelType)));
+	size_t numValsPerChunk = MIN(n,(size_t)((availMem*MAX_MEM_AVAIL)/sizeof(PixelTypeIn)));
 
-	int maxBlocks = (int)ceil((double)numValsPerChunk/(2*props.maxThreadsPerBlock)); 
 	int threads = props.maxThreadsPerBlock;
+	int maxBlocks = (int)ceil((double)numValsPerChunk/(threads*2)); 
 
-	HANDLE_ERROR(cudaMalloc((void**)&deviceBuffer,sizeof(PixelType)*numValsPerChunk));
-	HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(double)*maxBlocks));
+	HANDLE_ERROR(cudaMalloc((void**)&deviceBuffer,sizeof(PixelTypeIn)*numValsPerChunk));
+	HANDLE_ERROR(cudaMalloc((void**)&deviceSum,sizeof(OutType)*maxBlocks));
 
-	hostSum = new double[maxBlocks];
+	hostSum = new OutType[maxBlocks];
 
 	for (size_t startIdx=0; startIdx<n; startIdx += numValsPerChunk)
 	{
 		size_t curNumVals = MIN(numValsPerChunk,n-startIdx);
 
-		HANDLE_ERROR(cudaMemcpy(deviceBuffer,imageIn+startIdx,sizeof(PixelType)*curNumVals,cudaMemcpyHostToDevice));
+		HANDLE_ERROR(cudaMemcpy(deviceBuffer,imageIn+startIdx,sizeof(PixelTypeIn)*curNumVals,cudaMemcpyHostToDevice));
 
-		int blocks = (int)ceil((double)curNumVals/(2*props.maxThreadsPerBlock));
-		size_t sharedMemSize = sizeof(double)*props.maxThreadsPerBlock;
+		int blocks = (int)ceil((double)curNumVals/(threads*2));
+		size_t sharedMemSize = sizeof(OutType)*threads;
 
 		cudaSum<<<blocks,threads,sharedMemSize>>>(deviceBuffer,deviceSum,curNumVals);
 		DEBUG_KERNEL_CHECK();
 
-		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(double)*blocks,cudaMemcpyDeviceToHost));
+		HANDLE_ERROR(cudaMemcpy(hostSum,deviceSum,sizeof(OutType)*blocks,cudaMemcpyDeviceToHost));
 
 		for (int i=0; i<blocks; ++i)
 		{
 			sum += hostSum[i];
 		}
 
-		memset(hostSum,0,sizeof(double)*maxBlocks);
+		memset(hostSum,0,sizeof(OutType)*maxBlocks);
 	}
 
 	HANDLE_ERROR(cudaFree(deviceSum));
