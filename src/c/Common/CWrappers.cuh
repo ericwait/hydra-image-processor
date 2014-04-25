@@ -156,11 +156,11 @@ int* cReduceImage(const int* imageIn, Vec<size_t> dims, Vec<size_t> reductions, 
 float* cReduceImage(const float* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method=REDUC_MEAN, float** imageOut=NULL, int device=0);
 double* cReduceImage(const double* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method=REDUC_MEAN, double** imageOut=NULL, int device=0);
 
-double cSumArray(const unsigned char* imageIn, size_t n, int device=0);
-double cSumArray(const unsigned short* imageIn, size_t n, int device=0);
-double cSumArray(const short* imageIn, size_t n, int device=0);
-double cSumArray(const unsigned int* imageIn, size_t n, int device=0);
-double cSumArray(const int* imageIn, size_t n, int device=0);
+size_t cSumArray(const unsigned char* imageIn, size_t n, int device=0);
+size_t cSumArray(const unsigned short* imageIn, size_t n, int device=0);
+size_t cSumArray(const short* imageIn, size_t n, int device=0);
+size_t cSumArray(const unsigned int* imageIn, size_t n, int device=0);
+size_t cSumArray(const int* imageIn, size_t n, int device=0);
 double cSumArray(const float* imageIn, size_t n, int device=0);
 double cSumArray(const double* imageIn, size_t n, int device=0);
 

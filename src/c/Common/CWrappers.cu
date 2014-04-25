@@ -700,39 +700,39 @@ double* cReduceImage(const double* imageIn, Vec<size_t> dims, Vec<size_t> reduct
 }
 
 
-double cSumArray(const unsigned char* imageIn, size_t n, int device/*=0*/)
+size_t cSumArray(const unsigned char* imageIn, size_t n, int device/*=0*/)
 {
-	return sumArray(imageIn,n,device);
+	return sumArray<size_t>(imageIn,n,device);
 }
 
-double cSumArray(const unsigned short* imageIn, size_t n, int device/*=0*/)
+size_t cSumArray(const unsigned short* imageIn, size_t n, int device/*=0*/)
 {
-	return sumArray(imageIn,n,device);
+	return sumArray<size_t>(imageIn,n,device);
 }
 
-double cSumArray(const short* imageIn, size_t n, int device/*=0*/)
+size_t cSumArray(const short* imageIn, size_t n, int device/*=0*/)
 {
-	return sumArray(imageIn,n,device);
+	return sumArray<size_t>(imageIn,n,device);
 }
 
-double cSumArray(const unsigned int* imageIn, size_t n, int device/*=0*/)
+size_t cSumArray(const unsigned int* imageIn, size_t n, int device/*=0*/)
 {
-	return sumArray(imageIn,n,device);
+	return sumArray<size_t>(imageIn,n,device);
 }
 
-double cSumArray(const int* imageIn, size_t n, int device/*=0*/)
+size_t cSumArray(const int* imageIn, size_t n, int device/*=0*/)
 {
-	return sumArray(imageIn,n,device);
+	return sumArray<size_t>(imageIn,n,device);
 }
 
 double cSumArray(const float* imageIn, size_t n, int device/*=0*/)
 {
-	return sumArray(imageIn,n,device);
+	return sumArray<double>(imageIn,n,device);
 }
 
 double cSumArray(const double* imageIn, size_t n, int device/*=0*/)
 {
-	return sumArray(imageIn,n,device);
+	return sumArray<double>(imageIn,n,device);
 }
 
 
