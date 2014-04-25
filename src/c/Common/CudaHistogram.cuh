@@ -20,29 +20,31 @@ __global__ void cudaHistogramCreate( PixelType* values, size_t numValues, size_t
 
 	__syncthreads();
 
-	int i = threadIdx.x + blockIdx.x*blockDim.x;
-	int stride = blockDim.x * gridDim.x;
+	size_t i = threadIdx.x + blockIdx.x*blockDim.x;
+	size_t stride = blockDim.x * gridDim.x;
 
 	while (i < numValues)
 	{
-		size_t binNum = (size_t)MAX( 0.0, ( (double)(values[i])-minVal) / binSize );
+		size_t binNum = (size_t)MAX( 0.0, ( (values[i])-minVal) / binSize );
 		binNum = MIN(binNum, (size_t)numBins-1);
-		atomicAdd(&(tempHisto[binNum]), 1);
+		atomicAdd(&(tempHisto[binNum]), (size_t)1);
 		i += stride;
 	}
 
 	__syncthreads();
 	if (threadIdx.x<numBins)
 		atomicAdd(&(histogram[threadIdx.x]), tempHisto[threadIdx.x]);
+	
+	__syncthreads();
 }
 
-__global__ void cudaNormalizeHistogram(size_t* histogram, double* normHistogram, unsigned int numBins, double devisor)
+__global__ void cudaNormalizeHistogram(size_t* histogram, double* normHistogram, unsigned int numBins, double divisor)
 {
 	int i = threadIdx.x + blockIdx.x*blockDim.x;
 	int stride = blockDim.x * gridDim.x;
 	while (i<numBins)
 	{
-		normHistogram[i] = histogram[i] / devisor;
+		normHistogram[i] = (double)(histogram[i]) / divisor;
 		i += stride;
 	}
 }
@@ -56,8 +58,6 @@ size_t* createHistogram(int device, unsigned int arraySize, Vec<size_t> dims, Pi
 
 	if ((size_t)props.sharedMemPerBlock<sizeof(size_t)*arraySize)
 		throw std::runtime_error("Too many bins to calculate on GPU with current shared memory constraints!");
-
-	size_t* hostHist = new size_t[arraySize];
 
 	size_t* deviceHist;
 	HANDLE_ERROR(cudaMalloc((void**)&deviceHist,sizeof(size_t)*arraySize));
@@ -75,7 +75,7 @@ size_t* createHistogram(int device, unsigned int arraySize, Vec<size_t> dims, Pi
 
 	HANDLE_ERROR(cudaMalloc((void**)&deviceBuffer,sizeof(PixelType)*numValsPerChunk));
 
-	double binSize = (maxVal-minVal)/arraySize;
+	double binSize = ((double)maxVal-minVal)/arraySize;
 
 	for (size_t startIdx=0; startIdx<dims.product(); startIdx+=numValsPerChunk)
 	{
