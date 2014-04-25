@@ -28,7 +28,6 @@ public:
 		imageDims = dims;
 		maxImageDims = dims;
 		this->device = device;
-		checkFreeMemory(sizeof(PixelType)*dims.product(),device,true);
 		HANDLE_ERROR(cudaSetDevice(device));
 		HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(PixelType)*dims.product()));
 	}
