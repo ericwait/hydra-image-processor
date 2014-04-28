@@ -122,7 +122,7 @@ void MexCommand::init()
 	 {
 		 *argOut = mxCreateNumericArray(numDims,DIMS,mxUINT16_CLASS,mxREAL);
 		 *imageOut = (unsigned short*)mxGetData(*argOut);
-		 memset(*imageOut,0,sizeof(unsigned int)*dims->product());
+		 memset(*imageOut,0,sizeof(unsigned short)*dims->product());
 	 }
  }
 
@@ -149,7 +149,7 @@ void MexCommand::init()
 	 {
 		 *argOut = mxCreateNumericArray(numDims,DIMS,mxINT16_CLASS,mxREAL);
 		 *imageOut = (short*)mxGetData(*argOut);
-		 memset(*imageOut,0,sizeof(int)*dims->product());
+		 memset(*imageOut,0,sizeof(short)*dims->product());
 	 }
  }
 
