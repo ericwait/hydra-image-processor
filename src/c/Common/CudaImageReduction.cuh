@@ -51,7 +51,8 @@ template <class PixelType>
 __global__ void cudaMedianImageReduction( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut,
 										 Vec<size_t> hostReductions)
 {
-	extern __shared__ double vals[];
+	extern __shared__ unsigned char sharedMem[];
+	PixelType* vals = (PixelType*)sharedMem;
 	DeviceVec<size_t> reductions = hostReductions;
 	DeviceVec<size_t> coordinateOut;
 	coordinateOut.x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -234,23 +235,23 @@ PixelType* reduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> r
 			blocks.y = (unsigned int)ceil((double)reducedIt->getFullChunkSize().y / threads.y);
 			blocks.z = (unsigned int)ceil((double)reducedIt->getFullChunkSize().z / threads.z);
 		}
-
-		size_t sharedMemorysize = reductions.product()*sizeof(PixelType) * threads.x * threads.y * threads.z;
+		size_t sharedMemorysize = 0;
 
 		switch (method)
 		{
 		case REDUC_MEAN:
-			cudaMeanImageReduction<<<blocks,threads,sharedMemorysize>>>(*deviceImageIn, *deviceImageOut, reductions);
+			cudaMeanImageReduction<<<blocks,threads>>>(*deviceImageIn, *deviceImageOut, reductions);
 			break;
 		case REDUC_MEDIAN:
+			sharedMemorysize = reductions.product()*sizeof(PixelType) * threads.x * threads.y * threads.z;
 			cudaMedianImageReduction<<<blocks,threads,sharedMemorysize>>>(*deviceImageIn, *deviceImageOut, reductions);
 			break;
 		case REDUC_MIN:
-			cudaMinImageReduction<<<blocks,threads,sharedMemorysize>>>(*deviceImageIn, *deviceImageOut, reductions,
+			cudaMinImageReduction<<<blocks,threads>>>(*deviceImageIn, *deviceImageOut, reductions,
 				std::numeric_limits<PixelType>::max());
 			break;
 		case REDUC_MAX:
-			cudaMaxImageReduction<<<blocks,threads,sharedMemorysize>>>(*deviceImageIn, *deviceImageOut, reductions,
+			cudaMaxImageReduction<<<blocks,threads>>>(*deviceImageIn, *deviceImageOut, reductions,
 				std::numeric_limits<PixelType>::lowest());
 			break;
 		default:
