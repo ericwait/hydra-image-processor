@@ -131,11 +131,11 @@
 	}
  
  	const mwSize DIM = arraySize;
- 	plhs[0] = mxCreateNumericArray(1,&DIM,mxDOUBLE_CLASS,mxREAL);
- 	double* histPr = mxGetPr(plhs[0]);
+ 	plhs[0] = mxCreateNumericArray(1,&DIM,mxUINT64_CLASS,mxREAL);
+ 	size_t* histPr = (size_t*)mxGetPr(plhs[0]);
  
  	for (unsigned int i=0; i<arraySize; ++i)
- 		histPr[i] = double(hist[i]);
+ 		histPr[i] = hist[i];
  
  	delete[] hist;
  }
