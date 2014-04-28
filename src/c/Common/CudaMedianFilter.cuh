@@ -68,38 +68,46 @@ template <class PixelType>
 __global__ void cudaMedianFilter( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut,
 								 Vec<size_t> hostKernelDims )
 {
-	extern __shared__ double vals[];
-	DeviceVec<size_t> kernelDims = hostKernelDims;
+	extern __shared__ unsigned char valsShared[];
+	PixelType* vals = (PixelType*)valsShared;
+
 	DeviceVec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
-	int offset = threadIdx.x + threadIdx.y*blockDim.x + threadIdx.z*blockDim.y*blockDim.x;
-	offset *=  kernelDims.product();
 
 	if (coordinate<imageIn.getDeviceDims())
 	{
-		int kernelVolume = 0;
+		DeviceVec<size_t> blockDimVec(blockDim.x,blockDim.y,blockDim.z);
 		DeviceVec<size_t> kernelDims = hostKernelDims;
-		DeviceVec<size_t> halfKernal = kernelDims/2;
+		size_t linearThreadIdx = blockDimVec.linearAddressAt(DeviceVec<size_t>(threadIdx.x,threadIdx.y,threadIdx.z));
+		int sharedMemOffset = linearThreadIdx*kernelDims.product();
+		int kernelVolume = 0;
 
-		DeviceVec<size_t> curCoordIm = coordinate - halfKernal;
-		curCoordIm.z = (coordinate.z<halfKernal.z) ? 0 : coordinate.z-halfKernal.z;
-		for (; curCoordIm.z<=coordinate.z+halfKernal.z && curCoordIm.z<imageIn.getDeviceDims().z; ++curCoordIm.z)
-		{
-			curCoordIm.y = (coordinate.y<halfKernal.y) ? 0 : coordinate.y-halfKernal.y/2;
-			for (; curCoordIm.y<=coordinate.y+halfKernal.y && curCoordIm.y<imageIn.getDeviceDims().y; ++curCoordIm.y)
-			{
-				curCoordIm.x = (coordinate.x<halfKernal.x) ? 0 : coordinate.x-halfKernal.x/2;
-				for (; curCoordIm.x<=coordinate.x+halfKernal.x && curCoordIm.x<imageIn.getDeviceDims().x; ++curCoordIm.x)
-				{
-					vals[kernelVolume+offset] = (double)imageIn[curCoordIm];
-					++kernelVolume;
-				}
-			}
-		}
+		DeviceVec<int> startLimit = DeviceVec<int>(coordinate) - DeviceVec<int>((kernelDims)/2);
+		DeviceVec<size_t> endLimit = coordinate + (kernelDims+1)/2;
+		DeviceVec<size_t> kernelStart(DeviceVec<int>::max(-startLimit,DeviceVec<int>(0,0,0)));
 
-		imageOut[coordinate] = (PixelType)cudaFindMedian(vals+offset,kernelVolume);
+		startLimit = DeviceVec<int>::max(startLimit,DeviceVec<int>(0,0,0));
+		endLimit = DeviceVec<size_t>::min(DeviceVec<size_t>(endLimit),imageIn.getDeviceDims());
+
+		DeviceVec<size_t> imageStart(coordinate-(kernelDims/2)+kernelStart);
+		DeviceVec<size_t> iterationEnd(endLimit-DeviceVec<size_t>(startLimit));
+
+		DeviceVec<size_t> i(0,0,0);
+  		for (i.z=0; i.z<iterationEnd.z; ++i.z)
+  		{
+  			for (i.y=0; i.y<iterationEnd.y; ++i.y)
+  			{
+  				for (i.x=0; i.x<iterationEnd.x; ++i.x)
+  				{
+ 					vals[kernelVolume+sharedMemOffset] = (double)imageIn[imageStart+i];
+ 					++kernelVolume;
+  				}
+  			}
+  		}
+
+		imageOut[coordinate] = (PixelType)cudaFindMedian(vals+sharedMemOffset,kernelVolume);
 	}
 	__syncthreads();
 }
