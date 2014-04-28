@@ -233,7 +233,7 @@ copy "$(CudaToolkitBinDir)\cudart64*.dll" "$(ProjectDir)..\MATLAB\."</Command>
       <AdditionalLibraryDirectories>$(CUDA_PATH)lib\x64</AdditionalLibraryDirectories>
     </CudaLink>
     <CudaCompile>
-      <CodeGeneration>compute_20,sm_20;compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
+      <CodeGeneration>compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
       <TargetMachinePlatform>64</TargetMachinePlatform>
     </CudaCompile>
     <Bscmake>
@@ -289,7 +289,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(ProjectDir)..\..\bin\."</Command>
       <AdditionalLibraryDirectories>$(CUDA_PATH)lib\x64</AdditionalLibraryDirectories>
     </CudaLink>
     <CudaCompile>
-      <CodeGeneration>compute_20,sm_20;compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
+      <CodeGeneration>compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
       <TargetMachinePlatform>64</TargetMachinePlatform>
     </CudaCompile>
   </ItemDefinitionGroup>
