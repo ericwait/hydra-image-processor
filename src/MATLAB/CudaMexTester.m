@@ -49,7 +49,7 @@ for i=1:7
             typ = 'double';
     end
     
-    image1 = tiffReader(typ,1,[],[],metadataFile);
+    image1 = tiffReader(typ,4,[],[],metadataFile);
     imData = whos('image1');
     redc = imageMaxSize-imData.bytes;
     if (redc<0)
@@ -61,7 +61,7 @@ for i=1:7
         clear imTemp;
     end
     
-    image2 = tiffReader(typ,4,[],[],metadataFile);
+    image2 = tiffReader(typ,1,[],[],metadataFile);
     imData = whos('image2');
     redc = imageMaxSize-imData.bytes;
     if (redc<0)
@@ -77,7 +77,6 @@ for i=1:7
         showIm(image1,'Original');
         showIm(image2,'Second Image');
     end
-    
     try
         tic
         kernelName = 'AddConstant';
@@ -106,17 +105,6 @@ for i=1:7
         end
         clear imageOut;
         
-        MedianNeighborhoodX = NeighborhoodX;
-        MedianNeighborhoodY = NeighborhoodY;
-        MedianNeighborhoodZ = NeighborhoodZ;
-        tic
-        kernelName = 'ContrastEnhancement';
-        imageOut = CudaMex(sprintf('%s',kernelName),image1,[sigmaX,sigmaY,sigmaZ],[MedianNeighborhoodX,MedianNeighborhoodY,MedianNeighborhoodZ],device);
-        fprintf('%s took %f sec\n',kernelName,toc);
-        if (showOut)
-            showIm(imageOut,kernelName);
-        end
-        clear imageOut;
         
         tic
         kernelName = 'GaussianFilter';
@@ -137,7 +125,6 @@ for i=1:7
             plot(1:255,histogram,'-');
             title('Histogram');
         end
-        clear imageOut;
         
         tic
         kernelName = 'ImagePow';
@@ -185,15 +172,6 @@ for i=1:7
         clear imageOut;
         
         tic
-        kernelName = 'MedianFilter';
-        imageOut = CudaMex(sprintf('%s',kernelName),image1,[NeighborhoodX,NeighborhoodY,NeighborhoodZ],device);
-        fprintf('%s took %f sec\n',kernelName,toc);
-        if (showOut)
-            showIm(imageOut,kernelName);
-        end
-        clear imageOut;
-        
-        tic
         kernelName = 'MinFilterEllipsoid';
         imageOut = CudaMex(sprintf('%s',kernelName),image1,[radiusX,radiusY,radiusZ],device);
         fprintf('%s took %f sec\n',kernelName,toc);
@@ -224,7 +202,6 @@ for i=1:7
         kernelName = 'MinMax';
         [minVal, maxVal] = CudaMex(sprintf('%s',kernelName),image1,device);
         fprintf('%s took %f sec and returned Min=%f and Max=%f\n',kernelName,toc,minVal,maxVal);
-        clear imageOut;
         
         tic
         kernelName = 'MultiplyImage';
@@ -254,7 +231,6 @@ for i=1:7
             plot(1:255,histogram,'-');
             title('Normalized Histogram');
         end
-        clear imageOut;
         
         tic
         kernelName = 'OtsuThesholdValue';
@@ -277,7 +253,7 @@ for i=1:7
         tic
         kernelName = 'ReduceImage';
         imageOut = CudaMex(sprintf('%s',kernelName),image1,[reductionFactorX,reductionFactorY,reductionFactorZ],'mean',device);
-        fprintf('%s took %f sec\n',kernelName,toc);
+        fprintf('%s took %f sec\n',[kernelName ' mean'],toc);
         if (showOut)
             showIm(imageOut,[kernelName ' Mean']);
         end
@@ -286,7 +262,7 @@ for i=1:7
         tic
         kernelName = 'ReduceImage';
         imageOut = CudaMex(sprintf('%s',kernelName),image1,[reductionFactorX,reductionFactorY,reductionFactorZ],'median',device);
-        fprintf('%s took %f sec\n',kernelName,toc);
+        fprintf('%s took %f sec\n',[kernelName ' median',toc);
         if (showOut)
             showIm(imageOut,[kernelName ' Median']);
         end
@@ -295,7 +271,7 @@ for i=1:7
         tic
         kernelName = 'ReduceImage';
         imageOut = CudaMex(sprintf('%s',kernelName),image1,[reductionFactorX,reductionFactorY,reductionFactorZ],'min',device);
-        fprintf('%s took %f sec\n',kernelName,toc);
+        fprintf('%s took %f sec\n',[kernelName ' min'],toc);
         if (showOut)
             showIm(imageOut,[kernelName ' Min']);
         end
@@ -304,7 +280,7 @@ for i=1:7
         tic
         kernelName = 'ReduceImage';
         imageOut = CudaMex(sprintf('%s',kernelName),image1,[reductionFactorX,reductionFactorY,reductionFactorZ],'max',device);
-        fprintf('%s took %f sec\n',kernelName,toc);
+        fprintf('%s took %f sec\n',[kernelName ' max'],toc);
         if (showOut)
             showIm(imageOut,[kernelName ' Max']);
         end
@@ -313,8 +289,9 @@ for i=1:7
         tic
         kernelName = 'SumArray';
         sumVal = CudaMex(sprintf('%s',kernelName),image1,device);
+        sumTime = toc;
         dif = sumVal - sum(image1(:));
-        fprintf('%s took %f sec and returned a dif of %f\n',kernelName,toc,dif);
+        fprintf('%s took %f sec and returned a dif of %f\n',kernelName,sumTime,dif);
         clear imageOut;
         
         threshold = additive;
@@ -327,16 +304,50 @@ for i=1:7
         end
         clear imageOut;
         
+        %% these take the longest
+        tic
+        kernelName = 'MedianFilter';
+        imageOut = CudaMex(sprintf('%s',kernelName),image1,[NeighborhoodX,NeighborhoodY,NeighborhoodZ],device);
+        fprintf('%s took %f sec\n',kernelName,toc);
+        if (showOut)
+            showIm(imageOut,kernelName);
+        end
+        clear imageOut;
+        
         zChunk = ceil(size(image1,3)/3);
         zRange = zChunk:zChunk+zChunk;
         
         image1 = image1(:,:,zRange);
         image2 = image2(:,:,zRange);
+        
+        MedianNeighborhoodX = NeighborhoodX;
+        MedianNeighborhoodY = NeighborhoodY;
+        MedianNeighborhoodZ = NeighborhoodZ;
+        tic
+        kernelName = 'ContrastEnhancement';
+        imageOut = CudaMex(sprintf('%s',kernelName),image1,[sigmaX,sigmaY,sigmaZ],[MedianNeighborhoodX,MedianNeighborhoodY,MedianNeighborhoodZ],device);
+        fprintf('%s took %f sec\n',kernelName,toc);
+        if (showOut)
+            showIm(imageOut,kernelName);
+        end
+        clear imageOut;
+        
+        tic
+        kernelName = 'NormalizedCovariance';
+        normalizedCovariance = CudaMex(sprintf('%s',kernelName),image1,image1,device);
+        fprintf('%s with it self and took %f sec and returned %f\n',kernelName,toc,normalizedCovariance);
+        
         tic
         kernelName = 'NormalizedCovariance';
         normalizedCovariance = CudaMex(sprintf('%s',kernelName),image1,image2,device);
         fprintf('%s took %f sec and returned %f\n',kernelName,toc,normalizedCovariance);
-        clear imageOut;
+        
+        image2 = 255-image1;
+        tic
+        kernelName = 'NormalizedCovariance';
+        normalizedCovariance = CudaMex(sprintf('%s',kernelName),image1,image2,device);
+        fprintf('%s with its negitive and took %f sec and returned %f\n',kernelName,toc,normalizedCovariance);
+        
     catch e
         fprintf('************\nError: %sFrom line %d\n************\n',e.message,e.stack.line);
         clear mex
