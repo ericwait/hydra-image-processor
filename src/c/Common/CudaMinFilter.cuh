@@ -68,7 +68,7 @@ __global__ void cudaMinFilter( CudaImageContainer<PixelType> imageIn, CudaImageC
 }
 
 template <class PixelType>
-PixelType* minFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, PixelType** imageOut=NULL,
+PixelType* cMinFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, PixelType** imageOut=NULL,
 					 int device=0)
 {
 	PixelType* imOut = setUpOutIm(dims, imageOut);

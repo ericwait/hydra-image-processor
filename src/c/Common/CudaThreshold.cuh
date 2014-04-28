@@ -28,7 +28,7 @@ __global__ void cudaThreshold( CudaImageContainer<PixelType> imageIn, CudaImageC
 }
 
 template <class PixelType>
-PixelType* thresholdFilter(const PixelType* imageIn, Vec<size_t> dims, PixelType thresh, PixelType** imageOut=NULL, int device=0)
+PixelType* cThresholdFilter(const PixelType* imageIn, Vec<size_t> dims, PixelType thresh, PixelType** imageOut=NULL, int device=0)
 {
 	PixelType* imOut = setUpOutIm(dims, imageOut);
 
@@ -66,10 +66,10 @@ PixelType* thresholdFilter(const PixelType* imageIn, Vec<size_t> dims, PixelType
 }
 
 template <class PixelType>
-PixelType* otsuThresholdFilter(const PixelType* imageIn, Vec<size_t> dims, double alpha=1.0, PixelType** imageOut=NULL, int device=0)
+PixelType* cOtsuThresholdFilter(const PixelType* imageIn, Vec<size_t> dims, double alpha=1.0, PixelType** imageOut=NULL, int device=0)
 {
-	PixelType thresh = otsuThresholdValue(imageIn,dims,device);
+	PixelType thresh = cOtsuThresholdValue(imageIn,dims,device);
 	thresh = (PixelType)(thresh*alpha);
 
-	return thresholdFilter(imageIn,dims,thresh,imageOut,device);
+	return cThresholdFilter(imageIn,dims,thresh,imageOut,device);
 }

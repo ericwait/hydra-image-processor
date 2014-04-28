@@ -22,7 +22,7 @@
 		 if (imageDims!=imageDims2)
 			 mexErrMsgTxt("Image dimensions must agree!");
 
-		 cAddImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
+		 addImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
 	 }
 	 else if (mxIsUint16(prhs[0]))
 	 {
@@ -34,7 +34,7 @@
 		 if (imageDims!=imageDims2)
 			 mexErrMsgTxt("Image dimensions must agree!");
 
-		 cAddImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
+		 addImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
 	 }
 	 else if (mxIsInt16(prhs[0]))
 	 {
@@ -46,7 +46,7 @@
 		 if (imageDims!=imageDims2)
 			 mexErrMsgTxt("Image dimensions must agree!");
 
-		 cAddImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
+		 addImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
 	 }
 	 else if (mxIsUint32(prhs[0]))
 	 {
@@ -58,7 +58,7 @@
 		 if (imageDims!=imageDims2)
 			 mexErrMsgTxt("Image dimensions must agree!");
 
-		 cAddImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
+		 addImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
 	 }
 	 else if (mxIsInt32(prhs[0]))
 	 {
@@ -70,7 +70,7 @@
 		 if (imageDims!=imageDims2)
 			 mexErrMsgTxt("Image dimensions must agree!");
 
-		 cAddImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
+		 addImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
 	 }
 	 else if (mxIsSingle(prhs[0]))
 	 {
@@ -82,7 +82,7 @@
 		 if (imageDims!=imageDims2)
 			 mexErrMsgTxt("Image dimensions must agree!");
 
-		 cAddImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
+		 addImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
 	 }
 	 else if (mxIsDouble(prhs[0]))
 	 {
@@ -94,7 +94,7 @@
 		 if (imageDims!=imageDims2)
 			 mexErrMsgTxt("Image dimensions must agree!");
 
-		 cAddImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
+		 addImageWith(imageIn,imageIn2,imageDims,additive,&imageOut,device);
 	 }
 	 else
 	 {

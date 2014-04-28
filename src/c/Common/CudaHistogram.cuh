@@ -97,7 +97,7 @@ size_t* createHistogram(int device, unsigned int arraySize, Vec<size_t> dims, Pi
 }
 
 template <class PixelType>
-size_t* calculateHistogram(const PixelType* imageIn, Vec<size_t> dims, unsigned int arraySize,
+size_t* cCalculateHistogram(const PixelType* imageIn, Vec<size_t> dims, unsigned int arraySize,
 						   PixelType minVal=std::numeric_limits<PixelType>::lowest(), PixelType maxVal=std::numeric_limits<PixelType>::max(),
 						   int device=0)
 {
@@ -112,7 +112,7 @@ size_t* calculateHistogram(const PixelType* imageIn, Vec<size_t> dims, unsigned 
 }
 
 template <class PixelType>
-double* normalizeHistogram(const PixelType* imageIn, Vec<size_t> dims, unsigned int arraySize,
+double* cNormalizeHistogram(const PixelType* imageIn, Vec<size_t> dims, unsigned int arraySize,
 						   PixelType minVal=std::numeric_limits<PixelType>::lowest(), PixelType maxVal=std::numeric_limits<PixelType>::max(),
 						   int device=0)
 {
@@ -140,13 +140,13 @@ double* normalizeHistogram(const PixelType* imageIn, Vec<size_t> dims, unsigned 
 }
 
 template <class PixelType>
-PixelType otsuThresholdValue(const PixelType* imageIn, Vec<size_t> dims, int device=0)
+PixelType cOtsuThresholdValue(const PixelType* imageIn, Vec<size_t> dims, int device=0)
 {
 	PixelType minVal, maxVal;
-	getMinMax(imageIn,dims,minVal,maxVal,device);
+	cGetMinMax(imageIn,dims,minVal,maxVal,device);
 	unsigned int arraySize = NUM_BINS;
 
-	double* hist = normalizeHistogram(imageIn,dims,arraySize,minVal,maxVal,device);
+	double* hist = cNormalizeHistogram(imageIn,dims,arraySize,minVal,maxVal,device);
 
 	int theshIdx = calcOtsuThreshold(hist,arraySize);
 

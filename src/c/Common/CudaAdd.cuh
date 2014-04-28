@@ -43,7 +43,7 @@ __global__ void cudaAddTwoImagesWithFactor( CudaImageContainer<PixelType> imageI
 }
 
 template <class PixelTypeIn, class PixelTypeOut>
-PixelTypeOut* addConstant(const PixelTypeIn* imageIn, Vec<size_t> dims, double additive, PixelTypeOut** imageOut=NULL, int device=0)
+PixelTypeOut* cAddConstant(const PixelTypeIn* imageIn, Vec<size_t> dims, double additive, PixelTypeOut** imageOut=NULL, int device=0)
 {
 	PixelTypeOut* imOut = setUpOutIm(dims, imageOut);
 
@@ -85,7 +85,7 @@ PixelTypeOut* addConstant(const PixelTypeIn* imageIn, Vec<size_t> dims, double a
 *	which is multiplied to the passed in image prior to adding
 */
 template <class PixelType>
-PixelType* addImageWith(const PixelType* imageIn1, const PixelType* imageIn2, Vec<size_t> dims, double additive,
+PixelType* cAddImageWith(const PixelType* imageIn1, const PixelType* imageIn2, Vec<size_t> dims, double additive,
 						PixelType** imageOut=NULL, int device=0)
 {
 	PixelType* imOut = setUpOutIm(dims, imageOut);

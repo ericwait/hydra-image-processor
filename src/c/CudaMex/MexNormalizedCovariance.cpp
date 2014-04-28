@@ -21,7 +21,7 @@ void MexNormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 		if (imageDims1!=imageDims2)
 			mexErrMsgTxt("Image Dimensions Must Match!\n");
 
-		normCoVar = cNormalizedCovariance(imageIn1,imageIn2,imageDims1,device);
+		normCoVar = normalizedCovariance(imageIn1,imageIn2,imageDims1,device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
@@ -32,7 +32,7 @@ void MexNormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 		if (imageDims1!=imageDims2)
 			mexErrMsgTxt("Image Dimensions Must Match!\n");
 
-		normCoVar = cNormalizedCovariance(imageIn1,imageIn2,imageDims1,device);
+		normCoVar = normalizedCovariance(imageIn1,imageIn2,imageDims1,device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
@@ -43,7 +43,7 @@ void MexNormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 		if (imageDims1!=imageDims2)
 			mexErrMsgTxt("Image Dimensions Must Match!\n");
 
-		normCoVar = cNormalizedCovariance(imageIn1,imageIn2,imageDims1,device);
+		normCoVar = normalizedCovariance(imageIn1,imageIn2,imageDims1,device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
@@ -54,7 +54,7 @@ void MexNormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 		if (imageDims1!=imageDims2)
 			mexErrMsgTxt("Image Dimensions Must Match!\n");
 
-		normCoVar = cNormalizedCovariance(imageIn1,imageIn2,imageDims1,device);
+		normCoVar = normalizedCovariance(imageIn1,imageIn2,imageDims1,device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
@@ -65,7 +65,7 @@ void MexNormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 		if (imageDims1!=imageDims2)
 			mexErrMsgTxt("Image Dimensions Must Match!\n");
 
-		normCoVar = cNormalizedCovariance(imageIn1,imageIn2,imageDims1,device);
+		normCoVar = normalizedCovariance(imageIn1,imageIn2,imageDims1,device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
@@ -76,7 +76,7 @@ void MexNormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 		if (imageDims1!=imageDims2)
 			mexErrMsgTxt("Image Dimensions Must Match!\n");
 
-		normCoVar = cNormalizedCovariance(imageIn1,imageIn2,imageDims1,device);
+		normCoVar = normalizedCovariance(imageIn1,imageIn2,imageDims1,device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
@@ -87,7 +87,7 @@ void MexNormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 		if (imageDims1!=imageDims2)
 			mexErrMsgTxt("Image Dimensions Must Match!\n");
 
-		normCoVar = cNormalizedCovariance(imageIn1,imageIn2,imageDims1,device);
+		normCoVar = normalizedCovariance(imageIn1,imageIn2,imageDims1,device);
 	}
 	else
 	{

@@ -46,7 +46,7 @@ void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iter
 }
 
 template <class PixelType>
-PixelType* gaussianFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas, PixelType** imageOut=NULL, int device=0)
+PixelType* cGaussianFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas, PixelType** imageOut=NULL, int device=0)
 {
 	PixelType* imOut = setUpOutIm(dims, imageOut);
 

@@ -16,7 +16,7 @@ void MexMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prh
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
 		unsigned char minVal, maxVal;
-		cGetMinMax(imageIn,imageDims,minVal,maxVal,device);
+		getMinMax(imageIn,imageDims,minVal,maxVal,device);
 		plhs[0] = mxCreateDoubleScalar(minVal);
 		plhs[1] = mxCreateDoubleScalar(maxVal);
 	}
@@ -26,7 +26,7 @@ void MexMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prh
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
 		unsigned short minVal, maxVal;
-		cGetMinMax(imageIn,imageDims,minVal,maxVal,device);
+		getMinMax(imageIn,imageDims,minVal,maxVal,device);
 		plhs[0] = mxCreateDoubleScalar(minVal);
 		plhs[1] = mxCreateDoubleScalar(maxVal);
 	}
@@ -37,7 +37,7 @@ void MexMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prh
 
 		short minVal, maxVal;
 
-		cGetMinMax(imageIn,imageDims,minVal,maxVal,device);
+		getMinMax(imageIn,imageDims,minVal,maxVal,device);
 		plhs[0] = mxCreateDoubleScalar(minVal);
 		plhs[1] = mxCreateDoubleScalar(maxVal);
 	}
@@ -47,7 +47,7 @@ void MexMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prh
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
 		unsigned int minVal, maxVal;
-		cGetMinMax(imageIn,imageDims,minVal,maxVal,device);
+		getMinMax(imageIn,imageDims,minVal,maxVal,device);
 		plhs[0] = mxCreateDoubleScalar(minVal);
 		plhs[1] = mxCreateDoubleScalar(maxVal);
 	}
@@ -58,7 +58,7 @@ void MexMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prh
 
 		int minVal, maxVal;
 
-		cGetMinMax(imageIn,imageDims,minVal,maxVal,device);
+		getMinMax(imageIn,imageDims,minVal,maxVal,device);
 		plhs[0] = mxCreateDoubleScalar(minVal);
 		plhs[1] = mxCreateDoubleScalar(maxVal);
 	}
@@ -68,7 +68,7 @@ void MexMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prh
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
 		float minVal, maxVal;
-		cGetMinMax(imageIn,imageDims,minVal,maxVal,device);
+		getMinMax(imageIn,imageDims,minVal,maxVal,device);
 		plhs[0] = mxCreateDoubleScalar(minVal);
 		plhs[1] = mxCreateDoubleScalar(maxVal);
 	}
@@ -78,7 +78,7 @@ void MexMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prh
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
 		double minVal, maxVal;
-		cGetMinMax(imageIn,imageDims,minVal,maxVal,device);
+		getMinMax(imageIn,imageDims,minVal,maxVal,device);
 		plhs[0] = mxCreateDoubleScalar(minVal);
 		plhs[1] = mxCreateDoubleScalar(maxVal);
 	}

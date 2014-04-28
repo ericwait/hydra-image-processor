@@ -144,7 +144,7 @@ void runMedianFilter(cudaDeviceProp& props, std::vector<ImageChunk>::iterator cu
 }
 
 template <class PixelType>
-PixelType* medianFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, PixelType** imageOut=NULL, int device=0)
+PixelType* cMedianFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, PixelType** imageOut=NULL, int device=0)
 {
 	PixelType* imOut = setUpOutIm(dims, imageOut);
 

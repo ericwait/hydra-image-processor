@@ -22,49 +22,49 @@ void MexMaxFilterEllipsoid::execute( int nlhs, mxArray* plhs[], int nrhs, const 
 		unsigned char* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		cMaxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut,device);
+		maxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut,device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
 		unsigned short* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		cMaxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut,device);
+		maxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut,device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
 		short* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		cMaxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut,device);
+		maxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut,device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
 		unsigned int* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		cMaxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut,device);
+		maxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut,device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
 		int* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		cMaxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut,device);
+		maxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut,device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
 		float* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		cMaxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut,device);
+		maxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut,device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
 		double* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		cMaxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut,device);
+		maxFilter(imageIn,imageDims,kernDims,circleKernel,&imageOut,device);
 	}
 	else
 	{

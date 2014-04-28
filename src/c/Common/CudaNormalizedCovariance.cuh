@@ -6,25 +6,25 @@
 #include "CudaMultiplyImage.cuh"
 
 template <class PixelType>
-double normalizedCovariance(const PixelType* imageIn1, const PixelType* imageIn2, Vec<size_t> dims, int device=0)
+double cNormalizedCovariance(const PixelType* imageIn1, const PixelType* imageIn2, Vec<size_t> dims, int device=0)
 {
-	double im1Mean = sumArray<double>(imageIn1,dims.product(),device) / (double)dims.product();
-	double im2Mean = sumArray<double>(imageIn2,dims.product(),device) / (double)dims.product();
+	double im1Mean = cSumArray<double>(imageIn1,dims.product(),device) / (double)dims.product();
+	double im2Mean = cSumArray<double>(imageIn2,dims.product(),device) / (double)dims.product();
 
-	float* im1Sub = addConstant<PixelType,float>(imageIn1,dims,-1.0*im1Mean,NULL,device);
-	float* im2Sub = addConstant<PixelType,float>(imageIn2,dims,-1.0*im2Mean,NULL,device);
+	float* im1Sub = cAddConstant<PixelType,float>(imageIn1,dims,-1.0*im1Mean,NULL,device);
+	float* im2Sub = cAddConstant<PixelType,float>(imageIn2,dims,-1.0*im2Mean,NULL,device);
 
-	float* im1P = imagePow<float>(im1Sub,dims,2.0,NULL,device);
-	float* im2P = imagePow<float>(im2Sub,dims,2.0,NULL,device);
+	float* im1P = cImagePow<float>(im1Sub,dims,2.0,NULL,device);
+	float* im2P = cImagePow<float>(im2Sub,dims,2.0,NULL,device);
 
-	double sigma1 = sqrt(sumArray<double>(im1P,dims.product(),device)/(double)dims.product());
-	double sigma2 = sqrt(sumArray<double>(im2P,dims.product(),device)/(double)dims.product());
+	double sigma1 = sqrt(cSumArray<double>(im1P,dims.product(),device)/(double)dims.product());
+	double sigma2 = sqrt(cSumArray<double>(im2P,dims.product(),device)/(double)dims.product());
 
 	delete[] im1P;
 	delete[] im2P;
 
-	float* imMul = multiplyImageWith<float>(im1Sub,im2Sub,dims,1.0,NULL,device);
-	double numerator = sumArray<double>(imMul,dims.product(),device);
+	float* imMul = cMultiplyImageWith<float>(im1Sub,im2Sub,dims,1.0,NULL,device);
+	double numerator = cSumArray<double>(imMul,dims.product(),device);
 
 	double coVar = numerator/(dims.product()*sigma1*sigma2);
 
@@ -35,25 +35,25 @@ double normalizedCovariance(const PixelType* imageIn1, const PixelType* imageIn2
 	return coVar;
 }
 
-double normalizedCovariance(const double* imageIn1, const double* imageIn2, Vec<size_t> dims, int device=0)
+double cNormalizedCovariance(const double* imageIn1, const double* imageIn2, Vec<size_t> dims, int device=0)
 {
-	double im1Mean = sumArray<double>(imageIn1,dims.product(),device) / (double)dims.product();
-	double im2Mean = sumArray<double>(imageIn2,dims.product(),device) / (double)dims.product();
+	double im1Mean = cSumArray<double>(imageIn1,dims.product(),device) / (double)dims.product();
+	double im2Mean = cSumArray<double>(imageIn2,dims.product(),device) / (double)dims.product();
 
-	double* im1Sub = addConstant<double,double>(imageIn1,dims,-1.0*im1Mean,NULL,device);
-	double* im2Sub = addConstant<double,double>(imageIn2,dims,-1.0*im2Mean,NULL,device);
+	double* im1Sub = cAddConstant<double,double>(imageIn1,dims,-1.0*im1Mean,NULL,device);
+	double* im2Sub = cAddConstant<double,double>(imageIn2,dims,-1.0*im2Mean,NULL,device);
 
-	double* im1P = imagePow<double>(im1Sub,dims,2.0,NULL,device);
-	double* im2P = imagePow<double>(im2Sub,dims,2.0,NULL,device);
+	double* im1P = cImagePow<double>(im1Sub,dims,2.0,NULL,device);
+	double* im2P = cImagePow<double>(im2Sub,dims,2.0,NULL,device);
 
-	double sigma1 = sqrt(sumArray<double>(im1P,dims.product(),device)/(double)dims.product());
-	double sigma2 = sqrt(sumArray<double>(im2P,dims.product(),device)/(double)dims.product());
+	double sigma1 = sqrt(cSumArray<double>(im1P,dims.product(),device)/(double)dims.product());
+	double sigma2 = sqrt(cSumArray<double>(im2P,dims.product(),device)/(double)dims.product());
 
 	delete[] im1P;
 	delete[] im2P;
 
-	double* imMul = multiplyImageWith<double>(im1Sub,im2Sub,dims,1.0,NULL,device);
-	double numerator = sumArray<double>(imMul,dims.product(),device);
+	double* imMul = cMultiplyImageWith<double>(im1Sub,im2Sub,dims,1.0,NULL,device);
+	double numerator = cSumArray<double>(imMul,dims.product(),device);
 
 	double coVar = numerator/(dims.product()*sigma1*sigma2);
 

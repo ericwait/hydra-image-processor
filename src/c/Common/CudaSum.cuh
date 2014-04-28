@@ -44,7 +44,7 @@ __global__ void cudaSum(PixelTypeIn* arrayIn, OutType* arrayOut, size_t n)
 }
 
 template < class OutType, class PixelTypeIn>
-OutType sumArray(const PixelTypeIn* imageIn, size_t n, int device=0)
+OutType cSumArray(const PixelTypeIn* imageIn, size_t n, int device=0)
 {
 	OutType sum = 0;
 	OutType* deviceSum;

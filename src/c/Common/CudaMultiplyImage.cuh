@@ -45,7 +45,7 @@ __global__ void cudaMultiplyTwoImages(CudaImageContainer<PixelType> imageIn1, Cu
 }
 
 template <class PixelType>
-PixelType* multiplyImage(const PixelType* imageIn, Vec<size_t> dims, double multiplier, PixelType** imageOut=NULL, int device=0)
+PixelType* cMultiplyImage(const PixelType* imageIn, Vec<size_t> dims, double multiplier, PixelType** imageOut=NULL, int device=0)
 {
 	PixelType* imOut = setUpOutIm(dims, imageOut);
 
@@ -83,7 +83,7 @@ PixelType* multiplyImage(const PixelType* imageIn, Vec<size_t> dims, double mult
 }
 
 template <class PixelType>
-PixelType* multiplyImageWith(const PixelType* imageIn1, const PixelType* imageIn2, Vec<size_t> dims, double factor, PixelType** imageOut=NULL,
+PixelType* cMultiplyImageWith(const PixelType* imageIn1, const PixelType* imageIn2, Vec<size_t> dims, double factor, PixelType** imageOut=NULL,
 							int device=0)
 {
 	PixelType* imOut = setUpOutIm(dims, imageOut);

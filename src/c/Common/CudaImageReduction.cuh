@@ -151,7 +151,7 @@ __global__ void cudaMinImageReduction(CudaImageContainer<PixelType> imageIn, Cud
 }
 
 template <class PixelType>
-PixelType* reduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, 
+PixelType* cReduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, 
 					   ReductionMethods method=REDUC_MEAN, PixelType** imageOut=NULL, int device=0)
 {
 	reductions = reductions.clamp(Vec<size_t>(1,1,1),dims);

@@ -24,7 +24,7 @@ __global__ void cudaPow( CudaImageContainer<PixelType> imageIn1, CudaImageContai
 }
 
 template <class PixelType>
-PixelType* imagePow(const PixelType* imageIn, Vec<size_t> dims, double power, PixelType** imageOut=NULL, int device=0)
+PixelType* cImagePow(const PixelType* imageIn, Vec<size_t> dims, double power, PixelType** imageOut=NULL, int device=0)
 {
 	PixelType* imOut = setUpOutIm(dims, imageOut);
 

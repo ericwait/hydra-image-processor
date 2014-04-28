@@ -47,7 +47,7 @@ __global__ void cudaMeanFilter( CudaImageContainer<PixelType> imageIn, CudaImage
 }
 
 template <class PixelType>
-PixelType* meanFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, PixelType** imageOut=NULL, int device=0)
+PixelType* cMeanFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, PixelType** imageOut=NULL, int device=0)
 {
 	PixelType* imOut = setUpOutIm(dims, imageOut);
 

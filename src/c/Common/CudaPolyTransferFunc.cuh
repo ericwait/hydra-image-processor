@@ -36,7 +36,7 @@ __global__ void cudaPolyTransferFunc( CudaImageContainer<PixelType> imageIn, Cud
 }
 
 template <class PixelType>
-PixelType* applyPolyTransferFunction(const PixelType* imageIn, Vec<size_t> dims, double a, double b, double c,
+PixelType* cApplyPolyTransferFunction(const PixelType* imageIn, Vec<size_t> dims, double a, double b, double c,
 									 PixelType minValue=std::numeric_limits<PixelType>::lowest(),
 									 PixelType maxValue=std::numeric_limits<PixelType>::max(), PixelType** imageOut=NULL, int device=0)
 {

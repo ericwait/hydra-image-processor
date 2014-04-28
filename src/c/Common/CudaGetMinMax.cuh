@@ -58,7 +58,7 @@ __global__ void cudaGetMinMax(PixelType* arrayIn, PixelType* minsOut, PixelType*
 }
 
 template <class PixelType>
-void getMinMax(const PixelType* imageIn, Vec<size_t> dims, PixelType& minVal, PixelType& maxVal, int device=0)
+void cGetMinMax(const PixelType* imageIn, Vec<size_t> dims, PixelType& minVal, PixelType& maxVal, int device=0)
 {
 	size_t n = dims.product();
 	minVal = std::numeric_limits<PixelType>::max();

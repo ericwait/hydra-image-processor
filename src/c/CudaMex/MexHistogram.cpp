@@ -27,7 +27,7 @@
 		if (nrhs>3)
 			mx = MIN(mx,(unsigned char)mxGetScalar(prhs[3]));
 		
-		hist = cHistogram(imageIn,imageDims,arraySize,mn,mx,device);
+		hist = histogram(imageIn,imageDims,arraySize,mn,mx,device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
@@ -43,7 +43,7 @@
 		if (nrhs>3)
 			mx = MIN(mx,(unsigned short)mxGetScalar(prhs[3]));
 
-		hist = cHistogram(imageIn,imageDims,arraySize,mn,mx,device);
+		hist = histogram(imageIn,imageDims,arraySize,mn,mx,device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
@@ -59,7 +59,7 @@
 		if (nrhs>3)
 			mx = MIN(mx,(short)mxGetScalar(prhs[3]));
 
-		hist = cHistogram(imageIn,imageDims,arraySize,mn,mx,device);
+		hist = histogram(imageIn,imageDims,arraySize,mn,mx,device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
@@ -75,7 +75,7 @@
 		if (nrhs>3)
 			mx = MIN(mx,(unsigned int)mxGetScalar(prhs[3]));
 
-		hist = cHistogram(imageIn,imageDims,arraySize,mn,mx,device);
+		hist = histogram(imageIn,imageDims,arraySize,mn,mx,device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
@@ -91,7 +91,7 @@
 		if (nrhs>3)
 			mx = MIN(mx,(int)mxGetScalar(prhs[3]));
 
-		hist = cHistogram(imageIn,imageDims,arraySize,mn,mx,device);
+		hist = histogram(imageIn,imageDims,arraySize,mn,mx,device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
@@ -107,7 +107,7 @@
 		if (nrhs>3)
 			mx = MIN(mx,(float)mxGetScalar(prhs[3]));
 
-		hist = cHistogram(imageIn,imageDims,arraySize,mn,mx,device);
+		hist = histogram(imageIn,imageDims,arraySize,mn,mx,device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
@@ -123,7 +123,7 @@
 		if (nrhs>3)
 			mx = MIN(mx,mxGetScalar(prhs[3]));
 
-		hist = cHistogram(imageIn,imageDims,arraySize,mn,mx,device);
+		hist = histogram(imageIn,imageDims,arraySize,mn,mx,device);
 	}
 	else
 	{

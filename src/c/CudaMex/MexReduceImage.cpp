@@ -39,7 +39,7 @@ void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 		unsigned char* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-		unsigned char* imageOut = cReduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
+		unsigned char* imageOut = reduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
 
 		size_t numDims = mxGetNumberOfDimensions(prhs[0]);
 		dims = new mwSize[numDims];
@@ -59,7 +59,7 @@ void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 		unsigned short* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-		unsigned short* imageOut = cReduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
+		unsigned short* imageOut = reduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
 
 		size_t numDims = mxGetNumberOfDimensions(prhs[0]);
 		dims = new mwSize[numDims];
@@ -79,7 +79,7 @@ void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 		short* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-		short* imageOut = cReduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
+		short* imageOut = reduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
 
 		size_t numDims = mxGetNumberOfDimensions(prhs[0]);
 		dims = new mwSize[numDims];
@@ -99,7 +99,7 @@ void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 		unsigned int* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-		unsigned int* imageOut = cReduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
+		unsigned int* imageOut = reduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
 
 		size_t numDims = mxGetNumberOfDimensions(prhs[0]);
 		dims = new mwSize[numDims];
@@ -119,7 +119,7 @@ void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 		int* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-		int* imageOut = cReduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
+		int* imageOut = reduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
 
 		size_t numDims = mxGetNumberOfDimensions(prhs[0]);
 		dims = new mwSize[numDims];
@@ -139,7 +139,7 @@ void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 		float* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-		float* imageOut = cReduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
+		float* imageOut = reduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
 
 		size_t numDims = mxGetNumberOfDimensions(prhs[0]);
 		dims = new mwSize[numDims];
@@ -159,7 +159,7 @@ void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 		double* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-		double* imageOut = cReduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
+		double* imageOut = reduceImage(imageIn,imageDims,reductionFactors,reducedDims,mthd,NULL,device);
 
 		size_t numDims = mxGetNumberOfDimensions(prhs[0]);
 		dims = new mwSize[numDims];

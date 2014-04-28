@@ -17,35 +17,35 @@ void MexThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxA
 		unsigned char* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		cThresholdFilter(imageIn,imageDims,(unsigned char)thresh,&imageOut,device);
+		thresholdFilter(imageIn,imageDims,(unsigned char)thresh,&imageOut,device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
 		unsigned int* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		cThresholdFilter(imageIn,imageDims,(unsigned int)thresh,&imageOut,device);
+		thresholdFilter(imageIn,imageDims,(unsigned int)thresh,&imageOut,device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
 		int* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		cThresholdFilter(imageIn,imageDims,(int)thresh,&imageOut,device);
+		thresholdFilter(imageIn,imageDims,(int)thresh,&imageOut,device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
 		float* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		cThresholdFilter(imageIn,imageDims,(float)thresh,&imageOut,device);
+		thresholdFilter(imageIn,imageDims,(float)thresh,&imageOut,device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
 		double* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		cThresholdFilter(imageIn,imageDims,thresh,&imageOut,device);
+		thresholdFilter(imageIn,imageDims,thresh,&imageOut,device);
 	}
 	else
 	{
