@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.cuh"
  
- void MexOtsuThesholdValue::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ void MexOtsuThresholdValue::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
 	 int device = 0;
 
@@ -69,7 +69,7 @@
  	plhs[0] = mxCreateDoubleScalar(thresh);
  }
  
- std::string MexOtsuThesholdValue::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ std::string MexOtsuThresholdValue::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
  {
  	if (nrhs<1 || nrhs>2)
  		return "Incorrect number of inputs!";
@@ -84,12 +84,12 @@
  	return "";
  }
  
- std::string MexOtsuThesholdValue::printUsage()
+ std::string MexOtsuThresholdValue::printUsage()
  {
- 	return "threshold = CudaMex('OtsuThesholdValue',imageIn,[device]);";
+ 	return "threshold = CudaMex('OtsuThresholdValue',imageIn,[device]);";
  }
 
- std::string MexOtsuThesholdValue::printHelp()
+ std::string MexOtsuThresholdValue::printHelp()
  {
 	 std::string msg = "\tCalculates the optimal two class threshold using Otsu's method.\n";
 	 msg += "\n";

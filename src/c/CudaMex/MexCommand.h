@@ -290,11 +290,11 @@ public:
 	virtual std::string printHelp();
 };
 
-class MexOtsuThesholdValue : MexCommand
+class MexOtsuThresholdValue : MexCommand
 {
 public:
-	MexOtsuThesholdValue(){}
-	virtual ~MexOtsuThesholdValue(){}
+	MexOtsuThresholdValue(){}
+	virtual ~MexOtsuThresholdValue(){}
 
 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);

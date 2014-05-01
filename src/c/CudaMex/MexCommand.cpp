@@ -24,12 +24,13 @@ void MexCommand::init()
  	REGISTER_COMMAND(MexMinFilterKernel);
  	REGISTER_COMMAND(MexMinFilterNeighborhood);
 	REGISTER_COMMAND(MexMinMax);
+	REGISTER_COMMAND(MexMorphologicalClosure);
  	REGISTER_COMMAND(MexMultiplyImage);
 	REGISTER_COMMAND(MexMultiplyTwoImages);
  	REGISTER_COMMAND(MexNormalizedCovariance);
  	REGISTER_COMMAND(MexNormalizedHistogram);
  	REGISTER_COMMAND(MexOtsuThresholdFilter);
- 	REGISTER_COMMAND(MexOtsuThesholdValue);
+ 	REGISTER_COMMAND(MexOtsuThresholdValue);
  	REGISTER_COMMAND(MexReduceImage);
  	REGISTER_COMMAND(MexSumArray);
  	REGISTER_COMMAND(MexThresholdFilter);
