@@ -152,7 +152,7 @@ PixelType cOtsuThresholdValue(const PixelType* imageIn, Vec<size_t> dims, int de
 
 	delete[] hist;
 
-	double binSize = (maxVal-minVal)/arraySize;
+	double binSize = ((double)maxVal-minVal)/arraySize;
 
 	PixelType thrsh = (PixelType)(minVal + binSize*theshIdx);
 
