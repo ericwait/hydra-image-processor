@@ -84,5 +84,5 @@ int calcOtsuThreshold(const double* normHistogram, int numBins)
 	delete[] mus;
 	delete[] sigma_b_squared;
 
-	return floor(mean);
+	return (int)floor(mean);
 }
