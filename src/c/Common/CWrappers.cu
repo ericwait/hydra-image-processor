@@ -8,6 +8,7 @@
 #include "CudaMeanFilter.cuh"
 #include "CudaMedianFilter.cuh"
 #include "CudaMinFilter.cuh"
+#include "CudaMorphologicalOperations.cuh"
 #include "CudaMultiplyImage.cuh"
 #include "CudaNormalizedCovariance.cuh"
 #include "CudaPolyTransferFunc.cuh"
@@ -445,6 +446,78 @@ float* minFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims,
 double* minFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, double** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return cMinFilter(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+
+unsigned char* morphologicalClosure(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMorphologicalClosure(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+unsigned short* morphologicalClosure(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned short** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMorphologicalClosure(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+short* morphologicalClosure(const short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, short** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMorphologicalClosure(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+unsigned int* morphologicalClosure(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMorphologicalClosure(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+int* morphologicalClosure(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMorphologicalClosure(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+float* morphologicalClosure(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, float** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMorphologicalClosure(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+double* morphologicalClosure(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, double** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMorphologicalClosure(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+
+unsigned char* morphologicalOpening(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMorphologicalOpening(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+unsigned short* morphologicalOpening(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned short** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMorphologicalOpening(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+short* morphologicalOpening(const short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, short** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMorphologicalOpening(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+unsigned int* morphologicalOpening(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMorphologicalOpening(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+int* morphologicalOpening(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, int** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMorphologicalOpening(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+float* morphologicalOpening(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, float** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMorphologicalOpening(imageIn,dims,kernelDims,kernel,imageOut,device);
+}
+
+double* morphologicalOpening(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, double** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMorphologicalOpening(imageIn,dims,kernelDims,kernel,imageOut,device);
 }
 
 

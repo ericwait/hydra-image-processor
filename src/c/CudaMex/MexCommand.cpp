@@ -25,6 +25,7 @@ void MexCommand::init()
  	REGISTER_COMMAND(MexMinFilterNeighborhood);
 	REGISTER_COMMAND(MexMinMax);
 	REGISTER_COMMAND(MexMorphologicalClosure);
+	REGISTER_COMMAND(MexMorphologicalOpening);
  	REGISTER_COMMAND(MexMultiplyImage);
 	REGISTER_COMMAND(MexMultiplyTwoImages);
  	REGISTER_COMMAND(MexNormalizedCovariance);

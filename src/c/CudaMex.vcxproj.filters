@@ -99,9 +99,6 @@
     <ClCompile Include="CudaMex\MexNormalizedHistogram.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexOtsuThesholdValue.cpp">
-      <Filter>Source Files\MexFiles</Filter>
-    </ClCompile>
     <ClCompile Include="CudaMex\MexOtsuThresholdFilter.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
@@ -115,6 +112,15 @@
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
     <ClCompile Include="CudaMex\MexMinMax.cpp">
+      <Filter>Source Files\MexFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="MexMorphologicalClosure.cpp">
+      <Filter>Source Files\MexFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="CudaMex\MexOtsuThresholdValue.cpp">
+      <Filter>Source Files\MexFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="CudaMex\MexMorphologicalOpening.cpp">
       <Filter>Source Files\MexFiles</Filter>
     </ClCompile>
   </ItemGroup>
@@ -226,6 +232,9 @@
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
     <ClInclude Include="Common\CudaNormalizedCovariance.cuh">
+      <Filter>Header Files\CudaFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\CudaMorphologicalOperations.cuh">
       <Filter>Header Files\CudaFiles</Filter>
     </ClInclude>
   </ItemGroup>

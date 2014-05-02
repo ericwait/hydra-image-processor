@@ -229,7 +229,31 @@ virtual std::string printHelp();
  	virtual std::string printUsage();
 virtual std::string printHelp();
  };
+
+ class MexMorphologicalClosure : MexCommand
+ {
+ public:
+	 MexMorphologicalClosure(){}
+	 virtual ~MexMorphologicalClosure(){}
+
+	 virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	 virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	 virtual std::string printUsage();
+	 virtual std::string printHelp();
+ };
  
+ class MexMorphologicalOpening : MexCommand
+ {
+ public:
+	 MexMorphologicalOpening(){}
+	 virtual ~MexMorphologicalOpening(){}
+
+	 virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	 virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	 virtual std::string printUsage();
+	 virtual std::string printHelp();
+ };
+
  class MexMultiplyImage : MexCommand
  {
  public:

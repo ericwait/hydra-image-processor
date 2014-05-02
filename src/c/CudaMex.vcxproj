@@ -41,15 +41,17 @@
     <ClCompile Include="CudaMex\MexMinFilterKernal.cpp" />
     <ClCompile Include="CudaMex\MexMinFilterNeighborhood.cpp" />
     <ClCompile Include="CudaMex\MexMinMax.cpp" />
+    <ClCompile Include="CudaMex\MexMorphologicalOpening.cpp" />
     <ClCompile Include="CudaMex\MexMultiplyImage.cpp" />
     <ClCompile Include="CudaMex\MexMultiplyImageWith.cpp" />
     <ClCompile Include="CudaMex\MexNormalizedCovariance.cpp" />
     <ClCompile Include="CudaMex\MexNormalizedHistogram.cpp" />
-    <ClCompile Include="CudaMex\MexOtsuThesholdValue.cpp" />
+    <ClCompile Include="CudaMex\MexOtsuThresholdValue.cpp" />
     <ClCompile Include="CudaMex\MexOtsuThresholdFilter.cpp" />
     <ClCompile Include="CudaMex\MexReduceImage.cpp" />
     <ClCompile Include="CudaMex\MexSumArray.cpp" />
     <ClCompile Include="CudaMex\MexThresholdFilter.cpp" />
+    <ClCompile Include="MexMorphologicalClosure.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="Common\CudaUtilities.cu">
@@ -66,6 +68,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Common\CudaContrastEnhancement.cuh" />
+    <ClInclude Include="Common\CudaMorphologicalOperations.cuh" />
     <ClInclude Include="Common\CudaNormalizedCovariance.cuh" />
     <ClInclude Include="Common\Defines.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>

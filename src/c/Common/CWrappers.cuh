@@ -99,6 +99,22 @@ int* minFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, flo
 float* minFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, float** imageOut=NULL, int device=0);
 double* minFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, double** imageOut=NULL, int device=0);
 
+unsigned char* morphologicalClosure(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, unsigned char** imageOut=NULL, int device=0);
+unsigned short* morphologicalClosure(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, unsigned short** imageOut=NULL, int device=0);
+short* morphologicalClosure(const short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, short** imageOut=NULL, int device=0);
+unsigned int* morphologicalClosure(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, unsigned int** imageOut=NULL, int device=0);
+int* morphologicalClosure(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, int** imageOut=NULL, int device=0);
+float* morphologicalClosure(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, float** imageOut=NULL, int device=0);
+double* morphologicalClosure(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, double** imageOut=NULL, int device=0);
+
+unsigned char* morphologicalOpening(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, unsigned char** imageOut=NULL, int device=0);
+unsigned short* morphologicalOpening(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, unsigned short** imageOut=NULL, int device=0);
+short* morphologicalOpening(const short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, short** imageOut=NULL, int device=0);
+unsigned int* morphologicalOpening(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, unsigned int** imageOut=NULL, int device=0);
+int* morphologicalOpening(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, int** imageOut=NULL, int device=0);
+float* morphologicalOpening(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, float** imageOut=NULL, int device=0);
+double* morphologicalOpening(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, double** imageOut=NULL, int device=0);
+
 unsigned char* multiplyImage(const unsigned char* imageIn, Vec<size_t> dims, double multiplier, unsigned char** imageOut=NULL, int device=0);
 unsigned short* multiplyImage(const unsigned short* imageIn, Vec<size_t> dims, double multiplier, unsigned short** imageOut=NULL, int device=0);
 short* multiplyImage(const short* imageIn, Vec<size_t> dims, double multiplier, short** imageOut=NULL, int device=0);
