@@ -121,6 +121,12 @@ public:
 		return x*y*z;
 	}
 
+	// Returns the sum of x+y+z
+	DEVICE_PREFIX T sum() const
+	{
+		return x+y+z;
+	}
+
 	// Returns the max value of x,y,z
 	DEVICE_PREFIX T maxValue() const
 	{
