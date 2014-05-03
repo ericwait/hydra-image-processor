@@ -121,3 +121,15 @@ struct Lock
 Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernel, int& iterations);
 
 Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernel, Vec<int>& iterations);
+
+template <class PixelType>
+PixelType* setUpOutIm(Vec<size_t> dims, PixelType** imageOut)
+{
+	PixelType* imOut;
+	if (imageOut==NULL)
+		imOut = new PixelType[dims.product()];
+	else
+		imOut = *imageOut;
+
+	return imOut;
+}

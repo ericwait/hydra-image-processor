@@ -128,6 +128,7 @@ void MexNormalizedHistogram::execute( int nlhs, mxArray* plhs[], int nrhs, const
 	else
 	{
 		mexErrMsgTxt("Image type not supported!");
+		return;
 	}
 
 	const mwSize DIM = arraySize;

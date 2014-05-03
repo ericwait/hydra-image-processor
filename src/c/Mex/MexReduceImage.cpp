@@ -177,6 +177,7 @@ void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	else
 	{
 		mexErrMsgTxt("Image type not supported!");
+		return;
 	}
 
 	delete[] dims;

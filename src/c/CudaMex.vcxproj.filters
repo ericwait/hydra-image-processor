@@ -13,229 +13,110 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\MexFiles">
-      <UniqueIdentifier>{0ad41ffd-0299-4ef8-b792-46648595117e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\CudaFiles">
-      <UniqueIdentifier>{279c075e-2087-4b73-ad9c-b3682c96bd16}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\MexFiles">
-      <UniqueIdentifier>{c10b55ac-ef71-4755-b26a-6ec371f9c1db}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\HelperFiles">
-      <UniqueIdentifier>{a1019f7e-4108-494e-a467-8da610158a60}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\CudaFiles">
-      <UniqueIdentifier>{8ac1cf5b-4b8f-430c-b524-fe5e2dc948ba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\HelperFiles">
-      <UniqueIdentifier>{905415ab-5f50-407d-b8f1-b9eb9914f4e5}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Common\CHelpers.cpp">
-      <Filter>Source Files\HelperFiles</Filter>
+    <ClInclude Include="Mex\MexCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\Vec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\VecFuncs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Mex\CudaMex.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\CudaMex.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexAddConstant.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexAddConstant.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexAddImageWith.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexAddImageWith.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexApplyPolyTransformation.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexApplyPolyTransformation.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexCommand.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexCommand.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexContrastEnhancement.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexContrastEnhancement.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexGaussianFilter.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexGaussianFilter.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexHistogram.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexHistogram.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexImagePow.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexImagePow.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexMaxFilterEllipsoid.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexMaxFilterEllipsoid.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexMaxFilterKernel.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexMaxFilterKernel.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexMaxFilterNeighborhood.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexMaxFilterNeighborhood.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexMeanFilter.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexMeanFilter.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexMedianFilter.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexMedianFilter.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexMinFilterEllipsoid.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexMinFilterEllipsoid.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexMinFilterKernal.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexMinFilterKernal.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexMinFilterNeighborhood.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexMinFilterNeighborhood.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexMinMax.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexMultiplyImage.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexMorphologicalClosure.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexMultiplyImageWith.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexMorphologicalOpening.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexNormalizedCovariance.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexMultiplyImage.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexNormalizedHistogram.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexMultiplyImageWith.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexOtsuThresholdFilter.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexNormalizedCovariance.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexReduceImage.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexNormalizedHistogram.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexSumArray.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexOtsuThresholdFilter.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexThresholdFilter.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexOtsuThresholdValue.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexMinMax.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexReduceImage.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MexMorphologicalClosure.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexSumArray.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CudaMex\MexOtsuThresholdValue.cpp">
-      <Filter>Source Files\MexFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="CudaMex\MexMorphologicalOpening.cpp">
-      <Filter>Source Files\MexFiles</Filter>
+    <ClCompile Include="Mex\MexThresholdFilter.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Common\CudaUtilities.cu">
-      <Filter>Source Files\HelperFiles</Filter>
-    </CudaCompile>
-    <CudaCompile Include="Common\CWrappers.cu">
-      <Filter>Source Files\CudaFiles</Filter>
-    </CudaCompile>
-    <CudaCompile Include="Common\ImageChunk.cu">
-      <Filter>Source Files\HelperFiles</Filter>
-    </CudaCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="CudaMex\CudaMex.def">
-      <Filter>Resource Files</Filter>
+    <None Include="Mex\CudaMex.def">
+      <Filter>Source Files</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CudaMex\MexCommand.h">
-      <Filter>Header Files\MexFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CHelpers.h">
-      <Filter>Header Files\HelperFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\Defines.h">
-      <Filter>Header Files\HelperFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\Vec.h">
-      <Filter>Header Files\HelperFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\VecFuncs.h">
-      <Filter>Header Files\HelperFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\ImageChunk.cuh">
-      <Filter>Header Files\HelperFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaDeviceImages.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaImageContainer.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaImageContainerClean.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaAdd.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaUtilities.cuh">
-      <Filter>Header Files\HelperFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaGaussianFilter.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaGetMinMax.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaGetROI.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaHistogram.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaImageReduction.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaIntensityProjection.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaMask.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaMaxFilter.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaMeanFilter.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaMedianFilter.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaMinFilter.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaMultAddFilter.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaMultiplyImage.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaPolyTransferFunc.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaPow.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaSum.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaThreshold.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CWrappers.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaContrastEnhancement.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaNormalizedCovariance.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="Common\CudaMorphologicalOperations.cuh">
-      <Filter>Header Files\CudaFiles</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
