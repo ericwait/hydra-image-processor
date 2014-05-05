@@ -34,19 +34,19 @@ for i=1:7
     typeTime = tic;
     switch (i)
         case 1
-            typ = 'uint8';
+            typ = 'uint8'
         case 2
-            typ = 'uint16';
+            typ = 'uint16'
         case 3
-            typ = 'int16';
+            typ = 'int16'
         case 4
-            typ = 'uint32';
+            typ = 'uint32'
         case 5
-            typ = 'int32';
+            typ = 'int32'
         case 6
-            typ = 'single';
+            typ = 'single'
         case 7
-            typ = 'double';
+            typ = 'double'
     end
     
     image1 = tiffReader(typ,4,[],[],metadataFile);
@@ -233,7 +233,7 @@ for i=1:7
         end
         
         tic
-        kernelName = 'OtsuThesholdValue';
+        kernelName = 'OtsuThresholdValue';
         threshold = CudaMex(sprintf('%s',kernelName),image1,device);
         fprintf('%s took %f sec and return a threshold of %f\n',kernelName,toc,double(threshold));
         clear imageOut;
@@ -262,7 +262,7 @@ for i=1:7
         tic
         kernelName = 'ReduceImage';
         imageOut = CudaMex(sprintf('%s',kernelName),image1,[reductionFactorX,reductionFactorY,reductionFactorZ],'median',device);
-        fprintf('%s took %f sec\n',[kernelName ' median',toc);
+        fprintf('%s took %f sec\n',[kernelName ' median'],toc);
         if (showOut)
             showIm(imageOut,[kernelName ' Median']);
         end
