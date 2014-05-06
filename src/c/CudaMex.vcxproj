@@ -41,12 +41,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\$(Configuration)_$(PlatformName)\</IntDir>
-    <TargetExt>.mexw64</TargetExt>
+    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\</OutDir>
     <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\$(Configuration)_$(PlatformName)\</IntDir>
-    <TargetExt>.mexw64</TargetExt>
+    <TargetExt>.dll</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -64,8 +64,8 @@
     </Link>
     <PostBuildEvent>
       <Command>mkdir ..\..\bin
-echo copy $(OutDir)\CudaMex.mexw64 ..\..\src\MATLAB\.
-copy $(OutDir)\CudaMex.mexw64 ..\..\src\MATLAB\.</Command>
+echo copy $(OutDir)\CudaMex.dll ..\..\src\MATLAB\CudaMex_d.mexw64
+copy $(OutDir)\CudaMex.dll ..\..\src\MATLAB\CudaMex_d.mexw64</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -88,10 +88,10 @@ copy $(OutDir)\CudaMex.mexw64 ..\..\src\MATLAB\.</Command>
     </Link>
     <PostBuildEvent>
       <Command>mkdir ..\..\bin
-echo copy $(OutDir)\CudaMex.mexw64 ..\..\bin\.
-copy $(OutDir)\CudaMex.mexw64 ..\..\bin\.
-echo copy $(OutDir)\CudaMex.mexw64 ..\..\src\MATLAB\.
-copy $(OutDir)\CudaMex.mexw64 ..\..\src\MATLAB\.</Command>
+echo copy $(OutDir)\CudaMex.dll ..\..\bin\CudaMex.mexw64
+copy $(OutDir)\CudaMex.dll ..\..\bin\CudaMex.mexw64
+echo copy $(OutDir)\CudaMex.dll ..\..\src\MATLAB\CudaMex.mexw64
+copy $(OutDir)\CudaMex.dll ..\..\src\MATLAB\CudaMex.mexw64</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
