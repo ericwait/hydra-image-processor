@@ -17,6 +17,11 @@
 #include "CudaSum.cuh"
 #include "CudaThreshold.cuh"
 
+void clearDevice()
+{
+	cudaDeviceReset();
+}
+
  unsigned char* addConstant(const unsigned char* imageIn, Vec<size_t> dims, double additive, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return cAddConstant(imageIn,dims,additive,imageOut,device);

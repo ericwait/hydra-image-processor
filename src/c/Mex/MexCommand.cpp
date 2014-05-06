@@ -1,5 +1,6 @@
 #include "MexCommand.h"
 #include "Vec.h"
+#include "CWrappers.cuh"
 
 std::map<std::string,MexCommand*> MexCommand::commandList;
 
@@ -67,6 +68,7 @@ void MexCommand::init()
  		delete it->second;
  
  	commandList.clear();
+	clearDevice();
  }
  
  void MexCommand::addCommand(const std::string commandText, MexCommand* commandObject)

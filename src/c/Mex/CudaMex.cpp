@@ -1,7 +1,8 @@
 #include "mex.h"
 #include <string>
- #include "Process.h"
- #include "MexCommand.h"
+#include "Process.h"
+#include "MexCommand.h"
+#include "CWrappers.cuh"
  
  extern "C" 
  {
@@ -59,14 +60,17 @@
  	}
  	catch (std::string err)
  	{
+		clearDevice();
  		mexErrMsgTxt(err.c_str());
  	}
 	catch(std::logic_error err)
 	{
+		clearDevice();
 		mexErrMsgTxt(err.what());
 	}
 	catch(std::runtime_error err)
 	{
+		clearDevice();
 		mexErrMsgTxt(err.what());
 	}
  }

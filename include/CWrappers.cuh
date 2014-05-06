@@ -12,6 +12,8 @@
 #define IMAGE_PROCESSOR_API
 #endif // IMAGE_PROCESSOR_DLL
 
+IMAGE_PROCESSOR_API void clearDevice();
+
 IMAGE_PROCESSOR_API unsigned char* addConstant(const unsigned char* imageIn, Vec<size_t> dims, double additive, unsigned char** imageOut=NULL, int device=0);
 IMAGE_PROCESSOR_API unsigned short* addConstant(const unsigned short* imageIn, Vec<size_t> dims, double additive, unsigned short** imageOut=NULL, int device=0);
 IMAGE_PROCESSOR_API short* addConstant(const short* imageIn, Vec<size_t> dims, double additive, short** imageOut=NULL, int device=0);
