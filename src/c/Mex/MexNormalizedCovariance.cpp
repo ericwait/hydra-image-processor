@@ -116,9 +116,6 @@ std::string MexNormalizedCovariance::check( int nlhs, mxArray* plhs[], int nrhs,
 	if (numDims1!=numDims2)
 		return "Images must have the same dimensions!";
 
-	if (!mxIsDouble(prhs[2]))
-		return "Factor needs to be a double!";
-
 	return "";
 }
 
