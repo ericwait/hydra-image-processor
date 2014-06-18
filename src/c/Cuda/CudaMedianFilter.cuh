@@ -124,12 +124,11 @@ void runMedianFilter(cudaDeviceProp& props, std::vector<ImageChunk>::iterator cu
 	if (newThreadVolume<threadVolume)
 	{
 		double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
-		threads.x = (unsigned int)(threads.x / alpha);
-		threads.y = (unsigned int)(threads.y / alpha);
-		threads.z = (unsigned int)(threads.z / alpha);
-		threads.x = (threads.x>0) ? (threads.x) : (1);
-		threads.y = (threads.y>0) ? (threads.y) : (1);
-		threads.z = (threads.z>0) ? (threads.z) : (1);
+		Vec<double> newThreads(threads/alpha);
+		if (newThreads<Vec<double>(1.0,1.0,1.0))
+			throw std::runtime_error("Median Filter Neighborhood is too big for shared memory!");
+
+		threads = newThreads;
 
 		blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x / threads.x);
 		blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y / threads.y);
