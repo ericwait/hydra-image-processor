@@ -173,6 +173,7 @@ copy Cuda\Defines.h ..\..\include\.
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <CodeGeneration>compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
+      <MaxRegCount>63</MaxRegCount>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -231,6 +232,7 @@ copy Cuda\Defines.h ..\..\include\.
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <CodeGeneration>compute_30,sm_30;compute_35,sm_35;</CodeGeneration>
+      <MaxRegCount>63</MaxRegCount>
     </CudaCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
