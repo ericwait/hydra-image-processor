@@ -15,8 +15,6 @@
 #ifndef CUDA_CONST_KERNEL
 #define CUDA_CONST_KERNEL
 __constant__ float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
-#else
-//__constant__ extern float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
 #endif
 
 template <class PixelType>
