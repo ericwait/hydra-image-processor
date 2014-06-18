@@ -11,20 +11,12 @@ void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &
 				threads.x = (unsigned int)dims.x;
 				threads.y = 1;
 				threads.z = 1;
-
-				blocks.x = 1;
-				blocks.y = 1;
-				blocks.z = 1;
 			} 
 			else
 			{
 				threads.x = prop.maxThreadsPerBlock;
 				threads.y = 1;
 				threads.z = 1;
-
-				blocks.x = (unsigned int)ceil((float)dims.x/prop.maxThreadsPerBlock);
-				blocks.y = 1;
-				blocks.z = 1;
 			}
 		}
 		else
@@ -34,10 +26,6 @@ void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &
 				threads.x = (unsigned int)dims.x;
 				threads.y = (unsigned int)dims.y;
 				threads.z = 1;
-
-				blocks.x = 1;
-				blocks.y = 1;
-				blocks.z = 1;
 			} 
 			else
 			{
@@ -46,10 +34,6 @@ void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &
 				threads.x = dim;
 				threads.y = dim;
 				threads.z = 1;
-
-				blocks.x = (unsigned int)ceil((float)dims.x/dim);
-				blocks.y = (unsigned int)ceil((float)dims.y/dim);
-				blocks.z = 1;
 			}
 		}
 	}
@@ -60,25 +44,22 @@ void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &
 			threads.x = (unsigned int)dims.x;
 			threads.y = (unsigned int)dims.y;
 			threads.z = (unsigned int)dims.z;
-
-			blocks.x = 1;
-			blocks.y = 1;
-			blocks.z = 1;
 		}
 		else
 		{
-			int dim = (unsigned int)pow((float)prop.maxThreadsPerBlock,1/3.0f);
-			float extra = (float)(prop.maxThreadsPerBlock-dim*dim*dim)/(dim*dim);
+			unsigned long index;
+			_BitScanReverse(&index,prop.maxThreadsPerBlock);
 
-			threads.x = dim + (unsigned int)extra;
-			threads.y = dim;
-			threads.z = dim;
-
-			blocks.x = (unsigned int)ceil((float)dims.x/threads.x);
-			blocks.y = (unsigned int)ceil((float)dims.y/threads.y);
-			blocks.z = (unsigned int)ceil((float)dims.z/threads.z);
+			int dim = index/3;
+			threads.x = 1 << MAX(dim,(int)index - 2*dim);
+			threads.y = 1 << dim;
+			threads.z = 1 << MIN(dim,(int)index - 2*dim);
 		}
 	}
+
+	blocks.x = (unsigned int)ceil((float)dims.x/threads.x);
+	blocks.y = (unsigned int)ceil((float)dims.y/threads.y);
+	blocks.z = (unsigned int)ceil((float)dims.z/threads.z);
 }
 
 Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernelOut, Vec<int>& iterations)
