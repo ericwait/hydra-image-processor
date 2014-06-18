@@ -42,6 +42,7 @@
     <ClInclude Include="Cuda\CudaNormalizedCovariance.cuh" />
     <ClInclude Include="Cuda\CudaPolyTransferFunc.cuh" />
     <ClInclude Include="Cuda\CudaPow.cuh" />
+    <ClInclude Include="Cuda\CudaSegment.cuh" />
     <ClInclude Include="Cuda\CudaSum.cuh" />
     <ClInclude Include="Cuda\CudaThreshold.cuh" />
     <ClInclude Include="Cuda\CudaUtilities.cuh" />

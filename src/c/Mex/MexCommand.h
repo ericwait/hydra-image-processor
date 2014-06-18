@@ -335,8 +335,21 @@ public:
 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string printUsage();
-virtual std::string printHelp();
+	virtual std::string printHelp();
 };
+
+class MexSegment : MexCommand
+{
+public:
+	MexSegment(){}
+	virtual ~MexSegment(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+	virtual std::string printHelp();
+};
+
 
  class MexReduceImage : MexCommand
  {

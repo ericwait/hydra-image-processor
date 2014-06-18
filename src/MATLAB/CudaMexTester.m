@@ -294,6 +294,15 @@ for i=1:7
         fprintf('%s took %f sec and returned a dif of %f\n',kernelName,sumTime,dif);
         clear imageOut;
         
+        tic
+        kernelName = 'Segment';
+        imageOut = CudaMex(sprintf('%s',kernalName),image1,1.0,[5,5,5],device);
+        fprintf('%s took %f sec\n',kernelName,toc);
+        if (showOut)
+            showIm(imageOut,[kernelName ' Max']);
+        end
+        clear imageOut;
+        
         threshold = additive;
         tic
         kernelName = 'ThresholdFilter';

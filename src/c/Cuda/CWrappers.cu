@@ -15,6 +15,7 @@
 #include "CudaPow.cuh"
 #include "CudaImageReduction.cuh"
 #include "CudaSum.cuh"
+#include "CudaSegment.cuh"
 #include "CudaThreshold.cuh"
 
 void clearDevice()
@@ -814,6 +815,42 @@ void clearDevice()
 }
 
 
+unsigned char* segment(const unsigned char* imageIn, Vec<size_t> dims, double alpha, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+ {
+	 return cSegment(imageIn,dims,alpha,kernelDims,kernel,imageOut,device);
+ }
+
+unsigned short* segment(const unsigned short* imageIn, Vec<size_t> dims, double alpha, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned short** imageOut/*=NULL*/, int device/*=0*/)
+ {
+	 return cSegment(imageIn,dims,alpha,kernelDims,kernel,imageOut,device);
+ }
+
+short* segment(const short* imageIn, Vec<size_t> dims, double alpha, Vec<size_t> kernelDims, float* kernel/*=NULL*/, short** imageOut/*=NULL*/, int device/*=0*/)
+ {
+	 return cSegment(imageIn,dims,alpha,kernelDims,kernel,imageOut,device);
+ }
+
+unsigned int* segment(const unsigned int* imageIn, Vec<size_t> dims, double alpha, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+ {
+	 return cSegment(imageIn,dims,alpha,kernelDims,kernel,imageOut,device);
+ }
+
+int* segment(const int* imageIn, Vec<size_t> dims, double alpha, Vec<size_t> kernelDims, float* kernel/*=NULL*/, int** imageOut/*=NULL*/, int device/*=0*/)
+ {
+	 return cSegment(imageIn,dims,alpha,kernelDims,kernel,imageOut,device);
+ }
+
+float* segment(const float* imageIn, Vec<size_t> dims, double alpha, Vec<size_t> kernelDims, float* kernel/*=NULL*/, float** imageOut/*=NULL*/, int device/*=0*/)
+ {
+	 return cSegment(imageIn,dims,alpha,kernelDims,kernel,imageOut,device);
+ }
+
+double* segment(const double* imageIn, Vec<size_t> dims, double alpha, Vec<size_t> kernelDims, float* kernel/*=NULL*/, double** imageOut/*=NULL*/, int device/*=0*/)
+ {
+	 return cSegment(imageIn,dims,alpha,kernelDims,kernel,imageOut,device);
+ }
+
+
  unsigned char* thresholdFilter(const unsigned char* imageIn, Vec<size_t> dims, unsigned char thresh, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return cThresholdFilter(imageIn,dims,thresh,imageOut,device);
@@ -848,3 +885,4 @@ void clearDevice()
 {
 	return cThresholdFilter(imageIn,dims,thresh,imageOut,device);
 }
+
