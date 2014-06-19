@@ -12,8 +12,9 @@ void MexContrastEnhancement::execute( int nlhs, mxArray* plhs[], int nrhs, const
 	double* sigmasD = (double*)mxGetData(prhs[1]);
 	double* neighborhoodD = (double*)mxGetData(prhs[2]);
 
+
 	Vec<float> sigmas((float)sigmasD[0],(float)sigmasD[1],(float)sigmasD[2]);
-	Vec<size_t> neighborhood((int)neighborhoodD[0],(int)neighborhoodD[1],(int)neighborhoodD[2]);
+	Vec<size_t> neighborhood((size_t)neighborhoodD[0],(size_t)neighborhoodD[1],(size_t)neighborhoodD[2]);
 	
 	Vec<size_t> imageDims;
 	if (mxIsUint8(prhs[0]))

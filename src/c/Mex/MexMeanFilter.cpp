@@ -10,7 +10,7 @@
 		 device = mat_to_c((int)mxGetScalar(prhs[2]));
  
  	double* neighborhoodD = (double*)mxGetData(prhs[1]);
- 	Vec<size_t> neighborhood((int)neighborhoodD[1],(int)neighborhoodD[0],(int)neighborhoodD[2]);
+ 	Vec<size_t> neighborhood((size_t)neighborhoodD[1],(size_t)neighborhoodD[0],(size_t)neighborhoodD[2]);
  
 	Vec<size_t> imageDims;
 	if (mxIsUint8(prhs[0]))

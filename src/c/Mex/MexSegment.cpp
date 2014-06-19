@@ -12,7 +12,7 @@ void MexSegment::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* pr
 
 	double alpha = mxGetScalar(prhs[1]);
 	double* radiusMex = (double*)mxGetData(prhs[2]);
-	Vec<size_t> radius((int)radiusMex[0],(int)radiusMex[1],(int)radiusMex[2]);
+	Vec<size_t> radius((size_t)radiusMex[0],(size_t)radiusMex[1],(size_t)radiusMex[2]);
 
 	Vec<size_t> kernDims;
 	float* kern = createEllipsoidKernel(radius,kernDims);
