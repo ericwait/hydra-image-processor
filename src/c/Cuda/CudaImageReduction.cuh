@@ -176,7 +176,21 @@ PixelType* cReduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> 
 	size_t memAvail, total;
 	cudaMemGetInfo(&memAvail,&total);
 
-	std::vector<ImageChunk> orgChunks = calculateBuffers<PixelType>(dims,1,(size_t)(memAvail*MAX_MEM_AVAIL*(1-ratio)),props,reductions);
+	std::vector<ImageChunk> orgChunks;
+	int numThreads = 1024;
+	if (method==REDUC_MEDIAN)
+	{
+		size_t sizeOfsharedMem = reducedDims.product()*sizeof(PixelType);
+		numThreads = (int)floor((double)props.sharedMemPerBlock/sizeOfsharedMem);
+		if (numThreads<1)
+			throw std::runtime_error("Median neighborhood is too large to fit in shared memory on the GPU!");
+		orgChunks = calculateBuffers<PixelType>(dims,1,(size_t)(memAvail*MAX_MEM_AVAIL*(1-ratio)),props,reductions,numThreads);
+	}
+	else
+	{
+		std::vector<ImageChunk> orgChunks = calculateBuffers<PixelType>(dims,1,(size_t)(memAvail*MAX_MEM_AVAIL*(1-ratio)),props,reductions);
+	}
+
 	std::vector<ImageChunk> reducedChunks = orgChunks;
 
 	for (std::vector<ImageChunk>::iterator it=reducedChunks.begin(); it!=reducedChunks.end(); ++it)
@@ -188,7 +202,10 @@ PixelType* cReduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> 
 		it->imageROIend = it->imageROIend/reductions;
 		it->chunkROIend = it->imageEnd-it->imageStart;
 
-		calcBlockThread(it->getFullChunkSize(),props,it->blocks,it->threads);
+		if (method==REDUC_MEDIAN)
+			calcBlockThread(it->getFullChunkSize(),props,it->blocks,it->threads,numThreads);
+		else
+			calcBlockThread(it->getFullChunkSize(),props,it->blocks,it->threads);
 	}
 
 	Vec<size_t> maxDeviceDims;
@@ -202,56 +219,28 @@ PixelType* cReduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> 
 	std::vector<ImageChunk>::iterator orgIt = orgChunks.begin();
 	std::vector<ImageChunk>::iterator reducedIt = reducedChunks.begin();
 
+	size_t sharedMemorysize = 0;
+
 	while (orgIt!=orgChunks.end() && reducedIt!=reducedChunks.end())
 	{
 		orgIt->sendROI(imageIn,dims,deviceImageIn);
 		deviceImageOut->setDims(reducedIt->getFullChunkSize());
 
-		dim3 blocks(reducedIt->blocks);
-		dim3 threads(reducedIt->threads);
-		double threadVolume = threads.x * threads.y * threads.z;
-		double newThreadVolume = (double)props.sharedMemPerBlock/(sizeof(PixelType)*reductions.product());
-
-		if (newThreadVolume<threadVolume)
-		{
-			double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
-			threads.x = (unsigned int)(threads.x / alpha);
-			threads.y = (unsigned int)(threads.y / alpha);
-			threads.z = (unsigned int)(threads.z / alpha);
-			threads.x = (threads.x>0) ? (threads.x) : (1);
-			threads.y = (threads.y>0) ? (threads.y) : (1);
-			threads.z = (threads.z>0) ? (threads.z) : (1);
-
-			if (threads.x*threads.y*threads.z>(unsigned int)props.maxThreadsPerBlock)
-			{
-				unsigned int maxThreads = (unsigned int)pow(props.maxThreadsPerBlock,1.0/3.0);
-				threads.x = maxThreads;
-				threads.y = maxThreads;
-				threads.z = maxThreads;
-			}
-
-
-			blocks.x = (unsigned int)ceil((double)reducedIt->getFullChunkSize().x / threads.x);
-			blocks.y = (unsigned int)ceil((double)reducedIt->getFullChunkSize().y / threads.y);
-			blocks.z = (unsigned int)ceil((double)reducedIt->getFullChunkSize().z / threads.z);
-		}
-		size_t sharedMemorysize = 0;
-
 		switch (method)
 		{
 		case REDUC_MEAN:
-			cudaMeanImageReduction<<<blocks,threads>>>(*deviceImageIn, *deviceImageOut, reductions);
+			cudaMeanImageReduction<<<reducedIt->blocks,reducedIt->threads>>>(*deviceImageIn, *deviceImageOut, reductions);
 			break;
 		case REDUC_MEDIAN:
-			sharedMemorysize = reductions.product()*sizeof(PixelType) * threads.x * threads.y * threads.z;
-			cudaMedianImageReduction<<<blocks,threads,sharedMemorysize>>>(*deviceImageIn, *deviceImageOut, reductions);
+			sharedMemorysize = reducedDims.product()*sizeof(PixelType) * reducedIt->threads.x * reducedIt->threads.y * reducedIt->threads.z;
+			cudaMedianImageReduction<<<reducedIt->blocks,reducedIt->threads,sharedMemorysize>>>(*deviceImageIn, *deviceImageOut, reductions);
 			break;
 		case REDUC_MIN:
-			cudaMinImageReduction<<<blocks,threads>>>(*deviceImageIn, *deviceImageOut, reductions,
+			cudaMinImageReduction<<<reducedIt->blocks,reducedIt->threads>>>(*deviceImageIn, *deviceImageOut, reductions,
 				std::numeric_limits<PixelType>::max());
 			break;
 		case REDUC_MAX:
-			cudaMaxImageReduction<<<blocks,threads>>>(*deviceImageIn, *deviceImageOut, reductions,
+			cudaMaxImageReduction<<<reducedIt->blocks,reducedIt->threads>>>(*deviceImageIn, *deviceImageOut, reductions,
 				std::numeric_limits<PixelType>::lowest());
 			break;
 		default:

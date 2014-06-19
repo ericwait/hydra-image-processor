@@ -124,8 +124,9 @@ PixelType* cMedianFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t>
 
 	size_t memAvail, total;
 	cudaMemGetInfo(&memAvail,&total);
+
 	size_t sizeOfsharedMem = neighborhood.product()*sizeof(PixelType);
-	int numThreads = floor((double)props.sharedMemPerBlock/sizeOfsharedMem);
+	int numThreads = (int)floor((double)props.sharedMemPerBlock/sizeOfsharedMem);
 	if (numThreads<1)
 		throw std::runtime_error("Median neighborhood is too large to fit in shared memory on the GPU!");
 

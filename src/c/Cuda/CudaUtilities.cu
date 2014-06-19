@@ -16,7 +16,7 @@ void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &
 			} 
 			else
 			{
-				threads.x = mxThreads;
+				threads.x = (unsigned int)mxThreads;
 				threads.y = 1;
 				threads.z = 1;
 			}
