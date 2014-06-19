@@ -144,11 +144,11 @@ public:
 void setMaxDeviceDims(std::vector<ImageChunk> &chunks, Vec<size_t> &maxDeviceDims);
 
 std::vector<ImageChunk> calculateChunking(Vec<size_t> orgImageDims, Vec<size_t> deviceDims, const cudaDeviceProp& prop,
-										  Vec<size_t> kernalDims=Vec<size_t>(0,0,0));
+										  Vec<size_t> kernalDims=Vec<size_t>(0,0,0), size_t maxThreads=std::numeric_limits<size_t>::max());
 
 template <class PixelType>
 std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNeeded, size_t memAvailable, const cudaDeviceProp& prop,
-										 Vec<size_t> kernelDims=Vec<size_t>(0,0,0))
+										 Vec<size_t> kernelDims=Vec<size_t>(0,0,0), size_t maxThreads=std::numeric_limits<size_t>::max())
 {
 	size_t numVoxels = (size_t)(memAvailable / (sizeof(PixelType)*numBuffersNeeded));
 
@@ -253,5 +253,5 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 		}
 	}
 
-	return calculateChunking(imageDims, deviceDims, prop, kernelDims);
+	return calculateChunking(imageDims, deviceDims, prop, kernelDims,maxThreads);
 }

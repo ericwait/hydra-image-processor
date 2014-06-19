@@ -85,6 +85,7 @@ PixelType* setUpOutIm(Vec<size_t> dims, PixelType** imageOut)
 
 size_t memoryAvailable(int device, size_t* totalOut=NULL);
 bool checkFreeMemory(size_t needed, int device, bool throws=false);
-void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads);
+void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads,
+					 size_t maxThreads=std::numeric_limits<size_t>::max());
 Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernel, int& iterations);
 Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernel, Vec<int>& iterations);

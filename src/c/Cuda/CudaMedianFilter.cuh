@@ -113,36 +113,6 @@ __global__ void cudaMedianFilter( CudaImageContainer<PixelType> imageIn, CudaIma
 }
 
 template <class PixelType>
-void runMedianFilter(cudaDeviceProp& props, std::vector<ImageChunk>::iterator curChunk, Vec<size_t> &neighborhood, 
-					 CudaDeviceImages<PixelType>& deviceImages)
-{
-	dim3 blocks(curChunk->blocks);
-	dim3 threads(curChunk->threads);
-	double threadVolume = threads.x * threads.y * threads.z;
-	double newThreadVolume = (double)props.sharedMemPerBlock/(sizeof(PixelType)*neighborhood.product());
-
-	if (newThreadVolume<threadVolume)
-	{
-		double alpha = pow(threadVolume/newThreadVolume,1.0/3.0);
-		Vec<double> newThreads(threads/alpha);
-		if (newThreads<Vec<double>(1.0,1.0,1.0))
-			throw std::runtime_error("Median Filter Neighborhood is too big for shared memory!");
-
-		threads = newThreads;
-
-		blocks.x = (unsigned int)ceil((double)curChunk->getFullChunkSize().x / threads.x);
-		blocks.y = (unsigned int)ceil((double)curChunk->getFullChunkSize().y / threads.y);
-		blocks.z = (unsigned int)ceil((double)curChunk->getFullChunkSize().z / threads.z);
-	}
-
-	size_t sharedMemorysize = neighborhood.product()*sizeof(PixelType) * threads.x * threads.y * threads.z;
-
-	cudaMedianFilter<<<blocks,threads,sharedMemorysize>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),neighborhood);
-	DEBUG_KERNEL_CHECK();
-	deviceImages.incrementBuffer();
-}
-
-template <class PixelType>
 PixelType* cMedianFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, PixelType** imageOut=NULL, int device=0)
 {
 	PixelType* imOut = setUpOutIm(dims, imageOut);
@@ -154,8 +124,12 @@ PixelType* cMedianFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t>
 
 	size_t memAvail, total;
 	cudaMemGetInfo(&memAvail,&total);
+	size_t sizeOfsharedMem = neighborhood.product()*sizeof(PixelType);
+	int numThreads = floor((double)props.sharedMemPerBlock/sizeOfsharedMem);
+	if (numThreads<1)
+		throw std::runtime_error("Median neighborhood is too large to fit in shared memory on the GPU!");
 
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(memAvail*MAX_MEM_AVAIL),props,neighborhood);
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(memAvail*MAX_MEM_AVAIL),props,neighborhood,numThreads);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
@@ -167,7 +141,13 @@ PixelType* cMedianFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t>
 		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
 		deviceImages.setNextDims(curChunk->getFullChunkSize());
 
-		runMedianFilter(props, curChunk, neighborhood, deviceImages);
+		size_t sharedMemorysize = neighborhood.product()*sizeof(PixelType) * curChunk->threads.x * curChunk->threads.y * curChunk->threads.z;
+
+		cudaMedianFilter<<<curChunk->blocks,curChunk->threads,sharedMemorysize>>>
+			(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),neighborhood);
+
+		DEBUG_KERNEL_CHECK();
+		deviceImages.incrementBuffer();
 
 		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
 	}

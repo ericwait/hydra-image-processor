@@ -20,10 +20,10 @@ void setMaxDeviceDims(std::vector<ImageChunk> &chunks, Vec<size_t> &maxDeviceDim
 }
 
 std::vector<ImageChunk> calculateChunking(Vec<size_t> orgImageDims, Vec<size_t> deviceDims, const cudaDeviceProp& prop,
-										  Vec<size_t> kernelDims/*=Vec<size_t>(0,0,0)*/)
+										  Vec<size_t> kernalDims/*=Vec<size_t>(0,0,0)*/, size_t maxThreads/*=std::numeric_limits<size_t>::max()*/)
 {
 	std::vector<ImageChunk> localChunks;
-	Vec<size_t> margin((kernelDims + 1)/2); //integer round
+	Vec<size_t> margin((kernalDims + 1)/2); //integer round
 	Vec<size_t> chunkDelta(deviceDims-margin*2);
 	Vec<size_t> numChunks(1,1,1);
 
@@ -74,7 +74,7 @@ std::vector<ImageChunk> calculateChunking(Vec<size_t> orgImageDims, Vec<size_t> 
 				curImageBuffer->chunkROIend = chunkROIend;
 				curImageBuffer->imageROIend = imageROIend;
 
-				calcBlockThread(curImageBuffer->getFullChunkSize(),prop,curImageBuffer->blocks,curImageBuffer->threads);
+				calcBlockThread(curImageBuffer->getFullChunkSize(),prop,curImageBuffer->blocks,curImageBuffer->threads,maxThreads);
 			}
 
 			curChunk.x = 0;
