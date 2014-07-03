@@ -4,6 +4,7 @@
 #include "CudaHistogram.cuh"
 #include "CudaGaussianFilter.cuh"
 #include "CudaGetMinMax.cuh"
+#include "CudaMarkovRandomFieldDenoiser.cuh"
 #include "CudaMaxFilter.cuh"
 #include "CudaMeanFilter.cuh"
 #include "CudaMedianFilter.cuh"
@@ -17,6 +18,7 @@
 #include "CudaSum.cuh"
 #include "CudaSegment.cuh"
 #include "CudaThreshold.cuh"
+#include "CudaVariance.cuh"
 
 void clearDevice()
 {
@@ -310,6 +312,11 @@ void clearDevice()
 	return cImagePow(imageIn,dims,power,imageOut,device);
 }
 
+
+float* markovRandomFieldDenoiser(const float* imageIn, Vec<size_t> dims, int maxIterations, float** imageOut/*=NULL*/, int device/*=0*/)
+{
+	return cMarkovRandomFieldDenoiser(imageIn,dims,maxIterations,imageOut,device);
+}
 
  unsigned char* maxFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
 {

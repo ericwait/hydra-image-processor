@@ -107,6 +107,9 @@
     <ClInclude Include="Cuda\CudaSegment.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cuda\CudaMarkovRandomFieldDenoiser.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Cuda\CudaVariance.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>

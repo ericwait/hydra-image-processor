@@ -16,6 +16,7 @@ void MexCommand::init()
  	REGISTER_COMMAND(MexGaussianFilter);
  	REGISTER_COMMAND(MexHistogram);
  	REGISTER_COMMAND(MexImagePow);
+	REGISTER_COMMAND(MexMarkovRandomFieldDenoiser);
  	REGISTER_COMMAND(MexMaxFilterEllipsoid);
  	REGISTER_COMMAND(MexMaxFilterKernel);
  	REGISTER_COMMAND(MexMaxFilterNeighborhood);

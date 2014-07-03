@@ -111,6 +111,7 @@ copy $(OutDir)\CudaMex.dll ..\..\src\MATLAB\CudaMex.mexw64</Command>
     <ClCompile Include="Mex\MexGaussianFilter.cpp" />
     <ClCompile Include="Mex\MexHistogram.cpp" />
     <ClCompile Include="Mex\MexImagePow.cpp" />
+    <ClCompile Include="Mex\MexMarkovRandomFieldDenoiser.cpp" />
     <ClCompile Include="Mex\MexMaxFilterEllipsoid.cpp" />
     <ClCompile Include="Mex\MexMaxFilterKernel.cpp" />
     <ClCompile Include="Mex\MexMaxFilterNeighborhood.cpp" />

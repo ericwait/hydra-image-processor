@@ -32,6 +32,7 @@
     <ClInclude Include="Cuda\CudaImageContainerClean.cuh" />
     <ClInclude Include="Cuda\CudaImageReduction.cuh" />
     <ClInclude Include="Cuda\CudaIntensityProjection.cuh" />
+    <ClInclude Include="Cuda\CudaMarkovRandomFieldDenoiser.cuh" />
     <ClInclude Include="Cuda\CudaMask.cuh" />
     <ClInclude Include="Cuda\CudaMaxFilter.cuh" />
     <ClInclude Include="Cuda\CudaMeanFilter.cuh" />
