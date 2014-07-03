@@ -4,7 +4,7 @@
 #include "cuda_runtime.h"
 
 template <class PixelTypeIn, class OutType>
-__global__ void cudaSum(PixelTypeIn* arrayIn, OutType* arrayOut, size_t n)
+__global__ void cudaSum(const PixelTypeIn* arrayIn, OutType* arrayOut, size_t n)
 {
 	extern __shared__ unsigned char sharedMem[];
 	OutType* sums = (OutType*)sharedMem;
