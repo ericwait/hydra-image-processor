@@ -18,7 +18,10 @@ public:
 			catch (std::runtime_error e)
 			{
 				for (int j=0; j<i; ++j)
+				{
 					delete deviceImages[j];
+					deviceImages[j] = NULL;
+				}
 
 				throw std::runtime_error(e.what());
 			}
@@ -31,7 +34,11 @@ public:
 	~CudaDeviceImages()
 	{
 		for (int i=0; i<numBuffers; ++i)
-			delete deviceImages[i];
+		{
+			CudaImageContainerClean<PixelType>* temp = deviceImages[i];
+			delete temp;
+			deviceImages[i] = NULL;
+		}
 	}
 
 	CudaImageContainer<PixelType>* getCurBuffer()
