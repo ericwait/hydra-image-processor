@@ -77,9 +77,6 @@ std::string MexSumArray::check( int nlhs, mxArray* plhs[], int nrhs, const mxArr
 	if (nlhs!=1)
 		return "Requires one outputs!";
 
-// 	if (!mxIsUint8(prhs[0]))
-// 		return "Image has to be formated as a uint8!";
-
 	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
 	if (numDims>3)
 		return "Image can have a maximum of three dimensions!";
