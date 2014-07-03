@@ -143,7 +143,7 @@ public:
 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string printUsage();
-virtual std::string printHelp();
+	virtual std::string printHelp();
 };
 
  class MexMaxFilterKernel : MexCommand
@@ -350,7 +350,6 @@ public:
 	virtual std::string printHelp();
 };
 
-
  class MexReduceImage : MexCommand
  {
  public:
@@ -368,6 +367,18 @@ class MexThresholdFilter : MexCommand
 public:
 	MexThresholdFilter(){}
 	virtual ~MexThresholdFilter(){}
+
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
+	virtual std::string printHelp();
+};
+
+class MexVariance : MexCommand
+{
+public:
+	MexVariance(){}
+	virtual ~MexVariance(){}
 
 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);

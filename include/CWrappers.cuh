@@ -205,3 +205,11 @@ IMAGE_PROCESSOR_API unsigned int* thresholdFilter(const unsigned int* imageIn, V
 IMAGE_PROCESSOR_API int* thresholdFilter(const int* imageIn, Vec<size_t> dims, int thresh, int** imageOut=NULL, int device=0);
 IMAGE_PROCESSOR_API float* thresholdFilter(const float* imageIn, Vec<size_t> dims, float thresh, float** imageOut=NULL, int device=0);
 IMAGE_PROCESSOR_API double* thresholdFilter(const double* imageIn, Vec<size_t> dims, double thresh, double** imageOut=NULL, int device=0);
+
+IMAGE_PROCESSOR_API double variance(const unsigned char* imageIn, Vec<size_t> dims, int device=0);
+IMAGE_PROCESSOR_API double variance(const unsigned short* imageIn, Vec<size_t> dims, int device=0);
+IMAGE_PROCESSOR_API double variance(const short* imageIn, Vec<size_t> dims, int device=0);
+IMAGE_PROCESSOR_API double variance(const unsigned int* imageIn, Vec<size_t> dims, int device=0);
+IMAGE_PROCESSOR_API double variance(const int* imageIn, Vec<size_t> dims, int device=0);
+IMAGE_PROCESSOR_API double variance(const float* imageIn, Vec<size_t> dims, int device=0);
+IMAGE_PROCESSOR_API double variance(const double* imageIn, Vec<size_t> dims, int device=0);

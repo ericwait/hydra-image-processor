@@ -47,6 +47,7 @@
     <ClInclude Include="Cuda\CudaSum.cuh" />
     <ClInclude Include="Cuda\CudaThreshold.cuh" />
     <ClInclude Include="Cuda\CudaUtilities.cuh" />
+    <ClInclude Include="Cuda\CudaVariance.cuh" />
     <ClInclude Include="Cuda\CWrappers.cuh" />
     <ClInclude Include="Cuda\Defines.h" />
     <ClInclude Include="Cuda\ImageChunk.cuh" />

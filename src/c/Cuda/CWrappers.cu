@@ -886,3 +886,37 @@ double* segment(const double* imageIn, Vec<size_t> dims, double alpha, Vec<size_
 	return cThresholdFilter(imageIn,dims,thresh,imageOut,device);
 }
 
+ double variance(const unsigned char* imageIn, Vec<size_t> dims, int device/*=0*/)
+ {
+	 return cVariance(imageIn,dims,device,(float*)NULL);
+ }
+
+ double variance(const unsigned short* imageIn, Vec<size_t> dims, int device/*=0*/)
+ {
+	 return cVariance(imageIn,dims,device,(float*)NULL);
+ }
+
+ double variance(const short* imageIn, Vec<size_t> dims, int device/*=0*/)
+ {
+	 return cVariance(imageIn,dims,device,(float*)NULL);
+ }
+
+ double variance(const unsigned int* imageIn, Vec<size_t> dims, int device/*=0*/)
+ {
+	 return cVariance(imageIn,dims,device,(float*)NULL);
+ }
+
+ double variance(const int* imageIn, Vec<size_t> dims, int device/*=0*/)
+ {
+	 return cVariance(imageIn,dims,device,(float*)NULL);
+ }
+
+ double variance(const float* imageIn, Vec<size_t> dims, int device/*=0*/)
+ {
+	 return cVariance(imageIn,dims,device,(float*)NULL);
+ }
+
+ double variance(const double* imageIn, Vec<size_t> dims, int device/*=0*/)
+ {
+	 return cVariance(imageIn,dims,device,(double*)NULL);
+ }

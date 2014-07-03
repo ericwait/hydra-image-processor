@@ -37,6 +37,7 @@ void MexCommand::init()
  	REGISTER_COMMAND(MexSumArray);
 	REGISTER_COMMAND(MexSegment);
  	REGISTER_COMMAND(MexThresholdFilter);
+	REGISTER_COMMAND(MexVariance);
  }
  
  MexCommand* MexCommand::getCommand(std::string cmd)
