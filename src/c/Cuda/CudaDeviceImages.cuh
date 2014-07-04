@@ -108,6 +108,18 @@ public:
 		return true;
 	}
 
+
+	void clear()
+	{
+		for (int i=0; i<numBuffers; ++i)
+		{
+			delete deviceImages[i];
+			deviceImages[i] = NULL;
+		}
+
+		numBuffers = 0;
+	}
+
 private:
 	CudaDeviceImages();
 	CudaImageContainerClean<PixelType>** deviceImages;
