@@ -4,6 +4,7 @@
 #include "CudaHistogram.cuh"
 #include "CudaGaussianFilter.cuh"
 #include "CudaGetMinMax.cuh"
+#include "CudaLinearUnmixing.cuh"
 #include "CudaMarkovRandomFieldDenoiser.cuh"
 #include "CudaMaxFilter.cuh"
 #include "CudaMeanFilter.cuh"
@@ -311,6 +312,42 @@ void clearDevice()
 {
 	return cImagePow(imageIn,dims,power,imageOut,device);
 }
+
+
+ float* linearUnmixing(const unsigned char* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device)
+ {
+	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
+ }
+
+ float* linearUnmixing(const unsigned short* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device)
+ {
+	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
+ }
+
+ float* linearUnmixing(const short* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device)
+ {
+	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
+ }
+
+ float* linearUnmixing(const unsigned int* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device)
+ {
+	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
+ }
+
+ float* linearUnmixing(const int* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device)
+ {
+	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
+ }
+
+ float* linearUnmixing(const float* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device)
+ {
+	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
+ }
+
+ float* linearUnmixing(const double* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device)
+ {
+	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
+ }
 
 
 float* markovRandomFieldDenoiser(const float* imageIn, Vec<size_t> dims, int maxIterations, float** imageOut/*=NULL*/, int device/*=0*/)
@@ -927,3 +964,4 @@ double* segment(const double* imageIn, Vec<size_t> dims, double alpha, Vec<size_
  {
 	 return cVariance(imageIn,dims,device,(double*)NULL);
  }
+

@@ -78,6 +78,14 @@ IMAGE_PROCESSOR_API int* imagePow(const int* imageIn, Vec<size_t> dims, double p
 IMAGE_PROCESSOR_API float* imagePow(const float* imageIn, Vec<size_t> dims, double power, float** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API double* imagePow(const double* imageIn, Vec<size_t> dims, double power, double** imageOut = NULL, int device = 0);
 
+IMAGE_PROCESSOR_API float*  linearUnmixing(const unsigned char* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API float* linearUnmixing(const unsigned short* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API float* linearUnmixing(const short* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API float* linearUnmixing(const unsigned int* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API float* linearUnmixing(const int* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API float* linearUnmixing(const float* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API float* linearUnmixing(const double* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut = NULL, int device = 0);
+
 IMAGE_PROCESSOR_API float* markovRandomFieldDenoiser(const float* imageIn, Vec<size_t> dims, int maxIterations, float** imageOut = NULL, int device = 0);
 
 IMAGE_PROCESSOR_API unsigned char* maxFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, unsigned char** imageOut = NULL, int device = 0);
