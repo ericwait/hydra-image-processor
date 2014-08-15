@@ -188,7 +188,7 @@ PixelType* cReduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> 
 	}
 	else
 	{
-		std::vector<ImageChunk> orgChunks = calculateBuffers<PixelType>(dims,1,(size_t)(memAvail*MAX_MEM_AVAIL*(1-ratio)),props,reductions);
+		orgChunks = calculateBuffers<PixelType>(dims,1,(size_t)(memAvail*MAX_MEM_AVAIL*(1-ratio)),props,reductions);
 	}
 
 	std::vector<ImageChunk> reducedChunks = orgChunks;
