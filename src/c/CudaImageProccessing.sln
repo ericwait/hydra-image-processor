@@ -1,9 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaImageProcessor_lib", "CudaImageProcessor_dll.vcxproj", "{F204D99B-C454-420D-BD1B-5FE4D9D07078}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaMex_old", "CudaMex_old.vcxproj", "{DF033EF0-D4AC-41CD-900B-5BFE8099BED4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA} = {25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaMex", "CudaMex.vcxproj", "{6698E8EC-49D9-421E-AA87-5BCC6B466347}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -29,14 +32,6 @@ Global
 		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Release|Win32.Build.0 = Release|Win32
 		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Release|x64.ActiveCfg = Release|x64
 		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Release|x64.Build.0 = Release|x64
-		{DF033EF0-D4AC-41CD-900B-5BFE8099BED4}.Debug|Win32.ActiveCfg = Debug|Win32
-		{DF033EF0-D4AC-41CD-900B-5BFE8099BED4}.Debug|Win32.Build.0 = Debug|Win32
-		{DF033EF0-D4AC-41CD-900B-5BFE8099BED4}.Debug|x64.ActiveCfg = Debug|x64
-		{DF033EF0-D4AC-41CD-900B-5BFE8099BED4}.Debug|x64.Build.0 = Debug|x64
-		{DF033EF0-D4AC-41CD-900B-5BFE8099BED4}.Release|Win32.ActiveCfg = Release|Win32
-		{DF033EF0-D4AC-41CD-900B-5BFE8099BED4}.Release|Win32.Build.0 = Release|Win32
-		{DF033EF0-D4AC-41CD-900B-5BFE8099BED4}.Release|x64.ActiveCfg = Release|x64
-		{DF033EF0-D4AC-41CD-900B-5BFE8099BED4}.Release|x64.Build.0 = Release|x64
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Debug|Win32.ActiveCfg = Debug|x64
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Debug|x64.ActiveCfg = Debug|x64
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Debug|x64.Build.0 = Debug|x64
