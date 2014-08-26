@@ -128,7 +128,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Mex\CudaMex.def">
-      <Filter>Source Files</Filter>
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
 </Project>
