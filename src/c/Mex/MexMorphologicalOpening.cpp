@@ -115,7 +115,7 @@ std::string MexMorphologicalOpening::check( int nlhs, mxArray* plhs[], int nrhs,
 
 std::string MexMorphologicalOpening::printUsage()
 {
-	return "imageOut = CudaMex('MexMorphologicalOpening',imageIn,kernel,[device]);";
+	return "imageOut = CudaMex('MorphologicalOpening',imageIn,kernel,[device]);";
 }
 
 std::string MexMorphologicalOpening::printHelp()
