@@ -99,7 +99,7 @@ void MexNormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 
 std::string MexNormalizedCovariance::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {
-	if (nrhs!=3)
+	if (nrhs<2)
 		return "Incorrect number of inputs!";
 
 	if (nlhs!=1)
