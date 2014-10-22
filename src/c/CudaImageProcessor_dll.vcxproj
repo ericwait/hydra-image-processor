@@ -23,6 +23,7 @@
     <ClInclude Include="Cuda\CudaAdd.cuh" />
     <ClInclude Include="Cuda\CudaContrastEnhancement.cuh" />
     <ClInclude Include="Cuda\CudaConvertType.cuh" />
+    <ClInclude Include="Cuda\CudaDeviceCount.cuh" />
     <ClInclude Include="Cuda\CudaDeviceImages.cuh" />
     <ClInclude Include="Cuda\CudaGaussianFilter.cuh" />
     <ClInclude Include="Cuda\CudaGetMinMax.cuh" />
@@ -50,6 +51,7 @@
     <ClInclude Include="Cuda\CudaUtilities.cuh" />
     <ClInclude Include="Cuda\CudaVariance.cuh" />
     <ClInclude Include="Cuda\CWrappers.cuh" />
+    <ClInclude Include="Cuda\CWrappers.h" />
     <ClInclude Include="Cuda\Defines.h" />
     <ClInclude Include="Cuda\ImageChunk.cuh" />
     <ClInclude Include="Cuda\Vec.h" />

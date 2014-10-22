@@ -116,6 +116,12 @@
     <ClInclude Include="Cuda\CudaConvertType.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cuda\CWrappers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaDeviceCount.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cuda\CHelpers.cpp">

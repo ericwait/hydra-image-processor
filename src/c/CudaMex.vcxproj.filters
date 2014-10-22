@@ -125,6 +125,9 @@
     <ClCompile Include="Mex\MexLinearUnmixing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mex\MexDeviceCount.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Mex\CudaMex.def">

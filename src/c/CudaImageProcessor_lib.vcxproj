@@ -23,6 +23,7 @@
     <ClInclude Include="Cuda\CudaAdd.cuh" />
     <ClInclude Include="Cuda\CudaContrastEnhancement.cuh" />
     <ClInclude Include="Cuda\CudaConvertType.cuh" />
+    <ClInclude Include="Cuda\CudaDeviceCount.cuh" />
     <ClInclude Include="Cuda\CudaDeviceImages.cuh" />
     <ClInclude Include="Cuda\CudaGaussianFilter.cuh" />
     <ClInclude Include="Cuda\CudaGetMinMax.cuh" />

@@ -13,6 +13,7 @@ void MexCommand::init()
 	REGISTER_COMMAND(MexAddImageWith);
  	REGISTER_COMMAND(MexApplyPolyTransformation);
  	REGISTER_COMMAND(MexContrastEnhancement);
+	REGISTER_COMMAND(MexDeviceCount);
  	REGISTER_COMMAND(MexGaussianFilter);
  	REGISTER_COMMAND(MexHistogram);
  	REGISTER_COMMAND(MexImagePow);

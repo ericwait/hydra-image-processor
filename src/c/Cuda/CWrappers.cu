@@ -1,6 +1,7 @@
 #include "CWrappers.cuh"
 #include "CudaAdd.cuh"
 #include "CudaContrastEnhancement.cuh"
+#include "CudaDeviceCount.cuh"
 #include "CudaHistogram.cuh"
 #include "CudaGaussianFilter.cuh"
 #include "CudaGetMinMax.cuh"
@@ -168,6 +169,12 @@ void clearDevice()
 {
 	return cContrastEnhancement(imageIn,dims,sigmas,neighborhood,imageOut,device);
 }
+
+
+ int deviceCount()
+ {
+	 return cDeviceCount();
+ }
 
 
  size_t* histogram(const unsigned char* imageIn, Vec<size_t> dims, unsigned int arraySize, unsigned char minVal/*=std::numeric_limits<unsigned char>::lowest()*/, unsigned char maxVal/*=std::numeric_limits<unsigned char>::max()*/, int device/*=0*/)
@@ -964,4 +971,3 @@ double* segment(const double* imageIn, Vec<size_t> dims, double alpha, Vec<size_
  {
 	 return cVariance(imageIn,dims,device,(double*)NULL);
  }
-
