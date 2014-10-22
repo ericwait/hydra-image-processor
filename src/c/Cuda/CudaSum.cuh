@@ -54,6 +54,16 @@ OutType cSumArray(const PixelTypeIn* imageIn, size_t n, int device=0)
 	cudaDeviceProp props;
 	cudaGetDeviceProperties(&props, device);
 
+	if (n <= props.maxThreadsPerBlock)
+	{
+		for (size_t i = 0; i < n; ++i)
+		{
+			sum += imageIn[i];
+		}
+
+		return sum;
+	}
+
 	size_t availMem, total;
 	cudaMemGetInfo(&availMem,&total);
 
