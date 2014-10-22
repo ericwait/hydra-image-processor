@@ -74,6 +74,7 @@ double squareOfDifferences(size_t elementSize, Vec<size_t> maxDeviceDims, int de
 	size_t sumSize_t = 0;
 	size_t* deviceSumSize_t;
 	size_t* hostSumSize_t;
+	
 	HANDLE_ERROR(cudaMalloc((void**)&deviceSumSize_t,sizeof(size_t)*numBlocks));
 	hostSumSize_t = new size_t[numBlocks];
 
@@ -116,8 +117,8 @@ double squareOfDifferences(size_t elementSize, Vec<size_t> maxDeviceDims, int de
 double squareOfDifferences(size_t elementSize, Vec<size_t> maxDeviceDims, int device, std::vector<ImageChunk> &chunks,
 						 const float* imageIn, float* imageOut, Vec<size_t> &dims, float minVal, float maxVal)
 {
-	size_t numBlocks = chunks[0].blocks.x*chunks[0].blocks.y*chunks[0].blocks.z;
-	size_t numThreads = chunks[0].threads.x*chunks[0].threads.y*chunks[0].threads.z;
+	unsigned int numBlocks = chunks[0].blocks.x*chunks[0].blocks.y*chunks[0].blocks.z;
+	unsigned int numThreads = chunks[0].threads.x*chunks[0].threads.y*chunks[0].threads.z;
 
 	double sumVal = 0;
 	double* deviceSum;
@@ -129,7 +130,7 @@ double squareOfDifferences(size_t elementSize, Vec<size_t> maxDeviceDims, int de
 	chunks[0].sendROI(imageIn,dims,deviceImages.getCurBuffer());
 	deviceImages.setAllDims(maxDeviceDims);
 
-	size_t sharedMemSize = numThreads * sizeof(double);
+	unsigned int sharedMemSize = numThreads * sizeof(double);
 	cudaSum<<<numBlocks,numThreads,sharedMemSize>>>(deviceImages.getCurBuffer()->getConstImagePointer(),deviceSum,dims.product());
 	DEBUG_KERNEL_CHECK();
 
@@ -137,7 +138,7 @@ double squareOfDifferences(size_t elementSize, Vec<size_t> maxDeviceDims, int de
 	HANDLE_ERROR(cudaFree(deviceSum));
 	deviceSum= NULL;
 
-	for (int i=0; i<numBlocks; ++i)
+	for (unsigned int i=0; i<numBlocks; ++i)
 		sumVal += hostSum[i];
 
 	delete[] hostSum;
@@ -162,8 +163,8 @@ double squareOfDifferences(size_t elementSize, Vec<size_t> maxDeviceDims, int de
 double squareOfDifferences(size_t elementSize, Vec<size_t> maxDeviceDims, int device, std::vector<ImageChunk> &chunks,
 						   const double* imageIn, double* imageOut, Vec<size_t> &dims, double minVal, double maxVal)
 {
-	size_t numBlocks = chunks[0].blocks.x*chunks[0].blocks.y*chunks[0].blocks.z;
-	size_t numThreads = chunks[0].threads.x*chunks[0].threads.y*chunks[0].threads.z;
+	unsigned int numBlocks = chunks[0].blocks.x*chunks[0].blocks.y*chunks[0].blocks.z;
+	unsigned int numThreads = chunks[0].threads.x*chunks[0].threads.y*chunks[0].threads.z;
 
 	double sumVal = 0;
 	double* deviceSum;
@@ -175,7 +176,7 @@ double squareOfDifferences(size_t elementSize, Vec<size_t> maxDeviceDims, int de
 	chunks[0].sendROI(imageIn,dims,deviceImages.getCurBuffer());
 	deviceImages.setAllDims(maxDeviceDims);
 
-	size_t sharedMemSize = numThreads * sizeof(double);
+	unsigned int sharedMemSize = numThreads * sizeof(double);
 	cudaSum<<<numBlocks,numThreads,sharedMemSize>>>(deviceImages.getCurBuffer()->getConstImagePointer(),deviceSum,dims.product());
 	DEBUG_KERNEL_CHECK();
 
@@ -183,7 +184,7 @@ double squareOfDifferences(size_t elementSize, Vec<size_t> maxDeviceDims, int de
 	HANDLE_ERROR(cudaFree(deviceSum));
 	deviceSum= NULL;
 
-	for (int i=0; i<numBlocks; ++i)
+	for (unsigned int i = 0; i<numBlocks; ++i)
 		sumVal += hostSum[i];
 
 	delete[] hostSum;
