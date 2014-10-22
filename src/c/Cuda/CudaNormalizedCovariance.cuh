@@ -9,6 +9,8 @@
 template <class PixelType>
 double cNormalizedCovariance(const PixelType* imageIn1, const PixelType* imageIn2, Vec<size_t> dims, int device=0)
 {
+	cudaSetDevice(device);
+
 	float* im1Sub = new float[dims.product()];
 	float* im2Sub = new float[dims.product()];
 
@@ -29,6 +31,8 @@ double cNormalizedCovariance(const PixelType* imageIn1, const PixelType* imageIn
 
 double cNormalizedCovariance(const double* imageIn1, const double* imageIn2, Vec<size_t> dims, int device=0)
 {
+	cudaSetDevice(device);
+
 	double* im1Sub = new double[dims.product()];
 	double* im2Sub = new double[dims.product()];
 
