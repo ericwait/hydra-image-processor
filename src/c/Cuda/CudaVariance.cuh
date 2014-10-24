@@ -10,9 +10,6 @@ double cVariance(const PixelType* imageIn, Vec<size_t> dims, int device=0, Pixel
 {
 	double variance = 0.0;
 
-	size_t elementSize;
-	double minVal, maxVal;
-
 	double imMean = cSumArray<double>(imageIn, dims.product(), device) / (double)dims.product();
 	PixelTypeOut* imSub = cAddConstant<PixelType, PixelTypeOut>(imageIn, dims, -imMean, NULL, device);
 	PixelTypeOut* imP = cImagePow<PixelTypeOut>(imSub, dims, 2.0, NULL, device);
