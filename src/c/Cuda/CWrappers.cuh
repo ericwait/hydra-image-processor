@@ -114,6 +114,8 @@ IMAGE_PROCESSOR_API int* medianFilter(const int* imageIn, Vec<size_t> dims, Vec<
 IMAGE_PROCESSOR_API float* medianFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, float** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API double* medianFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, double** imageOut = NULL, int device = 0);
 
+IMAGE_PROCESSOR_API int memoryStats(size_t** stats);
+
 IMAGE_PROCESSOR_API unsigned char* minFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, unsigned char** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API unsigned short* minFilter(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, unsigned short** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API short* minFilter(const short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, short** imageOut = NULL, int device = 0);

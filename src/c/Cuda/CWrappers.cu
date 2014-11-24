@@ -10,6 +10,7 @@
 #include "CudaMaxFilter.cuh"
 #include "CudaMeanFilter.cuh"
 #include "CudaMedianFilter.cuh"
+#include "CudaMemoryStats.cuh"
 #include "CudaMinFilter.cuh"
 #include "CudaMorphologicalOperations.cuh"
 #include "CudaMultiplyImage.cuh"
@@ -469,6 +470,11 @@ float* markovRandomFieldDenoiser(const float* imageIn, Vec<size_t> dims, int max
 	return cMedianFilter(imageIn,dims,neighborhood,imageOut,device);
 }
 
+
+ int memoryStats(size_t** stats)
+ {
+	 return cMemoryStats(stats);
+ }
 
  unsigned char* minFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
 {
