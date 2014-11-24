@@ -17,6 +17,7 @@ public:
 		defaults();
 		image = NULL;
 		maxImageDims = dims;
+		roiSizes = dims;
 		this->device = device;
 		loadImage(imageIn, dims);
 	}
@@ -27,6 +28,7 @@ public:
 		image = NULL;
 		imageDims = dims;
 		maxImageDims = dims;
+		roiSizes = dims;
 		this->device = device;
 		HANDLE_ERROR(cudaSetDevice(device));
 		HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(PixelType)*dims.product()));
@@ -55,24 +57,44 @@ public:
 
 	__device__ PixelType& operator[]( DeviceVec<size_t> coordinate )
 	{
+		coordinate += roiStarts;
 		const DeviceVec<size_t>& deviceImageDims = reinterpret_cast<const DeviceVec<size_t>&>(imageDims);
 		return image[deviceImageDims.linearAddressAt(coordinate)];
 	}
 
 	__device__ const PixelType& operator[]( DeviceVec<size_t> coordinate ) const
 	{
+		coordinate += roiStarts;
 		const DeviceVec<size_t>& deviceImageDims = reinterpret_cast<const DeviceVec<size_t>&>(imageDims);
 		return image[deviceImageDims.linearAddressAt(coordinate)];
 	}
 
 	__device__ PixelType& operator[](size_t idx)
 	{
-		return image[idx];
+		if (roiStarts==DeviceVec<size_t> (0,0,0))
+			return image[idx];
+
+		DeviceVec<size_t> coord = imageDims.coordAddressOf (idx);
+		coord += roiStarts;
+
+		if (coord>roiStarts+roiSizes)
+			throw runtime_error ("Index is out of ROI bounds!");
+
+		return this[coord];
 	}
 
 	__device__ const PixelType& operator[]( size_t idx) const
 	{
-		return image[idx];
+		if (roiStarts==DeviceVec<size_t> (0,0,0))
+			return image[idx];
+
+		DeviceVec<size_t> coord = imageDims.coordAddressOf (idx);
+		coord += roiStarts;
+
+		if (coord>roiStarts+roiSizes)
+			throw runtime_error ("Index is out of ROI bounds!");
+
+		return this[coord];
 	}
 
 	void loadImage( const PixelType* imageIn, Vec<size_t> dims)
@@ -117,13 +139,17 @@ protected:
 
 	void defaults() 
 	{
+		maxImageDims = Vec<size_t>(0, 0, 0);
 		imageDims = Vec<size_t>(0,0,0);
 		device = 0;
+		roiStarts = Vec<size_t>(0, 0, 0);
+		roiSizes = Vec<size_t>(0, 0, 0);
 	}
 
 	int device;
 	Vec<size_t> maxImageDims;
 	Vec<size_t> imageDims;
 	PixelType*	image;
-
+	Vec<size_t> roiStarts;
+	Vec<size_t> roiSizes;
 };
