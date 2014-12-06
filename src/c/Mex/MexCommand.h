@@ -395,11 +395,11 @@ public:
 	virtual std::string printHelp();
  };
 
- class MexRigidRegistration : MexCommand
+ class MexRidgidRegistration : MexCommand
  {
  public:
-	 MexRigidRegistration(){}
-	 virtual ~MexRigidRegistration(){}
+	 MexRidgidRegistration(){}
+	 virtual ~MexRidgidRegistration(){}
 
 	 virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
 	 virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);

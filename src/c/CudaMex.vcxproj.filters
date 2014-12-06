@@ -128,7 +128,7 @@
     <ClCompile Include="Mex\MexDeviceCount.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mex\MexRigidRegistration.cpp">
+    <ClCompile Include="Mex\MexRidgidRegistration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -122,7 +122,7 @@
     <ClInclude Include="Cuda\CudaDeviceCount.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cuda\CudaRidgeRegistaration.cuh">
+    <ClInclude Include="Cuda\CudaRidgidRegistaration.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
