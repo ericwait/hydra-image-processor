@@ -56,66 +56,59 @@ DEVICE_PREFIX VEC_THIS_CLASS<T> operator* (const EXTERN_TYPE<T>& other) const
 	return outVec;
 }
 
-// Adds each element by other
-template<typename d>
-DEVICE_PREFIX VEC_THIS_CLASS<T>& operator+= (const EXTERN_TYPE<T>& other) const
+DEVICE_PREFIX VEC_THIS_CLASS<T>& operator+= (const EXTERN_TYPE<T>& other)
 {
 	x += other.x;
 	y += other.y;
 	z += other.z;
 
-	return this;
+	return *this;
 }
 
-// Subtracts each element by other
-template<typename d>
-DEVICE_PREFIX VEC_THIS_CLASS<T>& operator-= (const EXTERN_TYPE<T>& other) const
+DEVICE_PREFIX VEC_THIS_CLASS<T>& operator-= (const EXTERN_TYPE<T>& other)
 {
 	x -= other.x;
 	y -= other.y;
 	z -= other.z;
 
-	return this;
+	return *this;
 }
 
 // Are all the values less then the passed in values
-DEVICE_PREFIX bool operator< (const EXTERN_TYPE<T>& inVec)
+DEVICE_PREFIX bool operator< (const EXTERN_TYPE<T>& inVec) const
 {
 	return x<inVec.x && y<inVec.y && z<inVec.z;
 }
 
-DEVICE_PREFIX bool operator<= (const EXTERN_TYPE<T>& inVec)
+DEVICE_PREFIX bool operator<= (const EXTERN_TYPE<T>& inVec) const
 {
 	return x<=inVec.x && y<=inVec.y && z<=inVec.z;
 }
 
 // Are all the values greater then the passed in values
-DEVICE_PREFIX bool operator> (const EXTERN_TYPE<T>& inVec)
+DEVICE_PREFIX bool operator>(const EXTERN_TYPE<T>& inVec) const
 {
 	return x>inVec.x && y>inVec.y && z>inVec.z;
 }
 
-DEVICE_PREFIX bool operator>= (const EXTERN_TYPE<T>& inVec)
+DEVICE_PREFIX bool operator>= (const EXTERN_TYPE<T>& inVec) const
 {
 	return x>=inVec.x && y>=inVec.y && z>=inVec.z;
 }
 
-DEVICE_PREFIX bool operator== (const EXTERN_TYPE<T>& inVec)
+DEVICE_PREFIX bool operator== (const EXTERN_TYPE<T>& inVec) const
 {
 	return x==inVec.x && y==inVec.y && z==inVec.z;
 }
 
-DEVICE_PREFIX bool operator!= (const EXTERN_TYPE<T>& inVec)
+DEVICE_PREFIX bool operator!= (const EXTERN_TYPE<T>& inVec) const
 {
 	return x!=inVec.x || y!=inVec.y || z!=inVec.z;
 }
 
 // Returns the linear memory map if this is the dimensions and the passed in Vec is the coordinate
-DEVICE_PREFIX size_t linearAddressAt(const EXTERN_TYPE<T>& coordinate, bool columnMajor=false) const
+DEVICE_PREFIX size_t linearAddressAt(const EXTERN_TYPE<T>& coordinate) const
 {
-	if (columnMajor)
-		return coordinate.y + coordinate.x*y + coordinate.z*x*y;
-
 	return coordinate.x + coordinate.y*x + coordinate.z*y*x;
 }
 
