@@ -26,7 +26,7 @@ __global__ void cudaLinearUnmixing(PixelType* imageIn, size_t imageDim, size_t n
 				val += cudaConstKernel[chanOut + chanIn*numImages] * (double)(imageIn[pixelIdx + chanIn*imageDim]);
 			}
 
-			imagesOut[pixelIdx + chanOut*imageDim] = (float)MAX(0.0,val);
+			imagesOut[pixelIdx + chanOut*imageDim] = (float)val;
 		}
 	}
 }
