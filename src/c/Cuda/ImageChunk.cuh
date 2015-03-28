@@ -153,9 +153,9 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 	size_t numVoxels = (size_t)(memAvailable / (sizeof(PixelType)*numBuffersNeeded));
 
 	Vec<size_t> overlapVolume;
-	overlapVolume.x = kernelDims.x * imageDims.y * imageDims.z;
-	overlapVolume.y = imageDims.x * kernelDims.y * imageDims.z;
-	overlapVolume.z = imageDims.x * imageDims.y * kernelDims.z;
+	overlapVolume.x = (kernelDims.x-1) * imageDims.y * imageDims.z;
+	overlapVolume.y = imageDims.x * (kernelDims.y-1) * imageDims.z;
+	overlapVolume.z = imageDims.x * imageDims.y * (kernelDims.z-1);
 
 	Vec<size_t> deviceDims(0,0,0);
 
