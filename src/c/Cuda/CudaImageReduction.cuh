@@ -177,11 +177,12 @@ PixelType* cReduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> 
 	cudaMemGetInfo(&memAvail,&total);
 
 	std::vector<ImageChunk> orgChunks;
-	int numThreads = 1024;
+	int numThreads = props.maxThreadsPerBlock;
 	if (method==REDUC_MEDIAN)
 	{
-		size_t sizeOfsharedMem = reducedDims.product()*sizeof(PixelType);
-		numThreads = (int)floor((double)props.sharedMemPerBlock/sizeOfsharedMem);
+		size_t sizeOfsharedMem = reductions.product()*sizeof(PixelType);
+		numThreads = (int)floor((double)props.sharedMemPerBlock/(double)sizeOfsharedMem);
+		numThreads = (props.maxThreadsPerBlock>numThreads) ? numThreads : props.maxThreadsPerBlock;
 		if (numThreads<1)
 			throw std::runtime_error("Median neighborhood is too large to fit in shared memory on the GPU!");
 		orgChunks = calculateBuffers<PixelType>(dims,1,(size_t)(memAvail*MAX_MEM_AVAIL*(1-ratio)),props,reductions,numThreads);
@@ -232,7 +233,7 @@ PixelType* cReduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> 
 			cudaMeanImageReduction<<<reducedIt->blocks,reducedIt->threads>>>(*deviceImageIn, *deviceImageOut, reductions);
 			break;
 		case REDUC_MEDIAN:
-			sharedMemorysize = reducedDims.product()*sizeof(PixelType) * reducedIt->threads.x * reducedIt->threads.y * reducedIt->threads.z;
+			sharedMemorysize = reductions.product()*sizeof(PixelType) * reducedIt->threads.x * reducedIt->threads.y * reducedIt->threads.z;
 			cudaMedianImageReduction<<<reducedIt->blocks,reducedIt->threads,sharedMemorysize>>>(*deviceImageIn, *deviceImageOut, reductions);
 			break;
 		case REDUC_MIN:
