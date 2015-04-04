@@ -26,7 +26,7 @@ __global__ void cudaLinearUnmixing(PixelType* imageIn, size_t imageDim, size_t n
 				val += cudaConstKernel[chanOut + chanIn*numImages] * (double)(imageIn[pixelIdx + chanIn*imageDim]);
 			}
 
-			imagesOut[pixelIdx + chanOut*imageDim] = (float)MAX(0.0,val);
+			imagesOut[pixelIdx + chanOut*imageDim] = (float)val;
 		}
 	}
 }
@@ -60,9 +60,9 @@ float* cLinearUnmixing(const PixelType* imageIn, Vec<size_t> imageDims, size_t n
  		size_t curNumVals = MIN(numValsPerChunk, imageDims.product() - startIdx);
 		for (size_t chan = 0; chan < numImages; ++chan)
 		{
-			HANDLE_ERROR(cudaMemcpy(deviceIn + sizeof(PixelType)*(numValsPerChunk*chan),
-				imageIn + sizeof(PixelType)*(imageDims.product()*chan + startIdx),
-				sizeof(PixelType)*curNumVals,cudaMemcpyHostToDevice));
+			PixelType* deviceChanStart = deviceIn + numValsPerChunk*chan;
+			const PixelType* hostChanStart = imageIn + (imageDims.product()*chan + startIdx);
+			HANDLE_ERROR(cudaMemcpy(deviceChanStart,hostChanStart,sizeof(PixelType)*curNumVals,cudaMemcpyHostToDevice));
 		}
 		
 		int numBlocks = (int)(ceil((double)curNumVals / props.maxThreadsPerBlock));
