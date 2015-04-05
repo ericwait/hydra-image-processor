@@ -118,6 +118,16 @@ public:
 		HANDLE_ERROR(cudaMemcpy(image,imageIn,sizeof(PixelType)*dims.product(),cudaMemcpyHostToDevice));
 	}
 
+	PixelType* retriveImage(PixelType** imageOut=NULL)
+	{
+		HANDLE_ERROR(cudaSetDevice(device));
+
+		PixelType* imOut = setUpOutIm(roiSizes,imageOut);
+
+		HANDLE_ERROR(cudaMemcpy(imOut,image,roiSizes.product()*sizeof(PixelType),cudaMemcpyDeviceToHost));
+
+		return imOut;
+	}
 
 	Vec<size_t> getDims() const { return roiSizes; }
 	__device__ DeviceVec<size_t> getDeviceDims() const { return DeviceVec<size_t>(roiSizes); }
