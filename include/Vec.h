@@ -179,6 +179,40 @@ public:
 		return outVec;
 	}
 
+	template<typename T>
+	DEVICE_PREFIX VEC_THIS_CLASS<size_t> coordAddressOf(T idx)const
+	{
+		VEC_THIS_CLASS<size_t> vecOut = VEC_THIS_CLASS<size_t>(0,0,0);
+		if(x==0 && y==0 && z==0)
+			throw runtime_error("Not a valid vector to index into!");
+
+		if(x==0)
+		{
+			if(y==0)
+			{
+				vecOut.z = idx;
+			} else
+			{
+				vecOut.z = idx/y;
+				vecOut.y = idx - vecOut.z*y;
+			}
+		} else
+		{
+			if(y==0)
+			{
+				vecOut.z = idx/x;
+				vecOut.x = idx - vecOut.z*x;
+			} else
+			{
+				vecOut.z = idx/(x*y);
+				idx -= vecOut.z*x*y;
+				vecOut.y = idx/x;
+				vecOut.x = idx - vecOut.y*x;
+			}
+		}
+		return vecOut;
+	}
+
 #define EXTERN_TYPE VEC_THIS_CLASS
 #include "VecFuncs.h"
 #undef EXTERN_TYPE

@@ -92,12 +92,12 @@ std::string MexLinearUnmixing::check(int nlhs, mxArray* plhs[], int nrhs, const 
 	if (nlhs != 1)
 		return "Requires one output!";
 
-	size_t numDims1 = mxGetNumberOfDimensions(prhs[0]);
+	size_t numDims1 = int(mxGetNumberOfDimensions(prhs[0]));
 	const mwSize* DIMS1 = mxGetDimensions(prhs[0]);
-	size_t numDims2 = mxGetNumberOfDimensions(prhs[1]);
+	size_t numDims2 = int(mxGetNumberOfDimensions(prhs[1]));
 	const mwSize* DIMS2 = mxGetDimensions(prhs[1]);
 	
-	int numImages = DIMS1[numDims1 - 1];
+	size_t numImages = DIMS1[numDims1 - 1];
 
 	if (numDims1 > 4)
 		return "Input images can be at most 3-D!";

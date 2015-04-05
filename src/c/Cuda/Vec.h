@@ -180,7 +180,7 @@ public:
 	}
 
 	template<typename T>
-	DEVICE_PREFIX VEC_THIS_CLASS<size_t> coordAddressOf(T idx)
+	DEVICE_PREFIX VEC_THIS_CLASS<size_t> coordAddressOf(T idx)const
 	{
 		VEC_THIS_CLASS<size_t> vecOut = VEC_THIS_CLASS<size_t>(0,0,0);
 		if(x==0 && y==0 && z==0)

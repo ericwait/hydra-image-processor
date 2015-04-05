@@ -55,7 +55,7 @@ void MexMarkovRandomFieldDenoiser::execute(int nlhs, mxArray* plhs[], int nrhs, 
 		float* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
 
-		markovRandomFieldDenoiser(imageIn,imageDims,maxIterations,&imageOut,device);
+		markovRandomFieldDenoiser(imageIn,imageDims,int(maxIterations),&imageOut,device);
 	}
 // 	else if (mxIsDouble(prhs[0]))
 // 	{

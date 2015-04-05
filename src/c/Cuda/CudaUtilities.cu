@@ -50,7 +50,7 @@ void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &
 		else
 		{
 			unsigned long index;
-			_BitScanReverse(&index,mxThreads);
+			_BitScanReverse(&index,unsigned long(mxThreads));
 
 			int dim = index/3;
 			threads.x = 1 << MAX(dim,(int)index - 2*dim);

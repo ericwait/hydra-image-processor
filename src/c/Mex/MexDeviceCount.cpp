@@ -20,8 +20,8 @@ void MexDeviceCount::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray*
 
 		for(int i=0; i<numDevices; ++i)
 		{
-			mxSetFieldByNumber(plhs[1],i,total_field,mxCreateDoubleScalar(memStats[i*2]));
-			mxSetFieldByNumber(plhs[1],i,avail_field,mxCreateDoubleScalar(memStats[i*2+1]));
+			mxSetFieldByNumber(plhs[1],i,total_field,mxCreateDoubleScalar(double(memStats[i*2])));
+			mxSetFieldByNumber(plhs[1],i,avail_field,mxCreateDoubleScalar(double(memStats[i*2+1])));
 		}
 	}
 }
