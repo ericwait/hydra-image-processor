@@ -26,12 +26,13 @@ public:
 	{
 		defaults();
 		image = NULL;
-		imageDims = dims;
 		maxImageDims = dims;
+		imageDims = dims;
 		roiSizes = dims;
 		this->device = device;
 		HANDLE_ERROR(cudaSetDevice(device));
 		HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(PixelType)*dims.product()));
+		HANDLE_ERROR(cudaMemset(image,0,sizeof(PixelType)*dims.product()));
 	}
 
 	~CudaImageContainer()
@@ -42,8 +43,10 @@ public:
 	CudaImageContainer(const CudaImageContainer& other)
 	{
 		device = other.device;
-		imageDims = other.imageDims;
 		maxImageDims = other.maxImageDims;
+		imageDims = other.imageDims;
+		roiStarts = other.roiStarts;
+		roiSizes = other.roiSizes;
 		image = other.image;
 	}
 
@@ -57,43 +60,44 @@ public:
 
 	__device__ PixelType& operator[]( DeviceVec<size_t> coordinate )
 	{
-		coordinate += roiStarts;
-		const DeviceVec<size_t>& deviceImageDims = reinterpret_cast<const DeviceVec<size_t>&>(imageDims);
-		return image[deviceImageDims.linearAddressAt(coordinate)];
+		coordinate += DeviceVec<size_t>(roiStarts);
+		DeviceVec<size_t> deviceImageDims = DeviceVec<size_t>(imageDims);
+
+		size_t ind = deviceImageDims.linearAddressAt(coordinate);
+		return image[ind];
 	}
 
 	__device__ const PixelType& operator[]( DeviceVec<size_t> coordinate ) const
 	{
-		coordinate += roiStarts;
-		const DeviceVec<size_t>& deviceImageDims = reinterpret_cast<const DeviceVec<size_t>&>(imageDims);
+		coordinate += DeviceVec<size_t>(roiStarts);
+		DeviceVec<size_t> deviceImageDims = DeviceVec<size_t>(imageDims);
+
 		return image[deviceImageDims.linearAddressAt(coordinate)];
 	}
 
 	__device__ PixelType& operator[](size_t idx)
 	{
-		if (roiStarts==DeviceVec<size_t> (0,0,0))
+		DeviceVec<size_t> deviceStarts = DeviceVec<size_t>(roiStarts);
+		if(deviceStarts==DeviceVec<size_t>(0,0,0))
 			return image[idx];
 
-		DeviceVec<size_t> coord = imageDims.coordAddressOf (idx);
-		coord += roiStarts;
+		DeviceVec<size_t> deviceImageDims = DeviceVec<size_t>(imageDims);
+		DeviceVec<size_t> coord = deviceImageDims.coordAddressOf(idx);
 
-		if (coord>roiStarts+roiSizes)
-			throw runtime_error ("Index is out of ROI bounds!");
-
+		coord += deviceStarts;
 		return this[coord];
 	}
 
 	__device__ const PixelType& operator[]( size_t idx) const
 	{
-		if (roiStarts==DeviceVec<size_t> (0,0,0))
+		DeviceVec<size_t> deviceStarts = DeviceVec<size_t>(roiStarts);
+		if(deviceStarts==DeviceVec<size_t>(0,0,0))
 			return image[idx];
 
-		DeviceVec<size_t> coord = imageDims.coordAddressOf (idx);
-		coord += roiStarts;
+		DeviceVec<size_t> deviceImageDims = DeviceVec<size_t>(imageDims);
+		DeviceVec<size_t> coord = deviceImageDims.coordAddressOf(idx);
 
-		if (coord>roiStarts+roiSizes)
-			throw runtime_error ("Index is out of ROI bounds!");
-
+		coord += deviceStarts;
 		return this[coord];
 	}
 
@@ -114,11 +118,12 @@ public:
 		HANDLE_ERROR(cudaMemcpy(image,imageIn,sizeof(PixelType)*dims.product(),cudaMemcpyHostToDevice));
 	}
 
-	Vec<size_t> getDims() const {return Vec<size_t>(imageDims);}
-	__device__ DeviceVec<size_t> getDeviceDims() const {return DeviceVec<size_t>(imageDims);}
-	__device__ size_t getWidth() const {return imageDims.x;}
-	__device__ size_t getHeight() const {return imageDims.y;}
-	__device__ size_t getDepth() const {return imageDims.z;}
+
+	Vec<size_t> getDims() const { return roiSizes; }
+	__device__ DeviceVec<size_t> getDeviceDims() const { return DeviceVec<size_t>(roiSizes); }
+	__device__ size_t getWidth() const { return DeviceVec<size_t>(roiSizes).x; }
+	__device__ size_t getHeight() const { return DeviceVec<size_t>(roiSizes).y; }
+	__device__ size_t getDepth() const { return DeviceVec<size_t>(roiSizes).z; }
 
 	bool setDims(Vec<size_t> dims)
 	{
@@ -128,6 +133,27 @@ public:
 		imageDims = dims;
 
 		return true;
+	}
+	bool setROIstart(Vec<size_t> starts)
+	{
+		if(starts>=imageDims)
+			return false;
+
+		roiStarts = starts;
+		return true;
+	}
+	bool setROIsize(Vec<size_t> sizes)
+	{
+		if(roiStarts+sizes>imageDims)
+			return false;
+
+		roiSizes = sizes;
+		return true;
+	}
+	void resetROI()
+	{
+		roiStarts = Vec<size_t>(0,0,0);
+		roiSizes = imageDims;
 	}
 
 protected:
@@ -149,7 +175,7 @@ protected:
 	int device;
 	Vec<size_t> maxImageDims;
 	Vec<size_t> imageDims;
-	PixelType*	image;
 	Vec<size_t> roiStarts;
 	Vec<size_t> roiSizes;
+	PixelType*	image;
 };
