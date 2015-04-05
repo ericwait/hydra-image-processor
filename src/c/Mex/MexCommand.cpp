@@ -40,6 +40,7 @@ void MexCommand::init()
  	REGISTER_COMMAND(MexSumArray);
 	REGISTER_COMMAND(MexSegment);
  	REGISTER_COMMAND(MexThresholdFilter);
+	REGISTER_COMMAND(MexTileImage);
 	REGISTER_COMMAND(MexVariance);
  }
  

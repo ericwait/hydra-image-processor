@@ -419,6 +419,19 @@ public:
 	virtual std::string printHelp();
 };
 
+class MexTileImage : MexCommand
+{
+public:
+	MexTileImage(){}
+	virtual ~MexTileImage(){}
+
+	virtual void execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]);
+	virtual std::string check(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]);
+	virtual std::string printUsage();
+	virtual std::string printHelp();
+};
+
+
 class MexVariance : MexCommand
 {
 public:

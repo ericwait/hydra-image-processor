@@ -131,6 +131,9 @@
     <ClCompile Include="Mex\MexRidgidRegistration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mex\MexTileImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Mex\CudaMex.def">

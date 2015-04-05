@@ -220,6 +220,14 @@ IMAGE_PROCESSOR_API int* thresholdFilter(const int* imageIn, Vec<size_t> dims, i
 IMAGE_PROCESSOR_API float* thresholdFilter(const float* imageIn, Vec<size_t> dims, float thresh, float** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API double* thresholdFilter(const double* imageIn, Vec<size_t> dims, double thresh, double** imageOut = NULL, int device = 0);
 
+IMAGE_PROCESSOR_API unsigned char* tileImage(const unsigned char* imageIn,Vec<size_t> dims,Vec<size_t> roiStart,Vec<size_t> roiSize,unsigned char** imageOut=NULL,int device=0);
+IMAGE_PROCESSOR_API unsigned short* tileImage(const unsigned short* imageIn,Vec<size_t> dims,Vec<size_t> roiStart,Vec<size_t> roiSize,unsigned short** imageOut=NULL,int device=0);
+IMAGE_PROCESSOR_API short* tileImage(const short* imageIn,Vec<size_t> dims,Vec<size_t> roiStart,Vec<size_t> roiSize,short** imageOut=NULL,int device=0);
+IMAGE_PROCESSOR_API unsigned int* tileImage(const unsigned int* imageIn,Vec<size_t> dims,Vec<size_t> roiStart,Vec<size_t> roiSize,unsigned int** imageOut=NULL,int device=0);
+IMAGE_PROCESSOR_API int* tileImage(const int* imageIn,Vec<size_t> dims,Vec<size_t> roiStart,Vec<size_t> roiSize,int** imageOut=NULL,int device=0);
+IMAGE_PROCESSOR_API float* tileImage(const float* imageIn,Vec<size_t> dims,Vec<size_t> roiStart,Vec<size_t> roiSize,float** imageOut=NULL,int device=0);
+IMAGE_PROCESSOR_API double* tileImage(const double* imageIn,Vec<size_t> dims,Vec<size_t> roiStart,Vec<size_t> roiSize,double** imageOut=NULL,int device=0);
+
 IMAGE_PROCESSOR_API double variance(const unsigned char* imageIn, Vec<size_t> dims, int device = 0);
 IMAGE_PROCESSOR_API double variance(const unsigned short* imageIn, Vec<size_t> dims, int device = 0);
 IMAGE_PROCESSOR_API double variance(const short* imageIn, Vec<size_t> dims, int device = 0);

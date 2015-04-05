@@ -31,6 +31,7 @@
     <ClInclude Include="Cuda\CudaHistogram.cuh" />
     <ClInclude Include="Cuda\CudaImageContainer.cuh" />
     <ClInclude Include="Cuda\CudaImageContainerClean.cuh" />
+    <ClInclude Include="Cuda\CudaImageCopy.cuh" />
     <ClInclude Include="Cuda\CudaImageReduction.cuh" />
     <ClInclude Include="Cuda\CudaIntensityProjection.cuh" />
     <ClInclude Include="Cuda\CudaLinearUnmixing.cuh" />

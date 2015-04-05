@@ -136,6 +136,7 @@ copy $(OutDir)\CudaMex.dll ..\..\src\MATLAB\CudaMex.mexw64</Command>
     <ClCompile Include="Mex\MexSegment.cpp" />
     <ClCompile Include="Mex\MexSumArray.cpp" />
     <ClCompile Include="Mex\MexThresholdFilter.cpp" />
+    <ClCompile Include="Mex\MexTileImage.cpp" />
     <ClCompile Include="Mex\MexVariance.cpp" />
   </ItemGroup>
   <ItemGroup>

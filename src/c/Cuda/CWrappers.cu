@@ -3,6 +3,7 @@
 #include "CudaContrastEnhancement.cuh"
 #include "CudaDeviceCount.cuh"
 #include "CudaHistogram.cuh"
+#include "CudaImageCopy.cuh"
 #include "CudaGaussianFilter.cuh"
 #include "CudaGetMinMax.cuh"
 #include "CudaLinearUnmixing.cuh"
@@ -942,6 +943,43 @@ double* segment(const double* imageIn, Vec<size_t> dims, double alpha, Vec<size_
 {
 	return cThresholdFilter(imageIn,dims,thresh,imageOut,device);
 }
+
+
+ unsigned char* tileImage(const unsigned char* imageIn,Vec<size_t> dims,Vec<size_t> roiStart,Vec<size_t> roiSize,unsigned char** imageOut/*=NULL*/,int device/*=0*/)
+ {
+	 return cTileImage(imageIn,dims,roiStart,roiSize,imageOut,device);
+ }
+
+ unsigned short* tileImage(const unsigned short* imageIn,Vec<size_t> dims,Vec<size_t> roiStart,Vec<size_t> roiSize,unsigned short** imageOut/*=NULL*/,int device/*=0*/)
+ {
+	 return cTileImage(imageIn,dims,roiStart,roiSize,imageOut,device);
+ }
+
+ short* tileImage(const short* imageIn,Vec<size_t> dims,Vec<size_t> roiStart,Vec<size_t> roiSize,short** imageOut/*=NULL*/,int device/*=0*/)
+ {
+	 return cTileImage(imageIn,dims,roiStart,roiSize,imageOut,device);
+ }
+
+ unsigned int* tileImage(const unsigned int* imageIn,Vec<size_t> dims,Vec<size_t> roiStart,Vec<size_t> roiSize,unsigned int** imageOut/*=NULL*/,int device/*=0*/)
+ {
+	 return cTileImage(imageIn,dims,roiStart,roiSize,imageOut,device);
+ }
+
+ int* tileImage(const int* imageIn,Vec<size_t> dims,Vec<size_t> roiStart,Vec<size_t> roiSize,int** imageOut/*=NULL*/,int device/*=0*/)
+ {
+	 return cTileImage(imageIn,dims,roiStart,roiSize,imageOut,device);
+ }
+
+ float* tileImage(const float* imageIn,Vec<size_t> dims,Vec<size_t> roiStart,Vec<size_t> roiSize,float** imageOut/*=NULL*/,int device/*=0*/)
+ {
+	 return cTileImage(imageIn,dims,roiStart,roiSize,imageOut,device);
+ }
+
+ double* tileImage(const double* imageIn,Vec<size_t> dims,Vec<size_t> roiStart,Vec<size_t> roiSize,double** imageOut/*=NULL*/,int device/*=0*/)
+ {
+	 return cTileImage(imageIn,dims,roiStart,roiSize,imageOut,device);
+ }
+
 
  double variance(const unsigned char* imageIn, Vec<size_t> dims, int device/*=0*/)
  {
