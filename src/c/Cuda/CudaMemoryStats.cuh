@@ -3,12 +3,12 @@
 
 int cMemoryStats(size_t** stats)
 {
-	int cnt = 0;
-	cudaGetDeviceCount(&cnt);
+	int deviceCount = 0;
+	cudaGetDeviceCount(&deviceCount);
 
-	*stats = new size_t[cnt*2];
+	*stats = new size_t[deviceCount*2];
 
-	for(int i=0; i<cnt; ++i)
+	for(int i=0; i<deviceCount; ++i)
 	{
 		cudaSetDevice(i);
 
@@ -18,5 +18,5 @@ int cMemoryStats(size_t** stats)
 		(*stats)[i*2+1] = availMem;
 	}
 
-	return cnt;
+	return deviceCount;
 }
