@@ -5,8 +5,8 @@
 class ImageChunk
 {
 public:
-	Vec<size_t> getFullChunkSize(){return imageEnd - imageStart;}
-	Vec<size_t> getROIsize(){return chunkROIend - chunkROIstart;}
+	Vec<size_t> getFullChunkSize(){return imageEnd - imageStart + 1;}
+	Vec<size_t> getROIsize(){return chunkROIend - chunkROIstart + 1;}
 
 	template <typename PixelType>
 	bool sendROI(const PixelType* imageIn, Vec<size_t> dims, CudaImageContainer<PixelType>* deviceImage)
@@ -86,7 +86,7 @@ public:
 					Vec<size_t> outIdx(imageROIstart+roiIdx);
 
 					PixelType* outPtr = outImage + dims.linearAddressAt(outIdx);
-					const PixelType* chunkPtr = deviceImage->getConstImagePointer() + deviceImage->getDims().linearAddressAt(chunkIdx);
+					const PixelType* chunkPtr = deviceImage->getConstImagePointer() + getFullChunkSize().linearAddressAt(chunkIdx);
 
 					HANDLE_ERROR(cudaMemcpy(outPtr,chunkPtr,sizeof(PixelType)*getROIsize().x,cudaMemcpyDeviceToHost));
 				}

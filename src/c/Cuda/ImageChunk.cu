@@ -59,9 +59,9 @@ std::vector<ImageChunk> calculateChunking(Vec<size_t> orgImageDims, Vec<size_t> 
 			for (curChunk.x=0; curChunk.x<numChunks.x; ++curChunk.x)
 			{
 				imageROIstart = chunkDelta * curChunk;
-				imageROIend = Vec<size_t>::min(imageROIstart + chunkDelta, orgImageDims);
+				imageROIend = Vec<size_t>::min(imageROIstart + chunkDelta, orgImageDims -1);
 				imageStart = Vec<size_t>(Vec<int>::max(Vec<int>(imageROIstart)-Vec<int>(margin), Vec<int>(0,0,0)));
-				imageEnd = Vec<size_t>::min(imageROIend + margin, orgImageDims);
+				imageEnd = Vec<size_t>::min(imageROIend + margin, orgImageDims-1);
 				chunkROIstart = imageROIstart - imageStart;
 				chunkROIend = imageROIend - imageStart;
 
