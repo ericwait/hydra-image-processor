@@ -154,6 +154,7 @@ template <class PixelType>
 PixelType* cReduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, 
 					   ReductionMethods method=REDUC_MEAN, PixelType** imageOut=NULL, int device=0)
 {
+	cudaSetDevice(device);
 	reductions = reductions.clamp(Vec<size_t>(1,1,1),dims);
 	reducedDims = dims / reductions;
 	PixelType* reducedImage;
