@@ -20,5 +20,9 @@ PixelType* cContrastEnhancement(const PixelType* imageIn, Vec<size_t> dims, Vec<
 
 	delete[] imGauss;
 
-	return cMedianFilter(imSub,dims,neighborhood,imageOut,device);
+	cMedianFilter(imSub,dims,neighborhood,imageOut,device);
+
+	delete[] imSub;
+	
+	return imageOut;
 }
