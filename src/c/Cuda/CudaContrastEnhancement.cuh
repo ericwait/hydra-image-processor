@@ -24,5 +24,5 @@ PixelType* cContrastEnhancement(const PixelType* imageIn, Vec<size_t> dims, Vec<
 
 	delete[] imSub;
 	
-	return imageOut;
+	return *imageOut;
 }
