@@ -39,23 +39,23 @@ private:
  class MexAddConstant : MexCommand
  {
  public:
- 	MexAddConstant(){}
- 	virtual ~MexAddConstant(){}
- 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string printUsage();
+	MexAddConstant(){}
+	virtual ~MexAddConstant(){}
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
 	virtual std::string printHelp();
  };
  
  class MexAddImageWith : MexCommand
  {
  public:
- 	MexAddImageWith(){}
- 	virtual ~MexAddImageWith(){}
+	MexAddImageWith(){}
+	virtual ~MexAddImageWith(){}
  
- 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string printUsage();
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
 	virtual std::string printHelp();
  };
  
@@ -98,12 +98,12 @@ public:
  class MexGaussianFilter : MexCommand
  {
  public:
- 	MexGaussianFilter(){}
- 	virtual ~MexGaussianFilter(){}
+	MexGaussianFilter(){}
+	virtual ~MexGaussianFilter(){}
  
- 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string printUsage();
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
 	virtual std::string printHelp();
  };
 
@@ -182,36 +182,36 @@ public:
  class MexMaxFilterKernel : MexCommand
  {
  public:
- 	MexMaxFilterKernel(){}
- 	virtual ~MexMaxFilterKernel(){}
+	MexMaxFilterKernel(){}
+	virtual ~MexMaxFilterKernel(){}
  
- 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string printUsage();
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
  virtual std::string printHelp();
  };
  
  class MexMaxFilterNeighborhood : MexCommand
  {
  public:
- 	MexMaxFilterNeighborhood(){}
- 	virtual ~MexMaxFilterNeighborhood(){}
+	MexMaxFilterNeighborhood(){}
+	virtual ~MexMaxFilterNeighborhood(){}
  
- 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string printUsage();
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
  virtual std::string printHelp();
  };
  
  class MexMeanFilter : MexCommand
  {
  public:
- 	MexMeanFilter(){}
- 	virtual ~MexMeanFilter(){}
+	MexMeanFilter(){}
+	virtual ~MexMeanFilter(){}
  
- 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string printUsage();
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
 	virtual std::string printHelp();
  };
 
@@ -230,36 +230,36 @@ public:
  class MexMinFilterEllipsoid : MexCommand
  {
  public:
- 	MexMinFilterEllipsoid(){}
- 	virtual ~MexMinFilterEllipsoid(){}
+	MexMinFilterEllipsoid(){}
+	virtual ~MexMinFilterEllipsoid(){}
  
- 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string printUsage();
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
 virtual std::string printHelp();
  };
  
  class MexMinFilterKernel : MexCommand
  {
  public:
- 	MexMinFilterKernel(){}
- 	virtual ~MexMinFilterKernel(){}
+	MexMinFilterKernel(){}
+	virtual ~MexMinFilterKernel(){}
  
- 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string printUsage();
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
 virtual std::string printHelp();
  };
  
  class MexMinFilterNeighborhood : MexCommand
  {
  public:
- 	MexMinFilterNeighborhood(){}
- 	virtual ~MexMinFilterNeighborhood(){}
+	MexMinFilterNeighborhood(){}
+	virtual ~MexMinFilterNeighborhood(){}
  
- 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string printUsage();
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
 virtual std::string printHelp();
  };
 
@@ -290,24 +290,24 @@ virtual std::string printHelp();
  class MexMultiplyImage : MexCommand
  {
  public:
- 	MexMultiplyImage(){}
- 	virtual ~MexMultiplyImage(){}
+	MexMultiplyImage(){}
+	virtual ~MexMultiplyImage(){}
  
- 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string printUsage();
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
 virtual std::string printHelp();
  };
  
  class MexMultiplyTwoImages : MexCommand
  {
  public:
- 	MexMultiplyTwoImages(){}
- 	virtual ~MexMultiplyTwoImages(){}
+	MexMultiplyTwoImages(){}
+	virtual ~MexMultiplyTwoImages(){}
  
- 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string printUsage();
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
 virtual std::string printHelp();
  };
  
@@ -398,12 +398,12 @@ public:
  class MexReduceImage : MexCommand
  {
  public:
- 	MexReduceImage(){}
- 	virtual ~MexReduceImage(){}
+	MexReduceImage(){}
+	virtual ~MexReduceImage(){}
  
- 	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
- 	virtual std::string printUsage();
+	virtual void execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]);
+	virtual std::string printUsage();
 	virtual std::string printHelp();
  };
 
@@ -442,7 +442,6 @@ public:
 	virtual std::string printUsage();
 	virtual std::string printHelp();
 };
-
 
 class MexVariance : MexCommand
 {

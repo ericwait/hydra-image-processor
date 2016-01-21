@@ -11,76 +11,76 @@ void MexCommand::init()
 // 	//TODO Put every class here!
 	REGISTER_COMMAND(MexAddConstant);
 	REGISTER_COMMAND(MexAddImageWith);
- 	REGISTER_COMMAND(MexApplyPolyTransformation);
- 	REGISTER_COMMAND(MexContrastEnhancement);
+	REGISTER_COMMAND(MexApplyPolyTransformation);
+	REGISTER_COMMAND(MexContrastEnhancement);
 	REGISTER_COMMAND(MexDeviceCount);
- 	REGISTER_COMMAND(MexGaussianFilter);
- 	REGISTER_COMMAND(MexHistogram);
- 	REGISTER_COMMAND(MexImagePow);
+	REGISTER_COMMAND(MexGaussianFilter);
+	REGISTER_COMMAND(MexHistogram);
+	REGISTER_COMMAND(MexImagePow);
 	REGISTER_COMMAND(MexLinearUnmixing);
 	REGISTER_COMMAND(MexMarkovRandomFieldDenoiser);
- 	REGISTER_COMMAND(MexMaxFilterEllipsoid);
- 	REGISTER_COMMAND(MexMaxFilterKernel);
- 	REGISTER_COMMAND(MexMaxFilterNeighborhood);
- 	REGISTER_COMMAND(MexMeanFilter);
- 	REGISTER_COMMAND(MexMedianFilter);
- 	REGISTER_COMMAND(MexMinFilterEllipsoid);
- 	REGISTER_COMMAND(MexMinFilterKernel);
- 	REGISTER_COMMAND(MexMinFilterNeighborhood);
+	REGISTER_COMMAND(MexMaxFilterEllipsoid);
+	REGISTER_COMMAND(MexMaxFilterKernel);
+	REGISTER_COMMAND(MexMaxFilterNeighborhood);
+	REGISTER_COMMAND(MexMeanFilter);
+	REGISTER_COMMAND(MexMedianFilter);
+	REGISTER_COMMAND(MexMinFilterEllipsoid);
+	REGISTER_COMMAND(MexMinFilterKernel);
+	REGISTER_COMMAND(MexMinFilterNeighborhood);
 	REGISTER_COMMAND(MexMinMax);
 	REGISTER_COMMAND(MexMorphologicalClosure);
 	REGISTER_COMMAND(MexMorphologicalOpening);
- 	REGISTER_COMMAND(MexMultiplyImage);
+	REGISTER_COMMAND(MexMultiplyImage);
 	REGISTER_COMMAND(MexMultiplyTwoImages);
- 	REGISTER_COMMAND(MexNormalizedCovariance);
- 	REGISTER_COMMAND(MexNormalizedHistogram);
- 	REGISTER_COMMAND(MexOtsuThresholdFilter);
- 	REGISTER_COMMAND(MexOtsuThresholdValue);
- 	REGISTER_COMMAND(MexReduceImage);
- 	REGISTER_COMMAND(MexSumArray);
+	REGISTER_COMMAND(MexNormalizedCovariance);
+	REGISTER_COMMAND(MexNormalizedHistogram);
+	REGISTER_COMMAND(MexOtsuThresholdFilter);
+	REGISTER_COMMAND(MexOtsuThresholdValue);
+	REGISTER_COMMAND(MexReduceImage);
+	REGISTER_COMMAND(MexSumArray);
 	REGISTER_COMMAND(MexSegment);
- 	REGISTER_COMMAND(MexThresholdFilter);
 	REGISTER_COMMAND(MexStdFilter);
+	REGISTER_COMMAND(MexThresholdFilter);
 	REGISTER_COMMAND(MexTileImage);
 	REGISTER_COMMAND(MexVariance);
  }
  
  MexCommand* MexCommand::getCommand(std::string cmd)
  {
- 	if (commandList.count(cmd)!=0)
- 		return commandList[cmd];
+	if (commandList.count(cmd)!=0)
+		return commandList[cmd];
  
- 	return NULL;
+	return NULL;
  }
  
  std::string MexCommand::printUsageList()
  {
- 	std::string list = "";
- 	std::map<std::string,MexCommand*>::iterator it = commandList.begin();
+	std::string list = "";
+	std::map<std::string,MexCommand*>::iterator it = commandList.begin();
  
- 	for (; it!=commandList.end(); ++it)
- 	{
- 		list += it->second->printUsage();
- 		list += "\n";
- 	}
- 	
- 	return list;
+	for (; it!=commandList.end(); ++it)
+	{
+		list += it->second->printUsage();
+		list += "\n";
+	}
+	
+	return list;
  }
  
  void MexCommand::cleanUp()
  {
- 	std::map<std::string,MexCommand*>::iterator it = commandList.begin();
+	std::map<std::string,MexCommand*>::iterator it = commandList.begin();
  
- 	for (; it!=commandList.end(); ++it)
- 		delete it->second;
+	for (; it!=commandList.end(); ++it)
+		delete it->second;
  
- 	commandList.clear();
+	commandList.clear();
 	clearDevice();
  }
  
  void MexCommand::addCommand(const std::string commandText, MexCommand* commandObject)
  {
- 	commandList.insert(std::pair<std::string,MexCommand*>(commandText,commandObject));
+	commandList.insert(std::pair<std::string,MexCommand*>(commandText,commandObject));
  }
 
  void MexCommand::setupImagePointers(const mxArray* imageIn, unsigned char** image, Vec<size_t>* dims, mxArray** argOut/*=NULL*/, unsigned char** imageOut/*=NULL*/)
