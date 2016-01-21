@@ -21,6 +21,7 @@
 #include "CudaImageReduction.cuh"
 #include "CudaSum.cuh"
 #include "CudaSegment.cuh"
+#include "CudaStdFilter.cuh"
 #include "CudaThreshold.cuh"
 #include "CudaVariance.cuh"
 
@@ -909,7 +910,43 @@ double* segment(const double* imageIn, Vec<size_t> dims, double alpha, Vec<size_
  }
 
 
- unsigned char* thresholdFilter(const unsigned char* imageIn, Vec<size_t> dims, unsigned char thresh, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+unsigned char* stdFilter(const unsigned char* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,unsigned char** imageOut /*= NULL*/,int device /*= 0*/)
+{
+	return cStdFilter(imageIn,dims,neighborhood,imageOut,device);
+}
+
+unsigned short* stdFilter(const unsigned short* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,unsigned short** imageOut /*= NULL*/,int device /*= 0*/)
+{
+	return cStdFilter(imageIn,dims,neighborhood,imageOut,device);
+}
+
+short* stdFilter(const short* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,short** imageOut /*= NULL*/,int device /*= 0*/)
+{
+	return cStdFilter(imageIn,dims,neighborhood,imageOut,device);
+}
+
+unsigned int* stdFilter(const unsigned int* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,unsigned int** imageOut /*= NULL*/,int device /*= 0*/)
+{
+	return cStdFilter(imageIn,dims,neighborhood,imageOut,device);
+}
+
+int* stdFilter(const int* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,int** imageOut /*= NULL*/,int device /*= 0*/)
+{
+	return cStdFilter(imageIn,dims,neighborhood,imageOut,device);
+}
+
+float* stdFilter(const float* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,float** imageOut /*= NULL*/,int device /*= 0*/)
+{
+	return cStdFilter(imageIn,dims,neighborhood,imageOut,device);
+}
+
+double* stdFilter(const double* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,double** imageOut /*= NULL*/,int device /*= 0*/)
+{
+	return cStdFilter(imageIn,dims,neighborhood,imageOut,device);
+}
+
+
+unsigned char* thresholdFilter(const unsigned char* imageIn,Vec<size_t> dims,unsigned char thresh,unsigned char** imageOut/*=NULL*/,int device/*=0*/)
 {
 	return cThresholdFilter(imageIn,dims,thresh,imageOut,device);
 }

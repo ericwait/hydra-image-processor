@@ -49,6 +49,7 @@
     <ClInclude Include="Cuda\CudaPow.cuh" />
     <ClInclude Include="Cuda\CudaRidgidRegistaration.cuh" />
     <ClInclude Include="Cuda\CudaSegment.cuh" />
+    <ClInclude Include="Cuda\CudaStdFilter.cuh" />
     <ClInclude Include="Cuda\CudaSum.cuh" />
     <ClInclude Include="Cuda\CudaThreshold.cuh" />
     <ClInclude Include="Cuda\CudaUtilities.cuh" />
@@ -161,8 +162,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </Link>
     <PostBuildEvent>
       <Command>
-
-</Command>
+      </Command>
     </PostBuildEvent>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>

@@ -128,6 +128,7 @@ copy $(OutDir)\CudaMex.dll "..\..\src\MATLAB\+Cuda\Mex.mexw64"</Command>
     <ClCompile Include="Mex\MexReduceImage.cpp" />
     <ClCompile Include="Mex\MexRidgidRegistration.cpp" />
     <ClCompile Include="Mex\MexSegment.cpp" />
+    <ClCompile Include="Mex\MexStdFilter.cpp" />
     <ClCompile Include="Mex\MexSumArray.cpp" />
     <ClCompile Include="Mex\MexThresholdFilter.cpp" />
     <ClCompile Include="Mex\MexTileImage.cpp" />

@@ -212,6 +212,14 @@ IMAGE_PROCESSOR_API int* segment(const int* imageIn, Vec<size_t> dims, double al
 IMAGE_PROCESSOR_API float* segment(const float* imageIn, Vec<size_t> dims, double alpha, Vec<size_t> kernelDims, float* kernel = NULL, float** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API double* segment(const double* imageIn, Vec<size_t> dims, double alpha, Vec<size_t> kernelDims, float* kernel = NULL, double** imageOut = NULL, int device = 0);
 
+IMAGE_PROCESSOR_API unsigned char* stdFilter(const unsigned char* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,unsigned char** imageOut = NULL,int device = 0);
+IMAGE_PROCESSOR_API unsigned short* stdFilter(const unsigned short* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,unsigned short** imageOut = NULL,int device = 0);
+IMAGE_PROCESSOR_API short* stdFilter(const short* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,short** imageOut = NULL,int device = 0);
+IMAGE_PROCESSOR_API unsigned int* stdFilter(const unsigned int* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,unsigned int** imageOut = NULL,int device = 0);
+IMAGE_PROCESSOR_API int* stdFilter(const int* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,int** imageOut = NULL,int device = 0);
+IMAGE_PROCESSOR_API float* stdFilter(const float* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,float** imageOut = NULL,int device = 0);
+IMAGE_PROCESSOR_API double* stdFilter(const double* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,double** imageOut = NULL,int device = 0);
+
 IMAGE_PROCESSOR_API unsigned char* thresholdFilter(const unsigned char* imageIn, Vec<size_t> dims, unsigned char thresh, unsigned char** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API unsigned short* thresholdFilter(const unsigned short* imageIn, Vec<size_t> dims, unsigned short thresh, unsigned short** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API short* thresholdFilter(const short* imageIn, Vec<size_t> dims, short thresh, short** imageOut = NULL, int device = 0);

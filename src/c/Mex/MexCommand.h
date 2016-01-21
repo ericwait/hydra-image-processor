@@ -383,6 +383,18 @@ public:
 	virtual std::string printHelp();
 };
 
+class MexStdFilter : MexCommand
+{
+public:
+	MexStdFilter() {}
+	virtual ~MexStdFilter() {}
+
+	virtual void execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]);
+	virtual std::string check(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]);
+	virtual std::string printUsage();
+	virtual std::string printHelp();
+};
+
  class MexReduceImage : MexCommand
  {
  public:
