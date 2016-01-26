@@ -12,29 +12,6 @@ template <class PixelType>
 class CudaImageContainer
 {
 public:
-	CudaImageContainer(const PixelType* imageIn, Vec<size_t> dims, int device=0)
-	{
-		defaults();
-		image = NULL;
-		maxImageDims = dims;
-		roiSizes = dims;
-		this->device = device;
-		loadImage(imageIn, dims);
-	}
-
-	CudaImageContainer(Vec<size_t> dims, int device=0)
-	{
-		defaults();
-		image = NULL;
-		maxImageDims = dims;
-		imageDims = dims;
-		roiSizes = dims;
-		this->device = device;
-		HANDLE_ERROR(cudaSetDevice(device));
-		HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(PixelType)*dims.product()));
-		HANDLE_ERROR(cudaMemset(image,0,sizeof(PixelType)*dims.product()));
-	}
-
 	~CudaImageContainer()
 	{
 		defaults();
@@ -101,34 +78,6 @@ public:
 		return this[coord];
 	}
 
-	void loadImage( const PixelType* imageIn, Vec<size_t> dims)
-	{
-		HANDLE_ERROR(cudaSetDevice(device));
-		if (dims!=imageDims)
-		{
-			if (image!=NULL)
-			{
-				HANDLE_ERROR(cudaFree(image));
-			}
-			checkFreeMemory(sizeof(PixelType)*dims.product(),device,true);
-			HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(PixelType)*dims.product()));
-			imageDims = dims;
-		}
-
-		HANDLE_ERROR(cudaMemcpy(image,imageIn,sizeof(PixelType)*dims.product(),cudaMemcpyHostToDevice));
-	}
-
-	PixelType* retriveImage(PixelType** imageOut=NULL)
-	{
-		HANDLE_ERROR(cudaSetDevice(device));
-
-		PixelType* imOut = setUpOutIm(roiSizes,imageOut);
-
-		HANDLE_ERROR(cudaMemcpy(imOut,image,roiSizes.product()*sizeof(PixelType),cudaMemcpyDeviceToHost));
-
-		return imOut;
-	}
-
 	Vec<size_t> getDims() const { return roiSizes; }
 	__device__ DeviceVec<size_t> getDeviceDims() const { return DeviceVec<size_t>(roiSizes); }
 	__device__ size_t getWidth() const { return DeviceVec<size_t>(roiSizes).x; }
@@ -166,12 +115,33 @@ public:
 		roiSizes = imageDims;
 	}
 
+	void loadImage(const PixelType* imageIn,Vec<size_t> dims)
+	{
+		HANDLE_ERROR(cudaSetDevice(device));
+		if(dims!=imageDims)
+		{
+			if(image!=NULL)
+			{
+				HANDLE_ERROR(cudaFree(image));
+			}
+			checkFreeMemory(sizeof(PixelType)*dims.product(),device,true);
+			HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(PixelType)*dims.product()));
+			imageDims = dims;
+		}
+
+		HANDLE_ERROR(cudaMemcpy(image,imageIn,sizeof(PixelType)*dims.product(),cudaMemcpyHostToDevice));
+	}
+
 protected:
 	CudaImageContainer()
 	{
 		defaults();
 		image = NULL;
 	}
+
+	CudaImageContainer(const PixelType* imageIn,Vec<size_t> dims,int device=0) {}
+
+	CudaImageContainer(Vec<size_t> dims,int device=0) {}
 
 	void defaults() 
 	{
