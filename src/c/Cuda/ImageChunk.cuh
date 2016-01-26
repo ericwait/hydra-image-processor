@@ -70,6 +70,9 @@ public:
 	template <typename PixelType>
 	void retriveROI(PixelType* outImage, Vec<size_t>dims, const CudaImageContainer<PixelType>* deviceImage)
 	{
+		cudaThreadSynchronize(); 
+		gpuErrchk(cudaPeekAtLastError());
+
 		if (getFullChunkSize()==dims)
 		{
 			HANDLE_ERROR(cudaMemcpy(outImage, deviceImage->getConstImagePointer(), sizeof(PixelType)*getFullChunkSize().product(),
@@ -97,6 +100,9 @@ public:
 	template <typename PixelTypeIn, typename PixelTypeOut>
 	void retriveROI(PixelTypeOut* outImage, Vec<size_t>dims, const CudaImageContainer<PixelTypeIn>* deviceImage)
 	{
+		cudaThreadSynchronize();
+		gpuErrchk(cudaPeekAtLastError());
+
 		PixelTypeIn* tempBuffer;
 		if (getFullChunkSize()==dims)
 		{
