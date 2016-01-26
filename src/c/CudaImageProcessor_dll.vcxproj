@@ -31,13 +31,16 @@
     <ClInclude Include="Cuda\CudaHistogram.cuh" />
     <ClInclude Include="Cuda\CudaImageContainer.cuh" />
     <ClInclude Include="Cuda\CudaImageContainerClean.cuh" />
+    <ClInclude Include="Cuda\CudaImageCopy.cuh" />
     <ClInclude Include="Cuda\CudaImageReduction.cuh" />
     <ClInclude Include="Cuda\CudaIntensityProjection.cuh" />
+    <ClInclude Include="Cuda\CudaLinearUnmixing.cuh" />
     <ClInclude Include="Cuda\CudaMarkovRandomFieldDenoiser.cuh" />
     <ClInclude Include="Cuda\CudaMask.cuh" />
     <ClInclude Include="Cuda\CudaMaxFilter.cuh" />
     <ClInclude Include="Cuda\CudaMeanFilter.cuh" />
     <ClInclude Include="Cuda\CudaMedianFilter.cuh" />
+    <ClInclude Include="Cuda\CudaMemoryStats.cuh" />
     <ClInclude Include="Cuda\CudaMinFilter.cuh" />
     <ClInclude Include="Cuda\CudaMorphologicalOperations.cuh" />
     <ClInclude Include="Cuda\CudaMultAddFilter.cuh" />
@@ -45,7 +48,9 @@
     <ClInclude Include="Cuda\CudaNormalizedCovariance.cuh" />
     <ClInclude Include="Cuda\CudaPolyTransferFunc.cuh" />
     <ClInclude Include="Cuda\CudaPow.cuh" />
+    <ClInclude Include="Cuda\CudaRidgidRegistaration.cuh" />
     <ClInclude Include="Cuda\CudaSegment.cuh" />
+    <ClInclude Include="Cuda\CudaStdFilter.cuh" />
     <ClInclude Include="Cuda\CudaSum.cuh" />
     <ClInclude Include="Cuda\CudaThreshold.cuh" />
     <ClInclude Include="Cuda\CudaUtilities.cuh" />
@@ -150,7 +155,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;WIN64;IMAGE_PROCESSOR_INTERNAL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRTDBG_MAP_ALLOC;WIN32;WIN64;IMAGE_PROCESSOR_INTERNAL;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
