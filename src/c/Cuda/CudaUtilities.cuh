@@ -16,9 +16,9 @@
 
 static void HandleError( cudaError_t err, const char *file, int line ) 
 {
-	char* errorMessage = new char[255];
 	if (err != cudaSuccess) 
 	{
+		char* errorMessage = new char[255];
 		sprintf_s(errorMessage, 255, "%s in %s at line %d\n", cudaGetErrorString( err ),	file, line );
 		throw std::runtime_error(errorMessage);
 	}

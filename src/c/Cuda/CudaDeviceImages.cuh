@@ -39,6 +39,8 @@ public:
 			delete temp;
 			deviceImages[i] = NULL;
 		}
+
+		delete[] deviceImages;
 	}
 
 	CudaImageContainer<PixelType>* getCurBuffer()
