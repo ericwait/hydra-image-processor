@@ -1,6 +1,6 @@
 #include "MexCommand.h"
 #include "Vec.h"
-#include "CWrappers.cuh"
+#include "CWrappers.h"
 #include "Defines.h"
 
 void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )

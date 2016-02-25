@@ -1,5 +1,5 @@
 #include "MexCommand.h"
-#include "CWrappers.cuh"
+#include "CWrappers.h"
 
 void MexDeviceCount::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {

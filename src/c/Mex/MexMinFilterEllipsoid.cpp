@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CHelpers.h"
 #include "Vec.h"
-#include "CWrappers.cuh"
+#include "CWrappers.h"
 
 void MexMinFilterEllipsoid::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
 {

@@ -2,7 +2,7 @@
 #include <string>
 #include "Process.h"
 #include "MexCommand.h"
-#include "CWrappers.cuh"
+#include "CWrappers.h"
  
  extern "C" 
  {

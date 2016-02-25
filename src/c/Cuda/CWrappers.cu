@@ -1,4 +1,4 @@
-#include "CWrappers.cuh"
+#include "CWrappers.h"
 #include "CudaAdd.cuh"
 #include "CudaContrastEnhancement.cuh"
 #include "CudaDeviceCount.cuh"
@@ -19,9 +19,9 @@
 #include "CudaPolyTransferFunc.cuh"
 #include "CudaPow.cuh"
 #include "CudaImageReduction.cuh"
-#include "CudaSum.cuh"
 #include "CudaSegment.cuh"
 #include "CudaStdFilter.cuh"
+#include "CudaSum.cuh"
 #include "CudaThreshold.cuh"
 #include "CudaVariance.cuh"
 

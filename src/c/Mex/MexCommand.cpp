@@ -1,6 +1,6 @@
 #include "MexCommand.h"
 #include "Vec.h"
-#include "CWrappers.cuh"
+#include "CWrappers.h"
 
 std::map<std::string,MexCommand*> MexCommand::commandList;
 
