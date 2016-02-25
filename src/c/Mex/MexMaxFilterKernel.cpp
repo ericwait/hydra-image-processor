@@ -106,7 +106,7 @@ std::string MexMaxFilterKernel::check( int nlhs, mxArray* plhs[], int nrhs, cons
 	if (imgNumDims>3)
 		return "Image can have a maximum of three dimensions!";
 
-	size_t kernDims = mxGetNumberOfDimensions(prhs[0]);
+	size_t kernDims = mxGetNumberOfDimensions(prhs[1]);
 	if (kernDims<1 || kernDims>3)
 		return "Kernel can only be either 1-D, 2-D, or 3-D!";
 
