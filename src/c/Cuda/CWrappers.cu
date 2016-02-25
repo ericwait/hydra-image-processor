@@ -19,6 +19,7 @@
 #include "CudaPolyTransferFunc.cuh"
 #include "CudaPow.cuh"
 #include "CudaImageReduction.cuh"
+#include "CudaRegionGrowing.cuh"
 #include "CudaSegment.cuh"
 #include "CudaStdFilter.cuh"
 #include "CudaSum.cuh"
@@ -838,7 +839,43 @@ float* markovRandomFieldDenoiser(const float* imageIn, Vec<size_t> dims, int max
 }
 
 
- size_t sumArray(const unsigned char* imageIn, size_t n, int device/*=0*/)
+ void regionGrowing(const unsigned char* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device/*=0*/)
+ {
+	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,device);
+ }
+
+ void regionGrowing(const unsigned short* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device/*=0*/)
+ {
+	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,device);
+ }
+
+ void regionGrowing(const short* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device/*=0*/)
+ {
+	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,device);
+ }
+
+ void regionGrowing(const unsigned int* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device/*=0*/)
+ {
+	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,device);
+ }
+
+ void regionGrowing(const int* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device/*=0*/)
+ {
+	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,device);
+ }
+
+ void regionGrowing(const float* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device/*=0*/)
+ {
+	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,device);
+ }
+
+ void regionGrowing(const double* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device/*=0*/)
+ {
+	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,device);
+ }
+
+
+ size_t sumArray(const unsigned char* imageIn,size_t n,int device/*=0*/)
 {
 	return cSumArray<size_t>(imageIn,n,device);
 }

@@ -37,6 +37,7 @@ void MexCommand::init()
 	REGISTER_COMMAND(MexOtsuThresholdFilter);
 	REGISTER_COMMAND(MexOtsuThresholdValue);
 	REGISTER_COMMAND(MexReduceImage);
+	REGISTER_COMMAND(MexRegionGrowing);
 	REGISTER_COMMAND(MexSumArray);
 	REGISTER_COMMAND(MexSegment);
 	REGISTER_COMMAND(MexStdFilter);
