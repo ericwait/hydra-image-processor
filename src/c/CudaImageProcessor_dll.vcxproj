@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="Cuda\CHelpers.h" />
     <ClInclude Include="Cuda\CudaAdd.cuh" />
+    <ClInclude Include="Cuda\CudaClamp.cuh" />
     <ClInclude Include="Cuda\CudaContrastEnhancement.cuh" />
     <ClInclude Include="Cuda\CudaConvertType.cuh" />
     <ClInclude Include="Cuda\CudaDeviceCount.cuh" />

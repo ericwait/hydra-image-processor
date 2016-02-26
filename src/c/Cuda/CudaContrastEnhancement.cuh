@@ -8,6 +8,7 @@
 
 #include "CudaGaussianFilter.cuh"
 #include "CudaAdd.cuh"
+#include "CudaClamp.cuh"
 #include "CudaMedianFilter.cuh"
 
 template <class PixelType>
@@ -19,6 +20,9 @@ PixelType* cContrastEnhancement(const PixelType* imageIn, Vec<size_t> dims, Vec<
 	PixelType* imSub = cAddImageWith<PixelType>(imageIn,imGauss,dims,-1.0,NULL,device);
  
 	delete[] imGauss;
+
+	PixelType maxVal = std::numeric_limits<PixelType>::max();
+	cClamp(imSub,dims,(PixelType)(0),maxVal,&imSub,device);
 
 	cMedianFilter(imSub,dims,neighborhood,imageOut,device);
 
