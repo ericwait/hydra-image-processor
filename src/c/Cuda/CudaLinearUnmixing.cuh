@@ -34,6 +34,7 @@ __global__ void cudaLinearUnmixing(PixelType* imageIn, size_t imageDim, size_t n
 template <class PixelType>
 float* cLinearUnmixing(const PixelType* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device = 0)
 {
+	cudaSetDevice(device);
 	PixelType* deviceIn;
 	float* imOut, * deviceOut;
 	if (imageOut == NULL)
@@ -57,10 +58,10 @@ float* cLinearUnmixing(const PixelType* imageIn, Vec<size_t> imageDims, size_t n
 
 	for (size_t startIdx = 0; startIdx < imageDims.product(); startIdx+=numValsPerChunk)
 	{
- 		size_t curNumVals = MIN(numValsPerChunk, imageDims.product() - startIdx);
+		size_t curNumVals = MIN(numValsPerChunk, imageDims.product() - startIdx);
 		for (size_t chan = 0; chan < numImages; ++chan)
 		{
-			PixelType* deviceChanStart = deviceIn + numValsPerChunk*chan;
+			PixelType* deviceChanStart = deviceIn + curNumVals*chan;
 			const PixelType* hostChanStart = imageIn + (imageDims.product()*chan + startIdx);
 			HANDLE_ERROR(cudaMemcpy(deviceChanStart,hostChanStart,sizeof(PixelType)*curNumVals,cudaMemcpyHostToDevice));
 		}
