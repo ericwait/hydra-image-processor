@@ -5,9 +5,13 @@
 void MexRegionGrowing::execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[])
 {
 	int device = 0;
+	bool allowConnection = true;
+
+	if(nrhs>5)
+		device = mat_to_c((int)mxGetScalar(prhs[5]));
 
 	if(nrhs>4)
-		device = mat_to_c((int)mxGetScalar(prhs[2]));
+		allowConnection = mxGetScalar(prhs[4])>0;
 
 	size_t numDims = mxGetNumberOfDimensions(prhs[1]);
 	const mwSize* DIMS = mxGetDimensions(prhs[1]);
@@ -52,43 +56,43 @@ void MexRegionGrowing::execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* 
 		unsigned char* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-		regionGrowing(imageIn,imageDims,kernDims,kernel,maskOut,threshold,device);
+		regionGrowing(imageIn,imageDims,kernDims,kernel,maskOut,threshold,allowConnection,device);
 	} else if(mxIsUint16(prhs[0]))
 	{
 		unsigned short* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-		regionGrowing(imageIn,imageDims,kernDims,kernel,maskOut,threshold,device);
+		regionGrowing(imageIn,imageDims,kernDims,kernel,maskOut,threshold,allowConnection,device);
 	} else if(mxIsInt16(prhs[0]))
 	{
 		short* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-		regionGrowing(imageIn,imageDims,kernDims,kernel,maskOut,threshold,device);
+		regionGrowing(imageIn,imageDims,kernDims,kernel,maskOut,threshold,allowConnection,device);
 	} else if(mxIsUint32(prhs[0]))
 	{
 		unsigned int* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-		regionGrowing(imageIn,imageDims,kernDims,kernel,maskOut,threshold,device);
+		regionGrowing(imageIn,imageDims,kernDims,kernel,maskOut,threshold,allowConnection,device);
 	} else if(mxIsInt32(prhs[0]))
 	{
 		int* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-		regionGrowing(imageIn,imageDims,kernDims,kernel,maskOut,threshold,device);
+		regionGrowing(imageIn,imageDims,kernDims,kernel,maskOut,threshold,allowConnection,device);
 	} else if(mxIsSingle(prhs[0]))
 	{
 		float* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-		regionGrowing(imageIn,imageDims,kernDims,kernel,maskOut,threshold,device);
+		regionGrowing(imageIn,imageDims,kernDims,kernel,maskOut,threshold,allowConnection,device);
 	} else if(mxIsDouble(prhs[0]))
 	{
 		double* imageIn;
 		setupImagePointers(prhs[0],&imageIn,&imageDims);
 
-		regionGrowing(imageIn,imageDims,kernDims,kernel,maskOut,threshold,device);
+		regionGrowing(imageIn,imageDims,kernDims,kernel,maskOut,threshold,allowConnection,device);
 	} else
 	{
 		mexErrMsgTxt("Image type not supported!");
@@ -99,7 +103,7 @@ void MexRegionGrowing::execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* 
 
 std::string MexRegionGrowing::check(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[])
 {
-	if(nrhs<4 || nrhs>5)
+	if(nrhs<4 || nrhs>6)
 		return "Incorrect number of inputs!";
 
 	if(nlhs!=1)
@@ -125,7 +129,7 @@ std::string MexRegionGrowing::check(int nlhs,mxArray* plhs[],int nrhs,const mxAr
 
 std::string MexRegionGrowing::printUsage()
 {
-	return "maskOut = CudaMex('RegionGrowing',imageIn,kernel,mask,threshold,[device]);";
+	return "maskOut = CudaMex('RegionGrowing',imageIn,kernel,mask,threshold,[allowConnections],[device]);";
 }
 
 std::string MexRegionGrowing::printHelp()

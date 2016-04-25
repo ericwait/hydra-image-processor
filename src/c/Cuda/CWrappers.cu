@@ -839,39 +839,39 @@ float* markovRandomFieldDenoiser(const float* imageIn, Vec<size_t> dims, int max
 }
 
 
- void regionGrowing(const unsigned char* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device/*=0*/)
+ void regionGrowing(const unsigned char* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection/*=true*/,int device/*=0*/)
  {
-	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,device);
+	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,allowConnection,device);
  }
 
- void regionGrowing(const unsigned short* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device/*=0*/)
+ void regionGrowing(const unsigned short* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection/*=true*/,int device/*=0*/)
  {
-	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,device);
+	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,allowConnection,device);
  }
 
- void regionGrowing(const short* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device/*=0*/)
+ void regionGrowing(const short* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection/*=true*/,int device/*=0*/)
  {
-	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,device);
+	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,allowConnection,device);
  }
 
- void regionGrowing(const unsigned int* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device/*=0*/)
+ void regionGrowing(const unsigned int* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection/*=true*/,int device/*=0*/)
  {
-	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,device);
+	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,allowConnection,device);
  }
 
- void regionGrowing(const int* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device/*=0*/)
+ void regionGrowing(const int* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection/*=true*/,int device/*=0*/)
  {
-	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,device);
+	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,allowConnection,device);
  }
 
- void regionGrowing(const float* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device/*=0*/)
+ void regionGrowing(const float* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection/*=true*/,int device/*=0*/)
  {
-	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,device);
+	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,allowConnection,device);
  }
 
- void regionGrowing(const double* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device/*=0*/)
+ void regionGrowing(const double* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection/*=true*/,int device/*=0*/)
  {
-	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,device);
+	 return cRegionGrowing(imageIn,dims,kernelDims,kernel,imageMask,threshold,allowConnection,device);
  }
 
 

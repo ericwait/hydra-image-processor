@@ -196,13 +196,13 @@ IMAGE_PROCESSOR_API int* reduceImage(const int* imageIn, Vec<size_t> dims, Vec<s
 IMAGE_PROCESSOR_API float* reduceImage(const float* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, float** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API double* reduceImage(const double* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, double** imageOut = NULL, int device = 0);
 
-IMAGE_PROCESSOR_API void regionGrowing(const unsigned char* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device=0);
-IMAGE_PROCESSOR_API void regionGrowing(const unsigned short* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device=0);
-IMAGE_PROCESSOR_API void regionGrowing(const short* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device=0);
-IMAGE_PROCESSOR_API void regionGrowing(const unsigned int* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device=0);
-IMAGE_PROCESSOR_API void regionGrowing(const int* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device=0);
-IMAGE_PROCESSOR_API void regionGrowing(const float* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device=0);
-IMAGE_PROCESSOR_API void regionGrowing(const double* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,int device=0);
+IMAGE_PROCESSOR_API void regionGrowing(const unsigned char* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection=true,int device=0);
+IMAGE_PROCESSOR_API void regionGrowing(const unsigned short* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection=true,int device=0);
+IMAGE_PROCESSOR_API void regionGrowing(const short* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection=true,int device=0);
+IMAGE_PROCESSOR_API void regionGrowing(const unsigned int* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection=true,int device=0);
+IMAGE_PROCESSOR_API void regionGrowing(const int* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection=true,int device=0);
+IMAGE_PROCESSOR_API void regionGrowing(const float* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection=true,int device=0);
+IMAGE_PROCESSOR_API void regionGrowing(const double* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection=true,int device=0);
 
 IMAGE_PROCESSOR_API size_t sumArray(const unsigned char* imageIn, size_t n, int device = 0);
 IMAGE_PROCESSOR_API size_t sumArray(const unsigned short* imageIn, size_t n, int device = 0);
