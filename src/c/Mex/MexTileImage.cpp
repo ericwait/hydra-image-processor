@@ -2,7 +2,7 @@
 #include "CWrappers.h"
 #include "Vec.h"
 
-void MexTileImage::execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[])
+void MexTileImage::execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]) const
 {
 	int device = 0;
 
@@ -64,7 +64,7 @@ void MexTileImage::execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs
 	}
 }
 
-std::string MexTileImage::check(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[])
+std::string MexTileImage::check(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]) const
 {
 	if(nrhs<3 || nrhs>4)
 		return "Incorrect number of inputs!";
@@ -87,14 +87,24 @@ std::string MexTileImage::check(int nlhs,mxArray* plhs[],int nrhs,const mxArray*
 	return "";
 }
 
-std::string MexTileImage::printUsage()
+void MexTileImage::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imageOut = CudaMex('TileImage',imageIn,[roiStartX,roiStartY,roiStartZ],[roiSizeX,roiSizeY,roiSizeZ],[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("roiStart");
+	inArgs.push_back("roiSize");
+	inArgs.push_back("device");
+
+	outArgs.push_back("imageOut");
 }
 
-std::string MexTileImage::printHelp()
+void MexTileImage::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tThis will output an image the same size as the input image which has the Region of Interest (ROI)\n";
-	msg += "\tttitled across it.\n\n";
-	return msg;
+	helpLines.push_back("This will output an image that only consists of the region of interest indicated.");
+
+	helpLines.push_back("\tImageIn -- can be an image up to three dimensions and of type (uint8,int8,uint16,int16,uint32,int32,single,double).");
+	helpLines.push_back("\tRoiStart -- this is the location of the first voxel in the region of interest (starting from the origin).  Must be the same dimension as imageIn.");
+	helpLines.push_back("\tRoiSize -- this is how many voxels to include starting from roiStart. Must be the same dimension as imageIn.");
+	helpLines.push_back("\tDevice -- this is an optional parameter that indicates which Cuda capable device to use.");
+
+	helpLines.push_back("\tImageOut -- this will be an image that only contains the region of interest indicated.");
 }

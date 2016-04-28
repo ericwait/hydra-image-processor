@@ -4,7 +4,7 @@
 #include "CWrappers.h"
 #include "Vec.h"
 
-void MexMarkovRandomFieldDenoiser::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+void MexMarkovRandomFieldDenoiser::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	int device = 0;
 
@@ -18,38 +18,38 @@ void MexMarkovRandomFieldDenoiser::execute(int nlhs, mxArray* plhs[], int nrhs, 
 // 	{
 // 		unsigned char* imageIn,* imageOut;
 // 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
-// 
+//
 // 		markovRandomFieldDenoiser(imageIn,imageDims,maxIterations,&imageOut,device);
 // 	}
 // 	else if (mxIsUint16(prhs[0]))
 // 	{
 // 		unsigned short* imageIn,* imageOut;
 // 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
-// 
+//
 // 		markovRandomFieldDenoiser(imageIn,imageDims,maxIterations,&imageOut,device);
 // 	}
 // 	else if (mxIsInt16(prhs[0]))
 // 	{
 // 		short* imageIn,* imageOut;
 // 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
-// 
+//
 // 		markovRandomFieldDenoiser(imageIn,imageDims,maxIterations,&imageOut,device);
 // 	}
 // 	else if (mxIsUint32(prhs[0]))
 // 	{
 // 		unsigned int* imageIn,* imageOut;
 // 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
-// 
+//
 // 		markovRandomFieldDenoiser(imageIn,imageDims,maxIterations,&imageOut,device);
 // 	}
 // 	else if (mxIsInt32(prhs[0]))
 // 	{
 // 		int* imageIn,* imageOut;
 // 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
-// 
+//
 // 		markovRandomFieldDenoiser(imageIn,imageDims,maxIterations,&imageOut,device);
 // 	}
-//	else 
+//	else
 	if (mxIsSingle(prhs[0]))
 	{
 		float* imageIn,* imageOut;
@@ -61,7 +61,7 @@ void MexMarkovRandomFieldDenoiser::execute(int nlhs, mxArray* plhs[], int nrhs, 
 // 	{
 // 		double* imageIn,* imageOut;
 // 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
-// 
+//
 // 		markovRandomFieldDenoiser(imageIn,imageDims,maxIterations,&imageOut,device);
 // 	}
 	else
@@ -70,7 +70,7 @@ void MexMarkovRandomFieldDenoiser::execute(int nlhs, mxArray* plhs[], int nrhs, 
 	}
 }
 
-std::string MexMarkovRandomFieldDenoiser::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+std::string MexMarkovRandomFieldDenoiser::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -85,17 +85,20 @@ std::string MexMarkovRandomFieldDenoiser::check(int nlhs, mxArray* plhs[], int n
 	return "";
 }
 
-std::string MexMarkovRandomFieldDenoiser::printUsage()
+void MexMarkovRandomFieldDenoiser::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imageOut = CudaMex('MarkovRandomFieldDenoiser',imageIn,maxIterations,[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("maxIterations");
+inArgs.push_back("device");
+outArgs.push_back("imageOut");
 }
 
-std::string MexMarkovRandomFieldDenoiser::printHelp()
+void MexMarkovRandomFieldDenoiser::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tMarkov Random Field Denoiser will denoise the image using a noise estimation iteratively until the image\n";
-	msg += "\tmatches the noise model or the max iterations is reached.\n";
-	msg += "\tSee Ceccarelli, M. (2007). \"A Finite Markov Random Field approach to fast edge-preserving image recovery.\"\n";
-	msg += "Image and Vision Computing 25(6): 792-804.\n";
-	msg += "\n";
-	return msg;
+//\	std::string msg = "\tMarkov Random Field Denoiser will denoise the image using a noise estimation iteratively until the image\n";
+//\	msg += "\tmatches the noise model or the max iterations is reached.\n";
+//\	msg += "\tSee Ceccarelli, M. (2007). \"A Finite Markov Random Field approach to fast edge-preserving image recovery.\"\n";
+//\	msg += "Image and Vision Computing 25(6): 792-804.\n";
+//\	msg += "\n";
+//\	return msg;
 }

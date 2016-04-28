@@ -63,8 +63,8 @@
       <ModuleDefinitionFile>$(SolutionDir)Mex\CudaMex.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>echo copy $(OutDir)\CudaMex.dll "..\..\src\MATLAB\+Cuda\Mex.mexw64"
-copy $(OutDir)\CudaMex.dll "..\..\src\MATLAB\+Cuda\Mex.mexw64"</Command>
+      <Command>echo copy $(OutDir)\CudaMex.dll "$(ProjectDir)\Mex.mexw64"
+copy $(OutDir)\CudaMex.dll "$(ProjectDir)\Mex.mexw64"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -86,13 +86,14 @@ copy $(OutDir)\CudaMex.dll "..\..\src\MATLAB\+Cuda\Mex.mexw64"</Command>
       <ModuleDefinitionFile>$(SolutionDir)Mex\CudaMex.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>echo copy $(OutDir)\CudaMex.dll "..\..\src\MATLAB\+Cuda\Mex.mexw64"
-copy $(OutDir)\CudaMex.dll "..\..\src\MATLAB\+Cuda\Mex.mexw64"</Command>
+      <Command>echo copy $(OutDir)\CudaMex.dll "$(ProjectDir)\Mex.mexw64"
+copy $(OutDir)\CudaMex.dll "$(ProjectDir)\Mex.mexw64"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Cuda\Vec.h" />
     <ClInclude Include="Cuda\VecFuncs.h" />
+    <ClInclude Include="Mex\CommandList.h" />
     <ClInclude Include="Mex\MexCommand.h" />
   </ItemGroup>
   <ItemGroup>
@@ -127,7 +128,6 @@ copy $(OutDir)\CudaMex.dll "..\..\src\MATLAB\+Cuda\Mex.mexw64"</Command>
     <ClCompile Include="Mex\MexOtsuThresholdValue.cpp" />
     <ClCompile Include="Mex\MexReduceImage.cpp" />
     <ClCompile Include="Mex\MexRegionGrowing.cpp" />
-    <ClCompile Include="Mex\MexRidgidRegistration.cpp" />
     <ClCompile Include="Mex\MexSegment.cpp" />
     <ClCompile Include="Mex\MexStdFilter.cpp" />
     <ClCompile Include="Mex\MexSumArray.cpp" />

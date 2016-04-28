@@ -3,7 +3,7 @@
 #include "CWrappers.h"
 #include "CHelpers.h"
 
-void MexSegment::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexSegment::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	int device = 0;
 
@@ -73,7 +73,7 @@ void MexSegment::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* pr
 	}
 }
 
-std::string MexSegment::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexSegment::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	if (nrhs<3 || nrhs>4)
 		return "Incorrect number of inputs!";
@@ -95,15 +95,19 @@ std::string MexSegment::check( int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	return "";
 }
 
-std::string MexSegment::printUsage()
+void MexSegment::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imageOut = CudaMex('Segment',imageIn,alpha,[MorphClosureX,MorphClosureY,MorphClosureZ],[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("alpha");
+	inArgs.push_back("MorphClosure");
+	inArgs.push_back("device");
+	outArgs.push_back("imageOut");
 }
 
-std::string MexSegment::printHelp()
+void MexSegment::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tSegmentaion is done by applying an Otsu adaptive threshold (which can be modified by the alpha multiplier).\n";
-	msg += "\tA morphological closing is then applied using a ellipsoid neighborhood with the MorphClosure dimensions.\n";
-	msg += "\n";
-	return msg;
+//\	std::string msg = "\tSegmentaion is done by applying an Otsu adaptive threshold (which can be modified by the alpha multiplier).\n";
+//\	msg += "\tA morphological closing is then applied using a ellipsoid neighborhood with the MorphClosure dimensions.\n";
+//\	msg += "\n";
+//\	return msg;
 }

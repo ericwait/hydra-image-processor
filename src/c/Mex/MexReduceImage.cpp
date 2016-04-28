@@ -3,7 +3,7 @@
 #include "CWrappers.h"
 #include "Defines.h"
 
-void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	int device = 0;
 
@@ -32,7 +32,7 @@ void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 
 	Vec<size_t> reducedDims;
 	mwSize* dims;
-	
+
 	Vec<size_t> imageDims;
 	if (mxIsUint8(prhs[0]))
 	{
@@ -183,7 +183,7 @@ void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	delete[] dims;
 }
 
-std::string MexReduceImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexReduceImage::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	if (nrhs<2 || nrhs>4)
 		return "Incorrect number of inputs!";
@@ -202,17 +202,21 @@ std::string MexReduceImage::check( int nlhs, mxArray* plhs[], int nrhs, const mx
 	return "";
 }
 
-std::string MexReduceImage::printUsage()
+void MexReduceImage::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imageOut = CudaMex('ReduceImage',imageIn,[reductionFactorX,reductionFactorY,reductionFactorZ],[method],[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("reductionFactor");
+	inArgs.push_back("method");
+inArgs.push_back("device");
+outArgs.push_back("imageOut");
 }
 
-std::string MexReduceImage::printHelp()
+void MexReduceImage::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\treductionFactorX, reductionFactorY, and reductionFactorZ is the amount of\n";
-	msg += "\tpixels and direction to \"collapse\" into one pixel.";
-	msg += "\tThe optional parameter \"method\" can be \"median,\" \"mean,\" \"min,\" or \"max\" and will take the median or\n";
-	msg += "\tof the neighborhood respectfully.";
-	msg += "\n";
-	return msg;
+//\	std::string msg = "\treductionFactorX, reductionFactorY, and reductionFactorZ is the amount of\n";
+//\	msg += "\tpixels and direction to \"collapse\" into one pixel.";
+//\	msg += "\tThe optional parameter \"method\" can be \"median,\" \"mean,\" \"min,\" or \"max\" and will take the median or\n";
+//\	msg += "\tof the neighborhood respectfully.";
+//\	msg += "\n";
+//\	return msg;
 }

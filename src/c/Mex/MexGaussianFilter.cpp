@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
 
- void MexGaussianFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ void MexGaussianFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
  {
 	 int device = 0;
 
@@ -68,7 +68,7 @@
 	 }
  }
  
- std::string MexGaussianFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ std::string MexGaussianFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
  {
  	if (nrhs<2 || nrhs>3)
  		return "Incorrect number of inputs!";
@@ -87,15 +87,22 @@
  	return "";
  }
  
- std::string MexGaussianFilter::printUsage()
+ void MexGaussianFilter::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
  {
-	 return "imageOut = CudaMex('GaussianFilter',imageIn,[sigmaX,sigmaY,sigmaZ],[device]);";
+	 inArgs.push_back("imageIn");
+	 inArgs.push_back("sigma");
+	 inArgs.push_back("device");
 
+	 outArgs.push_back("imageOut");
  }
 
- std::string MexGaussianFilter::printHelp()
+ void MexGaussianFilter::help(std::vector<std::string>& helpLines) const
  {
-	 std::string msg = "\tsigmaX, sigmaY, and sigmaZ are the parameters to set up the Gaussian smoothing kernel.\n";
-	 msg += "\n";
-	 return msg;
+	 helpLines.push_back("Smooths image using a Gaussian kernel.");
+
+	 helpLines.push_back("\tImageIn -- can be an image up to three dimensions and of type (uint8,int8,uint16,int16,uint32,int32,single,double).");
+	 helpLines.push_back("\tSigma -- these values will create a n-dimensional Gaussian kernel to get a smoothed image that will be subtracted of the original.");
+	 helpLines.push_back("\tDevice -- this is an optional parameter that indicates which Cuda capable device to use.");
+
+	 helpLines.push_back("\tImageOut -- will have the same dimensions and type as imageIn. Values are clamped to the range of the image space.");
  }

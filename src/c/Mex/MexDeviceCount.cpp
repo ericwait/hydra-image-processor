@@ -1,7 +1,7 @@
 #include "MexCommand.h"
 #include "CWrappers.h"
 
-void MexDeviceCount::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+void MexDeviceCount::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	if(nlhs==1)
 	{
@@ -26,7 +26,7 @@ void MexDeviceCount::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray*
 	}
 }
 
-std::string MexDeviceCount::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+std::string MexDeviceCount::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	if (nlhs < 1)
 		return "Requires one output!";
@@ -34,17 +34,17 @@ std::string MexDeviceCount::check(int nlhs, mxArray* plhs[], int nrhs, const mxA
 	return "";
 }
 
-std::string MexDeviceCount::printUsage()
+void MexDeviceCount::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "[numCudaDevices, [memoryStats]] = CudaMex('DeviceCount');";
+	outArgs.push_back("numCudaDevices");
+	outArgs.push_back("memoryStats");
 }
 
-std::string MexDeviceCount::printHelp()
+void MexDeviceCount::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tThis returns the number of CUDA capable devices are present.\n";
-	msg += "\tIf there is a second left hand argument, a structure with the total and available memory is also returned.\n";
-	msg += "\tUse this number to pass in an index to all other CudaMex commands.\n";
-	msg += "\tDevice indices start at one. They then go up to and include the number returned here.\n";
-	msg += "\n";
-	return msg;
+	helpLines.push_back("This will return statistics on the Cuda devices available.");
+
+	helpLines.push_back("\tNumCudaDevices -- this is the number of Cuda devices available.");
+	helpLines.push_back("\tMemoryStats -- this is an array of structures where each entery corresponds to a Cuda device.");
+	helpLines.push_back("\t\tThe memory structure contains the total memory on the device and the memory available for a Cuda call.");
 }

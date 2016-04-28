@@ -1,4 +1,3 @@
 LIBRARY	"CudaMex"
 EXPORTS DllMain
 EXPORTS mexFunction
-EXPORTS mexCleanUp

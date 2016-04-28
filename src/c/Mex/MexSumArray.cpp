@@ -2,7 +2,7 @@
 #include "CWrappers.h"
 #include "Vec.h"
 
-void MexSumArray::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexSumArray::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	int device = 0;
 
@@ -69,7 +69,7 @@ void MexSumArray::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	plhs[0] = mxCreateDoubleScalar(sm);
 }
 
-std::string MexSumArray::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexSumArray::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	if (nrhs<1 || nrhs>2)
 		return "Incorrect number of inputs!";
@@ -84,14 +84,17 @@ std::string MexSumArray::check( int nlhs, mxArray* plhs[], int nrhs, const mxArr
 	return "";
 }
 
-std::string MexSumArray::printUsage()
+void MexSumArray::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "sum = CudaMex('SumArray',imageIn,[device]);";
+	inArgs.push_back("imageIn");
+
+inArgs.push_back("device");
+outArgs.push_back("sum");
 }
 
-std::string MexSumArray::printHelp()
+void MexSumArray::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tSums up all the values in the given image.\n";
-	msg += "\n";
-	return msg;
+//\	std::string msg = "\tSums up all the values in the given image.\n";
+//\	msg += "\n";
+//\	return msg;
 }

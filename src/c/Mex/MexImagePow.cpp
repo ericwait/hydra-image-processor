@@ -2,7 +2,7 @@
 #include "CWrappers.h"
 #include "Vec.h"
  
- void MexImagePow::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ void MexImagePow::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
  {
 	 int device = 0;
 
@@ -67,7 +67,7 @@
 	 }
  }
  
- std::string MexImagePow::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ std::string MexImagePow::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
  {
 	 if (nrhs<2 || nrhs>3)
 		 return "Incorrect number of inputs!";
@@ -85,16 +85,22 @@
  	return "";
  }
  
- std::string MexImagePow::printUsage()
+ void MexImagePow::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
  {
- 	return "imageOut = CudaMex('ImagePow',imageIn,power,[device]);";
+	 inArgs.push_back("imageIn");
+	 inArgs.push_back("power");
+	 inArgs.push_back("device");
+
+	 outArgs.push_back("imageOut");
  }
 
- std::string MexImagePow::printHelp()
+ void MexImagePow::help(std::vector<std::string>& helpLines) const
  {
-	 std::string msg = "\tPower must be a double and will be ceilinged if input is integer.\n";
-	 msg += "\tImageOut will not roll over.  Values are clamped to the range of the image space.\n";
-	 msg += "\tImageOut will have the same dimensions as imageIn.\n";
-	 msg += "\n";
-	 return msg;
+	 helpLines.push_back("This will raise each voxel value to the power provided.");
+
+	 helpLines.push_back("\tImageIn -- can be an image up to three dimensions and of type (uint8,int8,uint16,int16,uint32,int32,single,double).");
+	 helpLines.push_back("\tPower -- must be a double.");
+	 helpLines.push_back("\tDevice -- this is an optional parameter that indicates which Cuda capable device to use.");
+
+	 helpLines.push_back("\tImageOut -- will have the same dimensions and type as imageIn. Values are clamped to the range of the image space.");
  }

@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
 
-void MexOtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexOtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	int device = 0;
 
@@ -69,7 +69,7 @@ void MexOtsuThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const
 	}
 }
 
-std::string MexOtsuThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexOtsuThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	if (nrhs<1 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -88,17 +88,20 @@ std::string MexOtsuThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, 
 	return "";
 }
 
-std::string MexOtsuThresholdFilter::printUsage()
+void MexOtsuThresholdFilter::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imageOut = CudaMex('OtsuThresholdFilter',imageIn,[alpha],[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("alpha");
+inArgs.push_back("device");
+outArgs.push_back("imageOut");
 }
 
-std::string MexOtsuThresholdFilter::printHelp()
+void MexOtsuThresholdFilter::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tCalculates a two class threshold using Otsu's method.\n";
-	msg += "\tEach pixel/voxel >= the threshold is set to the max value of the image space.";
-	msg += "\tAll other values will be set at the minimum of the image space.\n";
-	msg += "\n";
-	return msg;
+//\	std::string msg = "\tCalculates a two class threshold using Otsu's method.\n";
+//\	msg += "\tEach pixel/voxel >= the threshold is set to the max value of the image space.";
+//\	msg += "\tAll other values will be set at the minimum of the image space.\n";
+//\	msg += "\n";
+//\	return msg;
 }
 

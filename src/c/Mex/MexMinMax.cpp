@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
 
-void MexMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	int device = 0;
 
@@ -88,7 +88,7 @@ void MexMinMax::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prh
 	}
 }
 
-std::string MexMinMax::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexMinMax::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	if (nrhs<1 || nrhs>2)
 		return "Incorrect number of inputs!";
@@ -103,14 +103,18 @@ std::string MexMinMax::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	return "";
 }
 
-std::string MexMinMax::printUsage()
+void MexMinMax::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "[min max] = CudaMex('MinMax',imageIn,[device]);";
+	inArgs.push_back("imageIn");
+inArgs.push_back("device");
+
+outArgs.push_back("min");
+outArgs.push_back("max");
 }
 
-std::string MexMinMax::printHelp()
+void MexMinMax::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tReturns the minimum and maximum values.\n";
-	msg += "\n";
-	return msg;
+//\	std::string msg = "\tReturns the minimum and maximum values.\n";
+//\	msg += "\n";
+//\	return msg;
 }

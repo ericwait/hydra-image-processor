@@ -2,7 +2,7 @@
 #include "CWrappers.h"
 #include "Vec.h"
  
- void MexAddImageWith::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ void MexAddImageWith::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
  {
 	 int device = 0;
 
@@ -102,7 +102,7 @@
 	 }
  }
  
- std::string MexAddImageWith::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ std::string MexAddImageWith::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
  {
  	if (nrhs<3 || nrhs>4)
  		return "Incorrect number of inputs!";
@@ -127,18 +127,24 @@
  	return "";
  }
  
- std::string MexAddImageWith::printUsage()
+ void MexAddImageWith::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
  {
-	 return "imageOut = CudaMex('AddImageWith',imageIn1,imageIn2,factor,[device]);";
+	 inArgs.push_back("imageIn1");
+	 inArgs.push_back("imageIn2");
+	 inArgs.push_back("factor");
+	 inArgs.push_back("device");
+
+	 outArgs.push_back("imageOut");
  }
 
- std::string MexAddImageWith::printHelp()
+ void MexAddImageWith::help(std::vector<std::string>& helpLines) const
  {
-	 std::string msg = "\tWhere factor is a multiplier on imageIn2.  Pixel = imageIn1 + factor*imageIn2.";
-	 msg += "\tfactor is used in place of a SubImageWith (e.g. factor = -1).\n";
-	 msg += "\tPixel value is floored at assignment only when integer.\n";
-	 msg += "\tImageIn1 and ImageIn2 must have the same dimensions.\n";
-	 msg += "\tImageOut will have the same dimensions as the input images.\n";
-	 msg += "\n";
-	 return msg;
+	 helpLines.push_back("This takes two images and adds them together.");
+
+	 helpLines.push_back("\tImageIn1 -- can be an image up to three dimensions and of type (uint8,int8,uint16,int16,uint32,int32,single,double).");
+	 helpLines.push_back("\tImageIn2 -- can be an image up to three dimensions and of the same type as imageIn1.");
+	 helpLines.push_back("\tFactor -- this is a multiplier to the second image in the form imageOut = imageIn1 + factor*imageIn2.");
+	 helpLines.push_back("\tDevice -- this is an optional parameter that indicates which Cuda capable device to use.");
+
+	 helpLines.push_back("\imageOut -- this is the result of imageIn1 + factor*imageIn2 and will be of the same type as imageIn1.");
  }

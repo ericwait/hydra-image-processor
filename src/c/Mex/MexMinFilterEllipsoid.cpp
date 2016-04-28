@@ -3,7 +3,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
 
-void MexMinFilterEllipsoid::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexMinFilterEllipsoid::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	int device = 0;
 
@@ -74,7 +74,7 @@ void MexMinFilterEllipsoid::execute( int nlhs, mxArray* plhs[], int nrhs, const 
 	delete[] circleKernel;
 }
 
-std::string MexMinFilterEllipsoid::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexMinFilterEllipsoid::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -93,14 +93,17 @@ std::string MexMinFilterEllipsoid::check( int nlhs, mxArray* plhs[], int nrhs, c
 	return "";
 }
 
-std::string MexMinFilterEllipsoid::printUsage()
+void MexMinFilterEllipsoid::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imageOut = CudaMex('MinFilterEllipsoid',imageIn,[radiusX,radiusY,radiusZ],[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("radius");
+inArgs.push_back("device");
+outArgs.push_back("imageOut");
 }
 
-std::string MexMinFilterEllipsoid::printHelp()
+void MexMinFilterEllipsoid::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tThis will set each pixel/voxel to the min value of an ellipsoidal neighborhood with the radii given.\n";
-	msg += "\n";
-	return msg;
+//\	std::string msg = "\tThis will set each pixel/voxel to the min value of an ellipsoidal neighborhood with the radii given.\n";
+//\	msg += "\n";
+//\	return msg;
 }

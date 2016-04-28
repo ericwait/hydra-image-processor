@@ -1,17 +1,17 @@
 #include "MexCommand.h"
 #include "Vec.h"
 #include "CWrappers.h"
- 
- void MexMaxFilterNeighborhood::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+
+ void MexMaxFilterNeighborhood::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
  {
 	 int device = 0;
 
 	 if (nrhs>2)
 		 device = mat_to_c((int)mxGetScalar(prhs[2]));
- 
- 	double* nbh = (double*)mxGetData(prhs[1]);
- 	Vec<size_t> neighborhood((size_t)nbh[0],(size_t)nbh[1],(size_t)nbh[2]);
-	
+
+	double* nbh = (double*)mxGetData(prhs[1]);
+	Vec<size_t> neighborhood((size_t)nbh[0],(size_t)nbh[1],(size_t)nbh[2]);
+
 	Vec<size_t> imageDims;
 	if (mxIsUint8(prhs[0]))
 	{
@@ -67,35 +67,38 @@
 		mexErrMsgTxt("Image type not supported!");
 	}
  }
- 
- std::string MexMaxFilterNeighborhood::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+
+ std::string MexMaxFilterNeighborhood::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
  {
- 	if (nrhs<2 || nrhs>3)
- 		return "Incorrect number of inputs!";
- 
- 	if (nlhs!=1)
- 		return "Requires one output!";
-  
- 	size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
- 	if (imgNumDims>3)
+	if (nrhs<2 || nrhs>3)
+		return "Incorrect number of inputs!";
+
+	if (nlhs!=1)
+		return "Requires one output!";
+
+	size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
+	if (imgNumDims>3)
 		return "Image can have a maximum of three dimensions!";
- 
- 	size_t numEl = mxGetNumberOfElements(prhs[1]);
- 	if (numEl!=3)
- 		return "Neighborhood needs to be an array of three doubles!";
- 
- 	return "";
+
+	size_t numEl = mxGetNumberOfElements(prhs[1]);
+	if (numEl!=3)
+		return "Neighborhood needs to be an array of three doubles!";
+
+	return "";
  }
- 
- std::string MexMaxFilterNeighborhood::printUsage()
+
+ void MexMaxFilterNeighborhood::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
  {
- 	return "imageOut = CudaMex('MaxFilterNeighborhood',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ],[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("Neighborhood");
+inArgs.push_back("device");
+outArgs.push_back("imageOut");
  }
 
 
- std::string MexMaxFilterNeighborhood::printHelp()
+ void MexMaxFilterNeighborhood::help(std::vector<std::string>& helpLines) const
  {
-	 std::string msg = "\tThis will set each pixel/voxel to the max value within the neighborhood given.\n";
-	 msg += "\n";
-	 return msg;
+//\	 std::string msg = "\tThis will set each pixel/voxel to the max value within the neighborhood given.\n";
+//\	 msg += "\n";
+//\	 return msg;
  }

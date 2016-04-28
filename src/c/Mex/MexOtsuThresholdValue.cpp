@@ -1,14 +1,14 @@
 #include "MexCommand.h"
 #include "Vec.h"
 #include "CWrappers.h"
- 
- void MexOtsuThresholdValue::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+
+ void MexOtsuThresholdValue::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
  {
 	 int device = 0;
 
 	 if (nrhs>1)
 		 device = mat_to_c((int)mxGetScalar(prhs[1]));
- 
+
  	double thresh = 0.0;
 
 	Vec<size_t> imageDims;
@@ -65,33 +65,36 @@
 	{
 		mexErrMsgTxt("Image type not supported!");
 	}
- 
+
  	plhs[0] = mxCreateDoubleScalar(thresh);
  }
- 
- std::string MexOtsuThresholdValue::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+
+ std::string MexOtsuThresholdValue::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
  {
  	if (nrhs<1 || nrhs>2)
  		return "Incorrect number of inputs!";
- 
+
  	if (nlhs!=1)
  		return "Requires one output!";
- 
+
  	size_t numDims = mxGetNumberOfDimensions(prhs[0]);
  	if (numDims>3)
  		return "Image can have a maximum of three dimensions!";
- 
+
  	return "";
  }
- 
- std::string MexOtsuThresholdValue::printUsage()
+
+ void MexOtsuThresholdValue::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
  {
- 	return "threshold = CudaMex('OtsuThresholdValue',imageIn,[device]);";
+ 	inArgs.push_back("imageIn");
+
+inArgs.push_back("device");
+outArgs.push_back("threshold");
  }
 
- std::string MexOtsuThresholdValue::printHelp()
+ void MexOtsuThresholdValue::help(std::vector<std::string>& helpLines) const
  {
-	 std::string msg = "\tCalculates the optimal two class threshold using Otsu's method.\n";
-	 msg += "\n";
-	 return msg;
+//\	 std::string msg = "\tCalculates the optimal two class threshold using Otsu's method.\n";
+//\	 msg += "\n";
+//\	 return msg;
  }

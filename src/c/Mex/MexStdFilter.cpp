@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
 
-void MexStdFilter::execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[])
+void MexStdFilter::execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]) const
 {
 	int device = 0;
 
@@ -61,7 +61,7 @@ void MexStdFilter::execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs
 	}
 }
 
-std::string MexStdFilter::check(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[])
+std::string MexStdFilter::check(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]) const
 {
 	if(nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -80,14 +80,19 @@ std::string MexStdFilter::check(int nlhs,mxArray* plhs[],int nrhs,const mxArray*
 	return "";
 }
 
-std::string MexStdFilter::printUsage()
+void MexStdFilter::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imageOut = Cuda.Mex('StdFilter',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ],[device]);";
+	
+	inArgs.push_back("imageIn");
+	inArgs.push_back("Neighborhood");
+	inArgs.push_back("device");
+
+	outArgs.push_back("imageOut");
 }
 
-std::string MexStdFilter::printHelp()
+void MexStdFilter::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tNeighborhoodX, NeighborhoodY, and NeighborhoodZ are the directions and area to look for a given pixel.";
-	msg += "\n";
-	return msg;
+//\	std::string msg = "\tNeighborhoodX, NeighborhoodY, and NeighborhoodZ are the directions and area to look for a given pixel.";
+//\	msg += "\n";
+//\	return msg;
 }

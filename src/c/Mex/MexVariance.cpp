@@ -2,7 +2,7 @@
 #include "CWrappers.h"
 #include "Vec.h"
 
-void MexVariance::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+void MexVariance::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	int device = 0;
 
@@ -69,7 +69,7 @@ void MexVariance::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* pr
 	plhs[0] = mxCreateDoubleScalar(var);
 }
 
-std::string MexVariance::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+std::string MexVariance::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	if (nrhs<1 || nrhs>2)
 		return "Incorrect number of inputs!";
@@ -84,14 +84,15 @@ std::string MexVariance::check(int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	return "";
 }
 
-std::string MexVariance::printUsage()
+void MexVariance::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-		return "var = CudaMex('Variance',imageIn,[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("device");
+
+	outArgs.push_back("variance");
 }
 
-std::string MexVariance::printHelp()
+void MexVariance::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tReturns the global variance of the image passed in.\n";
-	msg += "\n";
-	return msg;
+	helpLines.push_back("This will return the variance of an image.");
 }

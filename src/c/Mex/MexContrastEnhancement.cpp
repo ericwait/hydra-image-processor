@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
 
-void MexContrastEnhancement::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexContrastEnhancement::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	int device = 0;
 
@@ -72,7 +72,7 @@ void MexContrastEnhancement::execute( int nlhs, mxArray* plhs[], int nrhs, const
 	}
 }
 
-std::string MexContrastEnhancement::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexContrastEnhancement::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	if (nrhs<3 || nrhs>4)
 		return "Incorrect number of inputs!";
@@ -95,16 +95,26 @@ std::string MexContrastEnhancement::check( int nlhs, mxArray* plhs[], int nrhs, 
 	return "";
 }
 
-std::string MexContrastEnhancement::printUsage()
+void MexContrastEnhancement::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imageOut = CudaMex('ContrastEnhancement',imageIn,[sigmaX,sigmaY,sigmaZ],[MedianNeighborhoodX,MedianNeighborhoodY,MedianNeighborhoodZ],[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("sigma");
+	inArgs.push_back("MedianNeighborhood");
+	inArgs.push_back("device");
+
+	outArgs.push_back("imageOut");
 }
 
-std::string MexContrastEnhancement::printHelp()
+void MexContrastEnhancement::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tContrastEnancement will do a high-pass background subtraction followed by a median smoothing.\n";
-	msg += "\tsigmaX, sigmaY, and sigmaZ correspond to the Gaussian smoothing kernel in those dimensions.\n";
-	msg += "\tMedianNeighborhoodX, MedianNeighborhoodY, and MedianNeighborhoodZ relate to how big the median smoothing window will be.\n";
-	msg += "\n";
-	return msg;
+	helpLines.push_back("This attempts to increase contrast by removing noise as proposed by Michel et al. This starts with subtracting off a highly smoothed version of imageIn followed by median filter.");
+	
+	helpLines.push_back("\tImageIn -- can be an image up to three dimensions and of type (uint8,int8,uint16,int16,uint32,int32,single,double).");
+	helpLines.push_back("\tSigma -- these values will create a n-dimensional Gaussian kernel to get a smoothed image that will be subtracted of the original.");
+	helpLines.push_back("\t\tN is the number of dimensions of imageIn");
+	helpLines.push_back("\t\tThe larger the sigma the more object preserving the high pass filter will be (e.g. sigma > 35)");
+	helpLines.push_back("\tMedianNeighborhood -- this is the neighborhood size in each dimension that will be evaluated for the median neighborhood filter.");
+	helpLines.push_back("\tDevice -- this is an optional parameter that indicates which Cuda capable device to use.");
+
+	helpLines.push_back("\tImageOut -- will have the same dimensions and type as imageIn.");
 }

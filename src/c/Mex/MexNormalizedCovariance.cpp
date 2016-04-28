@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
 
-void MexNormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexNormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	int device = 0;
 
@@ -97,7 +97,7 @@ void MexNormalizedCovariance::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 	plhs[0] = mxCreateDoubleScalar(normCoVar);
 }
 
-std::string MexNormalizedCovariance::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexNormalizedCovariance::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	if (nrhs<2)
 		return "Incorrect number of inputs!";
@@ -119,16 +119,19 @@ std::string MexNormalizedCovariance::check( int nlhs, mxArray* plhs[], int nrhs,
 	return "";
 }
 
-std::string MexNormalizedCovariance::printUsage()
+void MexNormalizedCovariance::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "normalizedCovariance = CudaMex('NormalizedCovariance',imageIn1,imageIn2,[device]);";
+	inArgs.push_back("imageIn1");
+	inArgs.push_back("imageIn2");
+inArgs.push_back("device");
+outArgs.push_back("normalizedCovariance");
 }
 
-std::string MexNormalizedCovariance::printHelp()
+void MexNormalizedCovariance::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tThis will calculate how similar the images are to one another.\n";
-	msg += "\tThe return value will be between [-1,1].  Where 1 is exactly the same and -1 is exactly the opposite.\n";
-	msg += "\tImages must match in dimension.\n";
-	msg += "\n";
-	return msg;
+//\	std::string msg = "\tThis will calculate how similar the images are to one another.\n";
+//\	msg += "\tThe return value will be between [-1,1].  Where 1 is exactly the same and -1 is exactly the opposite.\n";
+//\	msg += "\tImages must match in dimension.\n";
+//\	msg += "\n";
+//\	return msg;
 }

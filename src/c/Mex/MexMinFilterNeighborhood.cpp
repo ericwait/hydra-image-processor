@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
 
-void MexMinFilterNeighborhood::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexMinFilterNeighborhood::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	int device = 0;
 
@@ -68,7 +68,7 @@ void MexMinFilterNeighborhood::execute( int nlhs, mxArray* plhs[], int nrhs, con
 	}
 }
 
-std::string MexMinFilterNeighborhood::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexMinFilterNeighborhood::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -87,15 +87,18 @@ std::string MexMinFilterNeighborhood::check( int nlhs, mxArray* plhs[], int nrhs
 	return "";
 }
 
-std::string MexMinFilterNeighborhood::printUsage()
+void MexMinFilterNeighborhood::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imageOut = CudaMex('MinFilterNeighborhood',imageIn,[NeighborhoodX,NeighborhoodY,NeighborhoodZ],[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("Neighborhood");
+inArgs.push_back("device");
+outArgs.push_back("imageOut");
 }
 
 
-std::string MexMinFilterNeighborhood::printHelp()
+void MexMinFilterNeighborhood::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tThis will set each pixel/voxel to the min value within the neighborhood given.\n";
-	msg += "\n";
-	return msg;
+//\	std::string msg = "\tThis will set each pixel/voxel to the min value within the neighborhood given.\n";
+//\	msg += "\n";
+//\	return msg;
 }

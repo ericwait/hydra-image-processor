@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
 
-void MexMultiplyTwoImages::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexMultiplyTwoImages::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	int device = 0;
 
@@ -102,7 +102,7 @@ void MexMultiplyTwoImages::execute( int nlhs, mxArray* plhs[], int nrhs, const m
 	}
 }
 
-std::string MexMultiplyTwoImages::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexMultiplyTwoImages::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	if (nrhs<3 || nrhs>4)
 		return "Incorrect number of inputs!";
@@ -127,17 +127,21 @@ std::string MexMultiplyTwoImages::check( int nlhs, mxArray* plhs[], int nrhs, co
 	return "";
 }
 
-std::string MexMultiplyTwoImages::printUsage()
+void MexMultiplyTwoImages::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imageOut = CudaMex('MultiplyTwoImages',imageIn1,imageIn2,factor,[device]);";
+	inArgs.push_back("imageIn1");
+	inArgs.push_back("imageIn2");
+	inArgs.push_back("factor");
+inArgs.push_back("device");
+outArgs.push_back("imageOut");
 }
 
-std::string MexMultiplyTwoImages::printHelp()
+void MexMultiplyTwoImages::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tWhere factor is a multiplier.  Pixel = factor * imageIn1 * imageIn2.";
-	msg += "\tPixel value is floored at assignment only when integer.\n";
-	msg += "\tImageIn1 and ImageIn2 must have the same dimensions.\n";
-	msg += "\tImageOut will have the same dimensions as the input images.\n";
-	msg += "\n";
-	return msg;
+//\	std::string msg = "\tWhere factor is a multiplier.  Pixel = factor * imageIn1 * imageIn2.";
+//\	msg += "\tPixel value is floored at assignment only when integer.\n";
+//\	msg += "\tImageIn1 and ImageIn2 must have the same dimensions.\n";
+//\	msg += "\tImageOut will have the same dimensions as the input images.\n";
+//\	msg += "\n";
+//\	return msg;
 }

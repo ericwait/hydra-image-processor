@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
 
-void MexApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	int device = 0;
 
@@ -133,7 +133,7 @@ void MexApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, c
 	}
 }
 
-std::string MexApplyPolyTransformation::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexApplyPolyTransformation::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	if (nrhs<4 && nrhs>7)
 		return "Incorrect number of inputs!";
@@ -151,17 +151,29 @@ std::string MexApplyPolyTransformation::check( int nlhs, mxArray* plhs[], int nr
 	return "";
 }
 
-std::string MexApplyPolyTransformation::printUsage()
+void MexApplyPolyTransformation::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imageOut = CudaMex('ApplyPolyTransformation',imageIn,a,b,c,[min],[max],[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("a");
+	inArgs.push_back("b");
+	inArgs.push_back("c");
+	inArgs.push_back("min");
+	inArgs.push_back("max");
+	inArgs.push_back("device");
+
+	outArgs.push_back("imageOut");
 }
 
-std::string MexApplyPolyTransformation::printHelp()
+void MexApplyPolyTransformation::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\ta, b, and c are the polynomial curve parameters for the transfer function which maps imageIn to imageOut.\n";
-	msg += "\tmin and max are optional clamping parameters that will clamp the output values between [min,max].\n";
-	msg += "\tIf min and max are not supplied, imageOut is clamped to the range of imageIn's type.\n";
-	msg += "\timageOut will be the same dimension as imageIn.\n";
-	msg += "\n";
-	return msg;
+	helpLines.push_back("This returns an image with the quadradic function applied. ImageOut = a*ImageIn^2 + b*ImageIn + c");
+
+	helpLines.push_back("\tA -- this multiplier is applied to the square of the image.");
+	helpLines.push_back("\tB -- this multiplier is applied to the image.");
+	helpLines.push_back("\tC -- is the constant additive.");
+	helpLines.push_back("\tMin -- this is an optional parameter to clamp the output to and is useful for signed or floating point to remove negative values.");
+	helpLines.push_back("\tMax -- this is an optional parameter to clamp the output to.");
+	helpLines.push_back("\tDevice -- this is an optional parameter that indicates which Cuda capable device to use.");
+
+	helpLines.push_back("\tImageOut -- this is the result of ImageOut = a*ImageIn^2 + b*ImageIn + c and is the same dimension and type as imageIn.");
 }

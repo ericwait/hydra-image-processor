@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
 
-void MexRegionGrowing::execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[])
+void MexRegionGrowing::execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]) const
 {
 	int device = 0;
 	bool allowConnection = true;
@@ -47,8 +47,8 @@ void MexRegionGrowing::execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* 
 	bool* maskOut = (bool*)mxGetData(plhs[0]);
 	size_t numEl = mxGetNumberOfElements(prhs[2]);
 	double threshold = mxGetScalar(prhs[3]);
-	
-	memcpy(maskOut,maskIn,sizeof(bool)*numEl);	
+
+	memcpy(maskOut,maskIn,sizeof(bool)*numEl);
 
 	Vec<size_t> imageDims;
 	if(mxIsUint8(prhs[0]))
@@ -101,7 +101,7 @@ void MexRegionGrowing::execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* 
 	delete[] kernel;
 }
 
-std::string MexRegionGrowing::check(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[])
+std::string MexRegionGrowing::check(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]) const
 {
 	if(nrhs<4 || nrhs>6)
 		return "Incorrect number of inputs!";
@@ -127,14 +127,20 @@ std::string MexRegionGrowing::check(int nlhs,mxArray* plhs[],int nrhs,const mxAr
 	return "";
 }
 
-std::string MexRegionGrowing::printUsage()
+void MexRegionGrowing::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "maskOut = CudaMex('RegionGrowing',imageIn,kernel,mask,threshold,[allowConnections],[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("kernel");
+	inArgs.push_back("mask");
+	inArgs.push_back("threshold");
+	inArgs.push_back("allowConnections");
+inArgs.push_back("device");
+outArgs.push_back("maskOut");
 }
 
-std::string MexRegionGrowing::printHelp()
+void MexRegionGrowing::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tThis will return a mask that has grown by the kernal shape for any pixels that are within a threshold of the current mask.\n";
-	msg += "\n";
-	return msg;
+//\	std::string msg = "\tThis will return a mask that has grown by the kernal shape for any pixels that are within a threshold of the current mask.\n";
+//\	msg += "\n";
+//\	return msg;
 }

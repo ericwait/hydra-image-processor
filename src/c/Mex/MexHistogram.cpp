@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
  
- void MexHistogram::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ void MexHistogram::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
  {
 	 int device = 0;
 
@@ -141,7 +141,7 @@
  	delete[] hist;
  }
  
- std::string MexHistogram::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+ std::string MexHistogram::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
  {
  	if (nrhs<2 || nrhs>5)
  		return "Incorrect number of inputs!";
@@ -156,15 +156,28 @@
  	return "";
  }
  
- std::string MexHistogram::printUsage()
+ void MexHistogram::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
  {
- 	return "histogram = CudaMex('Histogram',imageIn,numBins,[min],[max],[device]);";
+	 inArgs.push_back("imageIn");
+	 inArgs.push_back("numBins");
+	 inArgs.push_back("min");
+	 inArgs.push_back("max");
+	 inArgs.push_back("device");
+
+	 outArgs.push_back("histogram");
  }
 
- std::string MexHistogram::printHelp()
+ void MexHistogram::help(std::vector<std::string>& helpLines) const
  {
-	 std::string msg = "\tCreates a histogram array with numBins bins between min/max values.\n";
-	 msg += "\tIf min/max is not provided, the min/max of the type is used.";
-	 msg += "\n";
-	 return msg;
+	 helpLines.push_back("Creates a histogram array with numBins bins between min/max values.");
+
+	 helpLines.push_back("\tImageIn -- can be an image up to three dimensions and of type (uint8,int8,uint16,int16,uint32,int32,single,double).");
+	 helpLines.push_back("\tNumBins -- number of bins that the histogram should partition the signal into.");
+	 helpLines.push_back("\tMin -- this is the minimum value for the histogram.");
+	 helpLines.push_back("\t\tIf min is not provided, the min of the image type is used.");
+	 helpLines.push_back("\tMax -- this is the maximum value for the histogram.");
+	 helpLines.push_back("\t\tIf min is not provided, the min of the image type is used.");
+	 helpLines.push_back("\tDevice -- this is an optional parameter that indicates which Cuda capable device to use.");
+
+	 helpLines.push_back("\tImageOut -- will have the same dimensions and type as imageIn. Values are clamped to the range of the image space.");
  }

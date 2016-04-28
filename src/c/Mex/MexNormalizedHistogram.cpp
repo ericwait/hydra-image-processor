@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
 
-void MexNormalizedHistogram::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexNormalizedHistogram::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	int device = 0;
 
@@ -141,7 +141,7 @@ void MexNormalizedHistogram::execute( int nlhs, mxArray* plhs[], int nrhs, const
 	delete[] hist;
 }
 
-std::string MexNormalizedHistogram::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexNormalizedHistogram::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	if (nrhs<2 || nrhs>5)
 		return "Incorrect number of inputs!";
@@ -156,16 +156,21 @@ std::string MexNormalizedHistogram::check( int nlhs, mxArray* plhs[], int nrhs, 
 	return "";
 }
 
-std::string MexNormalizedHistogram::printUsage()
+void MexNormalizedHistogram::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "histogram = CudaMex('NormalizedHistogram',imageIn,numBins,[min],[max],[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("numBins");
+	inArgs.push_back("min");
+	inArgs.push_back("max");
+inArgs.push_back("device");
+outArgs.push_back("histogram");
 }
 
-std::string MexNormalizedHistogram::printHelp()
+void MexNormalizedHistogram::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tCreates a histogram array with numBins bins\n";
-	msg += "\tIf min/max is not provided, the min/max of the type is used.";
-	msg += "\tEach bin is normalized over the total number of pixel/voxels.\n";
-	msg = "\n";
-	return msg;
+//\	std::string msg = "\tCreates a histogram array with numBins bins\n";
+//\	msg += "\tIf min/max is not provided, the min/max of the type is used.";
+//\	msg += "\tEach bin is normalized over the total number of pixel/voxels.\n";
+//\	msg = "\n";
+//\	return msg;
 }

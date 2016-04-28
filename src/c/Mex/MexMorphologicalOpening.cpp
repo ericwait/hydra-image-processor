@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
 
-void MexMorphologicalOpening::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexMorphologicalOpening::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	int device = 0;
 
@@ -94,7 +94,7 @@ void MexMorphologicalOpening::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 	delete[] kernel;
 }
 
-std::string MexMorphologicalOpening::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexMorphologicalOpening::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -113,15 +113,18 @@ std::string MexMorphologicalOpening::check( int nlhs, mxArray* plhs[], int nrhs,
 	return "";
 }
 
-std::string MexMorphologicalOpening::printUsage()
+void MexMorphologicalOpening::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imageOut = CudaMex('MorphologicalOpening',imageIn,kernel,[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("kernel");
+inArgs.push_back("device");
+outArgs.push_back("imageOut");
 }
 
-std::string MexMorphologicalOpening::printHelp()
+void MexMorphologicalOpening::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tThis will set each pixel/voxel to the in value of the neighborhood defined by the given kernel,\n";
-	msg += "\tfollowed by a max value of the neighborhood defined by the given kernel.\n";
-	msg += "\n";
-	return msg;
+//\	std::string msg = "\tThis will set each pixel/voxel to the in value of the neighborhood defined by the given kernel,\n";
+//\	msg += "\tfollowed by a max value of the neighborhood defined by the given kernel.\n";
+//\	msg += "\n";
+//\	return msg;
 }

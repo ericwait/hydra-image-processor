@@ -2,7 +2,7 @@
 #include "CWrappers.h"
 #include "Vec.h"
 
-void MexAddConstant::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+void MexAddConstant::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	int device = 0;
 
@@ -67,7 +67,7 @@ void MexAddConstant::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray*
 	}
 }
 
-std::string MexAddConstant::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+std::string MexAddConstant::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -85,16 +85,22 @@ std::string MexAddConstant::check(int nlhs, mxArray* plhs[], int nrhs, const mxA
 	return "";
 }
 
-std::string MexAddConstant::printUsage()
+void MexAddConstant::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imageOut = CudaMex('AddConstant',imageIn,additive,[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("additive");
+	inArgs.push_back("device");
+	
+	outArgs.push_back("imageOut");
 }
 
-std::string MexAddConstant::printHelp()
+void MexAddConstant::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tAdditive must be a double and will be floored if input is integer.\n";
-	msg += "\tImageOut will not roll over.  Values are clamped to the range of the image space.\n";
-	msg += "\tImageOut will have the same dimensions as imageIn.\n";
-	msg += "\n";
-	return msg;
+	helpLines.push_back("This will add a constant value at every voxel location.");
+
+	helpLines.push_back("\tImageIn -- can be an image up to three dimensions and of type (uint8,int8,uint16,int16,uint32,int32,single,double).");
+	helpLines.push_back("\tAdditive -- must be a double and will be floored if input is an integer type.");
+	helpLines.push_back("\tDevice -- this is an optional parameter that indicates which Cuda capable device to use.");
+
+	helpLines.push_back("\tImageOut -- will have the same dimensions and type as imageIn. Values are clamped to the range of the image space.");
 }

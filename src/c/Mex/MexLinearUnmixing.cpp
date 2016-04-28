@@ -2,7 +2,7 @@
 #include "CWrappers.h"
 #include "Vec.h"
 
-void MexLinearUnmixing::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+void MexLinearUnmixing::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	int device = 0;
 
@@ -84,7 +84,7 @@ void MexLinearUnmixing::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArr
 	delete[] unmix;
 }
 
-std::string MexLinearUnmixing::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
+std::string MexLinearUnmixing::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	if (nrhs < 2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -96,7 +96,7 @@ std::string MexLinearUnmixing::check(int nlhs, mxArray* plhs[], int nrhs, const 
 	const mwSize* DIMS1 = mxGetDimensions(prhs[0]);
 	size_t numDims2 = int(mxGetNumberOfDimensions(prhs[1]));
 	const mwSize* DIMS2 = mxGetDimensions(prhs[1]);
-	
+
 	size_t numImages = DIMS1[numDims1 - 1];
 
 	if (numDims1 > 4)
@@ -111,17 +111,21 @@ std::string MexLinearUnmixing::check(int nlhs, mxArray* plhs[], int nrhs, const 
 	return "";
 }
 
-std::string MexLinearUnmixing::printUsage()
+void MexLinearUnmixing::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imagesOut = CudaMex('LinearUnmixing',cat(ndims(im)+1,im,im2,..),unmixMatrix,[device]);";
+	inArgs.push_back("mixedImages");
+	inArgs.push_back("unmixMatrix");
+	inArgs.push_back("device");
+
+	outArgs.push_back("imageOut");
 }
 
-std::string MexLinearUnmixing::printHelp()
+void MexLinearUnmixing::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tLinear Unmixing takes an image that is one dimension larger than the\n";
-	msg += "\tinput images. This can be done with the cat function: cat(ndims(im)+1,im,im2,..).\n";
-	msg += "\tThe output image will have the same dimension as this input image and contains the\n";
-	msg += "\tunmixed images as single precision floating point values.";
-	msg += "\n";
-	return msg;
+//\	std::string msg = "\tLinear Unmixing takes an image that is one dimension larger than the\n";
+//\	msg += "\tinput images. This can be done with the cat function: cat(ndims(im)+1,im,im2,..).\n";
+//\	msg += "\tThe output image will have the same dimension as this input image and contains the\n";
+//\	msg += "\tunmixed images as single precision floating point values.";
+//\	msg += "\n";
+//\	return msg;
 }

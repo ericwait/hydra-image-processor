@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CWrappers.h"
 
-void MexThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+void MexThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	int device = 0;
 
@@ -67,7 +67,7 @@ void MexThresholdFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxA
 	}
 }
 
-std::string MexThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] )
+std::string MexThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
 	if (nrhs<2 || nrhs>3)
 		return "Incorrect number of inputs!";
@@ -85,15 +85,18 @@ std::string MexThresholdFilter::check( int nlhs, mxArray* plhs[], int nrhs, cons
 	return "";
 }
 
-std::string MexThresholdFilter::printUsage()
+void MexThresholdFilter::usage(std::vector<std::string>& outArgs,std::vector<std::string>& inArgs) const
 {
-	return "imageOut = CudaMex('ThresholdFilter',imageIn,threshold,[device]);";
+	inArgs.push_back("imageIn");
+	inArgs.push_back("threshold");
+	inArgs.push_back("device");
+outArgs.push_back("imageOut");
 }
 
-std::string MexThresholdFilter::printHelp()
+void MexThresholdFilter::help(std::vector<std::string>& helpLines) const
 {
-	std::string msg = "\tMaps any value >= thresh to the max value of the image space.";
-	msg += "\tAll other values will be set at the minimum of the image space.\n";
-	msg += "\n";
-	return msg;
+//	std::string msg = "\tMaps any value >= thresh to the max value of the image space.";
+//	msg += "\tAll other values will be set at the minimum of the image space.\n";
+//	msg += "\n";
+//	return msg;
 }

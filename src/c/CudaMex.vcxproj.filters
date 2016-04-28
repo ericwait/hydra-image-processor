@@ -15,13 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Mex\MexCommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Cuda\Vec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Cuda\VecFuncs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mex\MexCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mex\CommandList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -36,9 +39,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Mex\MexApplyPolyTransformation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Mex\MexContrastEnhancement.cpp">
@@ -128,9 +128,6 @@
     <ClCompile Include="Mex\MexDeviceCount.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mex\MexRidgidRegistration.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Mex\MexTileImage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -138,6 +135,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Mex\MexRegionGrowing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mex\MexCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
