@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaImageProcessor_lib", "CudaImageProcessor_dll.vcxproj", "{F204D99B-C454-420D-BD1B-5FE4D9D07078}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -18,32 +18,20 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaImageProcessor_dll", "C
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
-		Release|Win32 = Release|Win32
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Debug|Win32.ActiveCfg = Debug|Win32
-		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Debug|Win32.Build.0 = Debug|Win32
 		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Debug|x64.ActiveCfg = Debug|x64
 		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Debug|x64.Build.0 = Debug|x64
-		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Release|Win32.ActiveCfg = Release|Win32
-		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Release|Win32.Build.0 = Release|Win32
 		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Release|x64.ActiveCfg = Release|x64
 		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Release|x64.Build.0 = Release|x64
-		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Debug|Win32.ActiveCfg = Debug|x64
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Debug|x64.ActiveCfg = Debug|x64
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Debug|x64.Build.0 = Debug|x64
-		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Release|Win32.ActiveCfg = Release|x64
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Release|x64.ActiveCfg = Release|x64
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Release|x64.Build.0 = Release|x64
-		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}.Debug|Win32.ActiveCfg = Debug|Win32
-		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}.Debug|Win32.Build.0 = Debug|Win32
 		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}.Debug|x64.ActiveCfg = Debug|x64
 		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}.Debug|x64.Build.0 = Debug|x64
-		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}.Release|Win32.ActiveCfg = Release|Win32
-		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}.Release|Win32.Build.0 = Release|Win32
 		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}.Release|x64.ActiveCfg = Release|x64
 		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
