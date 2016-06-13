@@ -23,55 +23,52 @@ void MexLinearUnmixing::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArr
 	for (int i = 0; i < umixingDims.product(); ++i)
 		unmix[i] = (float)unmixing[i];
 
-	plhs[0] = mxCreateNumericArray(numImDims, IM_DIMS, mxSINGLE_CLASS, mxREAL);
-	float* imageOut = (float*)mxGetData(plhs[0]);
-
 	if (mxIsUint8(prhs[0]))
 	{
-		unsigned char* imageIn;
-		setupImagePointers(prhs[0], &imageIn, &imageDims);
+		unsigned char* imageIn, *imageOut;
+		setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
 
 		linearUnmixing(imageIn, imageDims, numImages, unmix, umixingDims, &imageOut, device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
-		unsigned short* imageIn;
-		setupImagePointers(prhs[0], &imageIn, &imageDims);
+		unsigned short* imageIn, *imageOut;
+		setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
 
 		linearUnmixing(imageIn, imageDims, numImages, unmix, umixingDims, &imageOut, device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
-		short* imageIn;
-		setupImagePointers(prhs[0], &imageIn, &imageDims);
+		short* imageIn, *imageOut;
+		setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
 
 		linearUnmixing(imageIn, imageDims, numImages, unmix, umixingDims, &imageOut, device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
-		unsigned int* imageIn;
-		setupImagePointers(prhs[0], &imageIn, &imageDims);
+		unsigned int* imageIn, *imageOut;
+		setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
 
 		linearUnmixing(imageIn, imageDims, numImages, unmix, umixingDims, &imageOut, device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
-		int* imageIn;
-		setupImagePointers(prhs[0], &imageIn, &imageDims);
+		int* imageIn, *imageOut;
+		setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
 
 		linearUnmixing(imageIn, imageDims, numImages, unmix, umixingDims, &imageOut, device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
-		float* imageIn;
-		setupImagePointers(prhs[0], &imageIn, &imageDims);
+		float* imageIn, *imageOut;
+		setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
 
 		linearUnmixing(imageIn, imageDims, numImages, unmix, umixingDims, &imageOut, device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
-		double* imageIn;
-		setupImagePointers(prhs[0], &imageIn, &imageDims);
+		double* imageIn, *imageOut;
+		setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
 
 		linearUnmixing(imageIn, imageDims, numImages, unmix, umixingDims, &imageOut, device);
 	}

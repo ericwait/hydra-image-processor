@@ -325,37 +325,37 @@ void clearDevice()
 }
 
 
- float* linearUnmixing(const unsigned char* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device)
+ unsigned char* linearUnmixing(const unsigned char* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims,  unsigned char** imageOut, int device)
  {
 	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
  }
 
- float* linearUnmixing(const unsigned short* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device)
+ unsigned short* linearUnmixing(const unsigned short* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims,  unsigned short** imageOut, int device)
  {
 	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
  }
 
- float* linearUnmixing(const short* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device)
+ short* linearUnmixing(const short* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims,  short** imageOut, int device)
  {
 	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
  }
 
- float* linearUnmixing(const unsigned int* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device)
+ unsigned int* linearUnmixing(const unsigned int* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims,  unsigned int** imageOut, int device)
  {
 	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
  }
 
- float* linearUnmixing(const int* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device)
+ int* linearUnmixing(const int* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims,  int** imageOut, int device)
  {
 	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
  }
 
- float* linearUnmixing(const float* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device)
+ float* linearUnmixing(const float* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims,  float** imageOut, int device)
  {
 	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
  }
 
- float* linearUnmixing(const double* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut, int device)
+ double* linearUnmixing(const double* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims,  double** imageOut, int device)
  {
 	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
  }
