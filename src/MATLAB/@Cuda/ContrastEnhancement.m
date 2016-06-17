@@ -8,5 +8,16 @@
 %    	Device -- this is an optional parameter that indicates which Cuda capable device to use.
 %    	ImageOut -- will have the same dimensions and type as imageIn.
 function imageOut = ContrastEnhancement(imageIn,sigma,MedianNeighborhood,device)
+    curPath = which('Cuda');
+    curPath = fileparts(curPath);
+    mutexfile = fullfile(curPath,sprintf('device%02d.txt',device));
+    while(exist(mutexfile,'file'))
+        pause(1);
+    end
+    f = fopen(mutexfile,'wt');
+    fclose(f);
+
     [imageOut] = Cuda.Mex('ContrastEnhancement',imageIn,sigma,MedianNeighborhood,device);
+
+    delete(mutexfile);
 end

@@ -6,5 +6,16 @@
 %    	Device -- this is an optional parameter that indicates which Cuda capable device to use.
 %    	ImageOut -- this will be an image that only contains the region of interest indicated.
 function imageOut = TileImage(imageIn,roiStart,roiSize,device)
+    curPath = which('Cuda');
+    curPath = fileparts(curPath);
+    mutexfile = fullfile(curPath,sprintf('device%02d.txt',device));
+    while(exist(mutexfile,'file'))
+        pause(1);
+    end
+    f = fopen(mutexfile,'wt');
+    fclose(f);
+
     [imageOut] = Cuda.Mex('TileImage',imageIn,roiStart,roiSize,device);
+
+    delete(mutexfile);
 end

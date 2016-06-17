@@ -6,5 +6,16 @@
 %    	Device -- this is an optional parameter that indicates which Cuda capable device to use.
 %    imageOut -- this is the result of imageIn1 + factor*imageIn2 and will be of the same type as imageIn1.
 function imageOut = AddImageWith(imageIn1,imageIn2,factor,device)
+    curPath = which('Cuda');
+    curPath = fileparts(curPath);
+    mutexfile = fullfile(curPath,sprintf('device%02d.txt',device));
+    while(exist(mutexfile,'file'))
+        pause(1);
+    end
+    f = fopen(mutexfile,'wt');
+    fclose(f);
+
     [imageOut] = Cuda.Mex('AddImageWith',imageIn1,imageIn2,factor,device);
+
+    delete(mutexfile);
 end

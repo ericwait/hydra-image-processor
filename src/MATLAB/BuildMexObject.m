@@ -65,7 +65,16 @@ function makeStaticMethod(objectName, mexName, commandInfo)
     end
 
     fprintf(methodFile, 'function %s\n', makePrototypeString(commandInfo));
+    fprintf(methodFile, '    curPath = which(''Cuda'');\n');
+    fprintf(methodFile, '    curPath = fileparts(curPath);\n');
+    fprintf(methodFile, '    mutexfile = fullfile(curPath,sprintf(''device%%02d.txt'',device));\n');
+    fprintf(methodFile, '    while(exist(mutexfile,''file''))\n');
+    fprintf(methodFile, '        pause(1);\n');
+    fprintf(methodFile, '    end\n');
+    fprintf(methodFile, '    f = fopen(mutexfile,''wt'');\n');
+    fprintf(methodFile, '    fclose(f);\n\n');
     fprintf(methodFile, '    %s;\n', makeCommandString(objectName, mexName,commandInfo));
+    fprintf(methodFile, '\n    delete(mutexfile);\n');
     fprintf(methodFile, 'end\n');
 
     fclose(methodFile);
