@@ -46,10 +46,10 @@ __global__ void cudaMultAddFilter( CudaImageContainer<PixelType> imageIn, CudaIm
 			{
 				for (i.x=0; i.x<iterationEnd.x; ++i.x)
 				{
-					float kernVal = cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)+kernelOffset];
+					double kernVal = double(cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)+kernelOffset]);
 
-					kernFactor += (double)kernVal;
-					val += (double)((imageIn[imageStart+i]) * kernVal);
+					kernFactor += kernVal;
+					val += double((imageIn[imageStart+i]) * kernVal);
 
 					++kernHits;
 				}
@@ -62,7 +62,7 @@ __global__ void cudaMultAddFilter( CudaImageContainer<PixelType> imageIn, CudaIm
 		}
 		else
 		{
-			kernFactor = (double)kernHits/kernelDims.product();
+			kernFactor = double(kernHits)/kernelDims.product();
 			imageOut[coordinate] = (PixelType)(val/kernFactor);
 		}
 	}
