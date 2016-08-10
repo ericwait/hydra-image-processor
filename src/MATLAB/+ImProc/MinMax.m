@@ -10,8 +10,11 @@ function [min,max] = MinMax(imageIn)
     	for deviceIdx=1:n
     		mutexfile = fullfile(curPath,sprintf('device%02d.txt',deviceIdx));
     		if (~exist(mutexfile,'file'))
-    			f = fopen(mutexfile,'wt');
-    			fclose(f);
+    			try
+                    fclose(fopen(mutexfile,'wt'));
+    			catch errMsg
+                    continue;
+    			end
     			foundDevice = true;
     			device = deviceIdx;
     			break;

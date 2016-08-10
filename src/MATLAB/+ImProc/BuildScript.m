@@ -88,8 +88,11 @@ for i=1:length(dList)
             fprintf(f, '    	for deviceIdx=1:n\n');
             fprintf(f, '    		mutexfile = fullfile(curPath,sprintf(''device%%02d.txt'',deviceIdx));\n');
             fprintf(f, '    		if (~exist(mutexfile,''file''))\n');
-            fprintf(f, '    			f = fopen(mutexfile,''wt'');\n');
-            fprintf(f, '    			fclose(f);\n');
+            fprintf(f, '    			try\n');
+            fprintf(f, '                    fclose(fopen(mutexfile,''wt''));\n');
+            fprintf(f, '    			catch errMsg\n');
+            fprintf(f, '                    continue;\n');
+            fprintf(f, '    			end\n');
             fprintf(f, '    			foundDevice = true;\n');
             fprintf(f, '    			device = deviceIdx;\n');
             fprintf(f, '    			break;\n');
