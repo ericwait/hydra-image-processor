@@ -7,3 +7,8 @@
 %       commandInfo.helpLines - Cell array of input arguments
 function commandInfo = Info()
 end
+
+function imageOut = lclImagePow(imageIn,power)
+
+end
+

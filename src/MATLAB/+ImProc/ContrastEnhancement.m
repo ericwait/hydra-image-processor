@@ -7,37 +7,49 @@
 %    	MedianNeighborhood -- this is the neighborhood size in each dimension that will be evaluated for the median neighborhood filter.
 %    	ImageOut -- will have the same dimensions and type as imageIn.
 function imageOut = ContrastEnhancement(imageIn,sigma,MedianNeighborhood)
+    % check for Cuda capable devices
     curPath = which('ImProc.Cuda');
     curPath = fileparts(curPath);
     n = ImProc.Cuda.DeviceCount();
-    foundDevice = false;
-    device = -1;
-    
-    while(~foundDevice)
-    	for deviceIdx=1:n
-    		mutexfile = fullfile(curPath,sprintf('device%02d.txt',deviceIdx));
-    		if (~exist(mutexfile,'file'))
-    			try
-                    fclose(fopen(mutexfile,'wt'));
-    			catch errMsg
-                    continue;
-    			end
-    			foundDevice = true;
-    			device = deviceIdx;
-    			break;
-    		end
-    	end
-    	if (~foundDevice)
-    		pause(2);
-    	end
+
+    % if there are devices find the availble one and grab the mutex
+    if (n>0)
+       foundDevice = false;
+       device = -1;
+       
+       while(~foundDevice)
+        for deviceIdx=1:n
+            mutexfile = fullfile(curPath,sprintf('device%02d.txt',deviceIdx));
+            if (~exist(mutexfile,'file'))
+                try
+                       fclose(fopen(mutexfile,'wt'));
+                catch errMsg
+                       continue;
+                end
+                foundDevice = true;
+                device = deviceIdx;
+                break;
+            end
+        end
+        if (~foundDevice)
+            pause(2);
+        end
+       end
+       
+       try
+            imageOut = ImProc.Cuda.ContrastEnhancement(imageIn,sigma,MedianNeighborhood,device);
+        catch errMsg
+        	delete(mutexfile);
+        	throw(errMsg);
+        end
+        
+        delete(mutexfile);
+    else
+        imageOut = lclContrastEnhancement(imageIn,sigma,MedianNeighborhood);
     end
-    
-    try
-        imageOut = ImProc.Cuda.ContrastEnhancement(imageIn,sigma,MedianNeighborhood,device);
-    catch errMsg
-    	delete(mutexfile);
-    	throw(errMsg);
-    end
-    
-    delete(mutexfile);
 end
+
+function imageOut = lclContrastEnhancement(imageIn,sigma,MedianNeighborhood)
+
+end
+
