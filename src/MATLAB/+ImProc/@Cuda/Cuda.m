@@ -37,7 +37,7 @@ methods (Static)
     imageOut = ThresholdFilter(imageIn,threshold,device)
     imageOut = TileImage(imageIn,roiStart,roiSize,device)
     variance = Variance(imageIn,device)
-    shapeElement = MakeBallMask(radius)
+    shapeElement = ImProc.MakeBallMask(radius)
 end
 methods (Static, Access = private)
     varargout = Mex(command, varargin)

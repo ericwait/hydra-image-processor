@@ -30,7 +30,7 @@ function makeClassdef(objectName, mexName, commandList)
     for i=1:length(commandList)
         fprintf(objFile, '    %s\n', makePrototypeString(commandList(i)));
     end
-    fprintf(objFile, '    shapeElement = MakeBallMask(radius)\n');
+    fprintf(objFile, '    shapeElement = ImProc.MakeBallMask(radius)\n');
     fprintf(objFile, 'end\n');
 
     fprintf(objFile, 'methods (Static, Access = private)\n');
@@ -103,17 +103,17 @@ function protoString = makePrototypeString(commandInfo, objectName, parentPackag
     protoString = '';
     if ( ~isempty(commandInfo.outArgs) )
         protoString = makeCommaList(commandInfo.outArgs);
-        
+
         if ( length(commandInfo.outArgs) > 1 )
             protoString = ['[' protoString ']'];
         end
         protoString = [protoString ' = '];
     end
-    
+
     if ( ~isempty(objectName) )
         protoString = [protoString parentPackage objectName '.'];
     end
-    
+
     protoString = [protoString commandInfo.command '('];
     if ( ~isempty(commandInfo.inArgs) )
          protoString = [protoString makeCommaList(commandInfo.inArgs)];
