@@ -135,7 +135,7 @@ void MexApplyPolyTransformation::execute( int nlhs, mxArray* plhs[], int nrhs, c
 
 std::string MexApplyPolyTransformation::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
-	if (nrhs<4 && nrhs>7)
+	if (nrhs<4 || nrhs>7)
 		return "Incorrect number of inputs!";
 
 	if (nlhs!=1)
