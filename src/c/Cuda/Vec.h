@@ -27,6 +27,13 @@ public:
 	T z;
 
 	DEVICE_PREFIX VEC_THIS_CLASS(){x=0; y=0; z=0;};
+    
+    DEVICE_PREFIX VEC_THIS_CLASS(T val)
+    {
+        this->x = val;
+        this->y = val;
+        this->z = val;
+    }
 
 	template<typename U>
 	DEVICE_PREFIX VEC_THIS_CLASS(VEC_THIS_CLASS<U> other)
