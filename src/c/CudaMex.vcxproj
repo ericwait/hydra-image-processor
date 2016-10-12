@@ -63,8 +63,8 @@
       <ModuleDefinitionFile>$(SolutionDir)Mex\CudaMex.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>echo copy $(OutDir)\CudaMex.dll "$(ProjectDir)\Mex.mexw64"
-copy $(OutDir)\CudaMex.dll "$(ProjectDir)\Mex.mexw64"</Command>
+      <Command>echo copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"
+copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -86,8 +86,8 @@ copy $(OutDir)\CudaMex.dll "$(ProjectDir)\Mex.mexw64"</Command>
       <ModuleDefinitionFile>$(SolutionDir)Mex\CudaMex.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>echo copy $(OutDir)\CudaMex.dll "$(ProjectDir)\Mex.mexw64"
-copy $(OutDir)\CudaMex.dll "$(ProjectDir)\Mex.mexw64"</Command>
+      <Command>echo copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"
+copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
