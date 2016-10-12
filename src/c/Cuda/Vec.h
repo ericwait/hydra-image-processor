@@ -173,8 +173,8 @@ public:
 	{
 		VEC_THIS_CLASS<T> outVec;
 		outVec.x = (x<maxVal.x) ? ((x>minVal.x) ? (x) : (minVal.x)) : (maxVal.x);
-		outVec.y = (y<maxVal.y) ? ((x>minVal.y) ? (y) : (minVal.y)) : (maxVal.y);
-		outVec.z = (z<maxVal.z) ? ((x>minVal.z) ? (z) : (minVal.z)) : (maxVal.z);
+		outVec.y = (y<maxVal.y) ? ((y>minVal.y) ? (y) : (minVal.y)) : (maxVal.y);
+		outVec.z = (z<maxVal.z) ? ((z>minVal.z) ? (z) : (minVal.z)) : (maxVal.z);
 
 		return outVec;
 	}
