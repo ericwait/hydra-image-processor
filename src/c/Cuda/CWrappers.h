@@ -166,7 +166,7 @@ IMAGE_PROCESSOR_API double normalizedCovariance(const double* imageIn1, const do
 
 IMAGE_PROCESSOR_API double* normalizeHistogram(const unsigned char* imageIn, Vec<size_t> dims, unsigned int arraySize, unsigned char minVal = std::numeric_limits<unsigned char>::lowest(), unsigned char maxVal = std::numeric_limits<unsigned char>::max(), int device = 0);
 IMAGE_PROCESSOR_API double* normalizeHistogram(const unsigned short* imageIn, Vec<size_t> dims, unsigned int arraySize, unsigned short minVal = std::numeric_limits<unsigned short>::lowest(), unsigned short maxVal = std::numeric_limits<unsigned short>::max(), int device = 0);
-IMAGE_PROCESSOR_API double* normalizeHistogram(const short* imageIn, Vec<size_t> dims, unsigned int arraySize, short minVal = std::numeric_limits<int>::lowest(), short maxVal = std::numeric_limits<short>::max(), int device = 0);
+IMAGE_PROCESSOR_API double* normalizeHistogram(const short* imageIn, Vec<size_t> dims, unsigned int arraySize, short minVal = std::numeric_limits<short>::lowest(), short maxVal = std::numeric_limits<short>::max(), int device = 0);
 IMAGE_PROCESSOR_API double* normalizeHistogram(const unsigned int* imageIn, Vec<size_t> dims, unsigned int arraySize, unsigned int minVal = std::numeric_limits<unsigned int>::lowest(), unsigned int maxVal = std::numeric_limits<unsigned int>::max(), int device = 0);
 IMAGE_PROCESSOR_API double* normalizeHistogram(const int* imageIn, Vec<size_t> dims, unsigned int arraySize, int minVal = std::numeric_limits<int>::lowest(), int maxVal = std::numeric_limits<int>::max(), int device = 0);
 IMAGE_PROCESSOR_API double* normalizeHistogram(const float* imageIn, Vec<size_t> dims, unsigned int arraySize, float minVal = std::numeric_limits<float>::lowest(), float maxVal = std::numeric_limits<float>::max(), int device = 0);
@@ -188,13 +188,13 @@ IMAGE_PROCESSOR_API int otsuThresholdValue(const int* imageIn, Vec<size_t> dims,
 IMAGE_PROCESSOR_API float otsuThresholdValue(const float* imageIn, Vec<size_t> dims, int device = 0);
 IMAGE_PROCESSOR_API double otsuThresholdValue(const double* imageIn, Vec<size_t> dims, int device = 0);
 
-IMAGE_PROCESSOR_API unsigned char* reduceImage(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, unsigned char** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API unsigned short* reduceImage(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, unsigned short** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API short* reduceImage(const short* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, short** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API unsigned int* reduceImage(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, unsigned int** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API int* reduceImage(const int* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, int** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API float* reduceImage(const float* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, float** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API double* reduceImage(const double* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, double** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API unsigned char* reduceImage(const unsigned char* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, unsigned char** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API unsigned short* reduceImage(const unsigned short* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, unsigned short** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API short* reduceImage(const short* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, short** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API unsigned int* reduceImage(const unsigned int* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, unsigned int** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API int* reduceImage(const int* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, int** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API float* reduceImage(const float* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, float** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API double* reduceImage(const double* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, double** imageOut = NULL, int device = 0);
 
 IMAGE_PROCESSOR_API void regionGrowing(const unsigned char* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection=true,int device=0);
 IMAGE_PROCESSOR_API void regionGrowing(const unsigned short* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection=true,int device=0);

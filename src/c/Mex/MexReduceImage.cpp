@@ -12,14 +12,16 @@ void MexReduceImage::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	if (nrhs>2)
 	{
 		mxGetString(prhs[2],method,255);
-		if (_strcmpi(method,"mean")==0)
+		if(_strcmpi(method, "mean")==0)
 			mthd = REDUC_MEAN;
-		else if (_strcmpi(method,"median")==0)
+		else if(_strcmpi(method, "median")==0)
 			mthd = REDUC_MEDIAN;
-		else if (_strcmpi(method,"min")==0)
+		else if(_strcmpi(method, "min")==0)
 			mthd = REDUC_MIN;
-		else if (_strcmpi(method,"max")==0)
+		else if(_strcmpi(method, "max")==0)
 			mthd = REDUC_MAX;
+		else if(_strcmpi(method, "gaussian")==0)
+			mthd = REDUC_GAUS;
 		else
 			mexErrMsgTxt("Method of reduction not supported!");
 	}
@@ -207,8 +209,9 @@ void MexReduceImage::usage(std::vector<std::string>& outArgs,std::vector<std::st
 	inArgs.push_back("imageIn");
 	inArgs.push_back("reductionFactor");
 	inArgs.push_back("method");
-inArgs.push_back("device");
-outArgs.push_back("imageOut");
+	inArgs.push_back("device");
+
+	outArgs.push_back("imageOut");
 }
 
 void MexReduceImage::help(std::vector<std::string>& helpLines) const

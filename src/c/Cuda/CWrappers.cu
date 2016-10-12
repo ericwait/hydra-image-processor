@@ -803,37 +803,37 @@ float* markovRandomFieldDenoiser(const float* imageIn, Vec<size_t> dims, int max
 }
 
 
- unsigned char* reduceImage(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
+ unsigned char* reduceImage(const unsigned char* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return cReduceImage(imageIn,dims,reductions,reducedDims,method,imageOut,device);
 }
 
- unsigned short* reduceImage(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/, unsigned short** imageOut/*=NULL*/, int device/*=0*/)
+ unsigned short* reduceImage(const unsigned short* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/, unsigned short** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return cReduceImage(imageIn,dims,reductions,reducedDims,method,imageOut,device);
 }
 
- short* reduceImage(const short* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/, short** imageOut/*=NULL*/, int device/*=0*/)
+ short* reduceImage(const short* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/, short** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return cReduceImage(imageIn,dims,reductions,reducedDims,method,imageOut,device);
 }
 
- unsigned int* reduceImage(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/, unsigned int** imageOut/*=NULL*/, int device/*=0*/)
+ unsigned int* reduceImage(const unsigned int* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/, unsigned int** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return cReduceImage(imageIn,dims,reductions,reducedDims,method,imageOut,device);
 }
 
- int* reduceImage(const int* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/, int** imageOut/*=NULL*/, int device/*=0*/)
+ int* reduceImage(const int* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/, int** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return cReduceImage(imageIn,dims,reductions,reducedDims,method,imageOut,device);
 }
 
- float* reduceImage(const float* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/, float** imageOut/*=NULL*/, int device/*=0*/)
+ float* reduceImage(const float* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/, float** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return cReduceImage(imageIn,dims,reductions,reducedDims,method,imageOut,device);
 }
 
- double* reduceImage(const double* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/, double** imageOut/*=NULL*/, int device/*=0*/)
+ double* reduceImage(const double* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method/*=MEAN*/, double** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return cReduceImage(imageIn,dims,reductions,reducedDims,method,imageOut,device);
 }

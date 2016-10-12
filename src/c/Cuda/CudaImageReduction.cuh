@@ -13,6 +13,11 @@
 #include "CudaImageContainerClean.cuh"
 #include "Defines.h"
 
+#ifndef CUDA_CONST_KERNEL
+#define CUDA_CONST_KERNEL
+__constant__ float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
+#endif
+
 template <class PixelType>
 __global__ void cudaMeanImageReduction(CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut,
 									   Vec<size_t> hostReductions)
@@ -151,12 +156,65 @@ __global__ void cudaMinImageReduction(CudaImageContainer<PixelType> imageIn, Cud
 }
 
 template <class PixelType>
-PixelType* cReduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> reductions, Vec<size_t>& reducedDims, 
+__global__ void cudaGausImageReduction(CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut,
+									   Vec<int> hostReductions, Vec<int> hostKernalDims, PixelType minVal, PixelType maxVal)
+{
+	DeviceVec<int> reductions = hostReductions;
+	DeviceVec<int> coordinateOut;
+	coordinateOut.x = threadIdx.x+blockIdx.x * blockDim.x;
+	coordinateOut.y = threadIdx.y+blockIdx.y * blockDim.y;
+	coordinateOut.z = threadIdx.z+blockIdx.z * blockDim.z;
+
+	if(coordinateOut<imageOut.getDeviceDims())
+	{
+		double val = 0;
+		double kernFactor = 0;
+
+		DeviceVec<int> coordinateIn = coordinateOut*reductions+(reductions+1)/2.0;
+
+		DeviceVec<int> kernelDims = hostKernalDims;
+
+		DeviceVec<int> startLimit = coordinateIn-kernelDims/2;
+		DeviceVec<int> endLimit = coordinateIn+(kernelDims+1)/2;
+		DeviceVec<int> kernelStart(DeviceVec<int>::max(-startLimit, DeviceVec<int>(0, 0, 0)));
+
+		startLimit = DeviceVec<int>::max(startLimit, DeviceVec<int>(0, 0, 0));
+		endLimit = DeviceVec<int>::min(endLimit, imageIn.getDeviceDims());
+
+		DeviceVec<int> imageStart(coordinateIn-(kernelDims/2)+kernelStart);
+		DeviceVec<int> iterationEnd(endLimit-startLimit+1);
+
+		DeviceVec<int> centerOffset(0, 0, 0);
+		for(centerOffset.z = 0; centerOffset.z<iterationEnd.z; ++centerOffset.z)
+		{
+			for(centerOffset.y = 0; centerOffset.y<iterationEnd.y; ++centerOffset.y)
+			{
+				for(centerOffset.x = 0; centerOffset.x<iterationEnd.x; ++centerOffset.x)
+				{
+					double kernVal = double(cudaConstKernel[kernelDims.linearAddressAt(kernelStart+centerOffset)]);
+
+					kernFactor += kernVal;
+					val += double((imageIn[imageStart+centerOffset]) * kernVal);
+				}
+			}
+		}
+
+		val = val/kernFactor;
+		val = (val<minVal) ? (minVal) : (val);
+		val = (val>maxVal) ? (maxVal) : (val);
+
+		imageOut[coordinateOut] = (PixelType)val;
+	}
+}
+
+
+template <class PixelType>
+PixelType* cReduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, 
 					   ReductionMethods method=REDUC_MEAN, PixelType** imageOut=NULL, int device=0)
 {
 	cudaSetDevice(device);
 	reductions = reductions.clamp(Vec<size_t>(1,1,1),dims);
-	reducedDims = dims / reductions;
+	reducedDims = Vec<size_t>(Vec<double>(dims) / reductions);
 	PixelType* reducedImage;
 	if (imageOut==NULL)
 		reducedImage = new PixelType[reducedDims.product()];
@@ -179,42 +237,40 @@ PixelType* cReduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> 
 
 	std::vector<ImageChunk> orgChunks;
 	int numThreads = props.maxThreadsPerBlock;
+	Vec<int> gaussIterations(0, 0, 0);
+	float* hostKernel;
+	Vec<size_t> sizeconstKernelDims = Vec<size_t>(0, 0, 0);
+
 	if (method==REDUC_MEDIAN)
 	{
-		size_t sizeOfsharedMem = reductions.product()*sizeof(PixelType);
+		size_t sizeOfsharedMem = (size_t)(reductions.product())*sizeof(PixelType);
 		numThreads = (int)floor((double)props.sharedMemPerBlock/(double)sizeOfsharedMem);
 		numThreads = (props.maxThreadsPerBlock>numThreads) ? numThreads : props.maxThreadsPerBlock;
-		if (numThreads<1)
+		if(numThreads<1)
 			throw std::runtime_error("Median neighborhood is too large to fit in shared memory on the GPU!");
-		orgChunks = calculateBuffers<PixelType>(dims,1,(size_t)(memAvail*MAX_MEM_AVAIL*(1-ratio)),props,reductions,numThreads);
+
+		orgChunks = calculateBuffers<PixelType>(dims, 1, (size_t)(memAvail*MAX_MEM_AVAIL*(1-ratio)), props, reductions, numThreads);
+	}
+	else if(method==REDUC_GAUS)
+	{
+		Vec<float> sigmas = Vec<float>((reductions-1)*0.5f);
+
+		sizeconstKernelDims = createGaussianKernelFull(sigmas, &hostKernel);
+		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)*sizeconstKernelDims.product()));
+
+		orgChunks = calculateBuffers<PixelType>(dims, 1, (size_t)(memAvail*MAX_MEM_AVAIL*(1-ratio)), props, sizeconstKernelDims);
 	}
 	else
 	{
-		orgChunks = calculateBuffers<PixelType>(dims,1,(size_t)(memAvail*MAX_MEM_AVAIL*(1-ratio)),props,reductions);
-	}
-
-	std::vector<ImageChunk> reducedChunks = orgChunks;
-
-	for (std::vector<ImageChunk>::iterator it=reducedChunks.begin(); it!=reducedChunks.end(); ++it)
-	{
-		it->imageStart = it->imageROIstart/reductions;
-		it->chunkROIstart = Vec<size_t>(0,0,0);
-		it->imageROIstart = it->imageROIstart/reductions;
-		it->imageEnd = it->imageROIend/reductions;
-		it->imageROIend = it->imageROIend/reductions;
-		it->chunkROIend = it->imageEnd-it->imageStart;
-
-		if (method==REDUC_MEDIAN)
-			calcBlockThread(it->getFullChunkSize(),props,it->blocks,it->threads,numThreads);
-		else
-			calcBlockThread(it->getFullChunkSize(),props,it->blocks,it->threads);
+		orgChunks = calculateBuffers<PixelType>(dims, 1, (size_t)(memAvail*MAX_MEM_AVAIL*(1-ratio)), props, reductions);
 	}
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(orgChunks, maxDeviceDims);
-
 	CudaImageContainerClean<PixelType>* deviceImageIn = new CudaImageContainerClean<PixelType>(maxDeviceDims,device);
 
+	cudaMemGetInfo(&memAvail, &total);
+	std::vector<ImageChunk> reducedChunks = calculateBuffers<PixelType>(reducedDims, 1, (size_t)(memAvail*MAX_MEM_AVAIL), props, sizeconstKernelDims, numThreads);
 	setMaxDeviceDims(reducedChunks, maxDeviceDims);
 	CudaImageContainerClean<PixelType>* deviceImageOut = new CudaImageContainerClean<PixelType>(maxDeviceDims,device);
 
@@ -234,7 +290,7 @@ PixelType* cReduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> 
 			cudaMeanImageReduction<<<reducedIt->blocks,reducedIt->threads>>>(*deviceImageIn, *deviceImageOut, reductions);
 			break;
 		case REDUC_MEDIAN:
-			sharedMemorysize = reductions.product()*sizeof(PixelType) * reducedIt->threads.x * reducedIt->threads.y * reducedIt->threads.z;
+			sharedMemorysize = (size_t)(reductions.product())*sizeof(PixelType) * reducedIt->threads.x * reducedIt->threads.y * reducedIt->threads.z;
 			cudaMedianImageReduction<<<reducedIt->blocks,reducedIt->threads,sharedMemorysize>>>(*deviceImageIn, *deviceImageOut, reductions);
 			break;
 		case REDUC_MIN:
@@ -244,6 +300,10 @@ PixelType* cReduceImage(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> 
 		case REDUC_MAX:
 			cudaMaxImageReduction<<<reducedIt->blocks,reducedIt->threads>>>(*deviceImageIn, *deviceImageOut, reductions,
 				std::numeric_limits<PixelType>::lowest());
+			break;
+		case REDUC_GAUS:
+			cudaGausImageReduction<<<reducedIt->blocks, reducedIt->threads>>>(*deviceImageIn, *deviceImageOut, reductions, sizeconstKernelDims,
+																			  std::numeric_limits<PixelType>::lowest(), std::numeric_limits<PixelType>::max());
 			break;
 		default:
 			break;
