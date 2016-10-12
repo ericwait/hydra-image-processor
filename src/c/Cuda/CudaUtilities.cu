@@ -139,6 +139,55 @@ Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernelOut, Vec<int>& 
 	return kernelDims;
 }
 
+Vec<size_t> createGaussianKernelFull(Vec<float> sigma, float** kernelOut, Vec<size_t> maxKernelSize)
+{
+    Vec<size_t> kernelDims = Vec<size_t>(sigma.clamp(Vec<float>(1.0f), std::numeric_limits<float>::max()));
+
+    for(float numStd = 3.0f; numStd>1.0f; numStd -= 0.2f)
+    {
+        if(sigma.product()*numStd<maxKernelSize.product())
+        {
+            kernelDims = sigma*numStd+0.9999f;
+            break;
+        }
+    }
+
+    kernelDims = kernelDims.clamp(Vec<size_t>(1), Vec<size_t>(std::numeric_limits<size_t>::max()));
+    sigma = sigma.clamp(Vec<float>(0.1f), Vec<float>(std::numeric_limits<float>::max()));
+
+    if(kernelDims.product()>MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM)
+    {
+        kernelDims = Vec<size_t>(MAX_KERNEL_DIM, MAX_KERNEL_DIM, MAX_KERNEL_DIM);
+    }
+
+    Vec<float> center = (kernelDims-1.0f)/2.0f;
+
+    *kernelOut = new float[kernelDims.product()];
+    float* kernel = *kernelOut;
+
+    float total = 0.0f;
+    Vec<float> pos(0, 0, 0);
+    
+    Vec<float> denominator = SQR(sigma)*2;
+    for(pos.z = 0; pos.z<kernelDims.z; ++pos.z)
+    {
+        for(pos.y = 0; pos.y<kernelDims.y; ++pos.y)
+        {
+            for(pos.x = 0; pos.x<kernelDims.x; ++pos.x)
+            {
+                Vec<float> mahal = SQR(center-pos)/denominator;
+                kernel[kernelDims.linearAddressAt(pos)] = exp(-(mahal.sum()));
+                total += kernel[kernelDims.linearAddressAt(pos)];
+            }
+        }
+    }
+
+    for(int i = 0; i<kernelDims.product(); ++i)
+        kernel[i] /= total;
+
+    return kernelDims;
+}
+
 size_t memoryAvailable(int device, size_t* totalOut/*=NULL*/)
 {
 	HANDLE_ERROR(cudaSetDevice(device));
