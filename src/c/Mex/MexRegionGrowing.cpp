@@ -134,12 +134,18 @@ void MexRegionGrowing::usage(std::vector<std::string>& outArgs,std::vector<std::
 	inArgs.push_back("mask");
 	inArgs.push_back("threshold");
 	inArgs.push_back("allowConnections");
-inArgs.push_back("device");
-outArgs.push_back("maskOut");
+	inArgs.push_back("device");
+	outArgs.push_back("maskOut");
 }
 
 void MexRegionGrowing::help(std::vector<std::string>& helpLines) const
 {
+	helpLines.push_back("This will create a mask that grows by a delta value.  If a neighboring voxel is masked and the current voxel intensity is +/- delta from the masked intensity, then the current voxel is added to the mask.");
+
+	helpLines.push_back("\tImageIn -- can be an image up to three dimensions and of type (uint8,int8,uint16,int16,uint32,int32,single,double).");
+	helpLines.push_back("\tKernel -- this ");
+
+	helpLines.push_back("");
 //\	std::string msg = "\tThis will return a mask that has grown by the kernal shape for any pixels that are within a threshold of the current mask.\n";
 //\	msg += "\n";
 //\	return msg;

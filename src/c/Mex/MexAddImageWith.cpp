@@ -146,5 +146,5 @@
 	 helpLines.push_back("\tFactor -- this is a multiplier to the second image in the form imageOut = imageIn1 + factor*imageIn2.");
 	 helpLines.push_back("\tDevice -- this is an optional parameter that indicates which Cuda capable device to use.");
 
-	 helpLines.push_back("\imageOut -- this is the result of imageIn1 + factor*imageIn2 and will be of the same type as imageIn1.");
+	 helpLines.push_back("\timageOut -- this is the result of imageIn1 + factor*imageIn2 and will be of the same type as imageIn1.");
  }

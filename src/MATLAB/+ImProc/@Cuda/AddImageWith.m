@@ -4,7 +4,7 @@
 %    	ImageIn2 -- can be an image up to three dimensions and of the same type as imageIn1.
 %    	Factor -- this is a multiplier to the second image in the form imageOut = imageIn1 + factor*imageIn2.
 %    	Device -- this is an optional parameter that indicates which Cuda capable device to use.
-%    imageOut -- this is the result of imageIn1 + factor*imageIn2 and will be of the same type as imageIn1.
+%    	imageOut -- this is the result of imageIn1 + factor*imageIn2 and will be of the same type as imageIn1.
 function imageOut = AddImageWith(imageIn1,imageIn2,factor,device)
     [imageOut] = ImProc.Cuda.Mex('AddImageWith',imageIn1,imageIn2,factor,device);
 end
