@@ -131,9 +131,15 @@
     <ClInclude Include="Cuda\CudaStdFilter.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cuda\CudaDeviceStats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cuda\CHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cuda\CudaDeviceStats.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

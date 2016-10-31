@@ -1,5 +1,6 @@
 #pragma once
 #include "Vec.h"
+#include "CudaDeviceStats.h"
 #include <limits>
 
 #ifdef IMAGE_PROCESSOR_DLL
@@ -47,6 +48,7 @@ IMAGE_PROCESSOR_API float* contrastEnhancement(const float* imageIn, Vec<size_t>
 IMAGE_PROCESSOR_API double* contrastEnhancement(const double* imageIn, Vec<size_t> dims, Vec<float> sigmas, Vec<size_t> neighborhood, double** imageOut = NULL, int device = 0);
 
 IMAGE_PROCESSOR_API int deviceCount();
+IMAGE_PROCESSOR_API int deviceStats(DevStats** stats);
 
 IMAGE_PROCESSOR_API size_t* histogram(const unsigned char* imageIn, Vec<size_t> dims, unsigned int arraySize, unsigned char minVal = std::numeric_limits<unsigned char>::lowest(), unsigned char maxVal = std::numeric_limits<unsigned char>::max(), int device = 0);
 IMAGE_PROCESSOR_API size_t* histogram(const unsigned short* imageIn, Vec<size_t> dims, unsigned int arraySize, unsigned short minVal = std::numeric_limits<unsigned short>::lowest(), unsigned short maxVal = std::numeric_limits<unsigned short>::max(), int device = 0);

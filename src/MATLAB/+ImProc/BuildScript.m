@@ -3,7 +3,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 excludeList = ...
     {'Cuda.m';
-     'DeviceCount.m'};
+     'DeviceCount.m';
+     'DeviceStats.m'};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % remember curent path

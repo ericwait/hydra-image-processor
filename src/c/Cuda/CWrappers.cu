@@ -2,6 +2,7 @@
 #include "CudaAdd.cuh"
 #include "CudaContrastEnhancement.cuh"
 #include "CudaDeviceCount.cuh"
+#include "CudaDeviceStats.h"
 #include "CudaHistogram.cuh"
 #include "CudaImageCopy.cuh"
 #include "CudaGaussianFilter.cuh"
@@ -180,6 +181,11 @@ void clearDevice()
 	 return cDeviceCount();
  }
 
+
+ int deviceStats(DevStats** stats)
+ {
+	 return cDeviceStats(stats);
+ }
 
  size_t* histogram(const unsigned char* imageIn, Vec<size_t> dims, unsigned int arraySize, unsigned char minVal/*=std::numeric_limits<unsigned char>::lowest()*/, unsigned char maxVal/*=std::numeric_limits<unsigned char>::max()*/, int device/*=0*/)
 {

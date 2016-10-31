@@ -42,9 +42,9 @@ void MexDeviceCount::usage(std::vector<std::string>& outArgs,std::vector<std::st
 
 void MexDeviceCount::help(std::vector<std::string>& helpLines) const
 {
-	helpLines.push_back("This will return statistics on the Cuda devices available.");
+	helpLines.push_back("This will return the number of Cuda devices available, and their memory.");
 
 	helpLines.push_back("\tNumCudaDevices -- this is the number of Cuda devices available.");
-	helpLines.push_back("\tMemoryStats -- this is an array of structures where each entery corresponds to a Cuda device.");
+	helpLines.push_back("\tMemoryStats -- this is an array of structures where each entry corresponds to a Cuda device.");
 	helpLines.push_back("\t\tThe memory structure contains the total memory on the device and the memory available for a Cuda call.");
 }

@@ -26,6 +26,7 @@
     <ClInclude Include="Cuda\CudaConvertType.cuh" />
     <ClInclude Include="Cuda\CudaDeviceCount.cuh" />
     <ClInclude Include="Cuda\CudaDeviceImages.cuh" />
+    <ClInclude Include="Cuda\CudaDeviceStats.h" />
     <ClInclude Include="Cuda\CudaGaussianFilter.cuh" />
     <ClInclude Include="Cuda\CudaGetMinMax.cuh" />
     <ClInclude Include="Cuda\CudaGetROI.cuh" />
@@ -67,6 +68,9 @@
     <ClCompile Include="Cuda\CHelpers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Cuda\CudaDeviceStats.cpp">
+      <FileType>Document</FileType>
+    </ClCompile>
     <CudaCompile Include="Cuda\CudaUtilities.cu" />
     <CudaCompile Include="Cuda\CWrappers.cu" />
     <CudaCompile Include="Cuda\ImageChunk.cu" />
