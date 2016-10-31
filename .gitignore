@@ -37,3 +37,4 @@ src/c/CudaImageProccessing.v11.suo
 *.asv
 *.~
 *.VC.db
+*.opendb
