@@ -11,6 +11,7 @@ template <class PixelType>
 void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iterator& curChunk, CudaDeviceImages<PixelType>& deviceImages,
 						Vec<size_t> sizeconstKernelDims, int device)
 {
+    cudaSetDevice(device);
 	if (curChunk->getFullChunkSize().x>1)
 	{
 		for (int x=0; x<gaussIterations.x; ++x)
@@ -48,6 +49,7 @@ void runGaussIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iter
 template <class PixelType>
 PixelType* cGaussianFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas, PixelType** imageOut=NULL, int device=0)
 {
+    cudaSetDevice(device);
 	PixelType* imOut = setUpOutIm(dims, imageOut);
 
 	Vec<int> gaussIterations(0,0,0);

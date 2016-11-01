@@ -40,6 +40,7 @@ PixelType* cApplyPolyTransferFunction(const PixelType* imageIn, Vec<size_t> dims
 									 PixelType minValue=std::numeric_limits<PixelType>::lowest(),
 									 PixelType maxValue=std::numeric_limits<PixelType>::max(), PixelType** imageOut=NULL, int device=0)
 {
+    cudaSetDevice(device);
 	PixelType* imOut = setUpOutIm(dims, imageOut);
 
 	cudaDeviceProp props;

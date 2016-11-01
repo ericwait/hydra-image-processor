@@ -7,6 +7,7 @@ template <class PixelType>
 PixelType* cSegment(const PixelType* imageIn, Vec<size_t> dims, double alpha, Vec<size_t> kernelDims, float* kernel=NULL,
 					PixelType** imageOut=NULL, int device=0)
 {
+    cudaSetDevice(device);
 	PixelType thresh = cOtsuThresholdValue(imageIn,dims,device);
 	thresh = (PixelType)(thresh*alpha);
 

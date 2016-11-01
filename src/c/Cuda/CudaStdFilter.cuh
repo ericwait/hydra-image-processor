@@ -66,6 +66,7 @@ __global__ void cudaStdFilter(CudaImageContainer<PixelType> imageIn,CudaImageCon
 template <class PixelType>
 PixelType* cStdFilter(const PixelType* imageIn,Vec<size_t> dims,Vec<size_t> neighborhood,PixelType** imageOut=NULL,int device=0)
 {
+    cudaSetDevice(device);
 	PixelType* imOut = setUpOutIm(dims,imageOut);
 
 	neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);

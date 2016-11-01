@@ -25,6 +25,8 @@ __global__ void cudaClamp(CudaImageContainer<PixelType> imageIn,CudaImageContain
 template <class PixelType>
 PixelType* cClamp(const PixelType* imageIn,Vec<size_t> dims,PixelType minVal,PixelType maxVal,PixelType** imageOut=NULL,int device=0)
 {
+    cudaSetDevice(device);
+
 	PixelType* imOut = setUpOutIm(dims,imageOut);
 
 	cudaDeviceProp props;

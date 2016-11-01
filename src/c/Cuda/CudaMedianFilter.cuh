@@ -115,6 +115,7 @@ __global__ void cudaMedianFilter( CudaImageContainer<PixelType> imageIn, CudaIma
 template <class PixelType>
 PixelType* cMedianFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> neighborhood, PixelType** imageOut=NULL, int device=0)
 {
+    cudaSetDevice(device);
 	PixelType* imOut = setUpOutIm(dims, imageOut);
 
 	neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);

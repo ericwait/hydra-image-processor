@@ -88,6 +88,8 @@ template <class PixelType>
 PixelType* cAddImageWith(const PixelType* imageIn1, const PixelType* imageIn2, Vec<size_t> dims, double additive,
 						PixelType** imageOut=NULL, int device=0)
 {
+    cudaSetDevice(device);
+
 	PixelType* imOut = setUpOutIm(dims, imageOut);
 
 	PixelType minVal = std::numeric_limits<PixelType>::lowest();

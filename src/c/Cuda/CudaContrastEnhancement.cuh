@@ -15,6 +15,8 @@ template <class PixelType>
 PixelType* cContrastEnhancement(const PixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas, Vec<size_t> neighborhood,
 							   PixelType** imageOut=NULL, int device=0)
 {
+    cudaSetDevice(device);
+
 	PixelType* imGauss = cGaussianFilter<PixelType>(imageIn,dims,sigmas,NULL,device);
  
 	PixelType* imSub = cAddImageWith<PixelType>(imageIn,imGauss,dims,-1.0,NULL,device);

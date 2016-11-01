@@ -93,6 +93,8 @@ float* cMarkovRandomFieldDenoiser(const float* imageIn, Vec<size_t> dims, int ma
 //  c = convn(b,permute(a,[3 1 2]),'same')
 //  normalizer = sum((c(:).^2))
 
+    cudaSetDevice(device);
+
 	const size_t SINGLE_KERN_DIM = 3;
 	const Vec<size_t> KERN_DIMS = Vec<size_t>(SINGLE_KERN_DIM,SINGLE_KERN_DIM,SINGLE_KERN_DIM);
 	float hostKernel[SINGLE_KERN_DIM][SINGLE_KERN_DIM][SINGLE_KERN_DIM] = 

@@ -26,6 +26,7 @@ __global__ void cudaPow( CudaImageContainer<PixelType> imageIn1, CudaImageContai
 template <class PixelType>
 PixelType* cImagePow(const PixelType* imageIn, Vec<size_t> dims, double power, PixelType** imageOut=NULL, int device=0)
 {
+    cudaSetDevice(device);
 	PixelType* imOut = setUpOutIm(dims, imageOut);
 
 	PixelType minVal = std::numeric_limits<PixelType>::lowest();

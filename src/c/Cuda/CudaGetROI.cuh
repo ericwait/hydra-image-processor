@@ -10,6 +10,8 @@ template <class PixelType>
 __global__ void cudaGetROI( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut,
 						   Vec<size_t> hostStartPos, Vec<size_t> hostNewSize )
 {
+    cudaSetDevice(device);
+
 	DeviceVec<size_t> newSize = hostNewSize;
 	DeviceVec<size_t> startPos = hostStartPos;
 	DeviceVec<size_t> coordinate;

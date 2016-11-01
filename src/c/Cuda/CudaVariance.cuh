@@ -8,6 +8,7 @@
 template <class PixelType, class PixelTypeOut>
 double cVariance(const PixelType* imageIn, Vec<size_t> dims, int device=0, PixelTypeOut* imageOut=NULL)
 {
+    cudaSetDevice(device);
 	double variance = 0.0;
 
 	double imMean = cSumArray<double>(imageIn, dims.product(), device) / (double)dims.product();

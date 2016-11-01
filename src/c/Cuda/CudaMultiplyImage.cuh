@@ -47,6 +47,7 @@ __global__ void cudaMultiplyTwoImages(CudaImageContainer<PixelType> imageIn1, Cu
 template <class PixelType>
 PixelType* cMultiplyImage(const PixelType* imageIn, Vec<size_t> dims, double multiplier, PixelType** imageOut=NULL, int device=0)
 {
+    cudaSetDevice(device);
 	PixelType* imOut = setUpOutIm(dims, imageOut);
 
 	PixelType minVal = std::numeric_limits<PixelType>::lowest();
@@ -86,6 +87,7 @@ template <class PixelType>
 PixelType* cMultiplyImageWith(const PixelType* imageIn1, const PixelType* imageIn2, Vec<size_t> dims, double factor, PixelType** imageOut=NULL,
 							int device=0)
 {
+    cudaSetDevice(device);
 	PixelType* imOut = setUpOutIm(dims, imageOut);
 
 	PixelType minVal = std::numeric_limits<PixelType>::lowest();

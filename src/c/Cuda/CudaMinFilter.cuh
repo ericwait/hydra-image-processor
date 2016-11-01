@@ -69,6 +69,7 @@ template <class PixelType>
 PixelType* cMinFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, PixelType** imageOut=NULL,
 					 int device=0)
 {
+    cudaSetDevice(device);
 	PixelType* imOut = setUpOutIm(dims, imageOut);
 
 	PixelType minVal = std::numeric_limits<PixelType>::lowest();
