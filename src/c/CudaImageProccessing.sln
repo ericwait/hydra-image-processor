@@ -4,17 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaImageProcessor_lib", "CudaImageProcessor_dll.vcxproj", "{F204D99B-C454-420D-BD1B-5FE4D9D07078}"
-	ProjectSection(ProjectDependencies) = postProject
-		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA} = {25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaMex", "CudaMex.vcxproj", "{6698E8EC-49D9-421E-AA87-5BCC6B466347}"
 	ProjectSection(ProjectDependencies) = postProject
-		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA} = {25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}
 		{F204D99B-C454-420D-BD1B-5FE4D9D07078} = {F204D99B-C454-420D-BD1B-5FE4D9D07078}
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaImageProcessor_dll", "CudaImageProcessor_lib.vcxproj", "{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,10 +24,6 @@ Global
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Debug|x64.Build.0 = Debug|x64
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Release|x64.ActiveCfg = Release|x64
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Release|x64.Build.0 = Release|x64
-		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}.Debug|x64.ActiveCfg = Debug|x64
-		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}.Debug|x64.Build.0 = Debug|x64
-		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}.Release|x64.ActiveCfg = Release|x64
-		{25F5EA7B-85DC-4B1F-8850-DBB72F6678BA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
