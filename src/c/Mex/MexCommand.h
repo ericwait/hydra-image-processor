@@ -213,6 +213,7 @@ protected:
 		return usageString;
 	}
 
+    static void setupImagePointers(const mxArray* imageIn, bool** image, Vec<size_t>* dims, mxArray** argOut = NULL, bool** imageOut = NULL);
 	static void setupImagePointers(const mxArray* imageIn,unsigned char** image,Vec<size_t>* dims,mxArray** argOut=NULL,unsigned char** imageOut=NULL);
 	static void setupImagePointers(const mxArray* imageIn,unsigned short** image,Vec<size_t>* dims,mxArray** argOut=NULL,unsigned short** imageOut=NULL);
 	static void setupImagePointers(const mxArray* imageIn,short** image,Vec<size_t>* dims,mxArray** argOut=NULL,short** imageOut=NULL);

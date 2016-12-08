@@ -151,6 +151,33 @@ void MexHelp::help(std::vector<std::string>& helpLines) const
 	helpLines.push_back("Print detailed usage information for the specified command.");
 }
 
+void MexCommand::setupImagePointers(const mxArray* imageIn, bool** image, Vec<size_t>* dims, mxArray** argOut/*=NULL*/, bool** imageOut/*=NULL*/)
+{
+    size_t numDims = mxGetNumberOfDimensions(imageIn);
+    const mwSize* DIMS = mxGetDimensions(imageIn);
+
+    if(numDims>2)
+        dims->z = (size_t)DIMS[2];
+    else
+        dims->z = 1;
+
+    if(numDims>1)
+        dims->y = dims->y = (size_t)DIMS[1];
+    else
+        dims->y = 1;
+
+    dims->x = (size_t)DIMS[0];
+
+    *image = (bool*)mxGetData(imageIn);
+
+    if(argOut!=NULL && imageOut!=NULL)
+    {
+        *argOut = mxCreateLogicalArray(numDims, DIMS);
+        *imageOut = (bool*)mxGetData(*argOut);
+        memset(*imageOut, 0, sizeof(bool)*dims->product());
+    }
+}
+
 void MexCommand::setupImagePointers(const mxArray* imageIn,unsigned char** image,Vec<size_t>* dims,mxArray** argOut/*=NULL*/,unsigned char** imageOut/*=NULL*/)
 {
 	size_t numDims = mxGetNumberOfDimensions(imageIn);

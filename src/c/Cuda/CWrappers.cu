@@ -521,6 +521,11 @@ float* markovRandomFieldDenoiser(const float* imageIn, Vec<size_t> dims, int max
 }
 
 
+ bool* morphologicalClosure(const bool* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, bool** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+     return cMorphologicalClosure(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
+
  unsigned char* morphologicalClosure(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
 {
 	return cMorphologicalClosure(imageIn,dims,kernelDims,kernel,imageOut,device);
@@ -556,6 +561,11 @@ float* markovRandomFieldDenoiser(const float* imageIn, Vec<size_t> dims, int max
 	return cMorphologicalClosure(imageIn,dims,kernelDims,kernel,imageOut,device);
 }
 
+
+ bool* morphologicalOpening(const bool* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, bool** imageOut/*=NULL*/, int device/*=0*/)
+ {
+     return cMorphologicalOpening(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
 
  unsigned char* morphologicalOpening(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel/*=NULL*/, unsigned char** imageOut/*=NULL*/, int device/*=0*/)
 {

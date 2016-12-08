@@ -126,6 +126,7 @@ IMAGE_PROCESSOR_API int* minFilter(const int* imageIn, Vec<size_t> dims, Vec<siz
 IMAGE_PROCESSOR_API float* minFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, float** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API double* minFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, double** imageOut = NULL, int device = 0);
 
+IMAGE_PROCESSOR_API bool* morphologicalClosure(const bool* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, bool** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API unsigned char* morphologicalClosure(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, unsigned char** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API unsigned short* morphologicalClosure(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, unsigned short** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API short* morphologicalClosure(const short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, short** imageOut = NULL, int device = 0);
@@ -134,6 +135,7 @@ IMAGE_PROCESSOR_API int* morphologicalClosure(const int* imageIn, Vec<size_t> di
 IMAGE_PROCESSOR_API float* morphologicalClosure(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, float** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API double* morphologicalClosure(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, double** imageOut = NULL, int device = 0);
 
+IMAGE_PROCESSOR_API bool* morphologicalOpening(const bool* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, bool** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API unsigned char* morphologicalOpening(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, unsigned char** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API unsigned short* morphologicalOpening(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, unsigned short** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API short* morphologicalOpening(const short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, short** imageOut = NULL, int device = 0);
