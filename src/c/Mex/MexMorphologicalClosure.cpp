@@ -9,35 +9,17 @@ void MexMorphologicalClosure::execute( int nlhs, mxArray* plhs[], int nrhs, cons
 	if (nrhs>2)
 		device = mat_to_c((int)mxGetScalar(prhs[2]));
 
-	size_t numDims = mxGetNumberOfDimensions(prhs[1]);
-	const mwSize* DIMS = mxGetDimensions(prhs[1]);
-
-	Vec<size_t> kernDims;
-
-	if (numDims>2)
-		kernDims.z = (size_t)DIMS[2];
-	else
-		kernDims.z = 1;
-
-	if (numDims>1)
-		kernDims.y = (size_t)DIMS[1];
-	else
-		kernDims.y = 1;
-
-	if (numDims>0)
-		kernDims.x = (size_t)DIMS[0];
-	else
-		return;
-
-	double* matKernel;
-	matKernel = (double*)mxGetData(prhs[1]);
-
-	float* kernel = new float[kernDims.product()];
-	for (int i=0; i<kernDims.product(); ++i)
-		kernel[i] = (float)matKernel[i];
+    float* kernel = NULL;
+    Vec<size_t> kernDims = FillKernel(prhs[1], &kernel);
 
 	Vec<size_t> imageDims;
-	if (mxIsUint8(prhs[0]))
+    if(mxIsLogical(prhs[0]))
+    {
+        bool* imageIn, *imageOut;
+        setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
+
+        morphologicalClosure(imageIn, imageDims, kernDims, kernel, &imageOut, device);
+    } else if(mxIsUint8(prhs[0]))
 	{
 		unsigned char* imageIn,* imageOut;
 		setupImagePointers(prhs[0],&imageIn,&imageDims,&plhs[0],&imageOut);
@@ -117,8 +99,8 @@ void MexMorphologicalClosure::usage(std::vector<std::string>& outArgs,std::vecto
 {
 	inArgs.push_back("imageIn");
 	inArgs.push_back("kernel");
-inArgs.push_back("device");
-outArgs.push_back("imageOut");
+    inArgs.push_back("device");
+    outArgs.push_back("imageOut");
 }
 
 void MexMorphologicalClosure::help(std::vector<std::string>& helpLines) const
