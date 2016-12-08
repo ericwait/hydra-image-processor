@@ -221,6 +221,7 @@ protected:
 	static void setupImagePointers(const mxArray* imageIn,int** image,Vec<size_t>* dims,mxArray** argOut=NULL,int** imageOut=NULL);
 	static void setupImagePointers(const mxArray* imageIn,float** image,Vec<size_t>* dims,mxArray** argOut=NULL,float** imageOut=NULL);
 	static void setupImagePointers(const mxArray* imageIn,double** image,Vec<size_t>* dims,mxArray** argOut=NULL,double** imageOut=NULL);
+    static Vec<size_t> MexCommand::FillKernel(const mxArray* matKernelIn, float** kernel);
 
 private:
 	static const size_t m_numCommands;

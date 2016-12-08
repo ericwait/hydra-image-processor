@@ -366,3 +366,94 @@ void MexCommand::setupImagePointers(const mxArray* imageIn,double** image,Vec<si
 		memset(*imageOut,0,sizeof(double)*dims->product());
 	}
 }
+
+Vec<size_t> MexCommand::FillKernel(const mxArray* matKernelIn, float** kernel )
+{
+    size_t numDims = mxGetNumberOfDimensions(matKernelIn);
+    const mwSize* DIMS = mxGetDimensions(matKernelIn);
+
+    Vec<size_t> kernDims;
+
+    if(numDims>2)
+        kernDims.z = (size_t)DIMS[2];
+    else
+        kernDims.z = 1;
+
+    if(numDims>1)
+        kernDims.y = (size_t)DIMS[1];
+    else
+        kernDims.y = 1;
+
+    if(numDims>0)
+        kernDims.x = (size_t)DIMS[0];
+    else
+    {
+        mexErrMsgTxt("Kernel cannot be empty!");
+        return Vec<size_t>(0, 0, 0);
+    }
+
+    *kernel = new float[kernDims.product()];
+    float* lclKernel = *kernel;
+
+    if(mxIsLogical(matKernelIn))
+    {
+        bool* matKernel;
+        matKernel = (bool*)mxGetData(matKernelIn);
+
+        for(int i = 0; i<kernDims.product(); ++i)
+            lclKernel[i] = (matKernel[i]) ? (1.0f) : (0.0f);
+    } else if(mxIsUint8(matKernelIn))
+    {
+        unsigned char* matKernel;
+        matKernel = (unsigned char*)mxGetData(matKernelIn);
+
+        for(int i = 0; i<kernDims.product(); ++i)
+            lclKernel[i] = float(matKernel[i]);
+    } else if(mxIsUint16(matKernelIn))
+    {
+        unsigned short* matKernel;
+        matKernel = (unsigned short*)mxGetData(matKernelIn);
+
+        for(int i = 0; i<kernDims.product(); ++i)
+            lclKernel[i] = float(matKernel[i]);
+    } else if(mxIsInt16(matKernelIn))
+    {
+        short* matKernel;
+        matKernel = (short*)mxGetData(matKernelIn);
+
+        for(int i = 0; i<kernDims.product(); ++i)
+            lclKernel[i] = float(matKernel[i]);
+    } else if(mxIsUint32(matKernelIn))
+    {
+        unsigned int* matKernel;
+        matKernel = (unsigned int*)mxGetData(matKernelIn);
+
+        for(int i = 0; i<kernDims.product(); ++i)
+            lclKernel[i] = float(matKernel[i]);
+    } else if(mxIsInt32(matKernelIn))
+    {
+        int* matKernel;
+        matKernel = (int*)mxGetData(matKernelIn);
+
+        for(int i = 0; i<kernDims.product(); ++i)
+            lclKernel[i] = float(matKernel[i]);
+    } else if(mxIsSingle(matKernelIn))
+    {
+        float* matKernel;
+        matKernel = (float*)mxGetData(matKernelIn);
+
+        memcpy(kernel, matKernel, sizeof(float)*kernDims.product());
+    } else if(mxIsDouble(matKernelIn))
+    {
+        double* matKernel;
+        matKernel = (double*)mxGetData(matKernelIn);
+
+        for(int i = 0; i<kernDims.product(); ++i)
+            lclKernel[i] = float(matKernel[i]);
+    } else
+    {
+        mexErrMsgTxt("Kernel type not supported!");
+    }
+
+    return kernDims;
+}
