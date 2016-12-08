@@ -31,14 +31,14 @@ __global__ void cudaMaxFilter( CudaImageContainer<PixelType> imageIn, CudaImageC
 		double localMaxVal = imageIn[coordinate];
 		DeviceVec<size_t> kernelDims = hostKernelDims;
 
-		DeviceVec<int> startLimit = DeviceVec<int>(coordinate) - DeviceVec<int>((kernelDims)/2);
+		DeviceVec<int> startLimit = DeviceVec<int>(coordinate) - DeviceVec<int>(kernelDims/2);
 		DeviceVec<size_t> endLimit = coordinate + (kernelDims+1)/2;
 		DeviceVec<size_t> kernelStart(DeviceVec<int>::max(-startLimit,DeviceVec<int>(0,0,0)));
 
 		startLimit = DeviceVec<int>::max(startLimit,DeviceVec<int>(0,0,0));
 		endLimit = DeviceVec<size_t>::min(DeviceVec<size_t>(endLimit),imageIn.getDeviceDims());
 
-		DeviceVec<size_t> imageStart(coordinate-(kernelDims/2)+kernelStart);
+		DeviceVec<size_t> imageStart(startLimit);
 		DeviceVec<size_t> iterationEnd(endLimit-DeviceVec<size_t>(startLimit));
 
 		DeviceVec<size_t> i(0,0,0);
