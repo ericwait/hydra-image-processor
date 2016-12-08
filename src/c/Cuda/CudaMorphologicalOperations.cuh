@@ -47,13 +47,11 @@ PixelType* cMorphologicalClosure(const PixelType* imageIn, Vec<size_t> dims, Vec
 		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
 		deviceImages.setNextDims(curChunk->getFullChunkSize());
 
-		cudaMaxFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),kernelDims,
-			minVal,maxVal);
+		cudaMaxFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),kernelDims,minVal,maxVal);
 		DEBUG_KERNEL_CHECK();
 		deviceImages.incrementBuffer();
 
-		cudaMinFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),kernelDims,
-			minVal,maxVal);
+		cudaMinFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),kernelDims,minVal,maxVal);
 		DEBUG_KERNEL_CHECK();
 		deviceImages.incrementBuffer();
 
