@@ -3,7 +3,8 @@ function imageOut = MaxFilterEllipsoid(imageIn,radius)
     % check for Cuda capable devices
     curPath = which('ImProc.Cuda');
     curPath = fileparts(curPath);
-    n = ImProc.Cuda.DeviceCount();
+    devStats = ImProc.Cuda.DeviceStats();
+	n = length(devStats);
 
     % if there are devices find the availble one and grab the mutex
     if (n>0)
@@ -20,6 +21,9 @@ function imageOut = MaxFilterEllipsoid(imageIn,radius)
                        continue;
                 end
                 foundDevice = true;
+				f = fopen(mutexfile,'at');
+				fprintf(f,'%s',devStats(deviceIdx).name);
+				fclose(f);
                 device = deviceIdx;
                 break;
             end

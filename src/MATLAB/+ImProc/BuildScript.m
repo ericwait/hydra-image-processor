@@ -80,8 +80,9 @@ for i=1:length(dList)
             fprintf(f, '    %% check for Cuda capable devices\n');
             fprintf(f, '    curPath = which(''ImProc.Cuda'');\n');
             fprintf(f, '    curPath = fileparts(curPath);\n');
-            fprintf(f, '    n = ImProc.Cuda.DeviceCount();\n');
-            fprintf(f, '\n');
+            fprintf(f, '    devStats = ImProc.Cuda.DeviceStats();\n');
+	        fprintf(f, '    n = length(devStats);\n');
+            fprintf(f, '    \n');
             fprintf(f, '    %% if there are devices find the availble one and grab the mutex\n');
             fprintf(f, '    if (n>0)\n');
             fprintf(f, '       foundDevice = false;\n');
@@ -96,7 +97,11 @@ for i=1:length(dList)
             fprintf(f, '                catch errMsg\n');
             fprintf(f, '                       continue;\n');
             fprintf(f, '                end\n');
+            fprintf(f, '                \n');
             fprintf(f, '                foundDevice = true;\n');
+			fprintf(f, '                f = fopen(mutexfile,''at'');\n');
+			fprintf(f, '                fprintf(f,''%s'',devStats(deviceIdx).name);\n');
+			fprintf(f, '                fclose(f);\n');
             fprintf(f, '                device = deviceIdx;\n');
             fprintf(f, '                break;\n');
             fprintf(f, '            end\n');
