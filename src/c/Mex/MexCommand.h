@@ -214,13 +214,37 @@ protected:
 	}
 
     static void setupImagePointers(const mxArray* imageIn, bool** image, Vec<size_t>* dims, mxArray** argOut = NULL, bool** imageOut = NULL);
+    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, bool** image);
+    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, bool** image);
+
 	static void setupImagePointers(const mxArray* imageIn,unsigned char** image,Vec<size_t>* dims,mxArray** argOut=NULL,unsigned char** imageOut=NULL);
+    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, unsigned char** image);
+    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, unsigned char** image);
+
 	static void setupImagePointers(const mxArray* imageIn,unsigned short** image,Vec<size_t>* dims,mxArray** argOut=NULL,unsigned short** imageOut=NULL);
+    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, unsigned short** image);
+    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, unsigned short** image);
+
 	static void setupImagePointers(const mxArray* imageIn,short** image,Vec<size_t>* dims,mxArray** argOut=NULL,short** imageOut=NULL);
+    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, short** image);
+    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, short** image);
+
 	static void setupImagePointers(const mxArray* imageIn,unsigned int** image,Vec<size_t>* dims,mxArray** argOut=NULL,unsigned int** imageOut=NULL);
+    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, unsigned int** image);
+    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, unsigned int** image);
+
 	static void setupImagePointers(const mxArray* imageIn,int** image,Vec<size_t>* dims,mxArray** argOut=NULL,int** imageOut=NULL);
+    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, int** image);
+    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, int** image);
+
 	static void setupImagePointers(const mxArray* imageIn,float** image,Vec<size_t>* dims,mxArray** argOut=NULL,float** imageOut=NULL);
+    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, float** image);
+    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, float** image);
+
 	static void setupImagePointers(const mxArray* imageIn,double** image,Vec<size_t>* dims,mxArray** argOut=NULL,double** imageOut=NULL);
+    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, double** image);
+    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, double** image);
+
     static Vec<size_t> MexCommand::FillKernel(const mxArray* matKernelIn, float** kernel);
 
 private:
