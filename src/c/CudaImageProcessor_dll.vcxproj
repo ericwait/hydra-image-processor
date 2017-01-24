@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CudaResize.cuh" />
     <ClInclude Include="Cuda\CHelpers.h" />
     <ClInclude Include="Cuda\CudaAdd.cuh" />
     <ClInclude Include="Cuda\CudaClamp.cuh" />
