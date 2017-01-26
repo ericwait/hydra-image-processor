@@ -1,8 +1,5 @@
 #pragma once
 
-#define DEVICE_VEC
-#include "Vec.h"
-#undef DEVICE_VEC
 #include "Vec.h"
 #include <limits>
 

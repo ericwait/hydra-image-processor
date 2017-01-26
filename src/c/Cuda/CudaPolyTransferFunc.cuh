@@ -1,9 +1,5 @@
 #pragma once
 
-#define DEVICE_VEC
-#include "Vec.h"
-#undef DEVICE_VEC
-
 #include "CudaImageContainer.cuh"
 #include "Vec.h"
 #include <vector>
@@ -15,7 +11,7 @@ template <class PixelType>
 __global__ void cudaPolyTransferFunc( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, double a, double b,
 									 double c, PixelType minPixelValue, PixelType maxPixelValue )
 {
-	DeviceVec<size_t> coordinate;
+	Vec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;

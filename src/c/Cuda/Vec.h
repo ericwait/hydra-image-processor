@@ -1,34 +1,34 @@
-#ifndef HOST_VEC_ONCE
-#define HOST_VEC_ONCE
-#define DEVICE_PREFIX
+#ifndef INCLUDE_VEC
 #define INCLUDE_VEC
-#define VEC_THIS_CLASS Vec
-#define VEC_EXTERN_CLASS DeviceVec
-#elif defined(DEVICE_VEC) && !defined(DEVICE_VEC_ONCE)
-#define DEVICE_VEC_ONCE
-#define DEVICE_PREFIX __device__
-#define INCLUDE_VEC
-#define VEC_THIS_CLASS DeviceVec
-#define VEC_EXTERN_CLASS Vec
-#endif
 
-#ifdef INCLUDE_VEC
+#ifdef __CUDACC__
+#define MIXED_PREFIX __host__ __device__
+#else
+#define MIXED_PREFIX
+#endif
 
 #include "Defines.h"
 
-template<typename T> class VEC_EXTERN_CLASS;
+#include <type_traits>
 
 template<typename T>
-class VEC_THIS_CLASS
+class Vec
 {
 public:
-	T x;
-	T y;
-	T z;
+    union
+    {
+        T e[3];
+        struct  
+        {
+            T x;
+            T y;
+            T z;
+        };
+    };
 
-	DEVICE_PREFIX VEC_THIS_CLASS(){x=0; y=0; z=0;};
+	MIXED_PREFIX Vec(){x=0; y=0; z=0;};
     
-    DEVICE_PREFIX VEC_THIS_CLASS(T val)
+    MIXED_PREFIX Vec(T val)
     {
         this->x = val;
         this->y = val;
@@ -36,7 +36,7 @@ public:
     }
 
 	template<typename U>
-	DEVICE_PREFIX VEC_THIS_CLASS(VEC_THIS_CLASS<U> other)
+	MIXED_PREFIX Vec(const Vec<U>& other)
 	{
 		this->x = static_cast<T>(other.x);
 		this->y = static_cast<T>(other.y);
@@ -44,7 +44,7 @@ public:
 	}
 
 
-	DEVICE_PREFIX VEC_THIS_CLASS(T x, T y, T z)
+	MIXED_PREFIX Vec(T x, T y, T z)
 	{
 		this->x = x;
 		this->y = y;
@@ -52,9 +52,9 @@ public:
 	}
 
 	// Negates each element
-	DEVICE_PREFIX VEC_THIS_CLASS<T> operator- () const
+	MIXED_PREFIX Vec<T> operator- () const
 	{
-		VEC_THIS_CLASS<T> outVec;
+		Vec<T> outVec;
 		outVec.x = -x;
 		outVec.y = -y;
 		outVec.z = -z;
@@ -63,92 +63,92 @@ public:
 	}
 
 	// Adds each element by adder
-	template<typename d>
-	DEVICE_PREFIX VEC_THIS_CLASS<T> operator+ (d adder) const
+	template<typename U>
+	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator+ (U adder) const
 	{
-		VEC_THIS_CLASS<T> outVec;
-		outVec.x = (T)(x+adder);
-		outVec.y = (T)(y+adder);
-		outVec.z = (T)(z+adder);
+        Vec<typename std::common_type<T, U>::type> outVec;
+		outVec.x = x+adder;
+		outVec.y = y+adder;
+		outVec.z = z+adder;
 
 		return outVec;
 	}
 
 	// Subtracts each element by subtractor
-	template<typename d>
-	DEVICE_PREFIX VEC_THIS_CLASS<T> operator- (d subtractor) const
+	template<typename U>
+	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator- (U subtractor) const
 	{
-		VEC_THIS_CLASS<T> outVec;
-		outVec.x = (T)(x-subtractor);
-		outVec.y = (T)(y-subtractor);
-		outVec.z = (T)(z-subtractor);
+		Vec<typename std::common_type<T, U>::type> outVec;
+		outVec.x = x-subtractor;
+		outVec.y = y-subtractor;
+		outVec.z = z-subtractor;
 
 		return outVec;
 	}
 
 	// Divides each element by divisor
-	template<typename d>
-	DEVICE_PREFIX VEC_THIS_CLASS<T> operator/ (d divisor) const
+	template<typename U>
+	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator/ (U divisor) const
 	{
-		VEC_THIS_CLASS<T> outVec;
-		outVec.x = (T)(x/divisor);
-		outVec.y = (T)(y/divisor);
-		outVec.z = (T)(z/divisor);
+		Vec<typename std::common_type<T, U>::type> outVec;
+		outVec.x = x/divisor;
+		outVec.y = y/divisor;
+		outVec.z = z/divisor;
 
 		return outVec;
 	}
 
 	// Multiplies each element by mult
-	template<typename d>
-	DEVICE_PREFIX VEC_THIS_CLASS<T> operator* (d mult) const
+	template<typename U>
+	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator* (U mult) const
 	{
-		VEC_THIS_CLASS<T> outVec;
-		outVec.x = (T)(x*mult);
-		outVec.y = (T)(y*mult);
-		outVec.z = (T)(z*mult);
+		Vec<typename std::common_type<T, U>::type> outVec;
+		outVec.x = x*mult;
+		outVec.y = y*mult;
+		outVec.z = z*mult;
 
 		return outVec;
 	}
 
 	// Raises each element to the pwr
-	template<typename d>
-	DEVICE_PREFIX VEC_THIS_CLASS<T> pwr (d pw) const
+	template<typename U>
+	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> pwr (U pw) const
 	{
-		VEC_THIS_CLASS<T> outVec;
-		outVec.x = (T)(pow((double)x,pw));
-		outVec.y = (T)(pow((double)y,pw));
-		outVec.z = (T)(pow((double)z,pw));
+		Vec<typename std::common_type<T, U>::type> outVec;
+		outVec.x = pow((double)x,pw);
+		outVec.y = pow((double)y,pw);
+		outVec.z = pow((double)z,pw);
 
 		return outVec;
 	}
 
 	// Returns the product of x*y*z
-	DEVICE_PREFIX T product() const
+	MIXED_PREFIX T product() const
 	{
 		return x*y*z;
 	}
 
 	// Returns the sum of x+y+z
-	DEVICE_PREFIX T sum() const
+	MIXED_PREFIX T sum() const
 	{
 		return x+y+z;
 	}
 
 	// Returns the max value of x,y,z
-	DEVICE_PREFIX T maxValue() const
+	MIXED_PREFIX T maxValue() const
 	{
 		return (x>y) ? ((x>z)?(x):(z)) : ((y>z)?(y):(z));
 	}
 
 	// Returns the min value of x,y,z
-	DEVICE_PREFIX T minValue() const
+	MIXED_PREFIX T minValue() const
 	{
 		return (x<y) ? ((x<z)?(x):(z)) : ((y<z)?(y):(z));
 	}
 
-	DEVICE_PREFIX static VEC_THIS_CLASS<T> min(VEC_THIS_CLASS<T> a, VEC_THIS_CLASS<T> b)
+	MIXED_PREFIX static Vec<T> min(Vec<T> a, Vec<T> b)
 	{
-		VEC_THIS_CLASS<T> outVec;
+		Vec<T> outVec;
 		outVec.x = MIN(a.x, b.x);
 		outVec.y = MIN(a.y, b.y);
 		outVec.z = MIN(a.z, b.z);
@@ -156,9 +156,9 @@ public:
 		return outVec;
 	}
 
-	DEVICE_PREFIX static VEC_THIS_CLASS<T> max(VEC_THIS_CLASS<T> a, VEC_THIS_CLASS<T> b)
+	MIXED_PREFIX static Vec<T> max(Vec<T> a, Vec<T> b)
 	{
-		VEC_THIS_CLASS<T> outVec;
+		Vec<T> outVec;
 		outVec.x = MAX(a.x, b.x);
 		outVec.y = MAX(a.y, b.y);
 		outVec.z = MAX(a.z, b.z);
@@ -166,9 +166,9 @@ public:
 		return outVec;
 	}
 
-	DEVICE_PREFIX VEC_THIS_CLASS<T> saturate(VEC_THIS_CLASS<T> maxVal)
+	MIXED_PREFIX Vec<T> saturate(Vec<T> maxVal)
 	{
-		VEC_THIS_CLASS<T> outVec;
+		Vec<T> outVec;
 		outVec.x = (x<maxVal.x) ? (x) : (maxVal.x);
 		outVec.y = (y<maxVal.y) ? (y) : (maxVal.y);
 		outVec.z = (z<maxVal.z) ? (z) : (maxVal.z);
@@ -176,9 +176,9 @@ public:
 		return outVec;
 	}
 
-	DEVICE_PREFIX VEC_THIS_CLASS<T> clamp(VEC_THIS_CLASS<T> minVal, VEC_THIS_CLASS<T> maxVal)
+	MIXED_PREFIX Vec<T> clamp(Vec<T> minVal, Vec<T> maxVal)
 	{
-		VEC_THIS_CLASS<T> outVec;
+		Vec<T> outVec;
 		outVec.x = (x<maxVal.x) ? ((x>minVal.x) ? (x) : (minVal.x)) : (maxVal.x);
 		outVec.y = (y<maxVal.y) ? ((y>minVal.y) ? (y) : (minVal.y)) : (maxVal.y);
 		outVec.z = (z<maxVal.z) ? ((z>minVal.z) ? (z) : (minVal.z)) : (maxVal.z);
@@ -186,10 +186,10 @@ public:
 		return outVec;
 	}
 
-	template<typename T>
-	DEVICE_PREFIX VEC_THIS_CLASS<size_t> coordAddressOf(T idx)const
+	template<typename U>
+	MIXED_PREFIX Vec<size_t> coordAddressOf(U idx)const
 	{
-		VEC_THIS_CLASS<size_t> vecOut = VEC_THIS_CLASS<size_t>(0,0,0);
+		Vec<size_t> vecOut = Vec<size_t>(0,0,0);
 		if(x==0 && y==0 && z==0)
 			throw runtime_error("Not a valid vector to index into!");
 
@@ -220,17 +220,122 @@ public:
 		return vecOut;
 	}
 
-#define EXTERN_TYPE VEC_THIS_CLASS
-#include "VecFuncs.h"
-#undef EXTERN_TYPE
+    template <typename U>
+    MIXED_PREFIX Vec& operator= (const Vec<U>& other)
+    {
+        this->x = other.x;
+        this->y = other.y;
+        this->z = other.z;
 
-#define EXTERN_TYPE VEC_EXTERN_CLASS
-#include "VecFuncs.h"
-#undef EXTERN_TYPE
+        return *this;
+    }
+
+    template <typename U>
+    MIXED_PREFIX Vec<typename std::common_type<T,U>::type> operator+ (const Vec<U>& other) const
+    {
+        Vec<typename std::common_type<T, U>::type> outVec;
+        outVec.x = x+other.x;
+        outVec.y = y+other.y;
+        outVec.z = z+other.z;
+
+        return outVec;
+    }
+
+    template <typename U>
+    MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator- (const Vec<U>& other) const
+    {
+        Vec<typename std::common_type<T, U>::type> outVec;
+        outVec.x = x-other.x;
+        outVec.y = y-other.y;
+        outVec.z = z-other.z;
+
+        return outVec;
+    }
+
+    template <typename U>
+    MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator/ (const Vec<U>& other) const
+    {
+        Vec<typename std::common_type<T, U>::type> outVec;
+        outVec.x = x/other.x;
+        outVec.y = y/other.y;
+        outVec.z = z/other.z;
+
+        return outVec;
+    }
+
+    template <typename U>
+    MIXED_PREFIX Vec<typename std::common_type<T, U>::type>  operator* (const Vec<U>& other) const
+    {
+        Vec<typename std::common_type<T, U>::type> outVec;
+        outVec.x = x * other.x;
+        outVec.y = y * other.y;
+        outVec.z = z * other.z;
+
+        return outVec;
+    }
+
+    template <typename U>
+    MIXED_PREFIX Vec<T>& operator+= (const Vec<U>& other)
+    {
+        x += other.x;
+        y += other.y;
+        z += other.z;
+
+        return *this;
+    }
+
+    template <typename U>
+    MIXED_PREFIX Vec<T>& operator-= (const Vec<U>& other)
+    {
+        x -= other.x;
+        y -= other.y;
+        z -= other.z;
+
+        return *this;
+    }
+
+    // Are all the values less then the passed in values
+    MIXED_PREFIX bool operator< (const Vec<T>& inVec) const
+    {
+        return x<inVec.x && y<inVec.y && z<inVec.z;
+    }
+
+    MIXED_PREFIX bool operator<= (const Vec<T>& inVec) const
+    {
+        return x<=inVec.x && y<=inVec.y && z<=inVec.z;
+    }
+
+    // Are all the values greater then the passed in values
+    MIXED_PREFIX bool operator>(const Vec<T>& inVec) const
+    {
+        return x>inVec.x && y>inVec.y && z>inVec.z;
+    }
+
+    MIXED_PREFIX bool operator>= (const Vec<T>& inVec) const
+    {
+        return x>=inVec.x && y>=inVec.y && z>=inVec.z;
+    }
+
+    MIXED_PREFIX bool operator== (const Vec<T>& inVec) const
+    {
+        return x==inVec.x && y==inVec.y && z==inVec.z;
+    }
+
+    MIXED_PREFIX bool operator!= (const Vec<T>& inVec) const
+    {
+        return x!=inVec.x||y!=inVec.y||z!=inVec.z;
+    }
+
+    // Returns the linear memory map if this is the dimensions and the passed in Vec is the coordinate
+    MIXED_PREFIX size_t linearAddressAt(const Vec<T>& coordinate) const
+    {
+        return coordinate.x+coordinate.y*x+coordinate.z*y*x;
+    }
+
+    MIXED_PREFIX double EuclideanDistanceTo(const Vec<T>& other)
+    {
+        return sqrt((double)(SQR(x-other.x)+SQR(y-other.y)+SQR(z-other.z)));
+    }
 };
 
-#undef INCLUDE_VEC
-#undef VEC_THIS_CLASS
-#undef VEC_EXTERN_CLASS
-#undef DEVICE_PREFIX
 #endif

@@ -10,20 +10,20 @@
 template <class PixelType>
 __global__ void cudaMarkovGradDescent(CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, PixelType delta)
 {
-	DeviceVec<size_t> coordinate;
+	Vec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	DeviceVec<size_t> moves[7] =
+	Vec<size_t> moves[7] =
 	{
-		DeviceVec<size_t>(1,0,0),
-		DeviceVec<size_t>(0,1,0),
-		DeviceVec<size_t>(0,0,1),
-		DeviceVec<size_t>(1,1,0),
-		DeviceVec<size_t>(1,0,1),
-		DeviceVec<size_t>(0,1,1),
-		DeviceVec<size_t>(1,1,1)
+		Vec<size_t>(1,0,0),
+		Vec<size_t>(0,1,0),
+		Vec<size_t>(0,0,1),
+		Vec<size_t>(1,1,0),
+		Vec<size_t>(1,0,1),
+		Vec<size_t>(0,1,1),
+		Vec<size_t>(1,1,1)
 	};
 
 	if (coordinate<imageOut.getDeviceDims())
@@ -32,7 +32,7 @@ __global__ void cudaMarkovGradDescent(CudaImageContainer<PixelType> imageIn, Cud
 		double centerVal = imageIn[coordinate];
 		double curVal = centerVal;
 
-		if (coordinate>DeviceVec<size_t>(0,0,0) && coordinate<imageIn.getDeviceDims()-DeviceVec<size_t>(1,1,1))// left, top, and front planes avail
+		if (coordinate>Vec<size_t>(0,0,0) && coordinate<imageIn.getDeviceDims()-Vec<size_t>(1,1,1))// left, top, and front planes avail
 		{
 			for (int i=0; i<7; ++i)
 			{
@@ -62,22 +62,22 @@ __global__ void cudaMarkovGradDescent(CudaImageContainer<PixelType> imageIn, Cud
 
 //		double sgn = 0.0;
 // 		if (coordinate.x>0)
-// 			sgn -= SIGN(centerVal-imageIn[coordinate-DeviceVec<int>(1,0,0)]);
+// 			sgn -= SIGN(centerVal-imageIn[coordinate-Vec<int>(1,0,0)]);
 // 
 // 		if (coordinate.x<imageIn.getDeviceDims().x-1)
-// 			sgn += SIGN(imageIn[coordinate+DeviceVec<int>(1,0,0)]-centerVal);
+// 			sgn += SIGN(imageIn[coordinate+Vec<int>(1,0,0)]-centerVal);
 // 
 // 		if (coordinate.y>0)
-// 			sgn -= SIGN(centerVal - imageIn[coordinate-DeviceVec<int>(0,1,0)]);
+// 			sgn -= SIGN(centerVal - imageIn[coordinate-Vec<int>(0,1,0)]);
 // 
 // 		if (coordinate.y<imageIn.getDeviceDims().y-1)
-// 			sgn += SIGN(imageIn[coordinate+DeviceVec<int>(0,1,0)] - centerVal);
+// 			sgn += SIGN(imageIn[coordinate+Vec<int>(0,1,0)] - centerVal);
 // 
 // 		if (coordinate.z>0)
-// 			sgn -= SIGN(centerVal - imageIn[coordinate-DeviceVec<int>(0,0,1)]);
+// 			sgn -= SIGN(centerVal - imageIn[coordinate-Vec<int>(0,0,1)]);
 // 
 // 		if (coordinate.z<imageIn.getDeviceDims().z-1)
-// 			sgn += SIGN(imageIn[coordinate+DeviceVec<int>(0,0,1)] - centerVal);
+// 			sgn += SIGN(imageIn[coordinate+Vec<int>(0,0,1)] - centerVal);
 // 
 // 		imageOut[coordinate] = centerVal + SIGN(sgn)*delta;
 	}

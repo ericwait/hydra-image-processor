@@ -1,9 +1,5 @@
 #pragma once
 
-#define DEVICE_VEC
-#include "Vec.h"
-#undef DEVICE_VEC
-
 #include "CudaImageContainer.cuh"
 #include "Vec.h"
 #include <vector>
@@ -14,7 +10,7 @@
 template <class PixelType>
 __global__ void cudaMeanFilter( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, Vec<size_t> hostKernelDims )
 {
-	DeviceVec<size_t> coordinate;
+	Vec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
@@ -23,10 +19,10 @@ __global__ void cudaMeanFilter( CudaImageContainer<PixelType> imageIn, CudaImage
 	{
 		double val = 0;
 		double kernelVolume = 0;
-		DeviceVec<size_t> kernelDims = hostKernelDims;
-		DeviceVec<size_t> halfKernal = kernelDims/2;
+		Vec<size_t> kernelDims = hostKernelDims;
+		Vec<size_t> halfKernal = kernelDims/2;
 
-		DeviceVec<size_t> curCoordIm = coordinate - halfKernal;
+		Vec<size_t> curCoordIm = coordinate - halfKernal;
 		curCoordIm.z = (coordinate.z<halfKernal.z) ? 0 : coordinate.z-halfKernal.z;
 		for (; curCoordIm.z<=coordinate.z+halfKernal.z && curCoordIm.z<imageIn.getDeviceDims().z; ++curCoordIm.z)
 		{

@@ -1,8 +1,5 @@
 #pragma once
 
-#define DEVICE_VEC
-#include "Vec.h"
-#undef DEVICE_VEC
 #include "Vec.h"
 
 template <class PixelTypeIn, class PixelTypeOut>
@@ -22,7 +19,7 @@ __global__ void cudaConvertType( const PixelTypeIn* imageIn, PixelTypeOut* image
 // __global__ void cudaConvertType( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, PixelType minValue,
 // 								PixelType maxValue)
 // {
-// 	DeviceVec<size_t> coordinate;
+// 	Vec<size_t> coordinate;
 // 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
 // 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 // 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;

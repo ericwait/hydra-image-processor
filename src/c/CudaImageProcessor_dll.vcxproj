@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CudaResize.cuh" />
     <ClInclude Include="Cuda\CHelpers.h" />
     <ClInclude Include="Cuda\CudaAdd.cuh" />
     <ClInclude Include="Cuda\CudaClamp.cuh" />
@@ -63,7 +62,6 @@
     <ClInclude Include="Cuda\Defines.h" />
     <ClInclude Include="Cuda\ImageChunk.cuh" />
     <ClInclude Include="Cuda\Vec.h" />
-    <ClInclude Include="Cuda\VecFuncs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cuda\CHelpers.cpp" />

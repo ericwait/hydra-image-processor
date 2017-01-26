@@ -1,8 +1,5 @@
 #pragma once
 
-#define DEVICE_VEC
-#include "Vec.h"
-#undef DEVICE_VEC
 #include "Vec.h"
 
 #include <string>
@@ -12,12 +9,12 @@ template <class PixelType>
 class CudaImageContainer
 {
 public:
-	~CudaImageContainer()
+    __host__ __device__ ~CudaImageContainer()
 	{
 		defaults();
 	}
 
-	CudaImageContainer(const CudaImageContainer& other)
+	__host__ __device__ CudaImageContainer(const CudaImageContainer& other)
 	{
 		device = other.device;
 		maxImageDims = other.maxImageDims;
@@ -35,31 +32,31 @@ public:
 
 	__device__ PixelType* getImagePointer(){return image;}
 
-	__device__ PixelType& operator[]( DeviceVec<size_t> coordinate )
+	__device__ PixelType& operator[]( Vec<size_t> coordinate )
 	{
-		coordinate += DeviceVec<size_t>(roiStarts);
-		DeviceVec<size_t> deviceImageDims = DeviceVec<size_t>(imageDims);
+		coordinate += Vec<size_t>(roiStarts);
+		Vec<size_t> deviceImageDims = Vec<size_t>(imageDims);
 
 		size_t ind = deviceImageDims.linearAddressAt(coordinate);
 		return image[ind];
 	}
 
-	__device__ const PixelType& operator[]( DeviceVec<size_t> coordinate ) const
+	__device__ const PixelType& operator[]( Vec<size_t> coordinate ) const
 	{
-		coordinate += DeviceVec<size_t>(roiStarts);
-		DeviceVec<size_t> deviceImageDims = DeviceVec<size_t>(imageDims);
+		coordinate += Vec<size_t>(roiStarts);
+		Vec<size_t> deviceImageDims = Vec<size_t>(imageDims);
 
 		return image[deviceImageDims.linearAddressAt(coordinate)];
 	}
 
 	__device__ PixelType& operator[](size_t idx)
 	{
-		DeviceVec<size_t> deviceStarts = DeviceVec<size_t>(roiStarts);
-		if(deviceStarts==DeviceVec<size_t>(0,0,0))
+		Vec<size_t> deviceStarts = Vec<size_t>(roiStarts);
+		if(deviceStarts==Vec<size_t>(0,0,0))
 			return image[idx];
 
-		DeviceVec<size_t> deviceImageDims = DeviceVec<size_t>(imageDims);
-		DeviceVec<size_t> coord = deviceImageDims.coordAddressOf(idx);
+		Vec<size_t> deviceImageDims = Vec<size_t>(imageDims);
+		Vec<size_t> coord = deviceImageDims.coordAddressOf(idx);
 
 		coord += deviceStarts;
 		return this[coord];
@@ -67,22 +64,22 @@ public:
 
 	__device__ const PixelType& operator[]( size_t idx) const
 	{
-		DeviceVec<size_t> deviceStarts = DeviceVec<size_t>(roiStarts);
-		if(deviceStarts==DeviceVec<size_t>(0,0,0))
+		Vec<size_t> deviceStarts = Vec<size_t>(roiStarts);
+		if(deviceStarts==Vec<size_t>(0,0,0))
 			return image[idx];
 
-		DeviceVec<size_t> deviceImageDims = DeviceVec<size_t>(imageDims);
-		DeviceVec<size_t> coord = deviceImageDims.coordAddressOf(idx);
+		Vec<size_t> deviceImageDims = Vec<size_t>(imageDims);
+		Vec<size_t> coord = deviceImageDims.coordAddressOf(idx);
 
 		coord += deviceStarts;
 		return this[coord];
 	}
 
 	Vec<size_t> getDims() const { return roiSizes; }
-	__device__ DeviceVec<size_t> getDeviceDims() const { return DeviceVec<size_t>(roiSizes); }
-	__device__ size_t getWidth() const { return DeviceVec<size_t>(roiSizes).x; }
-	__device__ size_t getHeight() const { return DeviceVec<size_t>(roiSizes).y; }
-	__device__ size_t getDepth() const { return DeviceVec<size_t>(roiSizes).z; }
+	__device__ Vec<size_t> getDeviceDims() const { return Vec<size_t>(roiSizes); }
+	__device__ size_t getWidth() const { return Vec<size_t>(roiSizes).x; }
+	__device__ size_t getHeight() const { return Vec<size_t>(roiSizes).y; }
+	__device__ size_t getDepth() const { return Vec<size_t>(roiSizes).z; }
 
 	bool setDims(Vec<size_t> dims)
 	{
@@ -143,7 +140,7 @@ protected:
 
 	CudaImageContainer(Vec<size_t> dims,int device=0) {}
 
-	void defaults() 
+    __host__ __device__ void defaults()
 	{
 		maxImageDims = Vec<size_t>(0, 0, 0);
 		imageDims = Vec<size_t>(0,0,0);

@@ -1,9 +1,5 @@
 #pragma once
 
-#define DEVICE_VEC
-#include "Vec.h"
-#undef DEVICE_VEC
-
 #include "CudaImageContainer.cuh"
 #include "Vec.h"
 #include <vector>
@@ -21,7 +17,7 @@ template <class PixelType>
 __global__ void cudaMaxFilter( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, Vec<size_t> hostKernelDims,
 							  PixelType minVal, PixelType maxVal)
 {
-	DeviceVec<size_t> coordinate;
+	Vec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
@@ -29,19 +25,19 @@ __global__ void cudaMaxFilter( CudaImageContainer<PixelType> imageIn, CudaImageC
 	if (coordinate<imageIn.getDeviceDims())
 	{
 		double localMaxVal = imageIn[coordinate];
-		DeviceVec<size_t> kernelDims = hostKernelDims;
+		Vec<size_t> kernelDims = hostKernelDims;
 
-		DeviceVec<int> startLimit = DeviceVec<int>(coordinate) - DeviceVec<int>(kernelDims/2);
-		DeviceVec<size_t> endLimit = coordinate + (kernelDims+1)/2;
-		DeviceVec<size_t> kernelStart(DeviceVec<int>::max(-startLimit,DeviceVec<int>(0,0,0)));
+		Vec<int> startLimit = Vec<int>(coordinate) - Vec<int>(kernelDims/2);
+		Vec<size_t> endLimit = coordinate + (kernelDims+1)/2;
+		Vec<size_t> kernelStart(Vec<int>::max(-startLimit,Vec<int>(0,0,0)));
 
-		startLimit = DeviceVec<int>::max(startLimit,DeviceVec<int>(0,0,0));
-		endLimit = DeviceVec<size_t>::min(DeviceVec<size_t>(endLimit),imageIn.getDeviceDims());
+		startLimit = Vec<int>::max(startLimit,Vec<int>(0,0,0));
+		endLimit = Vec<size_t>::min(Vec<size_t>(endLimit),imageIn.getDeviceDims());
 
-		DeviceVec<size_t> imageStart(startLimit);
-		DeviceVec<size_t> iterationEnd(endLimit-DeviceVec<size_t>(startLimit));
+		Vec<size_t> imageStart(startLimit);
+		Vec<size_t> iterationEnd(endLimit-Vec<size_t>(startLimit));
 
-		DeviceVec<size_t> i(0,0,0);
+		Vec<size_t> i(0,0,0);
 		for (i.z=0; i.z<iterationEnd.z; ++i.z)
 		{
 			for (i.y=0; i.y<iterationEnd.y; ++i.y)
