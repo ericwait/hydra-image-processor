@@ -38,3 +38,5 @@ src/c/CudaImageProccessing.v11.suo
 *.~
 *.VC.db
 *.opendb
+
+src/MATLAB/\+ImProc/@Cuda/device02\.txt
