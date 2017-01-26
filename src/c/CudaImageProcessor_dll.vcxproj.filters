@@ -140,7 +140,7 @@
     <ClInclude Include="Cuda\CudaDeviceStats.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CudaResize.cuh">
+    <ClInclude Include="Cuda\CudaResize.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

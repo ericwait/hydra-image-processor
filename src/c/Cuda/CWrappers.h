@@ -208,6 +208,15 @@ IMAGE_PROCESSOR_API void regionGrowing(const int* imageIn,Vec<size_t> dims,Vec<s
 IMAGE_PROCESSOR_API void regionGrowing(const float* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection=true,int device=0);
 IMAGE_PROCESSOR_API void regionGrowing(const double* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection=true,int device=0);
 
+IMAGE_PROCESSOR_API bool* resize(const bool* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method = REDUC_MEAN, bool** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API unsigned char* resize(const unsigned char* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method = REDUC_MEAN, unsigned char** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API unsigned short* resize(const unsigned short* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method = REDUC_MEAN, unsigned short** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API short* resize(const short* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method = REDUC_MEAN, short** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API unsigned int* resize(const unsigned int* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method = REDUC_MEAN, unsigned int** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API int* resize(const int* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method = REDUC_MEAN, int** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API float* resize(const float* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method = REDUC_MEAN, float** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API double* resize(const double* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method = REDUC_MEAN, double** imageOut = NULL, int device = 0);
+
 IMAGE_PROCESSOR_API size_t sumArray(const unsigned char* imageIn, size_t n, int device = 0);
 IMAGE_PROCESSOR_API size_t sumArray(const unsigned short* imageIn, size_t n, int device = 0);
 IMAGE_PROCESSOR_API size_t sumArray(const short* imageIn, size_t n, int device = 0);

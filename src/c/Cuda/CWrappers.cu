@@ -21,6 +21,7 @@
 #include "CudaPow.cuh"
 #include "CudaImageReduction.cuh"
 #include "CudaRegionGrowing.cuh"
+#include "CudaResize.cuh"
 #include "CudaSegment.cuh"
 #include "CudaStdFilter.cuh"
 #include "CudaSum.cuh"
@@ -891,7 +892,47 @@ float* markovRandomFieldDenoiser(const float* imageIn, Vec<size_t> dims, int max
  }
 
 
- size_t sumArray(const unsigned char* imageIn,size_t n,int device/*=0*/)
+ bool* resize(const bool* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method /*= REDUC_MEAN*/, bool** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+     return cResize(imageIn, dimsIn, resizeFactors, dimsOut, method, imageOut, device);
+ }
+
+ unsigned char* resize(const unsigned char* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method /*= REDUC_MEAN*/, unsigned char** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+     return cResize(imageIn, dimsIn, resizeFactors, dimsOut, method, imageOut, device);
+ }
+
+ unsigned short* resize(const unsigned short* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method /*= REDUC_MEAN*/, unsigned short** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+     return cResize(imageIn, dimsIn, resizeFactors, dimsOut, method, imageOut, device);
+ }
+
+ short* resize(const short* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method /*= REDUC_MEAN*/, short** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+     return cResize(imageIn, dimsIn, resizeFactors, dimsOut, method, imageOut, device);
+ }
+
+ unsigned int* resize(const unsigned int* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method /*= REDUC_MEAN*/, unsigned int** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+     return cResize(imageIn, dimsIn, resizeFactors, dimsOut, method, imageOut, device);
+ }
+
+ int* resize(const int* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method /*= REDUC_MEAN*/, int** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+     return cResize(imageIn, dimsIn, resizeFactors, dimsOut, method, imageOut, device);
+ }
+
+ float* resize(const float* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method /*= REDUC_MEAN*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+     return cResize(imageIn, dimsIn, resizeFactors, dimsOut, method, imageOut, device);
+ }
+
+ double* resize(const double* imageIn, Vec<size_t> dimsIn, Vec<double> resizeFactors, Vec<size_t>& dimsOut, ReductionMethods method /*= REDUC_MEAN*/, double** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+     return cResize(imageIn, dimsIn, resizeFactors, dimsOut, method, imageOut, device);
+ }
+
+ size_t sumArray(const unsigned char* imageIn, size_t n, int device/*=0*/)
 {
 	return cSumArray<size_t>(imageIn,n,device);
 }

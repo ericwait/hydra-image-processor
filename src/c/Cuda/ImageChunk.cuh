@@ -137,11 +137,22 @@ public:
 		delete[] tempBuffer;
 	}
 
+    // This chunk starts at this location in the original image
 	Vec<size_t> imageStart;
+
+    // This is the start of the chunk to be evaluated
 	Vec<size_t> chunkROIstart;
+
+    // This is where the chunk should go back to the original image
 	Vec<size_t> imageROIstart;
+
+    // This chunk ends at this location in the original image (inclusive)
 	Vec<size_t> imageEnd;
+
+    // This is the end of the chunk to be evaluated (inclusive)
 	Vec<size_t> chunkROIend;
+
+    // This is where the chunk should go back to the original image (inclusive)
 	Vec<size_t> imageROIend;
 
 	dim3 blocks, threads;

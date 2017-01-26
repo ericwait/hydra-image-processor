@@ -236,9 +236,9 @@ void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, unsig
 {
     mwSize* DIMS = NULL;
     size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateLogicalArray(numDims, DIMS);
+    *imageOut = mxCreateNumericArray(numDims, DIMS,mxUINT8_CLASS,mxREAL);
     *image = (unsigned char*)mxGetData(*imageOut);
-    memset(*imageOut, 0, sizeof(unsigned char)*dims.product());
+    memset(*image, 0, sizeof(unsigned char)*dims.product());
 
     delete[] DIMS;
 }
@@ -262,7 +262,7 @@ void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, unsig
 {
     mwSize* DIMS = NULL;
     size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateLogicalArray(numDims, DIMS);
+    *imageOut = mxCreateNumericArray(numDims, DIMS, mxUINT16_CLASS, mxREAL);
     *image = (unsigned short*)mxGetData(*imageOut);
     memset(*imageOut, 0, sizeof(unsigned short)*dims.product());
 
@@ -288,7 +288,7 @@ void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, short
 {
     mwSize* DIMS = NULL;
     size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateLogicalArray(numDims, DIMS);
+    *imageOut = mxCreateNumericArray(numDims, DIMS, mxINT16_CLASS, mxREAL);
     *image = (short*)mxGetData(*imageOut);
     memset(*imageOut, 0, sizeof(short)*dims.product());
 
@@ -314,7 +314,7 @@ void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, unsig
 {
     mwSize* DIMS = NULL;
     size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateLogicalArray(numDims, DIMS);
+    *imageOut = mxCreateNumericArray(numDims, DIMS, mxUINT32_CLASS, mxREAL);
     *image = (unsigned int*)mxGetData(*imageOut);
     memset(*imageOut, 0, sizeof(unsigned int)*dims.product());
 
@@ -340,7 +340,7 @@ void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, int**
 {
     mwSize* DIMS = NULL;
     size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateLogicalArray(numDims, DIMS);
+    *imageOut = mxCreateNumericArray(numDims, DIMS, mxINT32_CLASS, mxREAL);
     *image = (int*)mxGetData(*imageOut);
     memset(*imageOut, 0, sizeof(int)*dims.product());
 
@@ -366,7 +366,7 @@ void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, float
 {
     mwSize* DIMS = NULL;
     size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateLogicalArray(numDims, DIMS);
+    *imageOut = mxCreateNumericArray(numDims, DIMS, mxSINGLE_CLASS, mxREAL);
     *image = (float*)mxGetData(*imageOut);
     memset(*imageOut, 0, sizeof(float)*dims.product());
 
@@ -392,7 +392,7 @@ void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, doubl
 {
     mwSize* DIMS = NULL;
     size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateLogicalArray(numDims, DIMS);
+    *imageOut = mxCreateNumericArray(numDims, DIMS, mxDOUBLE_CLASS, mxREAL);
     *image = (double*)mxGetData(*imageOut);
     memset(*imageOut, 0, sizeof(double)*dims.product());
 

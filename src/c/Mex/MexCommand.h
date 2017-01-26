@@ -11,6 +11,9 @@
 #include <algorithm>
 #include <exception>
 
+// Helper function for MexCommands class
+size_t getDimsIn(const mxArray* im, Vec<size_t>* dims);
+
 // Static class for holding some module information
 class ModuleInfo
 {
