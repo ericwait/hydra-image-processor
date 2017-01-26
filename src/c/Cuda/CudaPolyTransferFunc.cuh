@@ -16,7 +16,7 @@ __global__ void cudaPolyTransferFunc( CudaImageContainer<PixelType> imageIn, Cud
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDeviceDims())
+	if (coordinate<imageIn.getDims())
 	{
 		double pixVal = (double)imageIn[coordinate] / maxPixelValue;// place value between [0,1]
 		double multiplier = a*pixVal*pixVal + b*pixVal + c;

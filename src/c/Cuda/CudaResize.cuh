@@ -33,35 +33,35 @@ __device__ double cudaGetInterpValue_device(CudaImageContainer<PixelType> imageI
     
     Vec<size_t> minPos(0, 0, 0);
     Vec<size_t> curPos = Vec<size_t>(i, j, k);
-    if (curPos>minPos && curPos<imageIn.getDeviceDims())
+    if (curPos>minPos && curPos<imageIn.getDims())
         val += (1-alpha) * (1-beta)  * (1-gamma) * imageIn[curPos];
 
     curPos = Vec<size_t>(i+1, j, k);
-    if(curPos>minPos && curPos<imageIn.getDeviceDims())
+    if(curPos>minPos && curPos<imageIn.getDims())
         val += alpha  * (1-beta)  * (1-gamma) * imageIn[curPos];
 
     curPos = Vec<size_t>(i, j+1, k);
-    if(curPos>minPos && curPos<imageIn.getDeviceDims())
+    if(curPos>minPos && curPos<imageIn.getDims())
         val += (1-alpha) *    beta   * (1-gamma) * imageIn[curPos];
 
     curPos = Vec<size_t>(i+1, j+1, k);
-    if(curPos>minPos && curPos<imageIn.getDeviceDims())
+    if(curPos>minPos && curPos<imageIn.getDims())
         val += alpha  *    beta   * (1-gamma) * imageIn[curPos];
 
     curPos = Vec<size_t>(i, j, k+1);
-    if(curPos>minPos && curPos<imageIn.getDeviceDims())
+    if(curPos>minPos && curPos<imageIn.getDims())
         val += (1-alpha) * (1-beta)  *    gamma  * imageIn[curPos];
 
     curPos = Vec<size_t>(i+1, j, k+1);
-    if(curPos>minPos && curPos<imageIn.getDeviceDims())
+    if(curPos>minPos && curPos<imageIn.getDims())
         val += alpha  * (1-beta)  *    gamma  * imageIn[curPos];
 
     curPos = Vec<size_t>(i, j+1, k+1);
-    if(curPos>minPos && curPos<imageIn.getDeviceDims())
+    if(curPos>minPos && curPos<imageIn.getDims())
         val += (1-alpha) *    beta   *    gamma  * imageIn[curPos];
 
     curPos = Vec<size_t>(i+1, j+1, k+1);
-    if(curPos>minPos && curPos<imageIn.getDeviceDims())
+    if(curPos>minPos && curPos<imageIn.getDims())
         val += alpha  *    beta   *    gamma  * imageIn[curPos];
 
     return val;
@@ -78,7 +78,7 @@ __global__ void cudaMeanResize(CudaImageContainer<PixelType> imageIn, CudaImageC
     coordinateOut.y = threadIdx.y+blockIdx.y * blockDim.y;
     coordinateOut.z = threadIdx.z+blockIdx.z * blockDim.z;
 
-    if(coordinateOut<imageOut.getDeviceDims())
+    if(coordinateOut<imageOut.getDims())
     {
         double val = 0;
         double kernelFactor = 0;
@@ -97,14 +97,14 @@ __global__ void cudaMeanResize(CudaImageContainer<PixelType> imageIn, CudaImageC
         // This is the last place to visit in the input (inclusive)
         Vec<float> neighborhoodEnd = inputCenter+kernelCenter-1;
         // if the input end position is outside the image, we need to end earlier in on the kernel
-        kernelEnd.x = (neighborhoodEnd.x<imageOut.getDeviceDims().x) ? (kernelDims.x) :
-            (kernelDims.x-(neighborhoodEnd.x-imageOut.getDeviceDims().x));// will floor to int value
-        kernelEnd.y = (neighborhoodEnd.y<imageOut.getDeviceDims().y) ? (kernelDims.y) :
-            (kernelDims.y-(neighborhoodEnd.y-imageOut.getDeviceDims().y));// will floor to int value
-        kernelEnd.z = (neighborhoodEnd.z<imageOut.getDeviceDims().z) ? (kernelDims.z) :
-            (kernelDims.z-(neighborhoodEnd.z-imageOut.getDeviceDims().z));// will floor to int value
+        kernelEnd.x = (neighborhoodEnd.x<imageOut.getDims().x) ? (kernelDims.x) :
+            (kernelDims.x-(neighborhoodEnd.x-imageOut.getDims().x));// will floor to int value
+        kernelEnd.y = (neighborhoodEnd.y<imageOut.getDims().y) ? (kernelDims.y) :
+            (kernelDims.y-(neighborhoodEnd.y-imageOut.getDims().y));// will floor to int value
+        kernelEnd.z = (neighborhoodEnd.z<imageOut.getDims().z) ? (kernelDims.z) :
+            (kernelDims.z-(neighborhoodEnd.z-imageOut.getDims().z));// will floor to int value
 
-        neighborhoodEnd = Vec<float>::min(imageOut.getDeviceDims(), neighborhoodEnd);
+        neighborhoodEnd = Vec<float>::min(imageOut.getDims(), neighborhoodEnd);
 
         Vec<int> curKernelPos(0, 0, 0);
         Vec<int> curInPos = neighborhoodStart;

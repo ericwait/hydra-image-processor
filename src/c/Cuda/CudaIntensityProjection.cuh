@@ -10,7 +10,7 @@ __global__ void cudaMaximumIntensityProjection( CudaImageContainer<PixelType> im
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDeviceDims() && coordinate.z==0)
+	if (coordinate<imageIn.getDims() && coordinate.z==0)
 	{
 		PixelType maxVal = imageIn[coordinate];
 		for (; coordinate.z<imageIn.getDepth(); ++coordinate.z)
@@ -33,7 +33,7 @@ __global__ void cudaMeanIntensityProjection( CudaImageContainer<PixelType> image
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDeviceDims() && coordinate.z==0)
+	if (coordinate<imageIn.getDims() && coordinate.z==0)
 	{
 		double val = imageIn[coordinate];
 		for (; coordinate.z<imageIn.getDepth(); ++coordinate.z)

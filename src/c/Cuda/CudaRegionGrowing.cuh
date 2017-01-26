@@ -17,7 +17,7 @@ __device__ bool lineConnect(const CudaImageContainer<bool>& maskIn,Vec<long int>
 {
 	if(prevCoord>=Vec<long int>(0,0,0) && nextCoord>=Vec<long int>(0,0,0))
 	{
-		if(prevCoord<maskIn.getDeviceDims() && nextCoord<maskIn.getDeviceDims())
+		if(prevCoord<maskIn.getDims() && nextCoord<maskIn.getDims())
 		{
 
 			if(maskIn[Vec<size_t>(prevCoord)] && maskIn[Vec<size_t>(nextCoord)])
@@ -137,13 +137,13 @@ __device__ void evalNeighborhood(const CudaImageContainer<PixelType> &imageIn,co
 
 	Vec<size_t> curCoordIm = coordinate - halfKernal;
 	curCoordIm.z = (coordinate.z<halfKernal.z) ? 0 : coordinate.z-halfKernal.z;
-	for(; curCoordIm.z<=coordinate.z+halfKernal.z && curCoordIm.z<imageIn.getDeviceDims().z; ++curCoordIm.z)
+	for(; curCoordIm.z<=coordinate.z+halfKernal.z && curCoordIm.z<imageIn.getDims().z; ++curCoordIm.z)
 	{
 		curCoordIm.y = (coordinate.y<halfKernal.y) ? 0 : coordinate.y-halfKernal.y;
-		for(; curCoordIm.y<=coordinate.y+halfKernal.y && curCoordIm.y<imageIn.getDeviceDims().y; ++curCoordIm.y)
+		for(; curCoordIm.y<=coordinate.y+halfKernal.y && curCoordIm.y<imageIn.getDims().y; ++curCoordIm.y)
 		{
 			curCoordIm.x = (coordinate.x<halfKernal.x) ? 0 : coordinate.x-halfKernal.x;
-			for(; curCoordIm.x<=coordinate.x+halfKernal.x && curCoordIm.x<imageIn.getDeviceDims().x; ++curCoordIm.x)
+			for(; curCoordIm.x<=coordinate.x+halfKernal.x && curCoordIm.x<imageIn.getDims().x; ++curCoordIm.x)
 			{
 				if(curPixelVal > imageIn[curCoordIm] && maskIn[curCoordIm]==true)
 				{
@@ -164,7 +164,7 @@ __global__ void cudaRegionGrowing(CudaImageContainer<PixelType> imageIn,CudaImag
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if(coordinate<imageIn.getDeviceDims())
+	if(coordinate<imageIn.getDims())
 	{
 		if(maskIn[coordinate]==true)
 		{

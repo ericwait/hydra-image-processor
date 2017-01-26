@@ -15,7 +15,7 @@ __global__ void cudaGetROI( CudaImageContainer<PixelType> imageIn, CudaImageCont
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate>=startPos && coordinate<startPos+newSize && coordinate<imageIn.getDeviceDims())
+	if (coordinate>=startPos && coordinate<startPos+newSize && coordinate<imageIn.getDims())
 	{
 		imageOut[coordinate-startPos] = imageIn[coordinate];
 	}

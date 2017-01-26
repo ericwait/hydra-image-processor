@@ -16,7 +16,7 @@ __global__ void cudaMultAddFilter( CudaImageContainer<PixelType> imageIn, CudaIm
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDeviceDims())
+	if (coordinate<imageIn.getDims())
 	{
 		double val = 0;
 		double kernFactor = 0;
@@ -30,7 +30,7 @@ __global__ void cudaMultAddFilter( CudaImageContainer<PixelType> imageIn, CudaIm
 		Vec<size_t> kernelStart(Vec<int>::max(-startLimit,Vec<int>(0,0,0)));
 
 		startLimit = Vec<int>::max(startLimit,Vec<int>(0,0,0));
-		endLimit = Vec<size_t>::min(Vec<size_t>(endLimit),imageIn.getDeviceDims());
+		endLimit = Vec<size_t>::min(Vec<size_t>(endLimit),imageIn.getDims());
 
 		Vec<size_t> imageStart(coordinate-(kernelDims/2)+kernelStart);
 		Vec<size_t> iterationEnd(endLimit-Vec<size_t>(startLimit));

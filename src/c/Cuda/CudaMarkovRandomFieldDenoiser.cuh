@@ -26,13 +26,13 @@ __global__ void cudaMarkovGradDescent(CudaImageContainer<PixelType> imageIn, Cud
 		Vec<size_t>(1,1,1)
 	};
 
-	if (coordinate<imageOut.getDeviceDims())
+	if (coordinate<imageOut.getDims())
 	{
 		double maxDif = 0.0;
 		double centerVal = imageIn[coordinate];
 		double curVal = centerVal;
 
-		if (coordinate>Vec<size_t>(0,0,0) && coordinate<imageIn.getDeviceDims()-Vec<size_t>(1,1,1))// left, top, and front planes avail
+		if (coordinate>Vec<size_t>(0,0,0) && coordinate<imageIn.getDims()-Vec<size_t>(1,1,1))// left, top, and front planes avail
 		{
 			for (int i=0; i<7; ++i)
 			{
@@ -64,19 +64,19 @@ __global__ void cudaMarkovGradDescent(CudaImageContainer<PixelType> imageIn, Cud
 // 		if (coordinate.x>0)
 // 			sgn -= SIGN(centerVal-imageIn[coordinate-Vec<int>(1,0,0)]);
 // 
-// 		if (coordinate.x<imageIn.getDeviceDims().x-1)
+// 		if (coordinate.x<imageIn.getDims().x-1)
 // 			sgn += SIGN(imageIn[coordinate+Vec<int>(1,0,0)]-centerVal);
 // 
 // 		if (coordinate.y>0)
 // 			sgn -= SIGN(centerVal - imageIn[coordinate-Vec<int>(0,1,0)]);
 // 
-// 		if (coordinate.y<imageIn.getDeviceDims().y-1)
+// 		if (coordinate.y<imageIn.getDims().y-1)
 // 			sgn += SIGN(imageIn[coordinate+Vec<int>(0,1,0)] - centerVal);
 // 
 // 		if (coordinate.z>0)
 // 			sgn -= SIGN(centerVal - imageIn[coordinate-Vec<int>(0,0,1)]);
 // 
-// 		if (coordinate.z<imageIn.getDeviceDims().z-1)
+// 		if (coordinate.z<imageIn.getDims().z-1)
 // 			sgn += SIGN(imageIn[coordinate+Vec<int>(0,0,1)] - centerVal);
 // 
 // 		imageOut[coordinate] = centerVal + SIGN(sgn)*delta;

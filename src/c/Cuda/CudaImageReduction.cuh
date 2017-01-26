@@ -24,12 +24,12 @@ __global__ void cudaMeanImageReduction(CudaImageContainer<PixelType> imageIn, Cu
 	coordinateOut.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinateOut.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinateOut<imageOut.getDeviceDims())
+	if (coordinateOut<imageOut.getDims())
 	{
 		double kernelVolume = 0;
 		double val = 0;
 		Vec<size_t> mins(coordinateOut*reductions);
-		Vec<size_t> maxs = Vec<size_t>::min(mins+reductions, imageIn.getDeviceDims());
+		Vec<size_t> maxs = Vec<size_t>::min(mins+reductions, imageIn.getDims());
 
 		Vec<size_t> currCorrdIn(mins);
 		for (currCorrdIn.z=mins.z; currCorrdIn.z<maxs.z; ++currCorrdIn.z)
@@ -62,11 +62,11 @@ __global__ void cudaMedianImageReduction( CudaImageContainer<PixelType> imageIn,
 	int offset = threadIdx.x + threadIdx.y*blockDim.x + threadIdx.z*blockDim.y*blockDim.x;
 	offset *=  reductions.product();
 
-	if (coordinateOut<imageOut.getDeviceDims())
+	if (coordinateOut<imageOut.getDims())
 	{
 		int kernelVolume = 0;
 		Vec<size_t> mins(coordinateOut*Vec<size_t>(reductions));
-		Vec<size_t> maxs = Vec<size_t>::min(mins+reductions, imageIn.getDeviceDims());
+		Vec<size_t> maxs = Vec<size_t>::min(mins+reductions, imageIn.getDims());
 
 		Vec<size_t> currCorrdIn(mins);
 		for (currCorrdIn.z=mins.z; currCorrdIn.z<maxs.z; ++currCorrdIn.z)
@@ -95,11 +95,11 @@ __global__ void cudaMaxImageReduction(CudaImageContainer<PixelType> imageIn, Cud
 	coordinateOut.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinateOut.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinateOut<imageOut.getDeviceDims())
+	if (coordinateOut<imageOut.getDims())
 	{
 		PixelType val = minVal;
 		Vec<size_t> mins(coordinateOut*reductions);
-		Vec<size_t> maxs = Vec<size_t>::min(mins+reductions, imageIn.getDeviceDims());
+		Vec<size_t> maxs = Vec<size_t>::min(mins+reductions, imageIn.getDims());
 
 		Vec<size_t> currCorrdIn(mins);
 		for (currCorrdIn.z=mins.z; currCorrdIn.z<maxs.z; ++currCorrdIn.z)
@@ -128,11 +128,11 @@ __global__ void cudaMinImageReduction(CudaImageContainer<PixelType> imageIn, Cud
 	coordinateOut.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinateOut.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinateOut<imageOut.getDeviceDims())
+	if (coordinateOut<imageOut.getDims())
 	{
 		PixelType val = maxVal;
 		Vec<size_t> mins(coordinateOut*reductions);
-		Vec<size_t> maxs = Vec<size_t>::min(mins+reductions, imageIn.getDeviceDims());
+		Vec<size_t> maxs = Vec<size_t>::min(mins+reductions, imageIn.getDims());
 
 		Vec<size_t> currCorrdIn(mins);
 		for (currCorrdIn.z=mins.z; currCorrdIn.z<maxs.z; ++currCorrdIn.z)
@@ -161,7 +161,7 @@ __global__ void cudaGausImageReduction(CudaImageContainer<PixelType> imageIn, Cu
 	coordinateOut.y = threadIdx.y+blockIdx.y * blockDim.y;
 	coordinateOut.z = threadIdx.z+blockIdx.z * blockDim.z;
 
-	if(coordinateOut<imageOut.getDeviceDims())
+	if(coordinateOut<imageOut.getDims())
 	{
 		double val = 0;
 		double kernFactor = 0;
@@ -175,7 +175,7 @@ __global__ void cudaGausImageReduction(CudaImageContainer<PixelType> imageIn, Cu
 		Vec<int> kernelStart(Vec<int>::max(-startLimit, Vec<int>(0, 0, 0)));
 
 		startLimit = Vec<int>::max(startLimit, Vec<int>(0, 0, 0));
-		endLimit = Vec<int>::min(endLimit, imageIn.getDeviceDims());
+		endLimit = Vec<int>::min(endLimit, imageIn.getDims());
 
 		Vec<int> imageStart(coordinateIn-(kernelDims/2)+kernelStart);
 		Vec<int> iterationEnd(endLimit-startLimit+1);

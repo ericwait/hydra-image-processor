@@ -11,7 +11,7 @@ __global__ void cudaMask( const CudaImageContainer<PixelType> imageIn1, const Cu
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn1.getDeviceDims())
+	if (coordinate<imageIn1.getDims())
 	{
 		PixelType val=0;
 

@@ -12,7 +12,7 @@ __global__ void cudaImageCopy(CudaImageContainer<PixelType> imageIn, CudaImageCo
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if(coordinate<imageIn.getDeviceDims() && coordinate<imageOut.getDeviceDims())
+	if(coordinate<imageIn.getDims() && coordinate<imageOut.getDims())
 	{
 		imageOut[coordinate] = imageIn[coordinate];
 	}
