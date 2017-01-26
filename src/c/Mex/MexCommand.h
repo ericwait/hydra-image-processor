@@ -11,9 +11,6 @@
 #include <algorithm>
 #include <exception>
 
-// Helper function for MexCommands class
-size_t getDimsIn(const mxArray* im, Vec<size_t>* dims);
-
 // Static class for holding some module information
 class ModuleInfo
 {
@@ -216,37 +213,61 @@ protected:
 		return usageString;
 	}
 
-    static void setupImagePointers(const mxArray* imageIn, bool** image, Vec<size_t>* dims, mxArray** argOut = NULL, bool** imageOut = NULL);
-    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, bool** image);
-    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, bool** image);
+	// Helper function for MexCommands class
+	static size_t countDims(Vec<size_t> dims);
+	static void setupDims(const mxArray* im, Vec<size_t>* dims);
 
-	static void setupImagePointers(const mxArray* imageIn,unsigned char** image,Vec<size_t>* dims,mxArray** argOut=NULL,unsigned char** imageOut=NULL);
-    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, unsigned char** image);
-    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, unsigned char** image);
+	// Simple template-specialization map for C++ to mex types
+	template <typename T> struct TypeMap		{static const mxClassID mxType;};
+	template <> struct TypeMap<char>			{static const mxClassID mxType = mxINT8_CLASS;};
+	template <> struct TypeMap<short>			{static const mxClassID mxType = mxINT16_CLASS;};
+	template <> struct TypeMap<int>				{static const mxClassID mxType = mxINT32_CLASS;};
+	template <> struct TypeMap<unsigned char>	{static const mxClassID mxType = mxUINT8_CLASS;};
+	template <> struct TypeMap<unsigned short>	{static const mxClassID mxType = mxUINT16_CLASS;};
+	template <> struct TypeMap<unsigned int>	{static const mxClassID mxType = mxUINT32_CLASS;};
+	template <> struct TypeMap<float>			{static const mxClassID mxType = mxSINGLE_CLASS;};
+	template <> struct TypeMap<double>			{static const mxClassID mxType = mxDOUBLE_CLASS;};
 
-	static void setupImagePointers(const mxArray* imageIn,unsigned short** image,Vec<size_t>* dims,mxArray** argOut=NULL,unsigned short** imageOut=NULL);
-    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, unsigned short** image);
-    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, unsigned short** image);
+	// General array creation method
+	template <typename T>
+	static mxArray* createArray(mwSize ndim, const mwSize* dims)
+	{
+		return mxCreateNumericArray(ndim, dims, TypeMap<T>::mxType, mxREAL);
+	}
 
-	static void setupImagePointers(const mxArray* imageIn,short** image,Vec<size_t>* dims,mxArray** argOut=NULL,short** imageOut=NULL);
-    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, short** image);
-    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, short** image);
+	// Logical array creation specialziation
+	template <>
+	static mxArray* createArray<bool>(mwSize ndim, const mwSize* dims)
+	{
+		return mxCreateLogicalArray(ndim, dims);
+	}
 
-	static void setupImagePointers(const mxArray* imageIn,unsigned int** image,Vec<size_t>* dims,mxArray** argOut=NULL,unsigned int** imageOut=NULL);
-    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, unsigned int** image);
-    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, unsigned int** image);
+	template <typename T>
+	static void setupImagePointers(const mxArray* imageIn, T** image, Vec<size_t>* dims, mxArray** argOut = NULL, T** imageOut = NULL)
+	{
+		setupInputPointers(imageIn, dims, image);
+		if (argOut!=NULL && imageOut!=NULL)
+			setupOutputPointers(argOut, *dims, imageOut);
+	}
 
-	static void setupImagePointers(const mxArray* imageIn,int** image,Vec<size_t>* dims,mxArray** argOut=NULL,int** imageOut=NULL);
-    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, int** image);
-    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, int** image);
+	template <typename T>
+	static void setupInputPointers(const mxArray* imageIn, Vec<size_t>* pDims, T** image)
+	{
+		setupDims(imageIn, pDims);
+		*image = (T*)mxGetData(imageIn);
+	}
 
-	static void setupImagePointers(const mxArray* imageIn,float** image,Vec<size_t>* dims,mxArray** argOut=NULL,float** imageOut=NULL);
-    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, float** image);
-    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, float** image);
+	template <typename T>
+	static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, T** image)
+	{
+		size_t numDims = countDims(dims);
 
-	static void setupImagePointers(const mxArray* imageIn,double** image,Vec<size_t>* dims,mxArray** argOut=NULL,double** imageOut=NULL);
-    static size_t setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, double** image);
-    static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, double** image);
+		*imageOut = createArray<T>(numDims, dims.e);
+		*image = (T*)mxGetData(*imageOut);
+
+		memset(*image, 0, sizeof(T)*dims.product());
+	}
+
 
     static Vec<size_t> MexCommand::FillKernel(const mxArray* matKernelIn, float** kernel);
 

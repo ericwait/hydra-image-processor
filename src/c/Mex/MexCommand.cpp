@@ -151,252 +151,27 @@ void MexHelp::help(std::vector<std::string>& helpLines) const
 	helpLines.push_back("Print detailed usage information for the specified command.");
 }
 
-size_t getDimsIn(const mxArray* im, Vec<size_t>* dims)
+void MexCommand::setupDims(const mxArray* im, Vec<size_t>* dimsOut)
 {
+	*dimsOut = Vec<size_t>(1);
+
     size_t numDims = mxGetNumberOfDimensions(im);
     const mwSize* DIMS = mxGetDimensions(im);
 
-    if(numDims>2)
-        dims->z = (size_t)DIMS[2];
-    else
-        dims->z = 1;
-
-    if(numDims>1)
-        dims->y = (size_t)DIMS[1];
-    else
-        dims->y = 1;
-
-    dims->x = (size_t)DIMS[0];
-
-    return numDims;
+	for ( int i=0; i < numDims; ++i )
+		dimsOut->e[i] = (size_t)DIMS[i];
 }
 
-size_t getDimsOut(Vec<size_t> dims, mwSize** dims_ptr)
+size_t MexCommand::countDims(Vec<size_t> dims)
 {
     size_t numDims = 0;
-    if(dims.x>1)
-        ++numDims;
-    if(dims.y>1)
-        ++numDims;
-    if(dims.z>1)
-        ++numDims;
-
-    *dims_ptr = new mwSize[numDims];
-    if(dims.x>1)
-        (*dims_ptr)[0] = dims.x;
-    if(dims.y>1)
-        (*dims_ptr)[1] = dims.y;
-    if(dims.z>1)
-        (*dims_ptr)[2] = dims.z;
+	for ( int i=0; i < 3; ++i )
+	{
+		if ( dims.e[i] > 1)
+			++numDims;
+	}
 
     return numDims;
-}
-
-void MexCommand::setupImagePointers(const mxArray* imageIn, bool** image, Vec<size_t>* dims, mxArray** argOut/*=NULL*/, bool** imageOut/*=NULL*/)
-{
-   setupInputPointers(imageIn, dims, image);
-    if(argOut!=NULL && imageOut!=NULL)
-        setupOutputPointers(argOut, *dims, imageOut);
-}
-
-size_t MexCommand::setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, bool** image)
-{
-    size_t numDims = getDimsIn(imageIn, dims);
-    *image = (bool*)mxGetData(imageIn);
-    return numDims;
-}
-
-void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, bool** image)
-{
-    mwSize* DIMS = NULL;
-    size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateLogicalArray(numDims, DIMS);
-    *image = (bool*)mxGetData(*imageOut);
-    memset(*imageOut, 0, sizeof(bool)*dims.product());
-
-    delete[] DIMS;
-}
-
-
-void MexCommand::setupImagePointers(const mxArray* imageIn, unsigned char** image, Vec<size_t>* dims, mxArray** argOut/*=NULL*/, unsigned char** imageOut/*=NULL*/)
-{
-    setupInputPointers(imageIn, dims, image);
-    if(argOut!=NULL && imageOut!=NULL)
-        setupOutputPointers(argOut, *dims, imageOut);
-}
-
-size_t MexCommand::setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, unsigned char** image)
-{
-    size_t numDims = getDimsIn(imageIn, dims);
-    *image = (unsigned char*)mxGetData(imageIn);
-    return numDims;
-}
-
-void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, unsigned char** image)
-{
-    mwSize* DIMS = NULL;
-    size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateNumericArray(numDims, DIMS,mxUINT8_CLASS,mxREAL);
-    *image = (unsigned char*)mxGetData(*imageOut);
-    memset(*image, 0, sizeof(unsigned char)*dims.product());
-
-    delete[] DIMS;
-}
-
-
-void MexCommand::setupImagePointers(const mxArray* imageIn, unsigned short** image, Vec<size_t>* dims, mxArray** argOut/*=NULL*/, unsigned short** imageOut/*=NULL*/)
-{
-    setupInputPointers(imageIn, dims, image);
-    if(argOut!=NULL && imageOut!=NULL)
-        setupOutputPointers(argOut, *dims, imageOut);
-}
-
-size_t MexCommand::setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, unsigned short** image)
-{
-    size_t numDims = getDimsIn(imageIn, dims);
-    *image = (unsigned short*)mxGetData(imageIn);
-    return numDims;
-}
-
-void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, unsigned short** image)
-{
-    mwSize* DIMS = NULL;
-    size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateNumericArray(numDims, DIMS, mxUINT16_CLASS, mxREAL);
-    *image = (unsigned short*)mxGetData(*imageOut);
-    memset(*imageOut, 0, sizeof(unsigned short)*dims.product());
-
-    delete[] DIMS;
-}
-
-
-void MexCommand::setupImagePointers(const mxArray* imageIn, short** image, Vec<size_t>* dims, mxArray** argOut/*=NULL*/, short** imageOut/*=NULL*/)
-{
-    setupInputPointers(imageIn, dims, image);
-    if(argOut!=NULL && imageOut!=NULL)
-        setupOutputPointers(argOut, *dims, imageOut);
-}
-
-size_t MexCommand::setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, short** image)
-{
-    size_t numDims = getDimsIn(imageIn, dims);
-    *image = (short*)mxGetData(imageIn);
-    return numDims;
-}
-
-void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, short** image)
-{
-    mwSize* DIMS = NULL;
-    size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateNumericArray(numDims, DIMS, mxINT16_CLASS, mxREAL);
-    *image = (short*)mxGetData(*imageOut);
-    memset(*imageOut, 0, sizeof(short)*dims.product());
-
-    delete[] DIMS;
-}
-
-
-void MexCommand::setupImagePointers(const mxArray* imageIn, unsigned int** image, Vec<size_t>* dims, mxArray** argOut/*=NULL*/, unsigned int** imageOut/*=NULL*/)
-{
-    setupInputPointers(imageIn, dims, image);
-    if(argOut!=NULL && imageOut!=NULL)
-        setupOutputPointers(argOut, *dims, imageOut);
-}
-
-size_t MexCommand::setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, unsigned int** image)
-{
-    size_t numDims = getDimsIn(imageIn, dims);
-    *image = (unsigned int*)mxGetData(imageIn);
-    return numDims;
-}
-
-void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, unsigned int** image)
-{
-    mwSize* DIMS = NULL;
-    size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateNumericArray(numDims, DIMS, mxUINT32_CLASS, mxREAL);
-    *image = (unsigned int*)mxGetData(*imageOut);
-    memset(*imageOut, 0, sizeof(unsigned int)*dims.product());
-
-    delete[] DIMS;
-}
-
-
-void MexCommand::setupImagePointers(const mxArray* imageIn, int** image, Vec<size_t>* dims, mxArray** argOut/*=NULL*/, int** imageOut/*=NULL*/)
-{
-    setupInputPointers(imageIn, dims, image);
-    if(argOut!=NULL && imageOut!=NULL)
-        setupOutputPointers(argOut, *dims, imageOut);
-}
-
-size_t MexCommand::setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, int** image)
-{
-    size_t numDims = getDimsIn(imageIn, dims);
-    *image = (int*)mxGetData(imageIn);
-    return numDims;
-}
-
-void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, int** image)
-{
-    mwSize* DIMS = NULL;
-    size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateNumericArray(numDims, DIMS, mxINT32_CLASS, mxREAL);
-    *image = (int*)mxGetData(*imageOut);
-    memset(*imageOut, 0, sizeof(int)*dims.product());
-
-    delete[] DIMS;
-}
-
-
-void MexCommand::setupImagePointers(const mxArray* imageIn, float** image, Vec<size_t>* dims, mxArray** argOut/*=NULL*/, float** imageOut/*=NULL*/)
-{
-    setupInputPointers(imageIn, dims, image);
-    if(argOut!=NULL && imageOut!=NULL)
-        setupOutputPointers(argOut, *dims, imageOut);
-}
-
-size_t MexCommand::setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, float** image)
-{
-    size_t numDims = getDimsIn(imageIn, dims);
-    *image = (float*)mxGetData(imageIn);
-    return numDims;
-}
-
-void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, float** image)
-{
-    mwSize* DIMS = NULL;
-    size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateNumericArray(numDims, DIMS, mxSINGLE_CLASS, mxREAL);
-    *image = (float*)mxGetData(*imageOut);
-    memset(*imageOut, 0, sizeof(float)*dims.product());
-
-    delete[] DIMS;
-}
-
-
-void MexCommand::setupImagePointers(const mxArray* imageIn, double** image, Vec<size_t>* dims, mxArray** argOut/*=NULL*/, double** imageOut/*=NULL*/)
-{
-    setupInputPointers(imageIn, dims, image);
-    if(argOut!=NULL && imageOut!=NULL)
-        setupOutputPointers(argOut, *dims, imageOut);
-}
-
-size_t MexCommand::setupInputPointers(const mxArray* imageIn, Vec<size_t>* dims, double** image)
-{
-    size_t numDims = getDimsIn(imageIn, dims);
-    *image = (double*)mxGetData(imageIn);
-    return numDims;
-}
-
-void MexCommand::setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, double** image)
-{
-    mwSize* DIMS = NULL;
-    size_t numDims = getDimsOut(dims, &DIMS);
-    *imageOut = mxCreateNumericArray(numDims, DIMS, mxDOUBLE_CLASS, mxREAL);
-    *image = (double*)mxGetData(*imageOut);
-    memset(*imageOut, 0, sizeof(double)*dims.product());
-
-    delete[] DIMS;
 }
 
 

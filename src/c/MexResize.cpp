@@ -6,7 +6,7 @@
 void MexResize::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
     Vec<size_t> imageInDims(0, 0, 0);
-    getDimsIn(prhs[0], &imageInDims);
+    setupDims(prhs[0], &imageInDims);
     Vec<double> reductionFactors(0.0, 0.0, 0.0);
     if(!mxIsEmpty(prhs[1]))
     {
