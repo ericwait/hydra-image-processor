@@ -75,11 +75,10 @@ public:
 		return this[coord];
 	}
 
-	Vec<size_t> getDims() const { return roiSizes; }
-	__device__ Vec<size_t> getDeviceDims() const { return Vec<size_t>(roiSizes); }
-	__device__ size_t getWidth() const { return Vec<size_t>(roiSizes).x; }
-	__device__ size_t getHeight() const { return Vec<size_t>(roiSizes).y; }
-	__device__ size_t getDepth() const { return Vec<size_t>(roiSizes).z; }
+	__host__ __device__ const Vec<size_t>& getDims() const { return roiSizes; }
+	__host__ __device__ size_t getWidth() const { return roiSizes.x; }
+	__host__ __device__ size_t getHeight() const { return roiSizes.y; }
+	__host__ __device__ size_t getDepth() const { return roiSizes.z; }
 
 	bool setDims(Vec<size_t> dims)
 	{
