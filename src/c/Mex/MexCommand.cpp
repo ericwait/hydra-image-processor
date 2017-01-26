@@ -12,7 +12,7 @@
 HMODULE ModuleInfo::hModule;
 std::string ModuleInfo::name;
 
-__declspec(dllexport) BOOL WINAPI DllMain(HINSTANCE hInstDLL,DWORD fdwReason,LPVOID lpReserved)
+BOOL WINAPI DllMain(HINSTANCE hInstDLL,DWORD fdwReason,LPVOID lpReserved)
 {
 	if(fdwReason == DLL_PROCESS_ATTACH)
 		ModuleInfo::setModuleHandle(hInstDLL);
