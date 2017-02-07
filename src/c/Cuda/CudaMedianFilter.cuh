@@ -97,13 +97,13 @@ __global__ void cudaMedianFilter( CudaImageContainer<PixelType> imageIn, CudaIma
   			{
   				for (i.x=0; i.x<iterationEnd.x; ++i.x)
   				{
- 					vals[kernelVolume+sharedMemOffset] = (double)imageIn[imageStart+i];
+ 					vals[kernelVolume+sharedMemOffset] = (double)imageIn(imageStart+i);
  					++kernelVolume;
   				}
   			}
   		}
 
-		imageOut[coordinate] = (PixelType)cudaFindMedian(vals+sharedMemOffset,kernelVolume);
+		imageOut(coordinate) = (PixelType)cudaFindMedian(vals+sharedMemOffset,kernelVolume);
 	}
 	__syncthreads();
 }

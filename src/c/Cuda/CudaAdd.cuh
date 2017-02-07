@@ -16,8 +16,8 @@ __global__ void cudaAddScaler( CudaImageContainer<PixelType> imageIn1, CudaImage
 
 	if (coordinate<imageIn1.getDims())
 	{
-		double outValue = imageIn1[coordinate] + factor;
-		imageOut[coordinate] = (outValue>maxValue) ? (maxValue) : ((outValue<minValue) ? (minValue) : (outValue));
+		double outValue = imageIn1(coordinate) + factor;
+		imageOut(coordinate) = (outValue>maxValue) ? (maxValue) : ((outValue<minValue) ? (minValue) : (outValue));
 	}
 }
 
@@ -32,10 +32,10 @@ __global__ void cudaAddTwoImagesWithFactor( CudaImageContainer<PixelType> imageI
 
 	if (coordinate<imageIn1.getDims())
 	{
-		double additive = factor*(double)(imageIn2[coordinate]);
-		double outValue = (double)(imageIn1[coordinate]) + additive;
+		double additive = factor*(double)(imageIn2(coordinate));
+		double outValue = (double)(imageIn1(coordinate)) + additive;
 
-		imageOut[coordinate] = (outValue>(double)maxValue) ? (maxValue) : ((outValue<(double)minValue) ? (minValue) : ((PixelType)outValue));
+		imageOut(coordinate) = (outValue>(double)maxValue) ? (maxValue) : ((outValue<(double)minValue) ? (minValue) : ((PixelType)outValue));
 	}
 }
 

@@ -22,7 +22,7 @@ __global__ void cudaMultAddFilter( CudaImageContainer<PixelType> imageIn, CudaIm
 		double kernFactor = 0;
 		int kernHits = 0;
 
-		PixelType localMaxVal = imageIn[coordinate];
+		PixelType localMaxVal = imageIn(coordinate);
 		Vec<size_t> kernelDims = hostKernelDims;
 
 		Vec<int> startLimit = Vec<int>(coordinate) - Vec<int>((kernelDims)/2);
@@ -45,7 +45,7 @@ __global__ void cudaMultAddFilter( CudaImageContainer<PixelType> imageIn, CudaIm
 					double kernVal = double(cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)+kernelOffset]);
 
 					kernFactor += kernVal;
-					val += double((imageIn[imageStart+i]) * kernVal);
+					val += double((imageIn(imageStart+i)) * kernVal);
 
 					++kernHits;
 				}
@@ -54,12 +54,12 @@ __global__ void cudaMultAddFilter( CudaImageContainer<PixelType> imageIn, CudaIm
 
 		if (normalize)
 		{
-			imageOut[coordinate] = (PixelType)(val/kernFactor);
+			imageOut(coordinate) = (PixelType)(val/kernFactor);
 		}
 		else
 		{
 			kernFactor = double(kernHits)/kernelDims.product();
-			imageOut[coordinate] = (PixelType)(val/kernFactor);
+			imageOut(coordinate) = (PixelType)(val/kernFactor);
 		}
 	}
 }

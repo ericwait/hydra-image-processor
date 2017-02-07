@@ -32,7 +32,7 @@ __global__ void cudaStdFilter(CudaImageContainer<PixelType> imageIn,CudaImageCon
 				curCoordIm.x = (coordinate.x<halfKernal.x) ? 0 : coordinate.x-halfKernal.x;
 				for(; curCoordIm.x<=coordinate.x+halfKernal.x && curCoordIm.x<imageIn.getDims().x; ++curCoordIm.x)
 				{
-					val += imageIn[curCoordIm];
+					val += imageIn(curCoordIm);
 					++kernelVolume;
 				}
 			}
@@ -50,12 +50,12 @@ __global__ void cudaStdFilter(CudaImageContainer<PixelType> imageIn,CudaImageCon
 				curCoordIm.x = (coordinate.x<halfKernal.x) ? 0 : coordinate.x-halfKernal.x;
 				for(; curCoordIm.x<=coordinate.x+halfKernal.x && curCoordIm.x<imageIn.getDims().x; ++curCoordIm.x)
 				{
-					val += SQR(imageIn[curCoordIm] - mu);
+					val += SQR(imageIn(curCoordIm) - mu);
 				}
 			}
 		}
 
-		imageOut[coordinate] = sqrt(val/(kernelVolume-1));
+		imageOut(coordinate) = sqrt(val/(kernelVolume-1));
 	}
 }
 

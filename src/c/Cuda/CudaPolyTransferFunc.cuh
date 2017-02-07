@@ -18,7 +18,7 @@ __global__ void cudaPolyTransferFunc( CudaImageContainer<PixelType> imageIn, Cud
 
 	if (coordinate<imageIn.getDims())
 	{
-		double pixVal = (double)imageIn[coordinate] / maxPixelValue;// place value between [0,1]
+		double pixVal = (double)imageIn(coordinate) / maxPixelValue;// place value between [0,1]
 		double multiplier = a*pixVal*pixVal + b*pixVal + c;
 		if (multiplier<0)
 			multiplier = 0;
@@ -27,7 +27,7 @@ __global__ void cudaPolyTransferFunc( CudaImageContainer<PixelType> imageIn, Cud
 
 		PixelType newPixelVal = min((double)maxPixelValue,max((double)minPixelValue, multiplier*maxPixelValue));
 
-		imageOut[coordinate] = newPixelVal;
+		imageOut(coordinate) = newPixelVal;
 	}
 }
 

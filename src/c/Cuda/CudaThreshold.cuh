@@ -19,7 +19,7 @@ __global__ void cudaThreshold( CudaImageContainer<PixelType> imageIn, CudaImageC
 
 	if (coordinate<imageIn.getDims())
 	{
-		imageOut[coordinate] = (imageIn[coordinate]>=threshold) ? (maxValue) : (minValue);
+		imageOut(coordinate) = (imageIn(coordinate)>=threshold) ? (maxValue) : (minValue);
 	}
 }
 

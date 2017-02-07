@@ -25,7 +25,7 @@ __global__ void cudaMinFilter( CudaImageContainer<PixelType> imageIn, CudaImageC
 
 	if (coordinate<imageIn.getDims())
 	{
-		double localMinVal = imageIn[coordinate];
+		double localMinVal = imageIn(coordinate);
 		Vec<size_t> kernelDims = hostKernelDims;
 
 		Vec<int> startLimit = Vec<int>(coordinate) - Vec<int>(kernelDims/2);
@@ -48,7 +48,7 @@ __global__ void cudaMinFilter( CudaImageContainer<PixelType> imageIn, CudaImageC
 					if (cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)]==0)
 						continue;
 
-					double temp = imageIn[imageStart+i] * cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)];
+					double temp = imageIn(imageStart+i) * cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)];
 					if (temp<localMinVal)
 					{
 						localMinVal = temp;
@@ -57,7 +57,7 @@ __global__ void cudaMinFilter( CudaImageContainer<PixelType> imageIn, CudaImageC
 			}
 		}
 
-		imageOut[coordinate] = (localMinVal<minVal) ? (minVal) : (localMinVal);
+		imageOut(coordinate) = (localMinVal<minVal) ? (minVal) : (localMinVal);
 	}
 }
 

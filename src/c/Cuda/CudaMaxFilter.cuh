@@ -24,7 +24,7 @@ __global__ void cudaMaxFilter( CudaImageContainer<PixelType> imageIn, CudaImageC
 
 	if (coordinate<imageIn.getDims())
 	{
-		double localMaxVal = imageIn[coordinate];
+		double localMaxVal = imageIn(coordinate);
 		Vec<size_t> kernelDims = hostKernelDims;
 
 		Vec<int> startLimit = Vec<int>(coordinate) - Vec<int>(kernelDims/2);
@@ -47,7 +47,7 @@ __global__ void cudaMaxFilter( CudaImageContainer<PixelType> imageIn, CudaImageC
 					if (cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)]==0)
 						continue;
 
-					double temp = imageIn[imageStart+i] * cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)];
+					double temp = imageIn(imageStart+i) * cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)];
 					if (temp>localMaxVal)
 					{
 						localMaxVal = temp;
@@ -56,7 +56,7 @@ __global__ void cudaMaxFilter( CudaImageContainer<PixelType> imageIn, CudaImageC
 			}
 		}
 
-		imageOut[coordinate] = (localMaxVal>maxVal) ? (maxVal) : ((PixelType)localMaxVal);
+		imageOut(coordinate) = (localMaxVal>maxVal) ? (maxVal) : ((PixelType)localMaxVal);
 	}
 }
 

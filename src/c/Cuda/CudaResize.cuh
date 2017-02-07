@@ -16,57 +16,6 @@
 __constant__ float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
 #endif
 
-template <class PixelType>
-__device__ double cudaGetInterpValue_device(CudaImageContainer<PixelType> imageIn, Vec<float> pos)
-{
-    // Math example from http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#linear-filtering
-
-    Vec<float> betaPos = pos-0.5f;
-    size_t i = floor(betaPos.x);
-    size_t j = floor(betaPos.y);
-    size_t k = floor(betaPos.z);
-    float alpha = betaPos.x - floor(betaPos.x);
-    float beta = betaPos.y - floor(betaPos.y);
-    float gamma = betaPos.z - floor(betaPos.z);
-
-    double val = 0;
-    
-    Vec<size_t> minPos(0, 0, 0);
-    Vec<size_t> curPos = Vec<size_t>(i, j, k);
-    if (curPos>=minPos && curPos<imageIn.getDims())
-        val += (1-alpha) * (1-beta)  * (1-gamma) * imageIn[curPos];
-
-    curPos = Vec<size_t>(i+1, j, k);
-    if(curPos>=minPos && curPos<imageIn.getDims())
-        val += alpha  * (1-beta)  * (1-gamma) * imageIn[curPos];
-
-    curPos = Vec<size_t>(i, j+1, k);
-    if(curPos>=minPos && curPos<imageIn.getDims())
-        val += (1-alpha) *    beta   * (1-gamma) * imageIn[curPos];
-
-    curPos = Vec<size_t>(i+1, j+1, k);
-    if(curPos>=minPos && curPos<imageIn.getDims())
-        val += alpha  *    beta   * (1-gamma) * imageIn[curPos];
-
-    curPos = Vec<size_t>(i, j, k+1);
-    if(curPos>=minPos && curPos<imageIn.getDims())
-        val += (1-alpha) * (1-beta)  *    gamma  * imageIn[curPos];
-
-    curPos = Vec<size_t>(i+1, j, k+1);
-    if(curPos>=minPos && curPos<imageIn.getDims())
-        val += alpha  * (1-beta)  *    gamma  * imageIn[curPos];
-
-    curPos = Vec<size_t>(i, j+1, k+1);
-    if(curPos>=minPos && curPos<imageIn.getDims())
-        val += (1-alpha) *    beta   *    gamma  * imageIn[curPos];
-
-    curPos = Vec<size_t>(i+1, j+1, k+1);
-    if(curPos>=minPos && curPos<imageIn.getDims())
-        val += alpha  *    beta   *    gamma  * imageIn[curPos];
-
-    return val;
-}
-
 
 template <class PixelType>
 __global__ void cudaMeanResize(CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, Vec<float> hostResizeFactors, Vec<int> hostKernelDims, PixelType minVal, PixelType maxVal)
@@ -117,7 +66,7 @@ __global__ void cudaMeanResize(CudaImageContainer<PixelType> imageIn, CudaImageC
                 for(curKernelPos.x = kernelStart.x; curKernelPos.x<kernelEnd.x; ++curKernelPos.x)
                 {
                     curInPos.x = neighborhoodStart.x+curKernelPos.x;
-                    double imVal = cudaGetInterpValue_device(imageIn, curInPos);
+                    double imVal = imageIn(curInPos);
                     val += imVal;
                     ++kernelFactor;
                 }
@@ -132,7 +81,7 @@ __global__ void cudaMeanResize(CudaImageContainer<PixelType> imageIn, CudaImageC
             meanVal = (meanVal<maxVal) ? (meanVal) : ((double)maxVal);
         }
 
-        imageOut[coordinateOut] = (PixelType)meanVal;
+        imageOut(coordinateOut) = (PixelType)meanVal;
     }
 }
 

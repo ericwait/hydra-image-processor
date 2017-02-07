@@ -18,8 +18,8 @@ __global__ void cudaMultiplyImageScaler( CudaImageContainer<PixelType> imageIn, 
 
 	if (coordinate<imageIn.getDims())
 	{
-		double outValue = factor*imageIn[coordinate];
-		imageOut[coordinate] = (outValue>maxValue) ? (maxValue) : ((outValue<minValue) ? (minValue) : (outValue));
+		double outValue = factor*imageIn(coordinate);
+		imageOut(coordinate) = (outValue>maxValue) ? (maxValue) : ((outValue<minValue) ? (minValue) : (outValue));
 	}
 }
 
@@ -35,8 +35,8 @@ __global__ void cudaMultiplyTwoImages(CudaImageContainer<PixelType> imageIn1, Cu
 
 	if (coordinate<imageIn1.getDims())
 	{
-		double outValue = factor * (double)(imageIn1[coordinate]) * (double)(imageIn2[coordinate]);
-		imageOut[coordinate] = (outValue>(double)maxValue) ? (maxValue) : ((outValue<(double)minValue) ? (minValue) : (outValue));
+		double outValue = factor * (double)(imageIn1(coordinate)) * (double)(imageIn2(coordinate));
+		imageOut(coordinate) = (outValue>(double)maxValue) ? (maxValue) : ((outValue<(double)minValue) ? (minValue) : (outValue));
 	}
 }
 

@@ -29,26 +29,26 @@ __global__ void cudaMarkovGradDescent(CudaImageContainer<PixelType> imageIn, Cud
 	if (coordinate<imageOut.getDims())
 	{
 		double maxDif = 0.0;
-		double centerVal = imageIn[coordinate];
+		double centerVal = imageIn(coordinate);
 		double curVal = centerVal;
 
 		if (coordinate>Vec<size_t>(0,0,0) && coordinate<imageIn.getDims()-Vec<size_t>(1,1,1))// left, top, and front planes avail
 		{
 			for (int i=0; i<7; ++i)
 			{
-				double curDif = SQR(imageIn[coordinate-moves[i]] - imageIn[coordinate+moves[i]]);
+				double curDif = SQR(imageIn(coordinate-moves[i]) - imageIn(coordinate+moves[i]));
 				if (maxDif < curDif)
 					if (true)
 					{
 						maxDif = curDif;
 
-						if (SQR(centerVal-imageIn[coordinate-moves[i]]) > SQR(centerVal-imageIn[coordinate+moves[i]]))
+						if (SQR(centerVal-imageIn(coordinate-moves[i])) > SQR(centerVal-imageIn(coordinate+moves[i])))
 						{
-							curVal = centerVal - SIGN(centerVal-imageIn[coordinate-moves[i]]) * delta;
+							curVal = centerVal - SIGN(centerVal-imageIn(coordinate-moves[i])) * delta;
 						}
 						else
 						{
-							curVal = centerVal - SIGN(centerVal-imageIn[coordinate+moves[i]]) * delta;
+							curVal = centerVal - SIGN(centerVal-imageIn(coordinate+moves[i])) * delta;
 						}
 					}
 			}
@@ -58,7 +58,7 @@ __global__ void cudaMarkovGradDescent(CudaImageContainer<PixelType> imageIn, Cud
 			curVal = centerVal;//TODO change this if it looks like it is working!!!!
 		}
 
-		imageOut[coordinate] = curVal;
+		imageOut(coordinate) = curVal;
 
 //		double sgn = 0.0;
 // 		if (coordinate.x>0)

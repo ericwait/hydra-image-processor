@@ -15,7 +15,7 @@ __global__ void cudaClamp(CudaImageContainer<PixelType> imageIn,CudaImageContain
 
 	if(coordinate<imageIn.getDims())
 	{
-		imageOut[coordinate] = (imageIn[coordinate]>maxValue) ? (maxValue) : ((imageIn[coordinate]<minValue) ? (minValue) : (imageIn[coordinate]));
+		imageOut(coordinate) = (imageIn(coordinate)>maxValue) ? (maxValue) : ((imageIn(coordinate)<minValue) ? (minValue) : (imageIn(coordinate)));
 	}
 }
 

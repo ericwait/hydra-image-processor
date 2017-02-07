@@ -20,7 +20,7 @@ __device__ bool lineConnect(const CudaImageContainer<bool>& maskIn,Vec<long int>
 		if(prevCoord<maskIn.getDims() && nextCoord<maskIn.getDims())
 		{
 
-			if(maskIn[Vec<size_t>(prevCoord)] && maskIn[Vec<size_t>(nextCoord)])
+			if(maskIn(Vec<size_t>(prevCoord)) && maskIn(Vec<size_t>(nextCoord)))
 				return true;
 		}
 	}
@@ -30,7 +30,7 @@ __device__ bool lineConnect(const CudaImageContainer<bool>& maskIn,Vec<long int>
 
 __device__ bool willConnect(const CudaImageContainer<bool>& maskIn, Vec<size_t> coordinateIn)
 {
-	if(maskIn[coordinateIn])
+	if(maskIn(coordinateIn))
 		return true;
 
 	Vec<long int> coordinate(coordinateIn);
@@ -131,7 +131,7 @@ __device__ bool willConnect(const CudaImageContainer<bool>& maskIn, Vec<size_t> 
 template<class PixelType>
 __device__ void evalNeighborhood(const CudaImageContainer<PixelType> &imageIn,const Vec<size_t> &coordinate,double threshold,Vec<size_t> hostKernelDims,CudaImageContainer<bool>& maskIn,CudaImageContainer<bool> &maskOut)
 {
-	PixelType curPixelVal = imageIn[coordinate] + threshold;
+	PixelType curPixelVal = imageIn(coordinate) + threshold;
 	Vec<size_t> kernelDims = hostKernelDims;
 	Vec<size_t> halfKernal = kernelDims/2;
 
@@ -145,9 +145,9 @@ __device__ void evalNeighborhood(const CudaImageContainer<PixelType> &imageIn,co
 			curCoordIm.x = (coordinate.x<halfKernal.x) ? 0 : coordinate.x-halfKernal.x;
 			for(; curCoordIm.x<=coordinate.x+halfKernal.x && curCoordIm.x<imageIn.getDims().x; ++curCoordIm.x)
 			{
-				if(curPixelVal > imageIn[curCoordIm] && maskIn[curCoordIm]==true)
+				if(curPixelVal > imageIn(curCoordIm) && maskIn(curCoordIm)==true)
 				{
-					maskOut[coordinate] = true;
+					maskOut(coordinate) = true;
 				}
 			}
 		}
@@ -166,16 +166,16 @@ __global__ void cudaRegionGrowing(CudaImageContainer<PixelType> imageIn,CudaImag
 
 	if(coordinate<imageIn.getDims())
 	{
-		if(maskIn[coordinate]==true)
+		if(maskIn(coordinate)==true)
 		{
-			maskOut[coordinate] = true;
+			maskOut(coordinate) = true;
 		}
 		else
 		{
 			if(!allowConnection)
 			{
 				if(willConnect(maskIn,coordinate))
-					maskOut[coordinate] = false;
+					maskOut(coordinate) = false;
 				else
 					evalNeighborhood(imageIn,coordinate,threshold,deviceKernelDims,maskIn,maskOut);
 			}

@@ -15,8 +15,8 @@ __global__ void cudaPow( CudaImageContainer<PixelType> imageIn1, CudaImageContai
 
 	if (coordinate<imageIn1.getDims())
 	{
-		double outValue = pow((double)imageIn1[coordinate], power);
-		imageOut[coordinate] = (outValue>maxValue) ? (maxValue) : ((outValue<minValue) ? (minValue) : (outValue));
+		double outValue = pow((double)imageIn1(coordinate), power);
+		imageOut(coordinate) = (outValue>maxValue) ? (maxValue) : ((outValue<minValue) ? (minValue) : (outValue));
 	}
 }
 

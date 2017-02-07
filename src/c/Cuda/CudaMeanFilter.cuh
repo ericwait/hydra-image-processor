@@ -32,13 +32,13 @@ __global__ void cudaMeanFilter( CudaImageContainer<PixelType> imageIn, CudaImage
 				curCoordIm.x = (coordinate.x<halfKernal.x) ? 0 : coordinate.x-halfKernal.x;
 				for (; curCoordIm.x<=coordinate.x+halfKernal.x && curCoordIm.x<imageIn.getDims().x; ++curCoordIm.x)
 				{
-					val += imageIn[curCoordIm];
+					val += imageIn(curCoordIm);
 					++kernelVolume;
 				}
 			}
 		}
 
-		imageOut[coordinate] = val/kernelVolume;
+		imageOut(coordinate) = val/kernelVolume;
 	}
 }
 
