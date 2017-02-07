@@ -7,6 +7,19 @@
 #include "Vec.h"
 #include "Defines.h"
 
+#include <cuda_occupancy.h>
+
+template <typename T>
+int getKernelMaxThreads(T func, int threadLimit=0)
+{
+    int blockSizeMax = 0;
+    int minGridSize = 0; 
+
+    cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSizeMax, func, threadLimit, 0);
+
+    return blockSizeMax;
+}
+
 
 #ifdef _DEBUG
 #define DEBUG_KERNEL_CHECK() { cudaThreadSynchronize(); gpuErrchk( cudaPeekAtLastError() ); }
