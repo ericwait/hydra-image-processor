@@ -101,9 +101,6 @@
     <ClCompile Include="Mex\MexOtsuThresholdValue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mex\MexReduceImage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Mex\MexSumArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

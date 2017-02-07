@@ -192,14 +192,6 @@ IMAGE_PROCESSOR_API int otsuThresholdValue(const int* imageIn, Vec<size_t> dims,
 IMAGE_PROCESSOR_API float otsuThresholdValue(const float* imageIn, Vec<size_t> dims, int device = 0);
 IMAGE_PROCESSOR_API double otsuThresholdValue(const double* imageIn, Vec<size_t> dims, int device = 0);
 
-IMAGE_PROCESSOR_API unsigned char* reduceImage(const unsigned char* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, unsigned char** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API unsigned short* reduceImage(const unsigned short* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, unsigned short** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API short* reduceImage(const short* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, short** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API unsigned int* reduceImage(const unsigned int* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, unsigned int** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API int* reduceImage(const int* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, int** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API float* reduceImage(const float* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, float** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API double* reduceImage(const double* imageIn, Vec<size_t> dims, Vec<double> reductions, Vec<size_t>& reducedDims, ReductionMethods method = REDUC_MEAN, double** imageOut = NULL, int device = 0);
-
 IMAGE_PROCESSOR_API void regionGrowing(const unsigned char* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection=true,int device=0);
 IMAGE_PROCESSOR_API void regionGrowing(const unsigned short* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection=true,int device=0);
 IMAGE_PROCESSOR_API void regionGrowing(const short* imageIn,Vec<size_t> dims,Vec<size_t> kernelDims,float* kernel,bool* imageMask,double threshold,bool allowConnection=true,int device=0);

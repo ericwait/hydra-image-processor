@@ -127,7 +127,6 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     <ClCompile Include="Mex\MexNormalizedHistogram.cpp" />
     <ClCompile Include="Mex\MexOtsuThresholdFilter.cpp" />
     <ClCompile Include="Mex\MexOtsuThresholdValue.cpp" />
-    <ClCompile Include="Mex\MexReduceImage.cpp" />
     <ClCompile Include="Mex\MexRegionGrowing.cpp" />
     <ClCompile Include="Mex\MexSegment.cpp" />
     <ClCompile Include="Mex\MexStdFilter.cpp" />

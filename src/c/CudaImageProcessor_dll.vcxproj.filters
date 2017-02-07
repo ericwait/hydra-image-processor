@@ -47,9 +47,6 @@
     <ClInclude Include="Cuda\CudaImageContainerClean.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cuda\CudaImageReduction.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Cuda\CudaIntensityProjection.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
