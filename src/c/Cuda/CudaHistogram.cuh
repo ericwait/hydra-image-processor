@@ -69,7 +69,7 @@ size_t* createHistogram(int device, unsigned int arraySize, Vec<size_t> dims, Pi
 
 	size_t numValsPerChunk = MIN(dims.product(),(size_t)((availMem*MAX_MEM_AVAIL)/sizeof(PixelType)));
 
-	size_t maxThreads = MIN(numValsPerChunk,(size_t)props.maxThreadsPerBlock);
+    size_t maxThreads = getKernelMaxThreads(cudaHistogramCreate<PixelType>,numValsPerChunk);
 
 	PixelType* deviceBuffer;
 

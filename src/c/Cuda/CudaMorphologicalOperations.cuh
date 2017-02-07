@@ -4,6 +4,7 @@
 #include "CHelpers.h"
 #include "CudaMaxFilter.cuh"
 #include "CudaMinFilter.cuh"
+#include "CudaUtilities.cuh"
 
 template <class PixelType>
 PixelType* cMorphologicalClosure(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, PixelType** imageOut=NULL,
@@ -35,7 +36,9 @@ PixelType* cMorphologicalClosure(const PixelType* imageIn, Vec<size_t> dims, Vec
 	size_t memAvail, total;
 	cudaMemGetInfo(&memAvail,&total);
 
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(memAvail*MAX_MEM_AVAIL),props,kernelDims);
+    int blockSize = MIN(getKernelMaxThreads(cudaMaxFilter<PixelType>), getKernelMaxThreads(cudaMinFilter<PixelType>));
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(memAvail*MAX_MEM_AVAIL),props,kernelDims, blockSize);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
@@ -92,7 +95,9 @@ PixelType* cMorphologicalOpening(const PixelType* imageIn, Vec<size_t> dims, Vec
 	size_t memAvail, total;
 	cudaMemGetInfo(&memAvail,&total);
 
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(memAvail*MAX_MEM_AVAIL),props,kernelDims);
+    int blockSize = MIN(getKernelMaxThreads(cudaMaxFilter<PixelType>), getKernelMaxThreads(cudaMinFilter<PixelType>));
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(memAvail*MAX_MEM_AVAIL),props,kernelDims,blockSize);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);

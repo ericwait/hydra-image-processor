@@ -37,7 +37,11 @@ PixelType* cSegment(const PixelType* imageIn, Vec<size_t> dims, double alpha, Ve
 	size_t availMem, total;
 	cudaMemGetInfo(&availMem,&total);
 
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props,kernelDims);
+    int blockSize = getKernelMaxThreads(cudaThreshold<PixelType>);
+    blockSize = MIN(blockSize, getKernelMaxThreads(cudaMinFilter<PixelType>));
+    blockSize = MIN(blockSize, getKernelMaxThreads(cudaMaxFilter<PixelType>));
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props,kernelDims,blockSize);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);

@@ -69,7 +69,9 @@ PixelType* cGaussianFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<float
 	size_t availMem, total;
 	cudaMemGetInfo(&availMem,&total);
 
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props,sizeconstKernelDims);
+    int blockSize = getKernelMaxThreads(cudaMultAddFilter<PixelType>);
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props,sizeconstKernelDims,blockSize);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);

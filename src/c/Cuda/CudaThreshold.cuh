@@ -38,7 +38,9 @@ PixelType* cThresholdFilter(const PixelType* imageIn, Vec<size_t> dims, PixelTyp
 	size_t availMem, total;
 	cudaMemGetInfo(&availMem,&total);
 
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props);
+    int blockSize = getKernelMaxThreads(cudaThreshold<PixelType>);
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props,Vec<size_t>(0,0,0),blockSize);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);

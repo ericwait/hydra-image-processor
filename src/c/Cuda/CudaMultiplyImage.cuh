@@ -55,7 +55,9 @@ PixelType* cMultiplyImage(const PixelType* imageIn, Vec<size_t> dims, double mul
 	size_t availMem, total;
 	cudaMemGetInfo(&availMem,&total);
 
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props);
+    int blockSize = getKernelMaxThreads(cudaMultiplyImageScaler<PixelType>);
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props,blockSize);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
@@ -95,7 +97,9 @@ PixelType* cMultiplyImageWith(const PixelType* imageIn1, const PixelType* imageI
 	size_t availMem, total;
 	cudaMemGetInfo(&availMem,&total);
 
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,3,(size_t)(availMem*MAX_MEM_AVAIL),props);
+    int blockSize = getKernelMaxThreads(cudaMultiplyTwoImages<PixelType>);
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,3,(size_t)(availMem*MAX_MEM_AVAIL),props,blockSize);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);

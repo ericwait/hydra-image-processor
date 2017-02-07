@@ -73,7 +73,9 @@ PixelType* cStdFilter(const PixelType* imageIn,Vec<size_t> dims,Vec<size_t> neig
 	size_t memAvail,total;
 	cudaMemGetInfo(&memAvail,&total);
 
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(memAvail*MAX_MEM_AVAIL),props,neighborhood);
+    int blockSize = getKernelMaxThreads(cudaStdFilter<PixelType>);
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(memAvail*MAX_MEM_AVAIL),props,neighborhood,blockSize);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks,maxDeviceDims);

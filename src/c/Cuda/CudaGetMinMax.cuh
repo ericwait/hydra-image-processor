@@ -81,7 +81,7 @@ void cGetMinMax(const PixelType* imageIn, Vec<size_t> dims, PixelType& minVal, P
 
 	size_t numValsPerChunk = MIN(n,(size_t)((availMem*MAX_MEM_AVAIL)/sizeof(PixelType)));
 
-	int threads = props.maxThreadsPerBlock;
+    int threads = getKernelMaxThreads(cudaGetMinMax<PixelType>);
 	int maxBlocks = (int)ceil((double)numValsPerChunk/(threads*2)); 
 
 	HANDLE_ERROR(cudaMalloc((void**)&deviceBuffer,sizeof(PixelType)*numValsPerChunk));

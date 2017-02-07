@@ -173,14 +173,18 @@ PixelType* cResize(const PixelType* imageIn, Vec<size_t> dimsIn, Vec<double> res
     float* hostKernel;
     Vec<size_t> neighborhood;
     Vec<double> neighborhood_ = Vec<double>::max(resizeFactors,Vec<double>(1.0,1.0,1.0)/resizeFactors);
+
+    int blockSize = props.maxThreadsPerBlock;
     if(method==REDUC_GAUS)
     {
         Vec<float> sigmas = Vec<float>(neighborhood_*3);
 
         neighborhood = createGaussianKernelFull(sigmas, &hostKernel);
         HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)*neighborhood.product()));
+
+        //blockSize = getKernelMaxThreads(<PixelType>);
     }
-    else
+    else if(method==REDUC_MEAN)
     {
         neighborhood = Vec<size_t>(ceil(neighborhood_.x), ceil(neighborhood_.y), ceil(neighborhood_.z));
         hostKernel = new float[neighborhood.product()];
@@ -188,13 +192,15 @@ PixelType* cResize(const PixelType* imageIn, Vec<size_t> dimsIn, Vec<double> res
             hostKernel[i] = 1.0f;
 
         HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)*neighborhood.product()));
+
+        blockSize = getKernelMaxThreads(cudaMeanResize<PixelType>);
     }
 
     Vec<size_t> bigDims = (reduce) ? (dimsIn) : (dimsOut);
     Vec<size_t> smallDims = (reduce) ? (dimsOut) : (dimsIn);
     memSizeRatio = (reduce) ? (memSizeRatio) : (1/memSizeRatio); // this will be in terms of the smaller image
 
-    std::vector<ImageChunk> bigChunks = calculateBuffers<PixelType>(bigDims, 1, memAvail*MAX_MEM_AVAIL*(1-memSizeRatio), props, neighborhood);
+    std::vector<ImageChunk> bigChunks = calculateBuffers<PixelType>(bigDims, 1, memAvail*MAX_MEM_AVAIL*(1-memSizeRatio), props, neighborhood,blockSize);
     std::vector<ImageChunk> smallChunks(bigChunks);
 
     for(auto& it:smallChunks)

@@ -35,7 +35,9 @@ PixelType* cImagePow(const PixelType* imageIn, Vec<size_t> dims, double power, P
 	size_t availMem, total;
 	cudaMemGetInfo(&availMem,&total);
 
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props);
+    int blockSize = getKernelMaxThreads(cudaPow<PixelType>);
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props,blockSize);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);

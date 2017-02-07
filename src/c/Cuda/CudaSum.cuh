@@ -70,7 +70,7 @@ OutType cSumArray(const PixelTypeIn* imageIn, size_t n, int device=0)
 
 	size_t numValsPerChunk = MIN(n,(size_t)((availMem*MAX_MEM_AVAIL)/sizeof(PixelTypeIn)));
 
-	int threads = props.maxThreadsPerBlock;
+    int threads = getKernelMaxThreads(cudaSum<PixelTypeIn,OutType>);
 	int maxBlocks = (int)ceil((double)numValsPerChunk/(threads*2)); 
 
 	HANDLE_ERROR(cudaMalloc((void**)&deviceBuffer,sizeof(PixelTypeIn)*numValsPerChunk));

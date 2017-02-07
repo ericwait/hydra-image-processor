@@ -32,7 +32,9 @@ PixelType* cClamp(const PixelType* imageIn,Vec<size_t> dims,PixelType minVal,Pix
 	size_t availMem,total;
 	cudaMemGetInfo(&availMem,&total);
 
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props);
+    int blockSize = getKernelMaxThreads(cudaClamp<PixelType>);
+
+    std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims, 2, (size_t)(availMem*MAX_MEM_AVAIL), props, Vec<size_t>(0, 0, 0), blockSize);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks,maxDeviceDims);

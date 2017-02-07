@@ -45,7 +45,9 @@ PixelType* cApplyPolyTransferFunction(const PixelType* imageIn, Vec<size_t> dims
 	size_t memAvail, total;
 	cudaMemGetInfo(&memAvail,&total);
 
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(memAvail*MAX_MEM_AVAIL),props);
+    int blockSize = getKernelMaxThreads(cudaPolyTransferFunc<PixelType>);
+
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(memAvail*MAX_MEM_AVAIL),props,blockSize);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);

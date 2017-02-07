@@ -73,7 +73,7 @@ PixelType* cLinearUnmixing(const PixelType* imageIn, Vec<size_t> imageDims, size
 		
 		int numBlocks = (int)(ceil((double)curNumVals / props.maxThreadsPerBlock));
 		int maxThreads = (int)((double)props.sharedMemPerBlock / (sizeof(double)*numImages));
-		int threads = MAX(maxThreads,props.maxThreadsPerBlock);
+        int threads = getKernelMaxThreads(cudaLinearUnmixing<PixelType>,maxThreads);
 		size_t sharedMemSize = sizeof(double)*threads*numImages;
 		cudaLinearUnmixing<<<numBlocks,props.maxThreadsPerBlock,sharedMemSize>>>(deviceIm, curNumVals, numImages, min, max);
 		DEBUG_KERNEL_CHECK();
