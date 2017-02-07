@@ -1,5 +1,27 @@
+////////////////////////////////////////////////////////////////////////////////
+//Copyright 2014 Andrew Cohen, Eric Wait, and Mark Winter
+//This file is part of LEVER 3-D - the tool for 5-D stem cell segmentation,
+//tracking, and lineaging. See http://bioimage.coe.drexel.edu 'software' section
+//for details. LEVER 3-D is free software: you can redistribute it and/or modify
+//it under the terms of the GNU General Public License as published by the Free
+//Software Foundation, either version 3 of the License, or (at your option) any
+//later version.
+//LEVER 3-D is distributed in the hope that it will be useful, but WITHOUT ANY
+//WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+//A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+//You should have received a copy of the GNU General Public License along with
+//LEVer in file "gnu gpl v3.txt".  If not, see  <http://www.gnu.org/licenses/>.
+////////////////////////////////////////////////////////////////////////////////
+
 #ifndef INCLUDE_VEC
 #define INCLUDE_VEC
+
+#include "Defines.h"
+
+#include <type_traits>
+
+#undef min
+#undef max
 
 #ifdef __CUDACC__
 #define MIXED_PREFIX __host__ __device__
@@ -7,57 +29,46 @@
 #define MIXED_PREFIX
 #endif
 
-#include "Defines.h"
-
-#include <type_traits>
 
 template<typename T>
 class Vec
 {
 public:
-    union
-    {
-        T e[3];
-        struct  
-        {
-            T x;
-            T y;
-            T z;
-        };
-    };
+	union
+	{
+		T e[3];
+		struct  
+		{
+			T x;
+			T y;
+			T z;
+		};
+	};
 
-	MIXED_PREFIX Vec(){x=0; y=0; z=0;};
-    
-    MIXED_PREFIX Vec(T val)
-    {
-        this->x = val;
-        this->y = val;
-        this->z = val;
-    }
+	MIXED_PREFIX Vec() : x(0),y(0),z(0){}
+	
+	MIXED_PREFIX Vec(T val)
+		: x(val), y(val), z(val)
+	{}
 
 	template<typename U>
 	MIXED_PREFIX Vec(const Vec<U>& other)
-	{
-		this->x = static_cast<T>(other.x);
-		this->y = static_cast<T>(other.y);
-		this->z = static_cast<T>(other.z);
-	}
+		:	x(static_cast<T>(other.x)),
+			y(static_cast<T>(other.y)),
+			z(static_cast<T>(other.z))
+	{}
 
 
 	MIXED_PREFIX Vec(T x, T y, T z)
-	{
-		this->x = x;
-		this->y = y;
-		this->z = z;
-	}
+		: x(x), y(y), z(z)
+	{}
 
 	// Negates each element
 	MIXED_PREFIX Vec<T> operator- () const
 	{
 		Vec<T> outVec;
-		outVec.x = -x;
-		outVec.y = -y;
-		outVec.z = -z;
+		for ( int i=0; i < 3; ++i )
+			outVec.e[i] = -e[i];
 
 		return outVec;
 	}
@@ -66,10 +77,9 @@ public:
 	template<typename U>
 	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator+ (U adder) const
 	{
-        Vec<typename std::common_type<T, U>::type> outVec;
-		outVec.x = x+adder;
-		outVec.y = y+adder;
-		outVec.z = z+adder;
+		Vec<typename std::common_type<T, U>::type> outVec;
+		for ( int i=0; i < 3; ++i )
+			outVec.e[i] = e[i] + adder;
 
 		return outVec;
 	}
@@ -79,9 +89,8 @@ public:
 	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator- (U subtractor) const
 	{
 		Vec<typename std::common_type<T, U>::type> outVec;
-		outVec.x = x-subtractor;
-		outVec.y = y-subtractor;
-		outVec.z = z-subtractor;
+		for ( int i=0; i < 3; ++i )
+			outVec.e[i] = e[i] - subtractor;
 
 		return outVec;
 	}
@@ -91,9 +100,8 @@ public:
 	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator/ (U divisor) const
 	{
 		Vec<typename std::common_type<T, U>::type> outVec;
-		outVec.x = x/divisor;
-		outVec.y = y/divisor;
-		outVec.z = z/divisor;
+		for ( int i=0; i < 3; ++i )
+			outVec.e[i] = e[i] / divisor;
 
 		return outVec;
 	}
@@ -103,9 +111,8 @@ public:
 	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator* (U mult) const
 	{
 		Vec<typename std::common_type<T, U>::type> outVec;
-		outVec.x = x*mult;
-		outVec.y = y*mult;
-		outVec.z = z*mult;
+		for ( int i=0; i < 3; ++i )
+			outVec.e[i] = e[i] * mult;
 
 		return outVec;
 	}
@@ -115,9 +122,8 @@ public:
 	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> pwr (U pw) const
 	{
 		Vec<typename std::common_type<T, U>::type> outVec;
-		outVec.x = pow((double)x,pw);
-		outVec.y = pow((double)y,pw);
-		outVec.z = pow((double)z,pw);
+		for ( int i=0; i < 3; ++i )
+			outVec.e[i] = pow((double)e[i], pw);
 
 		return outVec;
 	}
@@ -149,9 +155,8 @@ public:
 	MIXED_PREFIX static Vec<T> min(Vec<T> a, Vec<T> b)
 	{
 		Vec<T> outVec;
-		outVec.x = MIN(a.x, b.x);
-		outVec.y = MIN(a.y, b.y);
-		outVec.z = MIN(a.z, b.z);
+		for ( int i=0; i < 3; ++i )
+			outVec.e[i] = MIN(a.e[i], b.e[i]);
 
 		return outVec;
 	}
@@ -159,9 +164,8 @@ public:
 	MIXED_PREFIX static Vec<T> max(Vec<T> a, Vec<T> b)
 	{
 		Vec<T> outVec;
-		outVec.x = MAX(a.x, b.x);
-		outVec.y = MAX(a.y, b.y);
-		outVec.z = MAX(a.z, b.z);
+		for ( int i=0; i < 3; ++i )
+			outVec.e[i] = MAX(a.e[i], b.e[i]);
 
 		return outVec;
 	}
@@ -169,9 +173,8 @@ public:
 	MIXED_PREFIX Vec<T> saturate(Vec<T> maxVal)
 	{
 		Vec<T> outVec;
-		outVec.x = (x<maxVal.x) ? (x) : (maxVal.x);
-		outVec.y = (y<maxVal.y) ? (y) : (maxVal.y);
-		outVec.z = (z<maxVal.z) ? (z) : (maxVal.z);
+		for ( int i=0; i < 3; ++i )
+			outVec.e[i] = (e[i] < maxVal.e[i]) ? (e[i]) : (maxVal.e[i]);
 
 		return outVec;
 	}
@@ -179,9 +182,8 @@ public:
 	MIXED_PREFIX Vec<T> clamp(Vec<T> minVal, Vec<T> maxVal)
 	{
 		Vec<T> outVec;
-		outVec.x = (x<maxVal.x) ? ((x>minVal.x) ? (x) : (minVal.x)) : (maxVal.x);
-		outVec.y = (y<maxVal.y) ? ((y>minVal.y) ? (y) : (minVal.y)) : (maxVal.y);
-		outVec.z = (z<maxVal.z) ? ((z>minVal.z) ? (z) : (minVal.z)) : (maxVal.z);
+		for ( int i=0; i < 3; ++i )
+			outVec.e[i] = (e[i] < maxVal.e[i]) ? ((e[i] > minVal.e[i]) ? (e[i]) : (minVal.e[i])) : (maxVal.e[i]);
 
 		return outVec;
 	}
@@ -220,122 +222,161 @@ public:
 		return vecOut;
 	}
 
-    template <typename U>
-    MIXED_PREFIX Vec& operator= (const Vec<U>& other)
-    {
-        this->x = other.x;
-        this->y = other.y;
-        this->z = other.z;
+	template <typename U>
+	MIXED_PREFIX Vec& operator= (const Vec<U>& other)
+	{
+		for ( int i=0; i < 3; ++i )
+			e[i] = other.e[i];
 
-        return *this;
+		return *this;
+	}
+
+	template <typename U>
+	MIXED_PREFIX Vec<typename std::common_type<T,U>::type> operator+ (const Vec<U>& other) const
+	{
+		Vec<typename std::common_type<T, U>::type> outVec;
+		for ( int i=0; i < 3; ++i )
+			outVec.e[i] = e[i] + other.e[i];
+
+		return outVec;
+	}
+
+	template <typename U>
+	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator- (const Vec<U>& other) const
+	{
+		Vec<typename std::common_type<T, U>::type> outVec;
+		for ( int i=0; i < 3; ++i )
+			outVec.e[i] = e[i] - other.e[i];
+
+		return outVec;
+	}
+
+	template <typename U>
+	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator/ (const Vec<U>& other) const
+	{
+		Vec<typename std::common_type<T, U>::type> outVec;
+		for ( int i=0; i < 3; ++i )
+			outVec.e[i] = e[i] / other.e[i];
+
+		return outVec;
+	}
+
+	template <typename U>
+	MIXED_PREFIX Vec<typename std::common_type<T, U>::type>  operator* (const Vec<U>& other) const
+	{
+		Vec<typename std::common_type<T, U>::type> outVec;
+		for ( int i=0; i < 3; ++i )
+			outVec.e[i] = e[i] * other.e[i];
+
+		return outVec;
+	}
+
+	template <typename U>
+	MIXED_PREFIX Vec<T>& operator+= (const Vec<U>& other)
+	{
+		for ( int i=0; i < 3; ++i )
+			e[i] += other.e[i];
+
+		return *this;
+	}
+
+	template <typename U>
+	MIXED_PREFIX Vec<T>& operator-= (const Vec<U>& other)
+	{
+		for ( int i=0; i < 3; ++i )
+			e[i] -= other.e[i];
+
+		return *this;
+	}
+
+	// Are all the values less then the passed in values
+	MIXED_PREFIX bool operator< (const Vec<T>& inVec) const
+	{
+		return x<inVec.x && y<inVec.y && z<inVec.z;
+	}
+
+	MIXED_PREFIX bool operator<= (const Vec<T>& inVec) const
+	{
+		return x<=inVec.x && y<=inVec.y && z<=inVec.z;
+	}
+
+	// Are all the values greater then the passed in values
+	MIXED_PREFIX bool operator>(const Vec<T>& inVec) const
+	{
+		return x>inVec.x && y>inVec.y && z>inVec.z;
+	}
+
+	MIXED_PREFIX bool operator>= (const Vec<T>& inVec) const
+	{
+		return x>=inVec.x && y>=inVec.y && z>=inVec.z;
+	}
+
+	MIXED_PREFIX bool operator== (const Vec<T>& inVec) const
+	{
+		return x==inVec.x && y==inVec.y && z==inVec.z;
+	}
+
+	MIXED_PREFIX bool operator!= (const Vec<T>& inVec) const
+	{
+		return x!=inVec.x||y!=inVec.y||z!=inVec.z;
+	}
+
+	// Returns the linear memory map if this is the dimensions and the passed in Vec is the coordinate
+	MIXED_PREFIX size_t linearAddressAt(const Vec<T>& coordinate) const
+	{
+		return coordinate.x+coordinate.y*x+coordinate.z*y*x;
+	}
+
+	MIXED_PREFIX double EuclideanDistanceTo(const Vec<T>& other)
+	{
+		return sqrt((double)(SQR(x-other.x)+SQR(y-other.y)+SQR(z-other.z)));
+	}
+
+	MIXED_PREFIX double lengthSqr()
+	{
+		return SQR(x) + SQR(y) + SQR(z);
+	}
+
+	MIXED_PREFIX double length()
+	{
+		return sqrt(lengthSqr());
+	}
+
+	MIXED_PREFIX Vec<double> normal()
+	{
+		return ((*this) / length());
+	}
+
+    MIXED_PREFIX Vec<T> ceil() const
+    {
+        Vec<T> out;
+        for(int i = 0; i<3; ++i)
+        {
+            out.e[i] = ::ceil(e[i]);
+        }
+
+        return out;
     }
 
-    template <typename U>
-    MIXED_PREFIX Vec<typename std::common_type<T,U>::type> operator+ (const Vec<U>& other) const
-    {
-        Vec<typename std::common_type<T, U>::type> outVec;
-        outVec.x = x+other.x;
-        outVec.y = y+other.y;
-        outVec.z = z+other.z;
+	template <typename U, typename V>
+	static MIXED_PREFIX Vec<typename std::common_type<U,V>::type> cross(const Vec<U>& a, const Vec<V>& b)
+	{
+		Vec<typename std::common_type<U, V>::type> o;
 
-        return outVec;
-    }
+		o.x = a.y*b.z - a.z*b.y;
+		o.y = -(a.x*b.z - a.z*b.x);
+		o.z = a.x*b.y - a.y*b.x;
 
-    template <typename U>
-    MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator- (const Vec<U>& other) const
-    {
-        Vec<typename std::common_type<T, U>::type> outVec;
-        outVec.x = x-other.x;
-        outVec.y = y-other.y;
-        outVec.z = z-other.z;
+		return o;
+	}
 
-        return outVec;
-    }
-
-    template <typename U>
-    MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator/ (const Vec<U>& other) const
-    {
-        Vec<typename std::common_type<T, U>::type> outVec;
-        outVec.x = x/other.x;
-        outVec.y = y/other.y;
-        outVec.z = z/other.z;
-
-        return outVec;
-    }
-
-    template <typename U>
-    MIXED_PREFIX Vec<typename std::common_type<T, U>::type>  operator* (const Vec<U>& other) const
-    {
-        Vec<typename std::common_type<T, U>::type> outVec;
-        outVec.x = x * other.x;
-        outVec.y = y * other.y;
-        outVec.z = z * other.z;
-
-        return outVec;
-    }
-
-    template <typename U>
-    MIXED_PREFIX Vec<T>& operator+= (const Vec<U>& other)
-    {
-        x += other.x;
-        y += other.y;
-        z += other.z;
-
-        return *this;
-    }
-
-    template <typename U>
-    MIXED_PREFIX Vec<T>& operator-= (const Vec<U>& other)
-    {
-        x -= other.x;
-        y -= other.y;
-        z -= other.z;
-
-        return *this;
-    }
-
-    // Are all the values less then the passed in values
-    MIXED_PREFIX bool operator< (const Vec<T>& inVec) const
-    {
-        return x<inVec.x && y<inVec.y && z<inVec.z;
-    }
-
-    MIXED_PREFIX bool operator<= (const Vec<T>& inVec) const
-    {
-        return x<=inVec.x && y<=inVec.y && z<=inVec.z;
-    }
-
-    // Are all the values greater then the passed in values
-    MIXED_PREFIX bool operator>(const Vec<T>& inVec) const
-    {
-        return x>inVec.x && y>inVec.y && z>inVec.z;
-    }
-
-    MIXED_PREFIX bool operator>= (const Vec<T>& inVec) const
-    {
-        return x>=inVec.x && y>=inVec.y && z>=inVec.z;
-    }
-
-    MIXED_PREFIX bool operator== (const Vec<T>& inVec) const
-    {
-        return x==inVec.x && y==inVec.y && z==inVec.z;
-    }
-
-    MIXED_PREFIX bool operator!= (const Vec<T>& inVec) const
-    {
-        return x!=inVec.x||y!=inVec.y||z!=inVec.z;
-    }
-
-    // Returns the linear memory map if this is the dimensions and the passed in Vec is the coordinate
-    MIXED_PREFIX size_t linearAddressAt(const Vec<T>& coordinate) const
-    {
-        return coordinate.x+coordinate.y*x+coordinate.z*y*x;
-    }
-
-    MIXED_PREFIX double EuclideanDistanceTo(const Vec<T>& other)
-    {
-        return sqrt((double)(SQR(x-other.x)+SQR(y-other.y)+SQR(z-other.z)));
-    }
+	template <typename U, typename V>
+	static MIXED_PREFIX typename std::common_type<U,V>::type dot(const Vec<U>& a, const Vec<V>& b)
+	{
+		return a.x*b.x + a.y*b.y + a.z*b.z;
+	}
 };
+
+
 
 #endif
