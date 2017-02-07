@@ -33,35 +33,35 @@ __device__ double cudaGetInterpValue_device(CudaImageContainer<PixelType> imageI
     
     Vec<size_t> minPos(0, 0, 0);
     Vec<size_t> curPos = Vec<size_t>(i, j, k);
-    if (curPos>minPos && curPos<imageIn.getDims())
+    if (curPos>=minPos && curPos<imageIn.getDims())
         val += (1-alpha) * (1-beta)  * (1-gamma) * imageIn[curPos];
 
     curPos = Vec<size_t>(i+1, j, k);
-    if(curPos>minPos && curPos<imageIn.getDims())
+    if(curPos>=minPos && curPos<imageIn.getDims())
         val += alpha  * (1-beta)  * (1-gamma) * imageIn[curPos];
 
     curPos = Vec<size_t>(i, j+1, k);
-    if(curPos>minPos && curPos<imageIn.getDims())
+    if(curPos>=minPos && curPos<imageIn.getDims())
         val += (1-alpha) *    beta   * (1-gamma) * imageIn[curPos];
 
     curPos = Vec<size_t>(i+1, j+1, k);
-    if(curPos>minPos && curPos<imageIn.getDims())
+    if(curPos>=minPos && curPos<imageIn.getDims())
         val += alpha  *    beta   * (1-gamma) * imageIn[curPos];
 
     curPos = Vec<size_t>(i, j, k+1);
-    if(curPos>minPos && curPos<imageIn.getDims())
+    if(curPos>=minPos && curPos<imageIn.getDims())
         val += (1-alpha) * (1-beta)  *    gamma  * imageIn[curPos];
 
     curPos = Vec<size_t>(i+1, j, k+1);
-    if(curPos>minPos && curPos<imageIn.getDims())
+    if(curPos>=minPos && curPos<imageIn.getDims())
         val += alpha  * (1-beta)  *    gamma  * imageIn[curPos];
 
     curPos = Vec<size_t>(i, j+1, k+1);
-    if(curPos>minPos && curPos<imageIn.getDims())
+    if(curPos>=minPos && curPos<imageIn.getDims())
         val += (1-alpha) *    beta   *    gamma  * imageIn[curPos];
 
     curPos = Vec<size_t>(i+1, j+1, k+1);
-    if(curPos>minPos && curPos<imageIn.getDims())
+    if(curPos>=minPos && curPos<imageIn.getDims())
         val += alpha  *    beta   *    gamma  * imageIn[curPos];
 
     return val;
@@ -82,12 +82,12 @@ __global__ void cudaMeanResize(CudaImageContainer<PixelType> imageIn, CudaImageC
     {
         double val = 0;
         double kernelFactor = 0;
-        Vec<float> inputCenter = Vec<float>(coordinateOut) * resizeFactors;
-        Vec<float> kernelCenter = kernelDims/2.0f;
+        Vec<float> inputCenter = Vec<float>(coordinateOut+0.5) / resizeFactors;
+        Vec<float> kernelCenter = Vec<float>(kernelDims-1)/2.0f;
         Vec<int> kernelStart(0,0,0);
         Vec<int> kernelEnd(0,0,0);
         
-        Vec<float> neighborhoodStart = inputCenter-kernelCenter;
+        Vec<float> neighborhoodStart = inputCenter-Vec<float>(kernelDims)/2.0f;
         // if the input start position is negative, we need to start further in on the kernel
         kernelStart.x = (neighborhoodStart.x>=0.0f) ? (0) : (ceil(-neighborhoodStart.x));
         kernelStart.y = (neighborhoodStart.y>=0.0f) ? (0) : (ceil(-neighborhoodStart.y));
@@ -95,26 +95,26 @@ __global__ void cudaMeanResize(CudaImageContainer<PixelType> imageIn, CudaImageC
         neighborhoodStart = Vec<float>::max(Vec<float>(0.0f, 0.0f, 0.0f), neighborhoodStart);
 
         // This is the last place to visit in the input (inclusive)
-        Vec<float> neighborhoodEnd = inputCenter+kernelCenter-1;
+        Vec<float> neighborhoodEnd = inputCenter+(Vec<float>(kernelDims)/2.0f);
         // if the input end position is outside the image, we need to end earlier in on the kernel
-        kernelEnd.x = (neighborhoodEnd.x<imageOut.getDims().x) ? (kernelDims.x) :
-            (kernelDims.x-(neighborhoodEnd.x-imageOut.getDims().x));// will floor to int value
-        kernelEnd.y = (neighborhoodEnd.y<imageOut.getDims().y) ? (kernelDims.y) :
-            (kernelDims.y-(neighborhoodEnd.y-imageOut.getDims().y));// will floor to int value
-        kernelEnd.z = (neighborhoodEnd.z<imageOut.getDims().z) ? (kernelDims.z) :
-            (kernelDims.z-(neighborhoodEnd.z-imageOut.getDims().z));// will floor to int value
+        kernelEnd.x = (neighborhoodEnd.x<=imageIn.getDims().x) ? (kernelDims.x) :
+            (kernelDims.x-(neighborhoodEnd.x-imageIn.getDims().x));// will floor to int value
+        kernelEnd.y = (neighborhoodEnd.y<=imageIn.getDims().y) ? (kernelDims.y) :
+            (kernelDims.y-(neighborhoodEnd.y-imageIn.getDims().y));// will floor to int value
+        kernelEnd.z = (neighborhoodEnd.z<=imageIn.getDims().z) ? (kernelDims.z) :
+            (kernelDims.z-(neighborhoodEnd.z-imageIn.getDims().z));// will floor to int value
 
-        neighborhoodEnd = Vec<float>::min(imageOut.getDims(), neighborhoodEnd);
+        neighborhoodEnd = Vec<float>::min(imageIn.getDims(), neighborhoodEnd);
 
         Vec<int> curKernelPos(0, 0, 0);
         Vec<int> curInPos = neighborhoodStart;
-        for(curKernelPos.z = kernelStart.z; curKernelPos.z<=kernelEnd.z; ++curKernelPos.z)
+        for(curKernelPos.z = kernelStart.z; curKernelPos.z<kernelEnd.z; ++curKernelPos.z)
         {
             curInPos.z = neighborhoodStart.z + curKernelPos.z;
-            for(curKernelPos.y = kernelStart.y; curKernelPos.y<=kernelEnd.y; ++curKernelPos.y)
+            for(curKernelPos.y = kernelStart.y; curKernelPos.y<kernelEnd.y; ++curKernelPos.y)
             {
                 curInPos.y = neighborhoodStart.y+curKernelPos.y;
-                for(curKernelPos.x = kernelStart.x; curKernelPos.x<=kernelEnd.x; ++curKernelPos.x)
+                for(curKernelPos.x = kernelStart.x; curKernelPos.x<kernelEnd.x; ++curKernelPos.x)
                 {
                     curInPos.x = neighborhoodStart.x+curKernelPos.x;
                     double imVal = cudaGetInterpValue_device(imageIn, curInPos);
@@ -124,9 +124,13 @@ __global__ void cudaMeanResize(CudaImageContainer<PixelType> imageIn, CudaImageC
             }
         }
 
-        double meanVal = val/kernelFactor;
-        meanVal = (meanVal>minVal) ? (meanVal) : ((double)minVal);
-        meanVal = (meanVal<maxVal) ? (meanVal) : ((double)maxVal);
+        double meanVal = 0;
+        if(kernelFactor>0)
+        {
+            meanVal = val/kernelFactor;
+            meanVal = (meanVal>minVal) ? (meanVal) : ((double)minVal);
+            meanVal = (meanVal<maxVal) ? (meanVal) : ((double)maxVal);
+        }
 
         imageOut[coordinateOut] = (PixelType)meanVal;
     }
@@ -141,6 +145,12 @@ PixelType* cResize(const PixelType* imageIn, Vec<size_t> dimsIn, Vec<double> res
         resizeFactors = Vec<double>(dimsOut)/Vec<double>(dimsIn);
 
     dimsOut = Vec<size_t>(Vec<double>(dimsIn)*resizeFactors);
+
+    double memSizeRatio = (double)dimsOut.product()/(double)dimsIn.product();
+    bool reduce = memSizeRatio<1;
+
+    if(!reduce)
+        std::runtime_error("Enlarging is currently not implemented.");
 
     PixelType* resizedImage = NULL;
     if(imageOut==NULL)
@@ -179,12 +189,6 @@ PixelType* cResize(const PixelType* imageIn, Vec<size_t> dimsIn, Vec<double> res
 
         HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)*neighborhood.product()));
     }
-
-    double memSizeRatio = (double)dimsOut.product()/(double)dimsIn.product();
-    bool reduce = memSizeRatio<1;
-
-    if (!reduce)
-        std::runtime_error("Enlarging is currently not implemented.");
 
     Vec<size_t> bigDims = (reduce) ? (dimsIn) : (dimsOut);
     Vec<size_t> smallDims = (reduce) ? (dimsOut) : (dimsIn);

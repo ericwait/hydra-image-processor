@@ -55,7 +55,7 @@ void MexResize::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
     {
         unsigned char* imageIn, *imageOut;
         setupInputPointers(prhs[0], &imageInDims, &imageIn);
-        imageOutDims = imageInDims*reductionFactors;
+        imageOutDims = Vec<size_t>(Vec<double>(imageInDims)*reductionFactors);
         setupOutputPointers(&(plhs[0]), imageOutDims, &imageOut);
 
         resize(imageIn, imageInDims, reductionFactors, imageOutDims, mthd, &imageOut, device);
