@@ -134,6 +134,30 @@ std::string MexResize::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray*
     if(!mxIsEmpty(prhs[2]) &&(numElSize!=3||!mxIsDouble(prhs[2])))
         return "ExplicitSize amounts have to be an array of three doubles!";
 
+    Vec<double> reductionFactors(0.0, 0.0, 0.0);
+    if(!mxIsEmpty(prhs[1]))
+    {
+        double* reductionD = (double*)mxGetData(prhs[1]);
+        reductionFactors = Vec<double>(reductionD[0], reductionD[1], reductionD[2]);
+
+        if(reductionFactors.maxValue()>1)
+            return "Enlarging any dimension is currently not implemented!";
+    }
+
+    if(!mxIsEmpty(prhs[2]))
+    {
+        Vec<size_t> imageOutDims(0, 0, 0);
+        double* outDim = (double*)mxGetData(prhs[2]);
+        imageOutDims = Vec<size_t>(outDim[0], outDim[1], outDim[2]);
+
+        Vec<size_t> imageInDims(0, 0, 0);
+        double* inDim = (double*)mxGetData(prhs[0]);
+        imageInDims = Vec<size_t>(inDim[0], inDim[1], inDim[2]);
+
+        if (imageInDims>imageOutDims)
+            return "Enlarging any dimension is currently not implemented!";
+    }
+
     return "";
 }
 
