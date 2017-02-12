@@ -322,9 +322,10 @@ public:
 	}
 
 	// Returns the linear memory map if this is the dimensions and the passed in Vec is the coordinate
-	MIXED_PREFIX size_t linearAddressAt(const Vec<T>& coordinate) const
+	MIXED_PREFIX size_t& linearAddressAt(const Vec<T>& coordinate) const
 	{
-		return coordinate.x+coordinate.y*x+coordinate.z*y*x;
+        size_t idx = coordinate.x+coordinate.y*x+coordinate.z*y*x;
+        return idx;
 	}
 
 	MIXED_PREFIX double EuclideanDistanceTo(const Vec<T>& other)
