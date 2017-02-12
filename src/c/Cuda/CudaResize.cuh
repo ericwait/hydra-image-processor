@@ -95,23 +95,26 @@ PixelType* cResize(const PixelType* imageIn, Vec<size_t> dimsIn, Vec<double> res
 
     dimsOut = Vec<size_t>(Vec<double>(dimsIn)*resizeFactors);
 
-    double memSizeRatio = (double)dimsOut.product()/(double)dimsIn.product();
-    bool reduce = memSizeRatio<1;
-
-    if(!reduce)
-        std::runtime_error("Enlarging is currently not implemented.");
-
     PixelType* resizedImage = NULL;
     if(imageOut==NULL)
+    {
         resizedImage = new PixelType[dimsOut.product()];
+        *imageOut = resizedImage;
+    }
     else
         resizedImage = *imageOut;
 
     if(resizeFactors.product()==1)
     {
-        memcpy(imageOut, imageIn, sizeof(PixelType)*dimsIn.product());
+        memcpy(*imageOut, imageIn, sizeof(PixelType)*dimsIn.product());
         return *imageOut;
     }
+
+    double memSizeRatio = (double)dimsOut.product()/(double)dimsIn.product();
+    bool reduce = memSizeRatio<1;
+
+    if(!reduce)
+        std::runtime_error("Enlarging is currently not implemented.");
 
     cudaDeviceProp props;
     cudaGetDeviceProperties(&props, device);
