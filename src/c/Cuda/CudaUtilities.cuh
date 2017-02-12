@@ -15,7 +15,7 @@ int getKernelMaxThreads(T func, int threadLimit=0)
     int blockSizeMax = 0;
     int minGridSize = 0; 
 
-    cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSizeMax, func, threadLimit, 0);
+    cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSizeMax, func, 0, threadLimit);
 
     return blockSizeMax;
 }
