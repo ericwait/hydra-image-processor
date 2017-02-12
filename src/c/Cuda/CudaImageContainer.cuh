@@ -195,14 +195,14 @@ protected:
         return image[getIdx(idx)];
     }
 
-    __device__ const size_t& getIdx(Vec<size_t> coordinate) const
+    __device__ size_t getIdx(Vec<size_t> coordinate) const
     {
         coordinate += Vec<size_t>(roiStarts);
 
         return imageDims.linearAddressAt(coordinate);
     }
 
-    __device__ const size_t& getIdx(size_t idx) const
+    __device__ size_t getIdx(size_t idx) const
     {
         Vec<size_t> deviceStarts = Vec<size_t>(roiStarts);
         if(deviceStarts==Vec<size_t>(0, 0, 0))
