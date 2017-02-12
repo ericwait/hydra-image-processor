@@ -146,6 +146,8 @@ PixelType* cResize(const PixelType* imageIn, Vec<size_t> dimsIn, Vec<double> res
         HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)*neighborhood.product()));
 
         blockSize = getKernelMaxThreads(cudaMeanResize<PixelType>);
+
+        delete[] hostKernel;
     }
 
     Vec<size_t> bigDims = (reduce) ? (dimsIn) : (dimsOut);
