@@ -31,10 +31,10 @@ for i=1:length(dList)
 
     % copy the file from the class to the package
     newFile = fullfile(packagePath,dList(i).name);
-    if (exist(newFile,'file'))
-        fprintf(1,'File exist: %s\n',newFile);
-        continue;
-    end
+%     if (exist(newFile,'file'))
+%         fprintf(1,'File exist: %s\n',newFile);
+%         continue;
+%     end
 
     % get all of the lines
     f = fopen(fullfile(cudaPath,dList(i).name),'rt');
@@ -90,6 +90,7 @@ for i=1:length(dList)
             fprintf(f, '       \n');
             fprintf(f, '       while(~foundDevice)\n');
             fprintf(f, '        for deviceIdx=1:n\n');
+            fprintf(f, '            pause(5*rand(1,1));\n');
             fprintf(f, '            mutexfile = fullfile(curPath,sprintf(''device%%02d.txt'',deviceIdx));\n');
             fprintf(f, '            if (~exist(mutexfile,''file''))\n');
             fprintf(f, '                try\n');
@@ -100,7 +101,7 @@ for i=1:length(dList)
             fprintf(f, '                \n');
             fprintf(f, '                foundDevice = true;\n');
 			fprintf(f, '                f = fopen(mutexfile,''at'');\n');
-			fprintf(f, '                fprintf(f,''%s'',devStats(deviceIdx).name);\n');
+			fprintf(f, '                fprintf(f,''%%s'',devStats(deviceIdx).name);\n');
 			fprintf(f, '                fclose(f);\n');
             fprintf(f, '                device = deviceIdx;\n');
             fprintf(f, '                break;\n');

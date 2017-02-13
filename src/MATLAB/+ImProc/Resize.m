@@ -12,8 +12,9 @@ function imageOut = Resize(imageIn,resizeFactor,explicitSize,method)
     % check for Cuda capable devices
     curPath = which('ImProc.Cuda');
     curPath = fileparts(curPath);
-    n = ImProc.Cuda.DeviceCount();
-
+    devStats = ImProc.Cuda.DeviceStats();
+    n = length(devStats);
+    
     % if there are devices find the availble one and grab the mutex
     if (n>0)
        foundDevice = false;
@@ -21,6 +22,7 @@ function imageOut = Resize(imageIn,resizeFactor,explicitSize,method)
        
        while(~foundDevice)
         for deviceIdx=1:n
+            pause(5*rand(1,1));
             mutexfile = fullfile(curPath,sprintf('device%02d.txt',deviceIdx));
             if (~exist(mutexfile,'file'))
                 try
@@ -28,7 +30,11 @@ function imageOut = Resize(imageIn,resizeFactor,explicitSize,method)
                 catch errMsg
                        continue;
                 end
+                
                 foundDevice = true;
+                f = fopen(mutexfile,'at');
+                fprintf(f,'%s',devStats(deviceIdx).name);
+                fclose(f);
                 device = deviceIdx;
                 break;
             end
