@@ -43,11 +43,12 @@ void MexResize::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
     if(nrhs>4)
         device = mat_to_c((int)mxGetScalar(prhs[4]));
 
+    imageOutDims = Vec<size_t>((Vec<double>(imageInDims)*reductionFactors).floor());
+
     if(mxIsLogical(prhs[0]))
     {
         bool* imageIn, *imageOut;
         setupInputPointers(prhs[0], &imageInDims, &imageIn);
-        imageOutDims = Vec<size_t>(Vec<double>(imageInDims)*reductionFactors);
         setupOutputPointers(&(plhs[0]), imageOutDims, &imageOut);
 
         resize(imageIn, imageInDims, reductionFactors, imageOutDims, mthd, &imageOut, device);
@@ -55,7 +56,6 @@ void MexResize::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
     {
         unsigned char* imageIn, *imageOut;
         setupInputPointers(prhs[0], &imageInDims, &imageIn);
-        imageOutDims = Vec<size_t>(Vec<double>(imageInDims)*reductionFactors);
         setupOutputPointers(&(plhs[0]), imageOutDims, &imageOut);
 
         resize(imageIn, imageInDims, reductionFactors, imageOutDims, mthd, &imageOut, device);
@@ -63,7 +63,6 @@ void MexResize::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
     {
         unsigned short* imageIn, *imageOut;
         setupInputPointers(prhs[0], &imageInDims, &imageIn);
-        imageOutDims = Vec<size_t>(Vec<double>(imageInDims)*reductionFactors);
         setupOutputPointers(&(plhs[0]), imageOutDims, &imageOut);
         
         resize(imageIn, imageInDims, reductionFactors, imageOutDims, mthd, &imageOut, device);
@@ -71,7 +70,6 @@ void MexResize::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
     {
         short* imageIn, *imageOut;
         setupInputPointers(prhs[0], &imageInDims, &imageIn);
-        imageOutDims = Vec<size_t>(Vec<double>(imageInDims)*reductionFactors);
         setupOutputPointers(&(plhs[0]), imageOutDims, &imageOut);
         
         resize(imageIn, imageInDims, reductionFactors, imageOutDims, mthd, &imageOut, device);
@@ -79,7 +77,6 @@ void MexResize::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
     {
         unsigned int* imageIn, *imageOut;
         setupInputPointers(prhs[0], &imageInDims, &imageIn);
-        imageOutDims = Vec<size_t>(Vec<double>(imageInDims)*reductionFactors);
         setupOutputPointers(&(plhs[0]), imageOutDims, &imageOut);
         
         resize(imageIn, imageInDims, reductionFactors, imageOutDims, mthd, &imageOut, device);
@@ -87,7 +84,6 @@ void MexResize::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
     {
         int* imageIn, *imageOut;
         setupInputPointers(prhs[0], &imageInDims, &imageIn);
-        imageOutDims = Vec<size_t>(Vec<double>(imageInDims)*reductionFactors);
         setupOutputPointers(&(plhs[0]), imageOutDims, &imageOut);
         
         resize(imageIn, imageInDims, reductionFactors, imageOutDims, mthd, &imageOut, device);
@@ -95,7 +91,6 @@ void MexResize::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
     {
         float* imageIn, *imageOut;
         setupInputPointers(prhs[0], &imageInDims, &imageIn);
-        imageOutDims = Vec<size_t>(Vec<double>(imageInDims)*reductionFactors);
         setupOutputPointers(&(plhs[0]), imageOutDims, &imageOut);
         
         resize(imageIn, imageInDims, reductionFactors, imageOutDims, mthd, &imageOut, device);
@@ -103,7 +98,6 @@ void MexResize::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs
     {
         double* imageIn, *imageOut;
         setupInputPointers(prhs[0], &imageInDims, &imageIn);
-        imageOutDims = Vec<size_t>(Vec<double>(imageInDims)*reductionFactors);
         setupOutputPointers(&(plhs[0]), imageOutDims, &imageOut);
         
         resize(imageIn, imageInDims, reductionFactors, imageOutDims, mthd, &imageOut, device);

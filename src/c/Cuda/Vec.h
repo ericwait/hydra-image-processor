@@ -358,6 +358,17 @@ public:
         return out;
     }
 
+    MIXED_PREFIX Vec<T> floor() const
+    {
+        Vec<T> out;
+        for(int i = 0; i<3; ++i)
+        {
+            out.e[i] = ::floor(e[i]);
+        }
+
+        return out;
+    }
+
 	template <typename U, typename V>
 	static MIXED_PREFIX Vec<typename std::common_type<U,V>::type> cross(const Vec<U>& a, const Vec<V>& b)
 	{
