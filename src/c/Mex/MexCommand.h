@@ -1,5 +1,6 @@
 #pragma once
 #include "Vec.h"
+#include "ScopedProcessMutex.h"
 
 #include "mex.h"
 #include "windows.h"
@@ -100,6 +101,7 @@ public:
 
 		try
 		{
+			ScopedProcessMutex("CudaMutex");
 			mexCmd->execute(nlhs,plhs,cmdNRHS,cmdPRHS);
 		} catch(const std::runtime_error& err)
 		{

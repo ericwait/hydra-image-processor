@@ -24,6 +24,9 @@
     <ClInclude Include="Mex\CommandList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Mex\ScopedProcessMutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp">
@@ -138,6 +141,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MexResize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mex\ScopedProcessMutex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
