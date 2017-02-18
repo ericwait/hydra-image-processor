@@ -78,53 +78,19 @@ for i=1:length(dList)
         if (~isempty(funcCall))
             fprintf(f,'function %s = %s(%s)\n',funcCall.out,funcCall.name,funcCall.param);
             fprintf(f, '    %% check for Cuda capable devices\n');
-            fprintf(f, '    curPath = which(''ImProc.Cuda'');\n');
-            fprintf(f, '    curPath = fileparts(curPath);\n');
             fprintf(f, '    devStats = ImProc.Cuda.DeviceStats();\n');
 	        fprintf(f, '    n = length(devStats);\n');
             fprintf(f, '    \n');
             fprintf(f, '    %% if there are devices find the availble one and grab the mutex\n');
             fprintf(f, '    if (n>0)\n');
-            fprintf(f, '       foundDevice = false;\n');
-            fprintf(f, '       device = -1;\n');
-            fprintf(f, '       \n');
-            fprintf(f, '       while(~foundDevice)\n');
-            fprintf(f, '        for deviceIdx=1:n\n');
-            fprintf(f, '            pause(5*rand(1,1));\n');
-            fprintf(f, '            mutexfile = fullfile(curPath,sprintf(''device%%02d.txt'',deviceIdx));\n');
-            fprintf(f, '            if (~exist(mutexfile,''file''))\n');
-            fprintf(f, '                try\n');
-            fprintf(f, '                       fclose(fopen(mutexfile,''wt''));\n');
-            fprintf(f, '                catch errMsg\n');
-            fprintf(f, '                       continue;\n');
-            fprintf(f, '                end\n');
-            fprintf(f, '                \n');
-            fprintf(f, '                foundDevice = true;\n');
-			fprintf(f, '                f = fopen(mutexfile,''at'');\n');
-			fprintf(f, '                fprintf(f,''%%s'',devStats(deviceIdx).name);\n');
-			fprintf(f, '                fclose(f);\n');
-            fprintf(f, '                device = deviceIdx;\n');
-            fprintf(f, '                break;\n');
-            fprintf(f, '            end\n');
-            fprintf(f, '        end\n');
-            fprintf(f, '        if (~foundDevice)\n');
-            fprintf(f, '            pause(2);\n');
-            fprintf(f, '        end\n');
-            fprintf(f, '       end\n');
-            fprintf(f, '       \n');
+            fprintf(f, '       [~,I] = max([devStats.totalMem]);\n');
             fprintf(f, '       try\n');
-
             % call the Cuda version of the function
-            fprintf(f, '            %s = ImProc.Cuda.%s(%s,device);\n',funcCall.out,funcCall.name,funcCall.param);
-
-            % clean up the mutex
+            fprintf(f, '            %s = ImProc.Cuda.%s(%s,I);\n',funcCall.out,funcCall.name,funcCall.param);
             fprintf(f, '        catch errMsg\n');
-            fprintf(f, '        	delete(mutexfile);\n');
             fprintf(f, '        	throw(errMsg);\n');
             fprintf(f, '        end\n');
             fprintf(f, '        \n');
-            fprintf(f, '        delete(mutexfile);\n');
-
             % otherwise
             fprintf(f, '    else\n');
             localFuctionCall = sprintf('%s = lcl%s(%s)',funcCall.out,funcCall.name,funcCall.param);
