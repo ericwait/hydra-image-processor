@@ -3,6 +3,7 @@
 #include "CudaContrastEnhancement.cuh"
 #include "CudaDeviceCount.cuh"
 #include "CudaDeviceStats.h"
+#include "CudaEntropyFilter.cuh"
 #include "CudaHistogram.cuh"
 #include "CudaImageCopy.cuh"
 #include "CudaGaussianFilter.cuh"
@@ -185,6 +186,41 @@ void clearDevice()
  int deviceStats(DevStats** stats)
  {
 	 return cDeviceStats(stats);
+ }
+
+ float* entropyFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cEntropyFilter(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
+
+ float* entropyFilter(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cEntropyFilter(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
+
+ float* entropyFilter(const short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cEntropyFilter(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
+
+ float* entropyFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cEntropyFilter(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
+
+ float* entropyFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cEntropyFilter(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
+
+ float* entropyFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cEntropyFilter(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
+
+ float* entropyFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cEntropyFilter(imageIn, dims, kernelDims, kernel, imageOut, device);
  }
 
  size_t* histogram(const unsigned char* imageIn, Vec<size_t> dims, unsigned int arraySize, unsigned char minVal/*=std::numeric_limits<unsigned char>::lowest()*/, unsigned char maxVal/*=std::numeric_limits<unsigned char>::max()*/, int device/*=0*/)

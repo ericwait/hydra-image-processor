@@ -27,6 +27,7 @@
     <ClInclude Include="Cuda\CudaDeviceCount.cuh" />
     <ClInclude Include="Cuda\CudaDeviceImages.cuh" />
     <ClInclude Include="Cuda\CudaDeviceStats.h" />
+    <ClInclude Include="Cuda\CudaEntropyFilter.cuh" />
     <ClInclude Include="Cuda\CudaGaussianFilter.cuh" />
     <ClInclude Include="Cuda\CudaGetMinMax.cuh" />
     <ClInclude Include="Cuda\CudaGetROI.cuh" />
