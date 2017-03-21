@@ -8,7 +8,7 @@ function imageOut = EntropyFilter(imageIn,kernel)
     if (n>0)
        [~,I] = max([devStats.totalMem]);
        try
-            imageOut = ImProc.Cuda.EntropyFilter(imageIn,kernel,I);
+            imageOut = ImProc.Cuda.EntropyFilter(imageIn,kernel,1);
         catch errMsg
         	throw(errMsg);
         end
@@ -19,6 +19,6 @@ function imageOut = EntropyFilter(imageIn,kernel)
 end
 
 function imageOut = lclEntropyFilter(imageIn,kernel)
-
+    imageOut = entropyfilt(imageIn,kernel);
 end
 

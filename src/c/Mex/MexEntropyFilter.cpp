@@ -39,7 +39,7 @@ void MexEntropyFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	Vec<size_t> imageDims(0, 0, 0);
 	setupDims(prhs[0], &imageDims);
 
-	float* imageOut;
+	double* imageOut;
 	setupOutputPointers(&(plhs[0]), imageDims, &imageOut);
 
 	if(mxIsUint8(prhs[0]))

@@ -7,20 +7,44 @@
 #include "CudaUtilities.cuh"
 #include "ImageChunk.cuh"
 #include "CudaDeviceImages.cuh"
+#include "CudaGetMinMax.cuh"
+
+#include <functional>
 
 #ifndef CUDA_CONST_KERNEL
 #define CUDA_CONST_KERNEL
 __constant__ float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
 #endif
 
-template <class PixelType>
-__global__ void cudaEntropyFilter(CudaImageContainer<PixelType> imageIn, CudaImageContainer<float> imageOut, Vec<size_t> hostKernelDims)
+class HistoShared
 {
+public:
+	inline __host__ __device__ HistoShared() {}
+	inline __host__ __device__ int operator()(int n)
+	{
+		n = n*256*sizeof(short);
+		return n;
+	}
+};
+
+template <class PixelType>
+__global__ void cudaEntropyFilter(CudaImageContainer<PixelType> imageIn, CudaImageContainer<double> imageOut, Vec<size_t> hostKernelDims, PixelType minVal, PixelType maxVal)
+{
+	//extern __shared__ unsigned short histo[];
+
 	Vec<int> kernelDims = hostKernelDims;
 	Vec<int> coordinateOut;
 	coordinateOut.x = threadIdx.x+blockIdx.x * blockDim.x;
 	coordinateOut.y = threadIdx.y+blockIdx.y * blockDim.y;
 	coordinateOut.z = threadIdx.z+blockIdx.z * blockDim.z;
+
+	//unsigned short* lclHisto = (threadIdx.x+threadIdx.y*blockDim.x+threadIdx.z*blockDim.y*blockDim.x)*256 +histo;
+	unsigned short lclHisto[256];
+	double binWidth = (double)(maxVal-minVal+1)/256.0f;
+	for (int i=0; i<255; ++i)
+	{
+		lclHisto[i] = 0;
+	}
 
 	if(coordinateOut<imageOut.getDims())
 	{
@@ -51,6 +75,7 @@ __global__ void cudaEntropyFilter(CudaImageContainer<PixelType> imageIn, CudaIma
 
 		Vec<int> curKernelPos(0, 0, 0);
 		Vec<int> curInPos = neighborhoodStart;
+		double numVals = 0;
 		for(curKernelPos.z = kernelStart.z; curKernelPos.z<kernelEnd.z; ++curKernelPos.z)
 		{
 			curInPos.z = neighborhoodStart.z+curKernelPos.z;
@@ -59,25 +84,41 @@ __global__ void cudaEntropyFilter(CudaImageContainer<PixelType> imageIn, CudaIma
 				curInPos.y = neighborhoodStart.y+curKernelPos.y;
 				for(curKernelPos.x = kernelStart.x; curKernelPos.x<kernelEnd.x; ++curKernelPos.x)
 				{
-					//-sum(p.*log(p))
-					curInPos.x = neighborhoodStart.x+curKernelPos.x;
-					double imVal = imageIn(curInPos);
-					val += imVal*log(imVal);
+					if (cudaConstKernel[hostKernelDims.linearAddressAt(curKernelPos)]>0)
+					{
+						curInPos.x = neighborhoodStart.x+curKernelPos.x;
+						PixelType imVal = imageIn(curInPos);
+						int binNum = floor((double)(imVal-minVal)/binWidth);
+						++(lclHisto[binNum]);
+						++numVals;
+					}
 				}
 			}
 		}
 
-		imageOut(coordinateOut) = -(float)val;
+		for(int i = 0; i<255; ++i)
+		{
+			double hVal = lclHisto[i]/numVals;
+			if (hVal>0)
+				val = val+hVal*log(hVal);
+		}
+
+
+		imageOut(coordinateOut) = -val;
 	}
 }
 
 #pragma optimize("",off)
 template <class PixelType>
-float* cEntropyFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, float** imageOut = NULL,
-					  int device = 0)
+double* cEntropyFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, double** imageOut = NULL, int device = 0)
 {
 	cudaSetDevice(device);
-	float* imOut = setUpOutIm(dims, imageOut);
+	double* imOut = setUpOutIm(dims, imageOut);
+
+	PixelType minVal = 0;
+	PixelType maxVal = 0;
+
+	cGetMinMax(imageIn, dims, minVal, maxVal, device);
 
 	if(kernel==NULL)
 	{
@@ -86,11 +127,11 @@ float* cEntropyFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> ke
 		for(int i = 0; i<kernelDims.product(); ++i)
 			ones[i] = 1.0f;
 
-		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, ones, sizeof(float)*kernelDims.product()));
+		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, ones, sizeof(double)*kernelDims.product()));
 		delete[] ones;
 	} else
 	{
-		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, kernel, sizeof(float)*kernelDims.product()));
+		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, kernel, sizeof(double)*kernelDims.product()));
 	}
 
 	cudaDeviceProp props;
@@ -99,9 +140,11 @@ float* cEntropyFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> ke
 	size_t availMem, total;
 	cudaMemGetInfo(&availMem, &total);
 
+	HistoShared hitoMemObj;
+	//int blockSize = getKernelMaxThreadsSharedMem(cudaEntropyFilter<PixelType>, hitoMemObj);
 	int blockSize = getKernelMaxThreads(cudaEntropyFilter<PixelType>);
 
-	double inOutSize = (double)(sizeof(PixelType)+sizeof(float));
+	double inOutSize = (double)(sizeof(PixelType)+sizeof(double));
 	double inputPrcnt = sizeof(PixelType)/inOutSize;
 
 	std::vector<ImageChunk> inChunks = calculateBuffers<PixelType>(dims, 1, (size_t)(availMem*MAX_MEM_AVAIL*inputPrcnt), props, kernelDims, blockSize);
@@ -110,7 +153,7 @@ float* cEntropyFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> ke
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(inChunks, maxDeviceDims);
 	CudaDeviceImages<PixelType> deviceInImages(1, maxDeviceDims, device);
-	CudaDeviceImages<float> deviceOutImages(1, maxDeviceDims, device);
+	CudaDeviceImages<double> deviceOutImages(1, maxDeviceDims, device);
 
 	std::vector<ImageChunk>::iterator inIt = inChunks.begin();
 	std::vector<ImageChunk>::iterator outIt = outChunks.begin();
@@ -120,10 +163,16 @@ float* cEntropyFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> ke
 		inIt->sendROI(imageIn, dims, deviceInImages.getCurBuffer());
 		deviceInImages.setNextDims(inIt->getFullChunkSize());
 
-		cudaEntropyFilter<<<inIt->blocks, inIt->threads>>>(*(deviceInImages.getCurBuffer()), *(deviceOutImages.getCurBuffer()), kernelDims);
+		//int sharedMemSize = hitoMemObj((inIt->threads.x * inIt->threads.y * inIt->threads.z));
+
+		//cudaEntropyFilter<<<inIt->blocks, inIt->threads, sharedMemSize>>>(*(deviceInImages.getCurBuffer()), *(deviceOutImages.getCurBuffer()), kernelDims, minVal, maxVal);
+		cudaEntropyFilter<<<inIt->blocks, inIt->threads>>>(*(deviceInImages.getCurBuffer()), *(deviceOutImages.getCurBuffer()), kernelDims, minVal, maxVal);
 		DEBUG_KERNEL_CHECK();
 
 		outIt->retriveROI(imOut, dims, deviceOutImages.getCurBuffer());
+
+		++inIt;
+		++outIt;
 	}
 
 	return imOut;

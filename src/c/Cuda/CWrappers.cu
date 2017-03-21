@@ -188,37 +188,37 @@ void clearDevice()
 	 return cDeviceStats(stats);
  }
 
- float* entropyFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ double* entropyFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
  {
 	 return cEntropyFilter(imageIn, dims, kernelDims, kernel, imageOut, device);
  }
 
- float* entropyFilter(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ double* entropyFilter(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
  {
 	 return cEntropyFilter(imageIn, dims, kernelDims, kernel, imageOut, device);
  }
 
- float* entropyFilter(const short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ double* entropyFilter(const short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
  {
 	 return cEntropyFilter(imageIn, dims, kernelDims, kernel, imageOut, device);
  }
 
- float* entropyFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ double* entropyFilter(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
  {
 	 return cEntropyFilter(imageIn, dims, kernelDims, kernel, imageOut, device);
  }
 
- float* entropyFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ double* entropyFilter(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
  {
 	 return cEntropyFilter(imageIn, dims, kernelDims, kernel, imageOut, device);
  }
 
- float* entropyFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ double* entropyFilter(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
  {
 	 return cEntropyFilter(imageIn, dims, kernelDims, kernel, imageOut, device);
  }
 
- float* entropyFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, float** imageOut /*= NULL*/, int device /*= 0*/)
+ double* entropyFilter(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
  {
 	 return cEntropyFilter(imageIn, dims, kernelDims, kernel, imageOut, device);
  }

@@ -8,6 +8,18 @@
 #include "Defines.h"
 
 #include <cuda_occupancy.h>
+#include <functional>
+
+template <typename T, typename U>
+int getKernelMaxThreadsSharedMem(T func, U f, int threadLimit = 0)
+{
+	int blockSizeMax = 0;
+	int minGridSize = 0;
+
+	cudaOccupancyMaxPotentialBlockSizeVariableSMem(&minGridSize, &blockSizeMax, func, f, threadLimit);
+
+	return blockSizeMax;
+}
 
 template <typename T>
 int getKernelMaxThreads(T func, int threadLimit=0)

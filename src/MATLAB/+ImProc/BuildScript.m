@@ -31,10 +31,10 @@ for i=1:length(dList)
 
     % copy the file from the class to the package
     newFile = fullfile(packagePath,dList(i).name);
-%     if (exist(newFile,'file'))
-%         fprintf(1,'File exist: %s\n',newFile);
-%         continue;
-%     end
+    if (exist(newFile,'file'))
+        fprintf(1,'File exist: %s\n',newFile);
+        continue;
+    end
 
     % get all of the lines
     f = fopen(fullfile(cudaPath,dList(i).name),'rt');
