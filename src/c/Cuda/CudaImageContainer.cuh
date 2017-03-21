@@ -44,6 +44,16 @@ public:
 
 	__device__ const PixelType& operator()(Vec<float> pos) const
 	{
+		Vec<size_t> curPos(0);
+		double val = 0;
+		if(pos.floor()==pos)
+		{
+			curPos = Vec<size_t>(pos);
+			val = accessValue(curPos);
+			return val;
+		}
+
+		// otherwise linear interpolation is needed
 		// Math example from http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#linear-filtering
 
 		Vec<float> betaPos = pos-0.5f;
@@ -54,10 +64,8 @@ public:
 		float beta = betaPos.y-floor(betaPos.y);
 		float gamma = betaPos.z-floor(betaPos.z);
 
-		double val = 0;
-
 		Vec<size_t> minPos(0, 0, 0);
-		Vec<size_t> curPos = Vec<size_t>(i, j, k);
+		curPos = Vec<size_t>(i, j, k);
 		if(curPos>=minPos && curPos<roiSizes)
 			val += (1-alpha) * (1-beta)  * (1-gamma) * accessValue(curPos);
 
