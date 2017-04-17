@@ -100,7 +100,7 @@ __global__ void cudaEntropyFilter(CudaImageContainer<PixelType> imageIn, CudaIma
 		{
 			double hVal = lclHisto[i]/numVals;
 			if (hVal>0)
-				val = val+hVal*log(hVal);
+				val = val+hVal*log2(hVal);
 		}
 
 
