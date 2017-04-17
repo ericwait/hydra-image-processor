@@ -191,8 +191,13 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 
 			deviceDims.z = (size_t)(numVoxels/(deviceDims.y*deviceDims.x));
 
-			if (deviceDims.z>imageDims.z)
+			if(deviceDims.z>imageDims.z)
+			{
 				deviceDims.z = imageDims.z;
+				// give some back to y
+				deviceDims.y = (size_t)(numVoxels/(deviceDims.z*deviceDims.x));
+				deviceDims.y = MIN(deviceDims.y, imageDims.y);
+			}
 		}
 		else // chunking in Z is second worst
 		{
@@ -204,7 +209,12 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 			deviceDims.y = (size_t)(numVoxels/(deviceDims.z*deviceDims.x));
 
 			if (deviceDims.y>imageDims.y)
+			{
 				deviceDims.y = imageDims.y;
+				// give some back to z
+				deviceDims.z = (size_t)(numVoxels/(deviceDims.y*deviceDims.x));
+				deviceDims.z = MIN(deviceDims.z, imageDims.z);
+			}
 		}
 	}
 	else if (overlapVolume.y>overlapVolume.z) // chunking in Y is the worst
@@ -223,7 +233,12 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 			deviceDims.z = (size_t)(numVoxels/(deviceDims.x*deviceDims.y));
 
 			if (deviceDims.z>imageDims.z)
+			{
 				deviceDims.z = imageDims.z;
+				// give some back to x
+				deviceDims.x = (size_t)(numVoxels/(deviceDims.z*deviceDims.x));
+				deviceDims.x = MIN(deviceDims.x, imageDims.x);
+			}
 		}
 		else
 		{
@@ -234,8 +249,13 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 
 			deviceDims.x = (size_t)(numVoxels/(deviceDims.z*deviceDims.y));
 
-			if (deviceDims.x>imageDims.x)
+			if(deviceDims.x>imageDims.x)
+			{
 				deviceDims.x = imageDims.x;
+				// give some back to z
+				deviceDims.z = (size_t)(numVoxels/(deviceDims.y*deviceDims.x));
+				deviceDims.z = MIN(deviceDims.z, imageDims.z);
+			}
 		}
 	}
 	else // chunking in Z is the worst
@@ -254,7 +274,12 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 			deviceDims.y = (size_t)(numVoxels/(deviceDims.x*deviceDims.z));
 
 			if (deviceDims.y>imageDims.y)
+			{
 				deviceDims.y = imageDims.y;
+				// give some back to x
+				deviceDims.x = (size_t)(numVoxels/(deviceDims.z*deviceDims.x));
+				deviceDims.x = MIN(deviceDims.x, imageDims.x);
+			}
 		}
 		else
 		{
@@ -266,9 +291,15 @@ std::vector<ImageChunk> calculateBuffers(Vec<size_t> imageDims, int numBuffersNe
 			deviceDims.x = (size_t)(numVoxels/(deviceDims.y*deviceDims.z));
 
 			if (deviceDims.x>imageDims.x)
+			{
 				deviceDims.x = imageDims.x;
+				// give some back to y
+				deviceDims.y = (size_t)(numVoxels/(deviceDims.z*deviceDims.x));
+				deviceDims.y = MIN(deviceDims.y, imageDims.y);
+			}
 		}
 	}
 
 	return calculateChunking(imageDims, deviceDims, prop, kernelDims,maxThreads);
 }
+#pragma optimize("",on)
