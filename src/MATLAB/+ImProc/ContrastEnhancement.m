@@ -8,12 +8,12 @@
 %    	ImageOut -- will have the same dimensions and type as imageIn.
 function imageOut = ContrastEnhancement(imageIn,sigma,MedianNeighborhood)
     % check for Cuda capable devices
-    devStats = ImProc.Cuda.DeviceStats();
-    n = length(devStats);
+    [devCount,m] = ImProc.Cuda.DeviceCount();
+    n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
     if (n>0)
-       [~,I] = max([devStats.totalMem]);
+       [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.ContrastEnhancement(imageIn,sigma,MedianNeighborhood,I);
         catch errMsg

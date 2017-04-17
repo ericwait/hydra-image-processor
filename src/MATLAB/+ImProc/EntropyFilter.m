@@ -1,14 +1,14 @@
 % EntropyFilter - imageOut = EntropyFilter(imageIn,kernel,device) 
 function imageOut = EntropyFilter(imageIn,kernel)
     % check for Cuda capable devices
-    devStats = ImProc.Cuda.DeviceStats();
-    n = length(devStats);
+    [devCount,m] = ImProc.Cuda.DeviceCount();
+    n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
     if (n>0)
-       [~,I] = max([devStats.totalMem]);
+       [~,I] = max([m.available]);
        try
-            imageOut = ImProc.Cuda.EntropyFilter(imageIn,kernel,1);
+            imageOut = ImProc.Cuda.EntropyFilter(imageIn,kernel,I);
         catch errMsg
         	throw(errMsg);
         end
@@ -19,6 +19,6 @@ function imageOut = EntropyFilter(imageIn,kernel)
 end
 
 function imageOut = lclEntropyFilter(imageIn,kernel)
-    imageOut = entropyfilt(imageIn,kernel);
+
 end
 

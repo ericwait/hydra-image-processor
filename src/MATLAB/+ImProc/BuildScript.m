@@ -33,7 +33,7 @@ for i=1:length(dList)
     newFile = fullfile(packagePath,dList(i).name);
     if (exist(newFile,'file'))
         fprintf(1,'File exist: %s\n',newFile);
-        continue;
+        %continue;
     end
 
     % get all of the lines
@@ -78,12 +78,12 @@ for i=1:length(dList)
         if (~isempty(funcCall))
             fprintf(f,'function %s = %s(%s)\n',funcCall.out,funcCall.name,funcCall.param);
             fprintf(f, '    %% check for Cuda capable devices\n');
-            fprintf(f, '    devStats = ImProc.Cuda.DeviceStats();\n');
-	        fprintf(f, '    n = length(devStats);\n');
+            fprintf(f, '    [devCount,m] = ImProc.Cuda.DeviceCount();\n');
+	        fprintf(f, '    n = length(devCount);\n');
             fprintf(f, '    \n');
             fprintf(f, '    %% if there are devices find the availble one and grab the mutex\n');
             fprintf(f, '    if (n>0)\n');
-            fprintf(f, '       [~,I] = max([devStats.totalMem]);\n');
+            fprintf(f, '       [~,I] = max([m.available]);\n');
             fprintf(f, '       try\n');
             % call the Cuda version of the function
             fprintf(f, '            %s = ImProc.Cuda.%s(%s,I);\n',funcCall.out,funcCall.name,funcCall.param);

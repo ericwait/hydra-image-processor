@@ -6,12 +6,12 @@
 %    	imageOut -- this is the result of imageIn1 + factor*imageIn2 and will be of the same type as imageIn1.
 function imageOut = AddImageWith(imageIn1,imageIn2,factor)
     % check for Cuda capable devices
-    devStats = ImProc.Cuda.DeviceStats();
-    n = length(devStats);
+    [devCount,m] = ImProc.Cuda.DeviceCount();
+    n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
     if (n>0)
-       [~,I] = max([devStats.totalMem]);
+       [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.AddImageWith(imageIn1,imageIn2,factor,I);
         catch errMsg

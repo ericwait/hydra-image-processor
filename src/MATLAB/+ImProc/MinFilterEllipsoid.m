@@ -1,12 +1,12 @@
 % MinFilterEllipsoid - imageOut = MinFilterEllipsoid(imageIn,radius,device) 
 function imageOut = MinFilterEllipsoid(imageIn,radius)
     % check for Cuda capable devices
-    devStats = ImProc.Cuda.DeviceStats();
-    n = length(devStats);
+    [devCount,m] = ImProc.Cuda.DeviceCount();
+    n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
     if (n>0)
-       [~,I] = max([devStats.totalMem]);
+       [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.MinFilterEllipsoid(imageIn,radius,I);
         catch errMsg

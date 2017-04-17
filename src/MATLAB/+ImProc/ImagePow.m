@@ -5,12 +5,12 @@
 %    	ImageOut -- will have the same dimensions and type as imageIn. Values are clamped to the range of the image space.
 function imageOut = ImagePow(imageIn,power)
     % check for Cuda capable devices
-    devStats = ImProc.Cuda.DeviceStats();
-    n = length(devStats);
+    [devCount,m] = ImProc.Cuda.DeviceCount();
+    n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
     if (n>0)
-       [~,I] = max([devStats.totalMem]);
+       [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.ImagePow(imageIn,power,I);
         catch errMsg

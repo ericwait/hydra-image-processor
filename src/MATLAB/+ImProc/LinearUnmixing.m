@@ -1,12 +1,12 @@
 % LinearUnmixing - imageOut = LinearUnmixing(mixedImages,unmixMatrix,device) 
 function imageOut = LinearUnmixing(mixedImages,unmixMatrix)
     % check for Cuda capable devices
-    devStats = ImProc.Cuda.DeviceStats();
-    n = length(devStats);
+    [devCount,m] = ImProc.Cuda.DeviceCount();
+    n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
     if (n>0)
-       [~,I] = max([devStats.totalMem]);
+       [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.LinearUnmixing(mixedImages,unmixMatrix,I);
         catch errMsg

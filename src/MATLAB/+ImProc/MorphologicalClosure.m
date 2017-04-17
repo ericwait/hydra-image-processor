@@ -1,12 +1,12 @@
 % MorphologicalClosure - imageOut = MorphologicalClosure(imageIn,kernel,device) 
 function imageOut = MorphologicalClosure(imageIn,kernel)
     % check for Cuda capable devices
-    devStats = ImProc.Cuda.DeviceStats();
-    n = length(devStats);
+    [devCount,m] = ImProc.Cuda.DeviceCount();
+    n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
     if (n>0)
-       [~,I] = max([devStats.totalMem]);
+       [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.MorphologicalClosure(imageIn,kernel,I);
         catch errMsg
