@@ -139,6 +139,147 @@ Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernelOut, Vec<int>& 
 	return kernelDims;
 }
 
+Vec<size_t> createLoGKernel(Vec<float> sigma, float** kernelOut, Vec<int>& iterations)
+{
+	const double PI = std::atan(1.0)*4;
+
+	Vec<size_t> kernelDims(1, 1, 1);
+	iterations = Vec<int>(1, 1, 1);
+
+	if((sigma.x+sigma.y+sigma.z)*10>MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM)
+	{
+		iterations.x = (int)MAX(1.0f, ceil(100.0f*SQR(sigma.x)/SQR(MAX_KERNEL_DIM)));
+		iterations.y = (int)MAX(1.0f, ceil(100.0f*SQR(sigma.y)/SQR(MAX_KERNEL_DIM)));
+		iterations.z = (int)MAX(1.0f, ceil(100.0f*SQR(sigma.z)/SQR(MAX_KERNEL_DIM)));
+
+		//TODO: Optimize iterations per dim
+		sigma.x = sigma.x/sqrt((float)iterations.x);
+		sigma.y = sigma.y/sqrt((float)iterations.y);
+		sigma.z = sigma.z/sqrt((float)iterations.z);
+	}
+
+	kernelDims.x = (size_t)MAX(1.0f, (10*sigma.x));
+	kernelDims.y = (size_t)MAX(1.0f, (10*sigma.y));
+	kernelDims.z = (size_t)MAX(1.0f, (10*sigma.z));
+
+	kernelDims.x = (kernelDims.x%2==0) ? (kernelDims.x+1) : (kernelDims.x);
+	kernelDims.y = (kernelDims.y%2==0) ? (kernelDims.y+1) : (kernelDims.y);
+	kernelDims.z = (kernelDims.z%2==0) ? (kernelDims.z+1) : (kernelDims.z);
+
+	Vec<float> mid;
+	mid.x = kernelDims.x/2;
+	mid.y = kernelDims.y/2;
+	mid.z = kernelDims.z/2;
+
+	*kernelOut = new float[kernelDims.sum()];
+	float* kernel = *kernelOut;
+
+	double piPow = 2.0;
+	double sigmaDem = 0.0;
+	double sigmaSub = 0.0;
+	int numDim = 0;
+
+	if(sigma.x!=0)
+	{
+		++numDim;
+		sigmaSub = sigmaSub-1.0/sigma.x;
+		if(sigma.y!=0)
+		{
+			++numDim;
+			sigmaSub = sigmaSub-1.0/sigma.y;
+			if(sigma.z!=0)
+			{
+				++numDim;
+				sigmaSub = sigmaSub-1.0/sigma.z;
+				sigmaDem = sigma.product();
+				piPow = 4.0;
+			}
+			else
+			{
+				sigmaDem = SQR(sigma.x) * SQR(sigma.y);
+			}
+		}
+		else
+		{
+			if(sigma.z!=0)
+			{
+				++numDim;
+				sigmaSub = sigmaSub-1.0/sigma.z;
+				sigmaDem = SQR(sigma.x) * SQR(sigma.z);
+			}
+			else
+			{
+				sigmaDem = SQR(sigma.x);
+			}
+		}
+	}
+	else
+	{
+		if(sigma.y!=0)
+		{
+			++numDim;
+			sigmaSub = sigmaSub-1.0/sigma.y;
+			if(sigma.z!=0)
+			{
+				++numDim;
+				sigmaSub = sigmaSub-1.0/sigma.z;
+				sigmaDem = SQR(sigma.y) * SQR(sigma.z);
+			}
+			else
+			{
+				sigmaDem = SQR(sigma.y);
+			}
+		} 
+		else
+		{
+			if(sigma.z!=0)
+			{
+				++numDim;
+				sigmaSub = sigmaSub-1.0/sigma.z;
+				sigmaDem = SQR(sigma.z);
+			} 
+			else
+			{
+				std::runtime_error("One dimension has to have a non-zero sigma!");
+			}
+		}
+	}
+
+	double sigmaGPwr = (numDim==3) ? (4) : (2);
+	double sigmaEPwr = (numDim==3) ? (2) : (0);
+	Vec<double> sigmaG = sigma.pwr(sigmaGPwr);
+	Vec<double> sigmaE = Vec<double>(sigma).pwr(sigmaEPwr)*2.0;
+	double dem = pow((2*PI), piPow) * sigmaDem;
+
+	for(int i = 0; i<3; ++i)
+	{
+		size_t indStride = 0;
+		for(int j = 0; j<i; ++j)
+		{
+			indStride += kernelDims.e[j];
+		}
+
+		if(sigma.e[i]==0)
+		{
+			kernel[indStride] = 1.0f;
+		} else
+		{
+			for(int j = 0; j<kernelDims.e[i]; ++j)
+			{
+				double jSqr = SQR(j-mid.e[i]);// make this a coordinate based on a zero mean
+				double kernelVal = (jSqr/sigmaG.e[i]);
+				kernelVal += sigmaSub;
+				kernelVal *= exp(-(jSqr/(sigmaE.e[i])));
+				kernelVal /= dem;
+
+				kernel[j+indStride] = (float)kernelVal;
+			}
+		}
+	}
+
+	return kernelDims;
+}
+
 Vec<size_t> createGaussianKernelFull(Vec<float> sigma, float** kernelOut, Vec<size_t> maxKernelSize)
 {
     Vec<size_t> kernelDims = Vec<size_t>(sigma.clamp(Vec<float>(1.0f), std::numeric_limits<float>::max()));

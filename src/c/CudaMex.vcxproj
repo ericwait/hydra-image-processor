@@ -98,6 +98,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp" />
+    <ClCompile Include="Mex\MexLoG.cpp" />
     <ClCompile Include="Mex\MexAddConstant.cpp" />
     <ClCompile Include="Mex\MexAddImageWith.cpp" />
     <ClCompile Include="Mex\MexApplyPolyTransformation.cpp" />

@@ -146,6 +146,9 @@
     <ClCompile Include="Mex\MexEntropyFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mex\MexLoG.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Mex\MexResize.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

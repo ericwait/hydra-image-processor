@@ -19,8 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Cuda\CHelpers.h" />
-    <ClInclude Include="Cuda\CudaAdd.cuh" />
+    <ClInclude Include="Cuda\CHelpers.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaAdd.cuh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Cuda\CudaClamp.cuh" />
     <ClInclude Include="Cuda\CudaContrastEnhancement.cuh" />
     <ClInclude Include="Cuda\CudaConvertType.cuh" />
@@ -37,6 +43,10 @@
     <ClInclude Include="Cuda\CudaImageCopy.cuh" />
     <ClInclude Include="Cuda\CudaIntensityProjection.cuh" />
     <ClInclude Include="Cuda\CudaLinearUnmixing.cuh" />
+    <ClInclude Include="Cuda\CudaLoG.cuh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Cuda\CudaMarkovRandomFieldDenoiser.cuh" />
     <ClInclude Include="Cuda\CudaMask.cuh" />
     <ClInclude Include="Cuda\CudaMaxFilter.cuh" />

@@ -9,6 +9,7 @@
 #include "CudaGaussianFilter.cuh"
 #include "CudaGetMinMax.cuh"
 #include "CudaLinearUnmixing.cuh"
+#include "CudaLoG.cuh"
 #include "CudaMarkovRandomFieldDenoiser.cuh"
 #include "CudaMaxFilter.cuh"
 #include "CudaMeanFilter.cuh"
@@ -400,6 +401,42 @@ void clearDevice()
  double* linearUnmixing(const double* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims,  double** imageOut, int device)
  {
 	 return cLinearUnmixing(imageIn, imageDims, numImages, unmixing, umixingDims, imageOut, device);
+ }
+
+
+ float* loG(const unsigned char* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cLoGFilter(imageIn, dims, sigmas, imageOut, device);
+ }
+
+ float* loG(const unsigned short* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cLoGFilter(imageIn, dims, sigmas, imageOut, device);
+ }
+
+ float* loG(const short* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cLoGFilter(imageIn, dims, sigmas, imageOut, device);
+ }
+
+ float* loG(const unsigned int* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cLoGFilter(imageIn, dims, sigmas, imageOut, device);
+ }
+
+ float* loG(const int* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cLoGFilter(imageIn, dims, sigmas, imageOut, device);
+ }
+
+ float* loG(const float* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cLoGFilter(imageIn, dims, sigmas, imageOut, device);
+ }
+
+ float* loG(const double* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cLoGFilter(imageIn, dims, sigmas, imageOut, device);
  }
 
 

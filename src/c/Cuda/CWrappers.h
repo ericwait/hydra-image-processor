@@ -99,6 +99,14 @@ IMAGE_PROCESSOR_API int* linearUnmixing(const int* imageIn, Vec<size_t> imageDim
 IMAGE_PROCESSOR_API float* linearUnmixing(const float* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, float** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API double* linearUnmixing(const double* imageIn, Vec<size_t> imageDims, size_t numImages, const float* unmixing, Vec<size_t> umixingDims, double** imageOut = NULL, int device = 0);
 
+IMAGE_PROCESSOR_API float* loG(const unsigned char* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API float* loG(const unsigned short* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API float* loG(const short* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API float* loG(const unsigned int* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API float* loG(const int* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API float* loG(const float* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut = NULL, int device = 0);
+IMAGE_PROCESSOR_API float* loG(const double* imageIn, Vec<size_t> dims, Vec<float> sigmas, float** imageOut = NULL, int device = 0);
+
 IMAGE_PROCESSOR_API float* markovRandomFieldDenoiser(const float* imageIn, Vec<size_t> dims, int maxIterations, float** imageOut = NULL, int device = 0);
 
 IMAGE_PROCESSOR_API unsigned char* maxFilter(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, unsigned char** imageOut = NULL, int device = 0);
