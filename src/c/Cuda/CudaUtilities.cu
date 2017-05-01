@@ -184,25 +184,38 @@ Vec<size_t> createLoGKernel(Vec<float> sigma, float** kernelOut, size_t& kernSiz
 
 	if(is3d)
 	{
+		// LaTeX form of LoG
+		// $\frac{\Big(\frac{(x-\mu_x)^2}{\sigma_x^4}-\frac{1}{\sigma_x^2}+\frac{(y-\mu_y)^2}{\sigma_y^4}-\frac{1}{\sigma_y^2}+\frac{(z-\mu_z)^2}{\sigma_z^4}-\frac{1}{\sigma_z^2}\Big)\exp\Big(-\frac{(x-\mu_x)^2}{2\sigma_x^2}-\frac{(y-\mu_y)^2}{2\sigma_y^2}-\frac{(z-\mu)^2}{2\sigma_z^2}\Big)}{(2\pi)^{\frac{3}{2}}\sigma_x\sigma_y\sigma_z}$
 		Vec<double> sigma4th = sigma.pwr(4);
-		double subtractor = -((Vec<double>(1.0f, 1.0f, 1.0f)/sigmaSqr).sum());
+		double subtractor = (Vec<double>(1.0f, 1.0f, 1.0f)/sigmaSqr).sum();
 		double denominator = pow(2.0*PI, 3.0/2.0)*sigma.product();
 
-		int stride = 0;
-		for(int d = 0; d<3; ++d)
+		Vec<int> curPos(0, 0, 0);
+		for(curPos.z = 0; curPos.z<kernelDims.z||curPos.z==0; ++curPos.z)
 		{
-			for(int i = 0; i<kernelDims.e[d]; ++i)
+			double zMuSub = SQR(curPos.z-center.z+0.5);
+			double zMuSubSigSqr = zMuSub/(2*sigmaSqr.z);
+			double zAdditive = zMuSub/sigma4th.z-1.0/sigmaSqr.z;
+			for(curPos.y = 0; curPos.y<kernelDims.y||curPos.y==0; ++curPos.y)
 			{
-				// LaTeX version of LoG
-				// $\frac{\Big(\frac{(x-\mu_x)^2}{\sigma_x^4}-\frac{1}{\sigma_x^2}+\frac{(y-\mu_y)^2}{\sigma_y^4}-\frac{1}{\sigma_y^2}+\frac{(z-\mu_z)^2}{\sigma_z^4}-\frac{1}{\sigma_z^2}\Big)\exp\Big(-\frac{(x-\mu_x)^2}{2\sigma_x^2}-\frac{(y-\mu_y)^2}{2\sigma_y^2}-\frac{(z-\mu)^2}{2\sigma_z^2}\Big)}{(2\pi)^{\frac{3}{2}}\sigma_x\sigma_y\sigma_z}$
-				double muSubSqr = SQR(i-center.e[d]);
-				kernel[i+stride] = ((muSubSqr/sigma4th.e[i]+subtractor) * exp(-(muSubSqr/twoSigmaSqr.e[d])))/denominator;
+				double yMuSub = SQR(curPos.y-center.y+0.5);
+				double yMuSubSigSqr = yMuSub/(2*sigmaSqr.y);
+				double yAdditive = yMuSub/sigma4th.y-1.0/sigmaSqr.y;
+				for(curPos.x = 0; curPos.x<kernelDims.x||curPos.x==0; ++curPos.x)
+				{
+					double xMuSub = SQR(curPos.x-center.x+0.5);
+					double xMuSubSigSqr = xMuSub/(2*sigmaSqr.x);
+					double xAdditive = xMuSub/sigma4th.x-1.0/sigmaSqr.x;
+					
+					kernel[kernelDims.linearAddressAt(curPos)] = ((xAdditive+yAdditive+zAdditive)*exp(-xMuSubSigSqr-yMuSubSigSqr-zMuSubSigSqr))/denominator;
+				}
 			}
-			stride += kernelDims.e[d];
 		}
 	}
 	else
 	{
+		// LaTeX form of LoG
+		// $\frac{-1}{\pi\sigma_x^2\sigma_y^2}\Bigg(1-\frac{(x-\mu_x)^2}{2\sigma_x^2}-\frac{(y-\mu_y)^2}{2\sigma_y^2}\Bigg)\exp\Bigg(-\frac{(x-\mu_x)^2}{2\sigma_x^2}-\frac{(y-\mu_y)^2}{2\sigma_y^2}\Bigg)$
 		// figure out which dim is zero
 		double sigProd = 1.0;
 		if (sigma.x!=0)
@@ -214,9 +227,8 @@ Vec<size_t> createLoGKernel(Vec<float> sigma, float** kernelOut, size_t& kernSiz
 		
 		double denominator = -PI*sigProd;
 
-		int stride = 0;
-		Vec<int> curPos(0, 0, 0);
 		Vec<double> gaussComp(0);
+		Vec<int> curPos(0, 0, 0);
 		for(curPos.z = 0; curPos.z<kernelDims.z || curPos.z==0; ++curPos.z)
 		{
 			if(sigma.z!=0)

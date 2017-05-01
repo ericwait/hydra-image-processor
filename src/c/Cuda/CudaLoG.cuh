@@ -60,14 +60,21 @@ float* cLoGFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
 	sigmas.z = (dims.z==1) ? (0) : (sigmas.z);
 
 	float* hostKernel = NULL;
+	float* deviceKernel = NULL;
 
 	size_t kernSize = 0;
 	Vec<size_t> sizeconstKernelDims = createLoGKernel(sigmas, &hostKernel,kernSize);
 
-	if (sizeconstKernelDims.product()<MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM)
+	if(sizeconstKernelDims.product()<MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM)
+	{
 		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)* kernSize));
-
-		
+	}
+	else
+	{
+		HANDLE_ERROR(cudaMalloc(&deviceKernel, sizeof(float)*kernSize));
+		HANDLE_ERROR(cudaMemcpy(deviceKernel, hostKernel, sizeof(float)*kernSize,cudaMemcpyHostToDevice));
+	}
+			
 	cudaDeviceProp props;
 	cudaGetDeviceProperties(&props, device);
 
@@ -95,7 +102,7 @@ float* cLoGFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
 
 			curChunk->sendROI(imageIn, dims, deviceImages.getCurBuffer());
 
-			cudaMultAddFilter<<<curChunk->blocks, curChunk->threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), sizeconstKernelDims, 0, false);
+			cudaMultAddFilter<<<curChunk->blocks, curChunk->threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), sizeconstKernelDims, 0, false,deviceKernel);
 			DEBUG_KERNEL_CHECK();
 
 			curChunk->retriveROI(imOut, dims, deviceImages.getNextBuffer());
@@ -124,7 +131,7 @@ float* cLoGFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
 			cudaConvertType<<<numBlocks,props.maxThreadsPerBlock>>>(deviceInputImages.getCurBuffer()->getDeviceImagePointer(), deviceFloatImages.getCurBuffer()->getDeviceImagePointer(), numVoxels, -FLT_MAX, FLT_MAX);
 			DEBUG_KERNEL_CHECK();
 
-			cudaMultAddFilter<<<curChunk->blocks, curChunk->threads>>>(*(deviceFloatImages.getCurBuffer()), *(deviceFloatImages.getNextBuffer()),sizeconstKernelDims, 0, false);
+			cudaMultAddFilter<<<curChunk->blocks, curChunk->threads>>>(*(deviceFloatImages.getCurBuffer()), *(deviceFloatImages.getNextBuffer()),sizeconstKernelDims, 0, false,deviceKernel);
 			DEBUG_KERNEL_CHECK();			
 
 			curChunk->retriveROI(imOut, dims, deviceFloatImages.getNextBuffer());

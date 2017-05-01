@@ -9,12 +9,18 @@ __constant__ float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM]
 
 template <class PixelType>
 __global__ void cudaMultAddFilter( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut,
-								  Vec<size_t> hostKernelDims, size_t kernelOffset=0, bool normalize=true)
+								  Vec<size_t> hostKernelDims, size_t kernelOffset=0, bool normalize=true, float* globalKernel=NULL)
 {
 	Vec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
+
+	const float* convKernel = NULL;
+	if(NULL!=globalKernel)
+		convKernel = globalKernel;
+	else
+		convKernel = cudaConstKernel;
 
 	if (coordinate<imageIn.getDims())
 	{
@@ -42,7 +48,7 @@ __global__ void cudaMultAddFilter( CudaImageContainer<PixelType> imageIn, CudaIm
 			{
 				for (i.x=0; i.x<iterationEnd.x; ++i.x)
 				{
-					double kernVal = double(cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)+kernelOffset]);
+					double kernVal = double(convKernel[kernelDims.linearAddressAt(kernelStart+i)+kernelOffset]);
 
 					kernFactor += kernVal;
 					val += double((imageIn(imageStart+i)) * kernVal);
