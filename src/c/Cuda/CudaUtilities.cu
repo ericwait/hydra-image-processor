@@ -139,69 +139,112 @@ Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernelOut, Vec<int>& 
 	return kernelDims;
 }
 
-Vec<size_t> createLoGKernel(Vec<float> sigma, float** kernelOut, Vec<int>& iterations)
+Vec<size_t> createLoGKernel(Vec<float> sigma, float** kernelOut, size_t& kernSize)
 {
 	const double PI = std::atan(1.0)*4;
 
-	Vec<size_t> kernelDims(1, 1, 1);
-	iterations = Vec<int>(1, 1, 1);
+	Vec<size_t> kernelDims = sigma*10;
 
-	if((sigma.x+sigma.y+sigma.z)*10>MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM)
-	{
-		iterations.x = (int)MAX(1.0f, ceil(100.0f*SQR(sigma.x)/SQR(MAX_KERNEL_DIM)));
-		iterations.y = (int)MAX(1.0f, ceil(100.0f*SQR(sigma.y)/SQR(MAX_KERNEL_DIM)));
-		iterations.z = (int)MAX(1.0f, ceil(100.0f*SQR(sigma.z)/SQR(MAX_KERNEL_DIM)));
-
-		//TODO: Optimize iterations per dim
-		sigma.x = sigma.x/sqrt((float)iterations.x);
-		sigma.y = sigma.y/sqrt((float)iterations.y);
-		sigma.z = sigma.z/sqrt((float)iterations.z);
-	}
-
-	kernelDims = sigma*10;
-
+	// make odd
 	kernelDims.x = (kernelDims.x!=0 && kernelDims.x%2==0) ? (kernelDims.x+1) : (kernelDims.x);
 	kernelDims.y = (kernelDims.y!=0 && kernelDims.y%2==0) ? (kernelDims.y+1) : (kernelDims.y);
 	kernelDims.z = (kernelDims.z!=0 && kernelDims.z%2==0) ? (kernelDims.z+1) : (kernelDims.z);
 
-	Vec<float> mu = Vec<float>(kernelDims-1)/2;
+	Vec<int> center = Vec<float>(kernelDims-1)/2;
+	kernSize = 0;
+	if (kernelDims.x>0)
+		kernSize = kernelDims.x;
 
-	*kernelOut = new float[kernelDims.sum()];
+	if(kernelDims.y>0)
+	{
+		if(kernSize>0)
+			kernSize *= kernelDims.y;
+		else
+			kernSize = kernelDims.y;
+	}
+
+	if(kernelDims.z>0)
+	{
+		if(kernSize>0)
+			kernSize *= kernelDims.z;
+		else
+			kernSize = kernelDims.z;
+	}
+
+	*kernelOut = new float[kernSize];
 	float* kernel = *kernelOut;
+
+	for(int i = 0; i<kernSize; ++i)
+		kernel[i] = 0.12345f;
 
 	bool is3d = sigma!=Vec<float>(0.0f, 0.0f, 0.0f);
 
 	Vec<double> sigmaSqr = sigma.pwr(2);
 	Vec<double> twoSigmaSqr = sigmaSqr*2;
-	Vec<double> sigma4th = sigma.pwr(4);
-	Vec<int> center = mu;
 
-	// figure out which if any dim is zero
-	double sigProd = 1.0;
-	if(sigma.x!=0)
-		sigProd *= sigma.x;
-	if(sigma.y!=0)
-		sigProd *= sigma.y;
-	if(sigma.z!=0)
-		sigProd *= sigma.z;
-
-	double denominator = -PI*sigProd;
-
-	int stride = 0;
-	for(int d = 0; d<3; ++d)
+	if(is3d)
 	{
-		if(sigma.e[0]==0.0f)
-			continue;
+		Vec<double> sigma4th = sigma.pwr(4);
+		double subtractor = -((Vec<double>(1.0f, 1.0f, 1.0f)/sigmaSqr).sum());
+		double denominator = pow(2.0*PI, 3.0/2.0)*sigma.product();
 
-		for(int i = 0; i<kernelDims.e[d]; ++i)
+		int stride = 0;
+		for(int d = 0; d<3; ++d)
 		{
-			// LaTeX version of LoG
-			// \bigg(\frac{x^2}{\sigma^4}-\frac{1}{\sigma^2}\bigg)\exp\bigg(-\frac{x^2}{2\sigma^2}\bigg)$
-			double muSubSqr = SQR(i-mu.e[d]);
-			kernel[i+stride] = (muSubSqr/sigma4th.e[d]-1/sigmaSqr.e[d])*exp(-muSubSqr/(2*sigmaSqr.e[d]));
+			for(int i = 0; i<kernelDims.e[d]; ++i)
+			{
+				// LaTeX version of LoG
+				// $\frac{\Big(\frac{(x-\mu_x)^2}{\sigma_x^4}-\frac{1}{\sigma_x^2}+\frac{(y-\mu_y)^2}{\sigma_y^4}-\frac{1}{\sigma_y^2}+\frac{(z-\mu_z)^2}{\sigma_z^4}-\frac{1}{\sigma_z^2}\Big)\exp\Big(-\frac{(x-\mu_x)^2}{2\sigma_x^2}-\frac{(y-\mu_y)^2}{2\sigma_y^2}-\frac{(z-\mu)^2}{2\sigma_z^2}\Big)}{(2\pi)^{\frac{3}{2}}\sigma_x\sigma_y\sigma_z}$
+				double muSubSqr = SQR(i-center.e[d]);
+				kernel[i+stride] = ((muSubSqr/sigma4th.e[i]+subtractor) * exp(-(muSubSqr/twoSigmaSqr.e[d])))/denominator;
+			}
+			stride += kernelDims.e[d];
 		}
-		stride += kernelDims.e[d];
 	}
+	else
+	{
+		// figure out which dim is zero
+		double sigProd = 1.0;
+		if (sigma.x!=0)
+			sigProd *= sigma.x;
+		if(sigma.y!=0)
+			sigProd *= sigma.y;
+		if(sigma.z!=0)
+			sigProd *= sigma.z;
+		
+		double denominator = -PI*sigProd;
+
+		int stride = 0;
+		Vec<int> curPos(0, 0, 0);
+		Vec<double> gaussComp(0);
+		for(curPos.z = 0; curPos.z<kernelDims.z || curPos.z==0; ++curPos.z)
+		{
+			if(sigma.z!=0)
+			{
+				gaussComp.z = SQR(curPos.z-center.z+0.5)/twoSigmaSqr.z;
+			}
+			for(curPos.y = 0; curPos.y<kernelDims.y || curPos.y==0; ++curPos.y)
+			{
+				if(sigma.y!=0)
+				{
+					gaussComp.y = SQR(curPos.y-center.y+0.5)/twoSigmaSqr.y;
+				}
+				for(curPos.x =0; curPos.x<kernelDims.x || curPos.x==0; ++curPos.x)
+				{
+					if(sigma.x!=0)
+					{
+						gaussComp.x = SQR(curPos.x-center.x+0.5)/twoSigmaSqr.x;
+					}
+					double gauss = gaussComp.sum();
+					kernel[kernelDims.linearAddressAt(curPos)] = ((1.0-gauss)*exp(-gauss))/denominator;
+				}
+			}
+		}
+	}
+
+	kernelDims.x = (0==kernelDims.x) ? (1) : (kernelDims.x);
+	kernelDims.y = (0==kernelDims.y) ? (1) : (kernelDims.y);
+	kernelDims.z = (0==kernelDims.z) ? (1) : (kernelDims.z);
 
 	return kernelDims;
 }

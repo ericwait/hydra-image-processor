@@ -61,8 +61,12 @@ float* cLoGFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
 
 	float* hostKernel = NULL;
 
-	Vec<size_t> sizeconstKernelDims = createLoGKernel(sigmas, &hostKernel, loGIterations);
-	HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)* sizeconstKernelDims.sum()));
+	size_t kernSize = 0;
+	Vec<size_t> sizeconstKernelDims = createLoGKernel(sigmas, &hostKernel,kernSize);
+
+	if (sizeconstKernelDims.product()<MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM)
+		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, hostKernel, sizeof(float)* kernSize));
+
 		
 	cudaDeviceProp props;
 	cudaGetDeviceProperties(&props, device);
@@ -91,9 +95,10 @@ float* cLoGFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
 
 			curChunk->sendROI(imageIn, dims, deviceImages.getCurBuffer());
 
-			runLoGIterations(loGIterations, curChunk, deviceImages, sizeconstKernelDims, device);
+			cudaMultAddFilter<<<curChunk->blocks, curChunk->threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), sizeconstKernelDims, 0, false);
+			DEBUG_KERNEL_CHECK();
 
-			curChunk->retriveROI(imOut, dims, deviceImages.getCurBuffer());
+			curChunk->retriveROI(imOut, dims, deviceImages.getNextBuffer());
 		}
 	}
 	else
@@ -117,10 +122,12 @@ float* cLoGFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
 			double numVoxels = curChunk->getFullChunkSize().product();
 			int numBlocks = ceil(numVoxels/props.maxThreadsPerBlock);
 			cudaConvertType<<<numBlocks,props.maxThreadsPerBlock>>>(deviceInputImages.getCurBuffer()->getDeviceImagePointer(), deviceFloatImages.getCurBuffer()->getDeviceImagePointer(), numVoxels, -FLT_MAX, FLT_MAX);
+			DEBUG_KERNEL_CHECK();
 
-			runLoGIterations(loGIterations, curChunk, deviceFloatImages, sizeconstKernelDims, device);
+			cudaMultAddFilter<<<curChunk->blocks, curChunk->threads>>>(*(deviceFloatImages.getCurBuffer()), *(deviceFloatImages.getNextBuffer()),sizeconstKernelDims, 0, false);
+			DEBUG_KERNEL_CHECK();			
 
-			curChunk->retriveROI(imOut, dims, deviceFloatImages.getCurBuffer());
+			curChunk->retriveROI(imOut, dims, deviceFloatImages.getNextBuffer());
 		}
 	}
 

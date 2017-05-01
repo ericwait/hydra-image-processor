@@ -113,5 +113,5 @@ bool checkFreeMemory(size_t needed, int device, bool throws=false);
 void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads,
 					 size_t maxThreads=std::numeric_limits<size_t>::max());
 Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernel, Vec<int>& iterations);
-Vec<size_t> createLoGKernel(Vec<float> sigma, float** kernelOut, Vec<int>& iterations);
+Vec<size_t> createLoGKernel(Vec<float> sigma, float** kernelOut, size_t& kernSize);
 Vec<size_t> createGaussianKernelFull(Vec<float> sigma, float** kernelOut, Vec<size_t> maxKernelSize = Vec<size_t>(std::numeric_limits<size_t>::max()));
