@@ -19,7 +19,7 @@ void runLoGIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iterat
 		for(int x = 0; x<gaussIterations.x; ++x)
 		{
 			cudaMultAddFilter<<<curChunk->blocks, curChunk->threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()),
-																	   Vec<size_t>(sizeconstKernelDims.x, 1, 1));
+																	   Vec<size_t>(sizeconstKernelDims.x, 1, 1),0, false);
 			DEBUG_KERNEL_CHECK();
 			deviceImages.incrementBuffer();
 		}
@@ -30,7 +30,7 @@ void runLoGIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iterat
 		for(int y = 0; y<gaussIterations.y; ++y)
 		{
 			cudaMultAddFilter<<<curChunk->blocks, curChunk->threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()),
-																	   Vec<size_t>(1, sizeconstKernelDims.y, 1), sizeconstKernelDims.x);
+																	   Vec<size_t>(1, sizeconstKernelDims.y, 1), sizeconstKernelDims.x, false);
 			DEBUG_KERNEL_CHECK();
 			deviceImages.incrementBuffer();
 		}
@@ -41,7 +41,7 @@ void runLoGIterations(Vec<int> &gaussIterations, std::vector<ImageChunk>::iterat
 		for(int z = 0; z<gaussIterations.z; ++z)
 		{
 			cudaMultAddFilter<<<curChunk->blocks, curChunk->threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()),
-																	   Vec<size_t>(1, 1, sizeconstKernelDims.z), sizeconstKernelDims.y+sizeconstKernelDims.x);
+																	   Vec<size_t>(1, 1, sizeconstKernelDims.z), sizeconstKernelDims.y+sizeconstKernelDims.x, false);
 			DEBUG_KERNEL_CHECK();
 			deviceImages.incrementBuffer();
 		}
@@ -114,7 +114,9 @@ float* cLoGFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<float> sigmas,
 
 			curChunk->sendROI(imageIn, dims, deviceInputImages.getCurBuffer());
 
-			cudaConvertType<<<curChunk->blocks,curChunk->threads>>>(deviceInputImages.getCurBuffer()->getDeviceImagePointer(), deviceFloatImages.getCurBuffer()->getDeviceImagePointer(), curChunk->getFullChunkSize().product(), 1.0f-FLT_MAX, FLT_MAX);
+			double numVoxels = curChunk->getFullChunkSize().product();
+			int numBlocks = ceil(numVoxels/props.maxThreadsPerBlock);
+			cudaConvertType<<<numBlocks,props.maxThreadsPerBlock>>>(deviceInputImages.getCurBuffer()->getDeviceImagePointer(), deviceFloatImages.getCurBuffer()->getDeviceImagePointer(), numVoxels, -FLT_MAX, FLT_MAX);
 
 			runLoGIterations(loGIterations, curChunk, deviceFloatImages, sizeconstKernelDims, device);
 

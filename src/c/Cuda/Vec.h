@@ -318,7 +318,7 @@ public:
 
 	MIXED_PREFIX bool operator!= (const Vec<T>& inVec) const
 	{
-		return x!=inVec.x||y!=inVec.y||z!=inVec.z;
+		return x!=inVec.x && y!=inVec.y && z!=inVec.z;
 	}
 
 	// Returns the linear memory map if this is the dimensions and the passed in Vec is the coordinate

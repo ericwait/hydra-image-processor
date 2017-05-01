@@ -158,123 +158,49 @@ Vec<size_t> createLoGKernel(Vec<float> sigma, float** kernelOut, Vec<int>& itera
 		sigma.z = sigma.z/sqrt((float)iterations.z);
 	}
 
-	kernelDims.x = (size_t)MAX(1.0f, (10*sigma.x));
-	kernelDims.y = (size_t)MAX(1.0f, (10*sigma.y));
-	kernelDims.z = (size_t)MAX(1.0f, (10*sigma.z));
+	kernelDims = sigma*10;
 
-	kernelDims.x = (kernelDims.x%2==0) ? (kernelDims.x+1) : (kernelDims.x);
-	kernelDims.y = (kernelDims.y%2==0) ? (kernelDims.y+1) : (kernelDims.y);
-	kernelDims.z = (kernelDims.z%2==0) ? (kernelDims.z+1) : (kernelDims.z);
+	kernelDims.x = (kernelDims.x!=0 && kernelDims.x%2==0) ? (kernelDims.x+1) : (kernelDims.x);
+	kernelDims.y = (kernelDims.y!=0 && kernelDims.y%2==0) ? (kernelDims.y+1) : (kernelDims.y);
+	kernelDims.z = (kernelDims.z!=0 && kernelDims.z%2==0) ? (kernelDims.z+1) : (kernelDims.z);
 
-	Vec<float> mid;
-	mid.x = kernelDims.x/2;
-	mid.y = kernelDims.y/2;
-	mid.z = kernelDims.z/2;
+	Vec<float> mu = Vec<float>(kernelDims-1)/2;
 
 	*kernelOut = new float[kernelDims.sum()];
 	float* kernel = *kernelOut;
 
-	double piPow = 2.0;
-	double sigmaDem = 0.0;
-	double sigmaSub = 0.0;
-	int numDim = 0;
+	bool is3d = sigma!=Vec<float>(0.0f, 0.0f, 0.0f);
 
+	Vec<double> sigmaSqr = sigma.pwr(2);
+	Vec<double> twoSigmaSqr = sigmaSqr*2;
+	Vec<double> sigma4th = sigma.pwr(4);
+	Vec<int> center = mu;
+
+	// figure out which if any dim is zero
+	double sigProd = 1.0;
 	if(sigma.x!=0)
+		sigProd *= sigma.x;
+	if(sigma.y!=0)
+		sigProd *= sigma.y;
+	if(sigma.z!=0)
+		sigProd *= sigma.z;
+
+	double denominator = -PI*sigProd;
+
+	int stride = 0;
+	for(int d = 0; d<3; ++d)
 	{
-		++numDim;
-		sigmaSub = sigmaSub-1.0/sigma.x;
-		if(sigma.y!=0)
-		{
-			++numDim;
-			sigmaSub = sigmaSub-1.0/sigma.y;
-			if(sigma.z!=0)
-			{
-				++numDim;
-				sigmaSub = sigmaSub-1.0/sigma.z;
-				sigmaDem = sigma.product();
-				piPow = 4.0;
-			}
-			else
-			{
-				sigmaDem = SQR(sigma.x) * SQR(sigma.y);
-			}
-		}
-		else
-		{
-			if(sigma.z!=0)
-			{
-				++numDim;
-				sigmaSub = sigmaSub-1.0/sigma.z;
-				sigmaDem = SQR(sigma.x) * SQR(sigma.z);
-			}
-			else
-			{
-				sigmaDem = SQR(sigma.x);
-			}
-		}
-	}
-	else
-	{
-		if(sigma.y!=0)
-		{
-			++numDim;
-			sigmaSub = sigmaSub-1.0/sigma.y;
-			if(sigma.z!=0)
-			{
-				++numDim;
-				sigmaSub = sigmaSub-1.0/sigma.z;
-				sigmaDem = SQR(sigma.y) * SQR(sigma.z);
-			}
-			else
-			{
-				sigmaDem = SQR(sigma.y);
-			}
-		} 
-		else
-		{
-			if(sigma.z!=0)
-			{
-				++numDim;
-				sigmaSub = sigmaSub-1.0/sigma.z;
-				sigmaDem = SQR(sigma.z);
-			} 
-			else
-			{
-				std::runtime_error("One dimension has to have a non-zero sigma!");
-			}
-		}
-	}
+		if(sigma.e[0]==0.0f)
+			continue;
 
-	double sigmaGPwr = (numDim==3) ? (4) : (2);
-	double sigmaEPwr = (numDim==3) ? (2) : (0);
-	Vec<double> sigmaG = sigma.pwr(sigmaGPwr);
-	Vec<double> sigmaE = Vec<double>(sigma).pwr(sigmaEPwr)*2.0;
-	double dem = pow((2*PI), piPow) * sigmaDem;
-
-	for(int i = 0; i<3; ++i)
-	{
-		size_t indStride = 0;
-		for(int j = 0; j<i; ++j)
+		for(int i = 0; i<kernelDims.e[d]; ++i)
 		{
-			indStride += kernelDims.e[j];
+			// LaTeX version of LoG
+			// \bigg(\frac{x^2}{\sigma^4}-\frac{1}{\sigma^2}\bigg)\exp\bigg(-\frac{x^2}{2\sigma^2}\bigg)$
+			double muSubSqr = SQR(i-mu.e[d]);
+			kernel[i+stride] = (muSubSqr/sigma4th.e[d]-1/sigmaSqr.e[d])*exp(-muSubSqr/(2*sigmaSqr.e[d]));
 		}
-
-		if(sigma.e[i]==0)
-		{
-			kernel[indStride] = 1.0f;
-		} else
-		{
-			for(int j = 0; j<kernelDims.e[i]; ++j)
-			{
-				double jSqr = SQR(j-mid.e[i]);// make this a coordinate based on a zero mean
-				double kernelVal = (jSqr/sigmaG.e[i]);
-				kernelVal += sigmaSub;
-				kernelVal *= exp(-(jSqr/(sigmaE.e[i])));
-				kernelVal /= dem;
-
-				kernel[j+indStride] = (float)kernelVal;
-			}
-		}
+		stride += kernelDims.e[d];
 	}
 
 	return kernelDims;
