@@ -116,6 +116,12 @@ PixelType* cMedianFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t>
 
 	neighborhood = neighborhood.clamp(Vec<size_t>(1,1,1),dims);
 
+	if (neighborhood == Vec<size_t>(1, 1, 1))
+	{
+		memcpy(imOut, imageIn, sizeof(PixelType)*dims.product());
+		return imOut;
+	}
+
 	cudaDeviceProp props;
 	cudaGetDeviceProperties(&props,device);
 
