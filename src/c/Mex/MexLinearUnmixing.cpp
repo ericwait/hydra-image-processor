@@ -26,49 +26,63 @@ void MexLinearUnmixing::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArr
 	if (mxIsUint8(prhs[0]))
 	{
 		unsigned char* imageIn, *imageOut;
-		setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
+		setupImagePointers(prhs[0], &imageIn, &imageDims);
+		plhs[0] = mxCreateNumericArray(numImDims, IM_DIMS, mxUINT8_CLASS, mxREAL);
+		imageOut = (unsigned char*)mxGetData(plhs[0]);
 
 		linearUnmixing(imageIn, imageDims, numImages, unmix, umixingDims, &imageOut, device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
 		unsigned short* imageIn, *imageOut;
-		setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
+		setupImagePointers(prhs[0], &imageIn, &imageDims);
+		plhs[0] = mxCreateNumericArray(numImDims, IM_DIMS, mxUINT16_CLASS, mxREAL);
+		imageOut = (unsigned short*)mxGetData(plhs[0]);
 
 		linearUnmixing(imageIn, imageDims, numImages, unmix, umixingDims, &imageOut, device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
 		short* imageIn, *imageOut;
-		setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
+		setupImagePointers(prhs[0], &imageIn, &imageDims);
+		plhs[0] = mxCreateNumericArray(numImDims, IM_DIMS, mxINT16_CLASS, mxREAL);
+		imageOut = (short*)mxGetData(plhs[0]);
 
 		linearUnmixing(imageIn, imageDims, numImages, unmix, umixingDims, &imageOut, device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
 		unsigned int* imageIn, *imageOut;
-		setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
+		setupImagePointers(prhs[0], &imageIn, &imageDims);
+		plhs[0] = mxCreateNumericArray(numImDims, IM_DIMS, mxUINT32_CLASS, mxREAL);
+		imageOut = (unsigned int*)mxGetData(plhs[0]);
 
 		linearUnmixing(imageIn, imageDims, numImages, unmix, umixingDims, &imageOut, device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
 		int* imageIn, *imageOut;
-		setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
+		setupImagePointers(prhs[0], &imageIn, &imageDims);
+		plhs[0] = mxCreateNumericArray(numImDims, IM_DIMS, mxINT32_CLASS, mxREAL);
+		imageOut = (int*)mxGetData(plhs[0]);
 
 		linearUnmixing(imageIn, imageDims, numImages, unmix, umixingDims, &imageOut, device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
 		float* imageIn, *imageOut;
-		setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
+		setupImagePointers(prhs[0], &imageIn, &imageDims);
+		plhs[0] = mxCreateNumericArray(numImDims, IM_DIMS, mxSINGLE_CLASS, mxREAL);
+		imageOut = (float*)mxGetData(plhs[0]);
 
 		linearUnmixing(imageIn, imageDims, numImages, unmix, umixingDims, &imageOut, device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
 		double* imageIn, *imageOut;
-		setupImagePointers(prhs[0], &imageIn, &imageDims, &plhs[0], &imageOut);
+		setupImagePointers(prhs[0], &imageIn, &imageDims);
+		plhs[0] = mxCreateNumericArray(numImDims, IM_DIMS, mxDOUBLE_CLASS, mxREAL);
+		imageOut = (double*)mxGetData(plhs[0]);
 
 		linearUnmixing(imageIn, imageDims, numImages, unmix, umixingDims, &imageOut, device);
 	}
