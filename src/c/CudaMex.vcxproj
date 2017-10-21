@@ -125,6 +125,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     <ClCompile Include="Mex\MexMorphologicalOpening.cpp" />
     <ClCompile Include="Mex\MexMultiplyImage.cpp" />
     <ClCompile Include="Mex\MexMultiplyImageWith.cpp" />
+    <ClCompile Include="Mex\MexNeighborhoodSum.cpp" />
     <ClCompile Include="Mex\MexNormalizedCovariance.cpp" />
     <ClCompile Include="Mex\MexNormalizedHistogram.cpp" />
     <ClCompile Include="Mex\MexOtsuThresholdFilter.cpp" />
