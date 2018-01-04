@@ -202,5 +202,4 @@ PixelType* cResize(const PixelType* imageIn, Vec<size_t> dimsIn, Vec<double> res
     
     return resizedImage;
 }
-
 #endif
