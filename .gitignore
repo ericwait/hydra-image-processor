@@ -40,3 +40,9 @@ src/c/CudaImageProccessing.v11.suo
 *.opendb
 
 src/MATLAB/\+ImProc/@Cuda/device02\.txt
+
+*.ipch
+
+*.db-shm
+
+*.db-wal
