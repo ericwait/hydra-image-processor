@@ -76,13 +76,17 @@ for i=1:length(dList)
         funcLineExpr = 'function (?<out>.*) = (?<name>\w+)\((?<param>.*),device\)';
         funcCall = regexpi(curLine,funcLineExpr,'names');
         if (~isempty(funcCall))
-            fprintf(f,'function %s = %s(%s)\n',funcCall.out,funcCall.name,funcCall.param);
+            fprintf(f,'function %s = %s(%s,forceMATLAB)\n',funcCall.out,funcCall.name,funcCall.param);
+            fprintf(f, '    if (~exist(''forceMATLAB'',''var'') || isempty(forceMATLAB))\n');
+            fprintf(f, '       forceMATLAB = false;\n');
+            fprintf(f, '    end\n');
+            fprintf(f, '    \n');
             fprintf(f, '    %% check for Cuda capable devices\n');
             fprintf(f, '    [devCount,m] = ImProc.Cuda.DeviceCount();\n');
 	        fprintf(f, '    n = length(devCount);\n');
             fprintf(f, '    \n');
             fprintf(f, '    %% if there are devices find the availble one and grab the mutex\n');
-            fprintf(f, '    if (n>0)\n');
+            fprintf(f, '    if (n>0 || ~forceMATLAB)\n');
             fprintf(f, '       [~,I] = max([m.available]);\n');
             fprintf(f, '       try\n');
             % call the Cuda version of the function
