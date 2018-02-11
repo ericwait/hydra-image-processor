@@ -33,7 +33,7 @@ for i=1:length(dList)
     newFile = fullfile(packagePath,dList(i).name);
     if (exist(newFile,'file'))
         fprintf(1,'File exist: %s\n',newFile);
-        %continue;
+        continue;
     end
 
     % get all of the lines
