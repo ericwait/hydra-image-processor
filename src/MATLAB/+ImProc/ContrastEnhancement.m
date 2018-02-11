@@ -30,6 +30,20 @@ function imageOut = ContrastEnhancement(imageIn,sigma,MedianNeighborhood,forceMA
 end
 
 function imageOut = lclContrastEnhancement(imageIn,sigma,MedianNeighborhood)
-
+    if (ismatrix(imageIn))
+        imGauss = imgaussfilt(imageIn,sigma);
+    else
+        imGauss = imgaussfilt3(imageIn,sigma);
+    end
+    
+    imageOut = imageIn - imGauss;
+    
+    if (ismatrix(imageIn))
+        imageOut = medfilt2(imageOut,MedianNeighborhood([1,2]));
+    else
+        imageOut = medfilt3(imageOut,MedianNeighborhood);
+    end
+    
+    imageOut(imageOut<0) = 0;
 end
 
