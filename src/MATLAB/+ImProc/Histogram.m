@@ -7,13 +7,17 @@
 %    	Max -- this is the maximum value for the histogram.
 %    		If min is not provided, the min of the image type is used.
 %    	ImageOut -- will have the same dimensions and type as imageIn. Values are clamped to the range of the image space.
-function histogram = Histogram(imageIn,numBins,min,max)
+function histogram = Histogram(imageIn,numBins,min,max,forceMATLAB)
+    if (~exist('forceMATLAB','var') || isempty(forceMATLAB))
+       forceMATLAB = false;
+    end
+    
     % check for Cuda capable devices
     [devCount,m] = ImProc.Cuda.DeviceCount();
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0)
+    if (n>0 || ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             histogram = ImProc.Cuda.Histogram(imageIn,numBins,min,max,I);

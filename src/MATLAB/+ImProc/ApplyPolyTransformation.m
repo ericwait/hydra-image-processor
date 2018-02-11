@@ -6,13 +6,17 @@
 %    	Min -- this is an optional parameter to clamp the output to and is useful for signed or floating point to remove negative values.
 %    	Max -- this is an optional parameter to clamp the output to.
 %    	ImageOut -- this is the result of ImageOut = a*ImageIn^2 + b*ImageIn + c and is the same dimension and type as imageIn.
-function imageOut = ApplyPolyTransformation(imageIn,a,b,c,min,max)
+function imageOut = ApplyPolyTransformation(imageIn,a,b,c,min,max,forceMATLAB)
+    if (~exist('forceMATLAB','var') || isempty(forceMATLAB))
+       forceMATLAB = false;
+    end
+    
     % check for Cuda capable devices
     [devCount,m] = ImProc.Cuda.DeviceCount();
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0)
+    if (n>0 || ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.ApplyPolyTransformation(imageIn,a,b,c,min,max,I);

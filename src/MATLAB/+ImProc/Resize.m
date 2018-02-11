@@ -8,13 +8,17 @@
 %    			If both resizeFactor and explicitSize are both set, the explicitSize will be used.
 %    	Method -- This is the neighborhood operation to apply when resizing (mean, median, min, max, gaussian).
 %    	ImageOut -- This will be a resize image the same type as the input image.
-function imageOut = Resize(imageIn,resizeFactor,explicitSize,method)
+function imageOut = Resize(imageIn,resizeFactor,explicitSize,method,forceMATLAB)
+    if (~exist('forceMATLAB','var') || isempty(forceMATLAB))
+       forceMATLAB = false;
+    end
+    
     % check for Cuda capable devices
     [devCount,m] = ImProc.Cuda.DeviceCount();
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0)
+    if (n>0 || ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.Resize(imageIn,resizeFactor,explicitSize,method,I);
@@ -23,11 +27,21 @@ function imageOut = Resize(imageIn,resizeFactor,explicitSize,method)
         end
         
     else
-        imageOut = lclResize(imageIn,resizeFactor,explicitSize,method);
+        imageOut = lclResize(imageIn,resizeFactor,explicitSize);
     end
 end
 
-function imageOut = lclResize(imageIn,resizeFactor,explicitSize,method)
-
+function imageOut = lclResize(imageIn,resizeFactor,explicitSize)
+    if (ismatrix(imageIn))
+        if (isempty(explicitSize))
+            explicitSize = round(size(imageIn).*resizeFactor([1,2]));
+        end
+        imageOut = imresize(imageIn,explicitSize,'bilinear');
+    else
+        if (isempty(explicitSize))
+            explicitSize = round(size(imageIn).*resizeFactor);
+        end
+        imageOut = imresize3(imageIn,explicitSize,'linear');
+    end
 end
 

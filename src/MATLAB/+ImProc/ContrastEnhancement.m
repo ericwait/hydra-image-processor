@@ -6,13 +6,17 @@
 %    		The larger the sigma the more object preserving the high pass filter will be (e.g. sigma > 35)
 %    	MedianNeighborhood -- this is the neighborhood size in each dimension that will be evaluated for the median neighborhood filter.
 %    	ImageOut -- will have the same dimensions and type as imageIn.
-function imageOut = ContrastEnhancement(imageIn,sigma,MedianNeighborhood)
+function imageOut = ContrastEnhancement(imageIn,sigma,MedianNeighborhood,forceMATLAB)
+    if (~exist('forceMATLAB','var') || isempty(forceMATLAB))
+       forceMATLAB = false;
+    end
+    
     % check for Cuda capable devices
     [devCount,m] = ImProc.Cuda.DeviceCount();
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0)
+    if (n>0 || ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.ContrastEnhancement(imageIn,sigma,MedianNeighborhood,I);
