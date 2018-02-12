@@ -18,7 +18,7 @@ function imageOut = Resize(imageIn,resizeFactor,explicitSize,method,forceMATLAB)
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0 || ~forceMATLAB)
+    if (n>0 && ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.Resize(imageIn,resizeFactor,explicitSize,method,I);

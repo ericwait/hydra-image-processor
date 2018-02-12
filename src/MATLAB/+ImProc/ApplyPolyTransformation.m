@@ -16,7 +16,7 @@ function imageOut = ApplyPolyTransformation(imageIn,a,b,c,min,max,forceMATLAB)
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0 || ~forceMATLAB)
+    if (n>0 && ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.ApplyPolyTransformation(imageIn,a,b,c,min,max,I);

@@ -14,7 +14,7 @@ function imageOut = AddImageWith(imageIn1,imageIn2,factor,forceMATLAB)
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0 || ~forceMATLAB)
+    if (n>0 && ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.AddImageWith(imageIn1,imageIn2,factor,I);

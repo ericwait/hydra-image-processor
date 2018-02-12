@@ -9,7 +9,7 @@ function [minVal,maxVal] = MinMax(imageIn,forceMATLAB)
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0 || ~forceMATLAB)
+    if (n>0 && ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             [minVal,maxVal] = ImProc.Cuda.MinMax(imageIn,I);

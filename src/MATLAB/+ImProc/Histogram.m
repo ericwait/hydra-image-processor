@@ -17,7 +17,7 @@ function histogram = Histogram(imageIn,numBins,min,max,forceMATLAB)
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0 || ~forceMATLAB)
+    if (n>0 && ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             histogram = ImProc.Cuda.Histogram(imageIn,numBins,min,max,I);

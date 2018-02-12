@@ -9,7 +9,7 @@ function histogram = NormalizedHistogram(imageIn,numBins,min,max,forceMATLAB)
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0 || ~forceMATLAB)
+    if (n>0 && ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             histogram = ImProc.Cuda.NormalizedHistogram(imageIn,numBins,min,max,I);

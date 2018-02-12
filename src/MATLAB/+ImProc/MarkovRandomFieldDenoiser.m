@@ -9,7 +9,7 @@ function imageOut = MarkovRandomFieldDenoiser(imageIn,maxIterations,forceMATLAB)
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0 || ~forceMATLAB)
+    if (n>0 && ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.MarkovRandomFieldDenoiser(imageIn,maxIterations,I);

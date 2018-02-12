@@ -14,7 +14,7 @@ function imageOut = TileImage(imageIn,roiStart,roiSize,forceMATLAB)
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0 || ~forceMATLAB)
+    if (n>0 && ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.TileImage(imageIn,roiStart,roiSize,I);

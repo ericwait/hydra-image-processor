@@ -9,7 +9,7 @@ function sumVal = SumArray(imageIn,forceMATLAB)
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0 || ~forceMATLAB)
+    if (n>0 && ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             sumVal = ImProc.Cuda.SumArray(imageIn,I);

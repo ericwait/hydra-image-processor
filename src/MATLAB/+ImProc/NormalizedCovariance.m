@@ -9,7 +9,7 @@ function normalizedCovariance = NormalizedCovariance(imageIn1,imageIn2,forceMATL
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0 || ~forceMATLAB)
+    if (n>0 && ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             normalizedCovariance = ImProc.Cuda.NormalizedCovariance(imageIn1,imageIn2,I);

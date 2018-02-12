@@ -86,7 +86,7 @@ for i=1:length(dList)
 	        fprintf(f, '    n = length(devCount);\n');
             fprintf(f, '    \n');
             fprintf(f, '    %% if there are devices find the availble one and grab the mutex\n');
-            fprintf(f, '    if (n>0 || ~forceMATLAB)\n');
+            fprintf(f, '    if (n>0 && ~forceMATLAB)\n');
             fprintf(f, '       [~,I] = max([m.available]);\n');
             fprintf(f, '       try\n');
             % call the Cuda version of the function
