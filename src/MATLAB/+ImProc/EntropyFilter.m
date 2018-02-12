@@ -24,6 +24,6 @@ end
 
 function imageOut = lclEntropyFilter(imageIn,kernel)
     imageOut = entropyfilt(imageIn,ones(size(kernel)));
-    warning('Falling back to MATLAB version which uses a square nhood and not the kernel passed in.');
+    %warning('Falling back to MATLAB version which uses a square nhood and not the kernel passed in.');
 end
 
