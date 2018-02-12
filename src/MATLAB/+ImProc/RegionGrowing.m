@@ -3,13 +3,17 @@
 %    	ImageIn -- can be an image up to three dimensions and of type (uint8,int8,uint16,int16,uint32,int32,single,double).
 %    	Kernel -- this 
 %    
-function maskOut = RegionGrowing(imageIn,kernel,mask,threshold,allowConnections)
+function maskOut = RegionGrowing(imageIn,kernel,mask,threshold,allowConnections,forceMATLAB)
+    if (~exist('forceMATLAB','var') || isempty(forceMATLAB))
+       forceMATLAB = false;
+    end
+    
     % check for Cuda capable devices
     [devCount,m] = ImProc.Cuda.DeviceCount();
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0)
+    if (n>0 && ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             maskOut = ImProc.Cuda.RegionGrowing(imageIn,kernel,mask,threshold,allowConnections,I);

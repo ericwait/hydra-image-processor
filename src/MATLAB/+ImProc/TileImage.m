@@ -4,13 +4,17 @@
 %    	RoiStart -- this is the location of the first voxel in the region of interest (starting from the origin).  Must be the same dimension as imageIn.
 %    	RoiSize -- this is how many voxels to include starting from roiStart. Must be the same dimension as imageIn.
 %    	ImageOut -- this will be an image that only contains the region of interest indicated.
-function imageOut = TileImage(imageIn,roiStart,roiSize)
+function imageOut = TileImage(imageIn,roiStart,roiSize,forceMATLAB)
+    if (~exist('forceMATLAB','var') || isempty(forceMATLAB))
+       forceMATLAB = false;
+    end
+    
     % check for Cuda capable devices
     [devCount,m] = ImProc.Cuda.DeviceCount();
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0)
+    if (n>0 && ~forceMATLAB)
        [~,I] = max([m.available]);
        try
             imageOut = ImProc.Cuda.TileImage(imageIn,roiStart,roiSize,I);

@@ -1,24 +1,29 @@
 % MinMax - [min,max] = MinMax(imageIn,device) 
-function [min,max] = MinMax(imageIn)
+function [minVal,maxVal] = MinMax(imageIn,forceMATLAB)
+    if (~exist('forceMATLAB','var') || isempty(forceMATLAB))
+       forceMATLAB = false;
+    end
+    
     % check for Cuda capable devices
     [devCount,m] = ImProc.Cuda.DeviceCount();
     n = length(devCount);
     
     % if there are devices find the availble one and grab the mutex
-    if (n>0)
+    if (n>0 && ~forceMATLAB)
        [~,I] = max([m.available]);
        try
-            [min,max] = ImProc.Cuda.MinMax(imageIn,I);
+            [minVal,maxVal] = ImProc.Cuda.MinMax(imageIn,I);
         catch errMsg
         	throw(errMsg);
         end
         
     else
-        [min,max] = lclMinMax(imageIn);
+        [minVal,maxVal] = lclMinMax(imageIn);
     end
 end
 
-function [min,max] = lclMinMax(imageIn)
-
+function [minVal,maxVal] = lclMinMax(imageIn)
+    minVal = min(imageIn(:));
+    maxVal = max(imageIn(:));
 end
 
