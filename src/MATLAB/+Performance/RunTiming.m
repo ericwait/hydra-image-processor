@@ -1,6 +1,6 @@
 sizes_rc = [5,6,7,8,9,10,11,12];%,13];
 sizeItter = length(sizes_rc):-1:1;
-numTrials = 2;
+numTrials = 3;
 types = {'uint8';'uint16';'single';'double'};
 typeItter = size(types,1):-1:1;
 %itter = 1:length(sizes_rc);
