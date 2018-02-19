@@ -177,13 +177,13 @@ IMAGE_PROCESSOR_API int* multiplyImageWith(const int* imageIn1, const int* image
 IMAGE_PROCESSOR_API float* multiplyImageWith(const float* imageIn1, const float* imageIn2, Vec<size_t> dims, double factor, float** imageOut = NULL, int device = 0);
 IMAGE_PROCESSOR_API double* multiplyImageWith(const double* imageIn1, const double* imageIn2, Vec<size_t> dims, double factor, double** imageOut = NULL, int device = 0);
 
-IMAGE_PROCESSOR_API unsigned short* neighborhoodSum(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, unsigned short** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API unsigned int* neighborhoodSum(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, unsigned int** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API int* neighborhoodSum(const short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, int** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API double* neighborhoodSum(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, double** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API double* neighborhoodSum(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, double** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API double* neighborhoodSum(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, double** imageOut = NULL, int device = 0);
-IMAGE_PROCESSOR_API double* neighborhoodSum(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, double** imageOut = NULL, int device = 0);
+//IMAGE_PROCESSOR_API unsigned short* neighborhoodSum(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, unsigned short** imageOut = NULL, int device = 0);
+//IMAGE_PROCESSOR_API unsigned int* neighborhoodSum(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, unsigned int** imageOut = NULL, int device = 0);
+//IMAGE_PROCESSOR_API int* neighborhoodSum(const short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, int** imageOut = NULL, int device = 0);
+//IMAGE_PROCESSOR_API double* neighborhoodSum(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, double** imageOut = NULL, int device = 0);
+//IMAGE_PROCESSOR_API double* neighborhoodSum(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, double** imageOut = NULL, int device = 0);
+//IMAGE_PROCESSOR_API double* neighborhoodSum(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, double** imageOut = NULL, int device = 0);
+//IMAGE_PROCESSOR_API double* neighborhoodSum(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel = NULL, double** imageOut = NULL, int device = 0);
 
 IMAGE_PROCESSOR_API double normalizedCovariance(const unsigned char* imageIn1, const unsigned char* imageIn2, Vec<size_t> dims, int device = 0);
 IMAGE_PROCESSOR_API double normalizedCovariance(const unsigned short* imageIn1, const unsigned short* imageIn2, Vec<size_t> dims, int device = 0);

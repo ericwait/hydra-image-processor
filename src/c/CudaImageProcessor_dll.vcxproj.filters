@@ -146,9 +146,6 @@
     <ClInclude Include="Cuda\CudaLoG.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cuda\CudaNeighborhoodSum.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cuda\CHelpers.cpp">
