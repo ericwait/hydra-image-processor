@@ -11,23 +11,23 @@ addTimes = Performance.AddConstantGraph(sizes_rc,sizeItter,types,typeItter,numTr
 %% Add Image With
 addWtimes = Performance.AddImageWithGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
 
-%% Contrast Enhancement
-conEnTimes = Performance.ContrastEnhancementGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
-
-%% EntropyFilter
-entropyTimes = Performance.EntropyFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
-
-%% GaussianFilter
-gaussTimes = Performance.GaussianFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
+%% Sum Array
+sumTimes = Performance.SumArrayGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
 
 %% Median Filter
 medTimes = Performance.MedianFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
 
+%% GaussianFilter
+gaussTimes = Performance.GaussianFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
+
 %% Std Filter
 stdTimes = Performance.StdFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
 
-%% Sum Array
-sumTimes = Performance.SumArrayGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
+%% EntropyFilter
+entropyTimes = Performance.EntropyFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
+
+%% Contrast Enhancement
+conEnTimes = Performance.ContrastEnhancementGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
 
 %% Save out results
 temp = what('ImProc');
