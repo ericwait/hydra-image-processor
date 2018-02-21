@@ -19,3 +19,13 @@ enum ReductionMethods
 {
 	REDUC_MEAN, REDUC_MEDIAN, REDUC_MIN, REDUC_MAX, REDUC_GAUS
 };
+
+// These defines check for non-narrowing (valid) implicit converstions from SrcType -> DstType
+#define NON_NARROWING_IMPLICIT(SrcType,DstType) std::is_same<typename std::common_type<SrcType,DstType>::type,DstType>::value
+
+#define VALID_IMPLICIT(SrcType,DstType) typename std::enable_if<NON_NARROWING_IMPLICIT(SrcType,DstType)>::type
+#define INVALID_IMPLICIT(SrcType,DstType) typename std::enable_if<!NON_NARROWING_IMPLICIT(SrcType,DstType)>::type
+
+// Helpers for SFINAE overload resolution to avoid implicit narrowing conversions
+#define VALID_IMPLICIT_ARG(SrcType,DstType) VALID_IMPLICIT(SrcType,DstType)* = nullptr
+#define INVALID_IMPLICIT_ARG(SrcType,DstType) INVALID_IMPLICIT(SrcType,DstType)* = nullptr

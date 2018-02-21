@@ -52,10 +52,17 @@ public:
 	{}
 
 	template<typename U>
-	MIXED_PREFIX Vec(const Vec<U>& other)
-		:	x(static_cast<T>(other.x)),
-			y(static_cast<T>(other.y)),
-			z(static_cast<T>(other.z))
+	MIXED_PREFIX Vec(const Vec<U>& other, VALID_IMPLICIT_ARG(U, T))
+		: x(static_cast<T>(other.x)),
+		y(static_cast<T>(other.y)),
+		z(static_cast<T>(other.z))
+	{}
+
+	template<typename U>
+	MIXED_PREFIX explicit Vec(const Vec<U>& other, INVALID_IMPLICIT_ARG(U, T))
+		: x(static_cast<T>(other.x)),
+		y(static_cast<T>(other.y)),
+		z(static_cast<T>(other.z))
 	{}
 
 
