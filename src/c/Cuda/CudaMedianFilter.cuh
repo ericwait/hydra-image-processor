@@ -80,27 +80,12 @@ __global__ void cudaMedianFilter( CudaImageContainer<PixelType> imageIn, CudaIma
 		int sharedMemOffset = linearThreadIdx*kernelDims.product();
 		int kernelVolume = 0;
 
-		Vec<int> startLimit = Vec<int>(coordinate) - Vec<int>((kernelDims)/2);
-		Vec<size_t> endLimit = coordinate + (kernelDims+1)/2;
-		Vec<size_t> kernelStart(Vec<int>::max(-startLimit,Vec<int>(0,0,0)));
+		KernelIterator kIt(coordinate, imageIn.getDims(), kernelDims);
 
-		startLimit = Vec<int>::max(startLimit,Vec<int>(0,0,0));
-		endLimit = Vec<size_t>::min(Vec<size_t>(endLimit),imageIn.getDims());
-
-		Vec<size_t> imageStart(coordinate-(kernelDims/2)+kernelStart);
-		Vec<size_t> iterationEnd(endLimit-Vec<size_t>(startLimit));
-
-		Vec<size_t> i(0,0,0);
-  		for (i.z=0; i.z<iterationEnd.z; ++i.z)
-  		{
-  			for (i.y=0; i.y<iterationEnd.y; ++i.y)
-  			{
-  				for (i.x=0; i.x<iterationEnd.x; ++i.x)
-  				{
- 					vals[kernelVolume+sharedMemOffset] = (double)imageIn(imageStart+i);
- 					++kernelVolume;
-  				}
-  			}
+		for(; !kIt.end(); ++kIt)
+		{
+			vals[kernelVolume+sharedMemOffset] = (double)imageIn(kIt.getImageCoordinate());
+			++kernelVolume;
   		}
 
 		imageOut(coordinate) = (PixelType)cudaFindMedian(vals+sharedMemOffset,kernelVolume);

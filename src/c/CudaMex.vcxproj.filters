@@ -152,9 +152,6 @@
     <ClCompile Include="Mex\MexResize.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mex\MexNeighborhoodSum.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Mex\CudaMex.def">

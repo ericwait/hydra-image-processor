@@ -57,7 +57,6 @@
     <ClInclude Include="Cuda\CudaMorphologicalOperations.cuh" />
     <ClInclude Include="Cuda\CudaMultAddFilter.cuh" />
     <ClInclude Include="Cuda\CudaMultiplyImage.cuh" />
-    <ClInclude Include="Cuda\CudaNeighborhoodSum.cuh" />
     <ClInclude Include="Cuda\CudaNormalizedCovariance.cuh" />
     <ClInclude Include="Cuda\CudaPolyTransferFunc.cuh" />
     <ClInclude Include="Cuda\CudaPow.cuh" />
@@ -73,6 +72,7 @@
     <ClInclude Include="Cuda\CWrappers.h" />
     <ClInclude Include="Cuda\Defines.h" />
     <ClInclude Include="Cuda\ImageChunk.cuh" />
+    <ClInclude Include="Cuda\KernelIterator.cuh" />
     <ClInclude Include="Cuda\Vec.h" />
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +85,7 @@
     <CudaCompile Include="Cuda\CudaUtilities.cu" />
     <CudaCompile Include="Cuda\CWrappers.cu" />
     <CudaCompile Include="Cuda\ImageChunk.cu" />
+    <CudaCompile Include="Cuda\KernelIterator.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{F204D99B-C454-420D-BD1B-5FE4D9D07078}</ProjectGuid>
@@ -189,6 +190,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <PtxAsOptionV>false</PtxAsOptionV>
       <MaxRegCount>
       </MaxRegCount>
+      <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
     </CudaCompile>
     <Lib>
       <AdditionalDependencies>cudart_static.lib</AdditionalDependencies>
@@ -241,6 +243,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <CodeGeneration>compute_30,sm_30;compute_35,sm_35;compute_50,sm_50;compute_61,sm_61;</CodeGeneration>
       <MaxRegCount>
       </MaxRegCount>
+      <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
     </CudaCompile>
     <Lib>
       <AdditionalDependencies>cudart_static.lib</AdditionalDependencies>

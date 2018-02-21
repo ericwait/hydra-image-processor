@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CudaImageContainer.cuh"
+#include "KernelIterator.cuh"
+#include "float.h"
 
 #ifndef CUDA_CONST_KERNEL
 #define CUDA_CONST_KERNEL
@@ -30,32 +32,20 @@ __global__ void cudaMultAddFilter( CudaImageContainer<PixelType> imageIn, CudaIm
 
 		PixelType localMaxVal = imageIn(coordinate);
 		Vec<size_t> kernelDims = hostKernelDims;
+		KernelIterator kIt(coordinate, imageIn.getDims(), kernelDims);
 
-		Vec<int> startLimit = Vec<int>(coordinate) - Vec<int>((kernelDims)/2);
-		Vec<size_t> endLimit = coordinate + (kernelDims+1)/2;
-		Vec<size_t> kernelStart(Vec<int>::max(-startLimit,Vec<int>(0,0,0)));
-
-		startLimit = Vec<int>::max(startLimit,Vec<int>(0,0,0));
-		endLimit = Vec<size_t>::min(Vec<size_t>(endLimit),imageIn.getDims());
-
-		Vec<size_t> imageStart(coordinate-(kernelDims/2)+kernelStart);
-		Vec<size_t> iterationEnd(endLimit-Vec<size_t>(startLimit));
-
-		Vec<size_t> i(0,0,0);
-		for (i.z=0; i.z<iterationEnd.z; ++i.z)
+		for(; !kIt.end(); ++kIt)
 		{
-			for (i.y=0; i.y<iterationEnd.y; ++i.y)
-			{
-				for (i.x=0; i.x<iterationEnd.x; ++i.x)
-				{
-					double kernVal = double(convKernel[kernelDims.linearAddressAt(kernelStart+i)+kernelOffset]);
+			Vec<size_t> kernIdx(kIt.getKernelIdx());
+			float kernVal = cudaConstKernel[kernelDims.linearAddressAt(kernIdx)];
 
-					kernFactor += kernVal;
-					val += double((imageIn(imageStart+i)) * kernVal);
+			if(kernVal<=FLT_MIN && kernVal>=FLT_MIN)//float zero
+				continue;
 
-					++kernHits;
-				}
-			}
+			kernFactor += kernVal;
+			val += double((imageIn(kIt.getImageCoordinate())) * kernVal);
+
+			++kernHits;
 		}
 
 		if (normalize)

@@ -27,33 +27,20 @@ __global__ void cudaMinFilter( CudaImageContainer<PixelType> imageIn, CudaImageC
 	{
 		double localMinVal = imageIn(coordinate);
 		Vec<size_t> kernelDims = hostKernelDims;
+		KernelIterator kIt(coordinate, imageIn.getDims(), kernelDims);
 
-		Vec<int> startLimit = Vec<int>(coordinate) - Vec<int>(kernelDims/2);
-		Vec<size_t> endLimit = coordinate + (kernelDims+1)/2;
-		Vec<size_t> kernelStart(Vec<int>::max(-startLimit,Vec<int>(0,0,0)));
-
-		startLimit = Vec<int>::max(startLimit,Vec<int>(0,0,0));
-		endLimit = Vec<size_t>::min(Vec<size_t>(endLimit),imageIn.getDims());
-
-		Vec<size_t> imageStart(startLimit);
-		Vec<size_t> iterationEnd(endLimit-Vec<size_t>(startLimit));
-
-		Vec<size_t> i(0,0,0);
-		for (i.z=0; i.z<iterationEnd.z; ++i.z)
+		for(; !kIt.end(); ++kIt)
 		{
-			for (i.y=0; i.y<iterationEnd.y; ++i.y)
-			{
-				for (i.x=0; i.x<iterationEnd.x; ++i.x)
-				{
-					if (cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)]==0)
-						continue;
+			Vec<size_t> kernIdx(kIt.getKernelIdx());
+			float kernVal = cudaConstKernel[kernelDims.linearAddressAt(kernIdx)];
 
-					double temp = imageIn(imageStart+i) * cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)];
-					if (temp<localMinVal)
-					{
-						localMinVal = temp;
-					}
-				}
+			if(kernVal==0)
+				continue;
+
+			double temp = imageIn(kIt.getImageCoordinate()) * cudaConstKernel[kernelDims.linearAddressAt(kernIdx)];
+			if(temp<localMinVal)
+			{
+				localMinVal = temp;
 			}
 		}
 

@@ -143,14 +143,14 @@ Vec<size_t> createLoGKernel(Vec<float> sigma, float** kernelOut, size_t& kernSiz
 {
 	const double PI = std::atan(1.0)*4;
 
-	Vec<size_t> kernelDims = sigma*10;
+	Vec<size_t> kernelDims = Vec<size_t>(sigma*10.0f);
 
 	// make odd
 	kernelDims.x = (kernelDims.x!=0 && kernelDims.x%2==0) ? (kernelDims.x+1) : (kernelDims.x);
 	kernelDims.y = (kernelDims.y!=0 && kernelDims.y%2==0) ? (kernelDims.y+1) : (kernelDims.y);
 	kernelDims.z = (kernelDims.z!=0 && kernelDims.z%2==0) ? (kernelDims.z+1) : (kernelDims.z);
 
-	Vec<int> center = Vec<float>(kernelDims-1)/2;
+	Vec<int> center(Vec<float>(kernelDims-1)/2.0f);
 	kernSize = 0;
 	if (kernelDims.x>0)
 		kernSize = kernelDims.x;
@@ -193,17 +193,17 @@ Vec<size_t> createLoGKernel(Vec<float> sigma, float** kernelOut, size_t& kernSiz
 		Vec<int> curPos(0, 0, 0);
 		for(curPos.z = 0; curPos.z<kernelDims.z||curPos.z==0; ++curPos.z)
 		{
-			double zMuSub = SQR(curPos.z-center.z+0.5);
+			double zMuSub = SQR(curPos.z-center.z);
 			double zMuSubSigSqr = zMuSub/(2*sigmaSqr.z);
 			double zAdditive = zMuSub/sigma4th.z-1.0/sigmaSqr.z;
 			for(curPos.y = 0; curPos.y<kernelDims.y||curPos.y==0; ++curPos.y)
 			{
-				double yMuSub = SQR(curPos.y-center.y+0.5);
+				double yMuSub = SQR(curPos.y-center.y);
 				double yMuSubSigSqr = yMuSub/(2*sigmaSqr.y);
 				double yAdditive = yMuSub/sigma4th.y-1.0/sigmaSqr.y;
 				for(curPos.x = 0; curPos.x<kernelDims.x||curPos.x==0; ++curPos.x)
 				{
-					double xMuSub = SQR(curPos.x-center.x+0.5);
+					double xMuSub = SQR(curPos.x-center.x);
 					double xMuSubSigSqr = xMuSub/(2*sigmaSqr.x);
 					double xAdditive = xMuSub/sigma4th.x-1.0/sigmaSqr.x;
 					
@@ -233,19 +233,19 @@ Vec<size_t> createLoGKernel(Vec<float> sigma, float** kernelOut, size_t& kernSiz
 		{
 			if(sigma.z!=0)
 			{
-				gaussComp.z = SQR(curPos.z-center.z+0.5)/twoSigmaSqr.z;
+				gaussComp.z = SQR(curPos.z-center.z)/twoSigmaSqr.z;
 			}
 			for(curPos.y = 0; curPos.y<kernelDims.y || curPos.y==0; ++curPos.y)
 			{
 				if(sigma.y!=0)
 				{
-					gaussComp.y = SQR(curPos.y-center.y+0.5)/twoSigmaSqr.y;
+					gaussComp.y = SQR(curPos.y-center.y)/twoSigmaSqr.y;
 				}
 				for(curPos.x =0; curPos.x<kernelDims.x || curPos.x==0; ++curPos.x)
 				{
 					if(sigma.x!=0)
 					{
-						gaussComp.x = SQR(curPos.x-center.x+0.5)/twoSigmaSqr.x;
+						gaussComp.x = SQR(curPos.x-center.x)/twoSigmaSqr.x;
 					}
 					double gauss = gaussComp.sum();
 					kernel[kernelDims.linearAddressAt(curPos)] = ((1.0-gauss)*exp(-gauss))/denominator;
@@ -288,7 +288,7 @@ Vec<size_t> createGaussianKernelFull(Vec<float> sigma, float** kernelOut, Vec<si
     float* kernel = *kernelOut;
 
     float total = 0.0f;
-    Vec<float> pos(0, 0, 0);
+    Vec<size_t> pos(0, 0, 0);
     
     Vec<float> denominator = SQR(sigma)*2;
     for(pos.z = 0; pos.z<kernelDims.z; ++pos.z)

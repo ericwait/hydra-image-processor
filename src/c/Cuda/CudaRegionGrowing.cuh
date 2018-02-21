@@ -13,9 +13,9 @@
 __constant__ float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
 #endif
 
-__device__ bool lineConnect(const CudaImageContainer<bool>& maskIn,Vec<long int> prevCoord,Vec<long int> nextCoord)
+__device__ bool lineConnect(const CudaImageContainer<bool>& maskIn,Vec<size_t> prevCoord,Vec<size_t> nextCoord)
 {
-	if(prevCoord>=Vec<long int>(0,0,0) && nextCoord>=Vec<long int>(0,0,0))
+	if(prevCoord>=Vec<size_t>(0,0,0) && nextCoord>=Vec<size_t>(0,0,0))
 	{
 		if(prevCoord<maskIn.getDims() && nextCoord<maskIn.getDims())
 		{
@@ -33,11 +33,11 @@ __device__ bool willConnect(const CudaImageContainer<bool>& maskIn, Vec<size_t> 
 	if(maskIn(coordinateIn))
 		return true;
 
-	Vec<long int> coordinate(coordinateIn);
-	Vec<long int> prevCoord;
-	Vec<long int> nextCoord;
-	Vec<long int> prevDelta;
-	Vec<long int> nextDelta;
+	Vec<size_t> coordinate(coordinateIn);
+	Vec<size_t> prevCoord;
+	Vec<size_t> nextCoord;
+	Vec<size_t> prevDelta;
+	Vec<size_t> nextDelta;
 	const char n = -2;
 	const char z = 0;
 	const char p = 2;
