@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CudaImageContainer.cuh"
+#include "KernelIterator.cuh"
 #include "Vec.h"
 #include <vector>
 #include "CHelpers.h"
@@ -31,12 +32,10 @@ template <class PixelType>
 __global__ void cudaEntropyFilter(CudaImageContainer<PixelType> imageIn, CudaImageContainer<double> imageOut, Vec<size_t> hostKernelDims, PixelType minVal, PixelType maxVal)
 {
 	//extern __shared__ unsigned short histo[];
-
-	Vec<int> kernelDims = hostKernelDims;
-	Vec<int> coordinateOut;
-	coordinateOut.x = threadIdx.x+blockIdx.x * blockDim.x;
-	coordinateOut.y = threadIdx.y+blockIdx.y * blockDim.y;
-	coordinateOut.z = threadIdx.z+blockIdx.z * blockDim.z;
+	Vec<size_t> coordinate;
+	coordinate.x = threadIdx.x+blockIdx.x * blockDim.x;
+	coordinate.y = threadIdx.y+blockIdx.y * blockDim.y;
+	coordinate.z = threadIdx.z+blockIdx.z * blockDim.z;
 
 	//unsigned short* lclHisto = (threadIdx.x+threadIdx.y*blockDim.x+threadIdx.z*blockDim.y*blockDim.x)*256 +histo;
 	unsigned short lclHisto[256];
@@ -46,53 +45,23 @@ __global__ void cudaEntropyFilter(CudaImageContainer<PixelType> imageIn, CudaIma
 		lclHisto[i] = 0;
 	}
 
-	if(coordinateOut<imageOut.getDims())
+	if(coordinate<imageOut.getDims())
 	{
 		double val = 0;
-		Vec<float> inputCenter = Vec<float>(coordinateOut+0.5f);
-		Vec<float> kernelCenter = Vec<float>(kernelDims-1)/2.0f;
-		Vec<int> kernelStart(0, 0, 0);
-		Vec<int> kernelEnd(0, 0, 0);
-
-		Vec<float> neighborhoodStart = inputCenter-Vec<float>(kernelDims)/2.0f;
-		// if the input start position is negative, we need to start further in on the kernel
-		kernelStart.x = (neighborhoodStart.x>=0.0f) ? (0) : (ceil(-neighborhoodStart.x));
-		kernelStart.y = (neighborhoodStart.y>=0.0f) ? (0) : (ceil(-neighborhoodStart.y));
-		kernelStart.z = (neighborhoodStart.z>=0.0f) ? (0) : (ceil(-neighborhoodStart.z));
-		neighborhoodStart = Vec<float>::max(Vec<float>(0.0f, 0.0f, 0.0f), neighborhoodStart);
-
-		// This is the last place to visit in the input (inclusive)
-		Vec<float> neighborhoodEnd = inputCenter+(Vec<float>(kernelDims)/2.0f);
-		// if the input end position is outside the image, we need to end earlier in on the kernel
-		kernelEnd.x = (neighborhoodEnd.x<=imageIn.getDims().x) ? (kernelDims.x) :
-			(kernelDims.x-(neighborhoodEnd.x-imageIn.getDims().x));// will floor to int value
-		kernelEnd.y = (neighborhoodEnd.y<=imageIn.getDims().y) ? (kernelDims.y) :
-			(kernelDims.y-(neighborhoodEnd.y-imageIn.getDims().y));// will floor to int value
-		kernelEnd.z = (neighborhoodEnd.z<=imageIn.getDims().z) ? (kernelDims.z) :
-			(kernelDims.z-(neighborhoodEnd.z-imageIn.getDims().z));// will floor to int value
-
-		neighborhoodEnd = Vec<float>::min(imageIn.getDims(), neighborhoodEnd);
-
-		Vec<int> curKernelPos(0, 0, 0);
-		Vec<int> curInPos = neighborhoodStart;
 		double numVals = 0;
-		for(curKernelPos.z = kernelStart.z; curKernelPos.z<kernelEnd.z; ++curKernelPos.z)
+
+		Vec<size_t> kernelDims = hostKernelDims;
+		KernelIterator kIt(coordinate, imageIn.getDims(), kernelDims);
+
+		for(; !kIt.end(); ++kIt)
 		{
-			curInPos.z = neighborhoodStart.z+curKernelPos.z;
-			for(curKernelPos.y = kernelStart.y; curKernelPos.y<kernelEnd.y; ++curKernelPos.y)
+			Vec<size_t> kernIdx(kIt.getKernelIdx());
+			if(cudaConstKernel[hostKernelDims.linearAddressAt(kernIdx)]>0)
 			{
-				curInPos.y = neighborhoodStart.y+curKernelPos.y;
-				for(curKernelPos.x = kernelStart.x; curKernelPos.x<kernelEnd.x; ++curKernelPos.x)
-				{
-					if (cudaConstKernel[hostKernelDims.linearAddressAt(curKernelPos)]>0)
-					{
-						curInPos.x = neighborhoodStart.x+curKernelPos.x;
-						PixelType imVal = imageIn(curInPos);
-						int binNum = floor((double)(imVal-minVal)/binWidth);
-						++(lclHisto[binNum]);
-						++numVals;
-					}
-				}
+				PixelType imVal = imageIn(kIt.getImageCoordinate());
+				int binNum = floor((double)(imVal-minVal)/binWidth);
+				++(lclHisto[binNum]);
+				++numVals;
 			}
 		}
 
@@ -104,7 +73,7 @@ __global__ void cudaEntropyFilter(CudaImageContainer<PixelType> imageIn, CudaIma
 		}
 
 
-		imageOut(coordinateOut) = -val;
+		imageOut(coordinate) = -val;
 	}
 }
 

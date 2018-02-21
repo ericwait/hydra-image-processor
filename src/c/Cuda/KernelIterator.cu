@@ -57,6 +57,12 @@ __device__ KernelIterator& KernelIterator::operator++()
 	return *this;
 }
 
+__device__ void KernelIterator::reset()
+{
+	isEnd = false;
+	iterator = Vec<size_t>(0);
+}
+
 __device__ Vec<float> KernelIterator::getImageCoordinate()
 {
 	return inputStartCoordinate + Vec<float>(iterator);

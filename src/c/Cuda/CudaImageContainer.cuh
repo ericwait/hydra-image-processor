@@ -42,7 +42,7 @@ public:
         return accessValue(coordinate);
 	}
 
-	__device__ const PixelType& operator()(Vec<float> pos) const
+	__device__ const PixelType operator()(Vec<float> pos) const
 	{
 		Vec<size_t> curPos(0);
 		double val = 0;

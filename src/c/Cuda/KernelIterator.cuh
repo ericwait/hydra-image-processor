@@ -10,6 +10,7 @@ public:
 
 	__device__ KernelIterator& operator++();
 	__device__ bool end() { return isEnd; }
+	__device__ void reset();
 	__device__ Vec<float> getImageCoordinate();
 	__device__ Vec<size_t> getKernelIdx();
 	

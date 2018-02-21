@@ -18,11 +18,11 @@ __constant__ float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM]
 
 
 template <class PixelType>
-__global__ void cudaMeanResize(CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, Vec<float> hostResizeFactors, Vec<int> hostKernelDims, PixelType minVal, PixelType maxVal)
+__global__ void cudaMeanResize(CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, Vec<float> hostResizeFactors, Vec<size_t> hostKernelDims, PixelType minVal, PixelType maxVal)
 {
     Vec<float> resizeFactors = hostResizeFactors;
-    Vec<int> kernelDims = hostKernelDims;
-    Vec<int> coordinateOut;
+    Vec<int> kernelDims(hostKernelDims);
+    Vec<size_t> coordinateOut;
     coordinateOut.x = threadIdx.x+blockIdx.x * blockDim.x;
     coordinateOut.y = threadIdx.y+blockIdx.y * blockDim.y;
     coordinateOut.z = threadIdx.z+blockIdx.z * blockDim.z;
@@ -56,7 +56,7 @@ __global__ void cudaMeanResize(CudaImageContainer<PixelType> imageIn, CudaImageC
         neighborhoodEnd = Vec<float>::min(imageIn.getDims(), neighborhoodEnd);
 
         Vec<int> curKernelPos(0, 0, 0);
-        Vec<int> curInPos = neighborhoodStart;
+        Vec<int> curInPos(neighborhoodStart);
         for(curKernelPos.z = kernelStart.z; curKernelPos.z<kernelEnd.z; ++curKernelPos.z)
         {
             curInPos.z = neighborhoodStart.z + curKernelPos.z;

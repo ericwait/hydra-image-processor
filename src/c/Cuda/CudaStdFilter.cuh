@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CudaImageContainer.cuh"
+#include "KernelIterator.cuh"
 #include "Vec.h"
 #include <vector>
 #include "CHelpers.h"
@@ -20,39 +21,21 @@ __global__ void cudaStdFilter(CudaImageContainer<PixelType> imageIn,CudaImageCon
 		double val = 0;
 		double kernelVolume = 0;
 		Vec<size_t> kernelDims = hostKernelDims;
-		Vec<size_t> halfKernal = kernelDims/2;
+		KernelIterator kIt(coordinate, imageIn.getDims(), kernelDims);
 
-		Vec<size_t> curCoordIm = coordinate - halfKernal;
-		curCoordIm.z = (coordinate.z<halfKernal.z) ? 0 : coordinate.z-halfKernal.z;
-		for(; curCoordIm.z<=coordinate.z+halfKernal.z && curCoordIm.z<imageIn.getDims().z; ++curCoordIm.z)
+		for(; !kIt.end(); ++kIt)
 		{
-			curCoordIm.y = (coordinate.y<halfKernal.y) ? 0 : coordinate.y-halfKernal.y;
-			for(; curCoordIm.y<=coordinate.y+halfKernal.y && curCoordIm.y<imageIn.getDims().y; ++curCoordIm.y)
-			{
-				curCoordIm.x = (coordinate.x<halfKernal.x) ? 0 : coordinate.x-halfKernal.x;
-				for(; curCoordIm.x<=coordinate.x+halfKernal.x && curCoordIm.x<imageIn.getDims().x; ++curCoordIm.x)
-				{
-					val += imageIn(curCoordIm);
-					++kernelVolume;
-				}
-			}
+			val += imageIn(kIt.getImageCoordinate());
+			++kernelVolume;
 		}
 
 		double mu = val/kernelVolume;
 
-		curCoordIm = coordinate - halfKernal;
-		curCoordIm.z = (coordinate.z<halfKernal.z) ? 0 : coordinate.z-halfKernal.z;
-		for(; curCoordIm.z<=coordinate.z+halfKernal.z && curCoordIm.z<imageIn.getDims().z; ++curCoordIm.z)
+		kIt.reset();
+
+		for(; !kIt.end(); ++kIt)
 		{
-			curCoordIm.y = (coordinate.y<halfKernal.y) ? 0 : coordinate.y-halfKernal.y;
-			for(; curCoordIm.y<=coordinate.y+halfKernal.y && curCoordIm.y<imageIn.getDims().y; ++curCoordIm.y)
-			{
-				curCoordIm.x = (coordinate.x<halfKernal.x) ? 0 : coordinate.x-halfKernal.x;
-				for(; curCoordIm.x<=coordinate.x+halfKernal.x && curCoordIm.x<imageIn.getDims().x; ++curCoordIm.x)
-				{
-					val += SQR(imageIn(curCoordIm) - mu);
-				}
-			}
+			val += SQR(imageIn(kIt.getImageCoordinate())-mu);
 		}
 
 		imageOut(coordinate) = sqrt(val/(kernelVolume-1));
