@@ -68,24 +68,33 @@
     <ClInclude Include="Cuda\CudaStdFilter.cuh" />
     <ClInclude Include="Cuda\CudaSum.cuh" />
     <ClInclude Include="Cuda\CudaThreshold.cuh" />
-    <ClInclude Include="Cuda\CudaUtilities.cuh" />
+    <ClInclude Include="Cuda\CudaUtilities.h" />
     <ClInclude Include="Cuda\CudaVariance.cuh" />
     <ClInclude Include="Cuda\CWrappers.h" />
     <ClInclude Include="Cuda\Defines.h" />
-    <ClInclude Include="Cuda\ImageChunk.cuh" />
+    <ClInclude Include="Cuda\ImageChunk.h" />
+    <ClInclude Include="Cuda\ImageContainer.h" />
+    <ClInclude Include="Cuda\KernelGenerators.h" />
     <ClInclude Include="Cuda\KernelIterator.cuh" />
     <ClInclude Include="Cuda\Vec.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cuda\CHelpers.cpp" />
+    <ClCompile Include="Cuda\LoGKernel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Cuda\CudaDeviceInfo.cpp" />
     <ClCompile Include="Cuda\CudaDeviceStats.cpp">
       <FileType>Document</FileType>
     </ClCompile>
-    <CudaCompile Include="Cuda\CudaUtilities.cu" />
+    <ClCompile Include="Cuda\CudaUtilities.cpp">
+      <FileType>Document</FileType>
+    </ClCompile>
     <CudaCompile Include="Cuda\CWrappers.cu" />
-    <CudaCompile Include="Cuda\ImageChunk.cu" />
+    <ClCompile Include="Cuda\GaussianKernel.cpp" />
+    <ClCompile Include="Cuda\ImageChunk.cpp">
+      <FileType>Document</FileType>
+    </ClCompile>
     <CudaCompile Include="Cuda\KernelIterator.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

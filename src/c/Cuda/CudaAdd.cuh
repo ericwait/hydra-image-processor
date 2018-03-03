@@ -2,8 +2,9 @@
 #include "Vec.h"
 #include "CudaImageContainer.cuh"
 #include "CHelpers.h"
-#include "ImageChunk.cuh"
+#include "ImageChunk.h"
 #include "CudaDeviceImages.cuh"
+#include "ImageContainer.h"
 
 template <class PixelType>
 __global__ void cudaAddScaler( CudaImageContainer<PixelType> imageIn1, CudaImageContainer<PixelType> imageOut, double factor, 
@@ -40,22 +41,22 @@ __global__ void cudaAddTwoImagesWithFactor( CudaImageContainer<PixelType> imageI
 }
 
 template <class PixelTypeIn, class PixelTypeOut>
-PixelTypeOut* cAddConstant(const PixelTypeIn* imageIn, Vec<size_t> dims, double additive, PixelTypeOut** imageOut=NULL, int device=0)
+ImageContainer<PixelTypeOut> cAddConstant(const ImageContainer<PixelTypeIn> imageIn, double additive, ImageContainer<PixelTypeOut> imageOut, int device=-1)
 {
-	PixelTypeOut* imOut = setUpOutIm(dims, imageOut);
+	ImageContainer<PixelTypeOut> imOut = setUpOutIm(imageIn, imageOut);
 
 	PixelTypeOut minVal = std::numeric_limits<PixelTypeOut>::lowest();
 	PixelTypeOut maxVal = std::numeric_limits<PixelTypeOut>::max();
 
-	cudaDeviceProp props;
-	cudaGetDeviceProperties(&props,device);
-
-	size_t availMem, total;
-	cudaMemGetInfo(&availMem,&total);
+	int* deviceIdxList;
+	int numDevices;
+	size_t maxThreadsPerBlock;
+	size_t availMem = getCudaInfo(&deviceIdxList, numDevices, maxThreadsPerBlock,device);
 
     int blockSize = getKernelMaxThreads(cudaAddScaler<PixelTypeOut>);
+	maxThreadsPerBlock = MIN(maxThreadsPerBlock, size_t(blockSize));
 
-    std::vector<ImageChunk> chunks = calculateBuffers<PixelTypeOut>(dims, 2, (size_t)(availMem*MAX_MEM_AVAIL), props,Vec<size_t>(0, 0, 0), blockSize);
+    std::vector<ImageChunk> chunks = calculateBuffers<PixelTypeOut>(dims, 2, (size_t)(availMem*MAX_MEM_AVAIL), sizeof(PixelTypeOut), maxThreadsPerBlock,Vec<size_t>(0, 0, 0));
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);

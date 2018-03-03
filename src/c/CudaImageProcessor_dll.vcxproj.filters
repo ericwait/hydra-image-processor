@@ -89,12 +89,6 @@
     <ClInclude Include="Cuda\CudaThreshold.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cuda\CudaUtilities.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\ImageChunk.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Cuda\CudaSegment.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -152,6 +146,18 @@
     <ClInclude Include="Cuda\CudaNeighborhoodSum.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cuda\ImageContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\ImageChunk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaUtilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\KernelGenerators.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cuda\CHelpers.cpp">
@@ -160,15 +166,24 @@
     <ClCompile Include="Cuda\CudaDeviceStats.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Cuda\CudaDeviceInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cuda\ImageChunk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cuda\CudaUtilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cuda\GaussianKernel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cuda\LoGKernel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Cuda\CudaUtilities.cu">
-      <Filter>Source Files</Filter>
-    </CudaCompile>
     <CudaCompile Include="Cuda\CWrappers.cu">
-      <Filter>Source Files</Filter>
-    </CudaCompile>
-    <CudaCompile Include="Cuda\ImageChunk.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
     <CudaCompile Include="Cuda\KernelIterator.cu">
