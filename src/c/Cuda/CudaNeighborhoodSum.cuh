@@ -15,7 +15,7 @@ __constant__ float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM]
 
 template <class PixelTypeIn, class PixelTypeOut>
 __global__ void cudaNeighborhoodSum( CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> imageOut, Vec<size_t> hostKernelDims,
-							  PixelType minVal, PixelType maxVal)
+							  PixelTypeOut minVal, PixelTypeOut maxVal)
 {
 	Vec<size_t> coordinate;
 	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
@@ -24,39 +24,21 @@ __global__ void cudaNeighborhoodSum( CudaImageContainer<PixelTypeIn> imageIn, Cu
 
 	if (coordinate<imageIn.getDims())
 	{
-		double localMaxVal = imageIn(coordinate);
+		double sumVal = imageIn(coordinate);
 		Vec<size_t> kernelDims = hostKernelDims;
+		KernelIterator kIt(coordinate, imageIn.getDims(), kernelDims);
 
-		Vec<int> startLimit = Vec<int>(coordinate) - Vec<int>(kernelDims/2);
-		Vec<size_t> endLimit = coordinate + (kernelDims+1)/2;
-		Vec<size_t> kernelStart(Vec<int>::max(-startLimit,Vec<int>(0,0,0)));
-
-		startLimit = Vec<int>::max(startLimit,Vec<int>(0,0,0));
-		endLimit = Vec<size_t>::min(Vec<size_t>(endLimit),imageIn.getDims());
-
-		Vec<size_t> imageStart(startLimit);
-		Vec<size_t> iterationEnd(endLimit-Vec<size_t>(startLimit));
-
-		Vec<size_t> i(0,0,0);
-		for (i.z=0; i.z<iterationEnd.z; ++i.z)
+		for (; !kIt.end(); ++kIt)
 		{
-			for (i.y=0; i.y<iterationEnd.y; ++i.y)
-			{
-				for (i.x=0; i.x<iterationEnd.x; ++i.x)
-				{
-					if (cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)]==0)
-						continue;
+			Vec<size_t> kernIdx(kIt.getKernelIdx());
+			float kernVal = cudaConstKernel[kernelDims.linearAddressAt(kernIdx)];
+			if (kernVal == 0)
+				continue;
 
-					double temp = imageIn(imageStart+i) * cudaConstKernel[kernelDims.linearAddressAt(kernelStart+i)];
-					if (temp>localMaxVal)
-					{
-						localMaxVal = temp;
-					}
-				}
-			}
+			sumVal += imageIn(kIt.getImageCoordinate()) * kernVal;
 		}
 
-		imageOut(coordinate) = (localMaxVal>maxVal) ? (maxVal) : ((PixelType)localMaxVal);
+		imageOut(coordinate) = (sumVal>maxVal) ? (maxVal) : ((PixelTypeOut)sumVal);
 	}
 }
 
@@ -91,21 +73,21 @@ PixelTypeOut* cNeighborhoodSum(const PixelTypeIn* imageIn, Vec<size_t> dims, Vec
 	size_t availMem, total;
 	cudaMemGetInfo(&availMem,&total);
 
-    int blockSize = getKernelMaxThreads(cudaMaxFilter<PixelType>);
+    int blockSize = getKernelMaxThreads(cudaMaxFilter<PixelTypeOut>);
 
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props,kernelDims,blockSize);
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelTypeOut>(dims,2,(size_t)(availMem*MAX_MEM_AVAIL),props,kernelDims,blockSize);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages<PixelType> deviceImages(2,maxDeviceDims,device);
+	CudaDeviceImages<PixelTypeOut> deviceImages(2,maxDeviceDims,device);
 
 	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
 		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
 		deviceImages.setNextDims(curChunk->getFullChunkSize());
 
-		cudaMaxFilter<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),kernelDims,
+		cudaNeighborhoodSum <<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),kernelDims,
 			minVal,maxVal);
 		DEBUG_KERNEL_CHECK();
 

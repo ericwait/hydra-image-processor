@@ -13,32 +13,41 @@
 	Vec<size_t> neighborhood((size_t)nbh[0],(size_t)nbh[1],(size_t)nbh[2]);
 
 	Vec<size_t> imageDims;
-	if (mxIsUint8(prhs[0]))
+	if (mxIsLogical(prhs[0]))
+	{
+		bool* imageIn;
+		unsigned char* imageOut;
+		setupInputPointers(prhs[0], &imageDims, &imageIn);
+		setupOutputPointers(&plhs[0], imageDims, &imageOut);
+
+		imageOut = neighborhoodSum(imageIn, imageDims, neighborhood, NULL,&imageOut, device);
+	}
+	else if (mxIsUint8(prhs[0]))
 	{
 		unsigned char* imageIn;
 		unsigned short* imageOut;
 		setupInputPointers(prhs[0], &imageDims, &imageIn);
 		setupOutputPointers(&plhs[0], imageDims, &imageOut);
 
-		neighborhoodSum(imageIn,imageDims,neighborhood,NULL,&imageOut,device);
+		imageOut = neighborhoodSum(imageIn,imageDims,neighborhood,NULL,&imageOut,device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
 		unsigned short* imageIn;
-		unsigned int*  *imageOut;
+		unsigned int*   imageOut;
 		setupInputPointers(prhs[0], &imageDims, &imageIn);
-		setupOutputPointers(&plhs[0], imageDims, &imageOut);
+		//setupOutputPointers(&plhs[0], imageDims, &imageOut);
 
-		neighborhoodSum(imageIn,imageDims,neighborhood,NULL,&imageOut,device);
+		imageOut = neighborhoodSum(imageIn,imageDims,neighborhood,NULL,&imageOut,device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
 		short* imageIn;
-		int*  *imageOut;
+		int*   imageOut;
 		setupInputPointers(prhs[0], &imageDims, &imageIn);
 		setupOutputPointers(&plhs[0], imageDims, &imageOut);
 
-		neighborhoodSum(imageIn,imageDims,neighborhood,NULL,&imageOut,device);
+		imageOut = neighborhoodSum(imageIn,imageDims,neighborhood,NULL,&imageOut,device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
@@ -47,7 +56,7 @@
 		setupInputPointers(prhs[0], &imageDims, &imageIn);
 		setupOutputPointers(&plhs[0], imageDims, &imageOut);
 
-		neighborhoodSum(imageIn,imageDims,neighborhood,NULL,&imageOut,device);
+		imageOut = neighborhoodSum(imageIn,imageDims,neighborhood,NULL,&imageOut,device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
@@ -56,7 +65,7 @@
 		setupInputPointers(prhs[0], &imageDims, &imageIn);
 		setupOutputPointers(&plhs[0], imageDims, &imageOut);
 
-		neighborhoodSum(imageIn,imageDims,neighborhood,NULL,&imageOut,device);
+		imageOut = neighborhoodSum(imageIn,imageDims,neighborhood,NULL,&imageOut,device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
@@ -65,7 +74,7 @@
 		setupInputPointers(prhs[0], &imageDims, &imageIn);
 		setupOutputPointers(&plhs[0], imageDims, &imageOut);
 
-		neighborhoodSum(imageIn,imageDims,neighborhood,NULL,&imageOut,device);
+		imageOut = neighborhoodSum(imageIn,imageDims,neighborhood,NULL,&imageOut,device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
@@ -74,7 +83,7 @@
 		setupInputPointers(prhs[0], &imageDims, &imageIn);
 		setupOutputPointers(&plhs[0], imageDims, &imageOut);
 
-		neighborhoodSum(imageIn,imageDims,neighborhood,NULL,&imageOut,device);
+		imageOut = neighborhoodSum(imageIn,imageDims,neighborhood,NULL,&imageOut,device);
 	}
 	else
 	{

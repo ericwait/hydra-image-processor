@@ -18,7 +18,7 @@
 #include "CudaMinFilter.cuh"
 #include "CudaMorphologicalOperations.cuh"
 #include "CudaMultiplyImage.cuh"
-//#include "CudaNeighborhoodSum.cuh"
+#include "CudaNeighborhoodSum.cuh"
 #include "CudaNormalizedCovariance.cuh"
 #include "CudaPolyTransferFunc.cuh"
 #include "CudaPow.cuh"
@@ -748,41 +748,45 @@ float* markovRandomFieldDenoiser(const float* imageIn, Vec<size_t> dims, int max
 	return cMultiplyImageWith(imageIn1,imageIn2,dims,factor,imageOut,device);
 }
 
+ unsigned char* neighborhoodSum(const bool* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, unsigned char** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cNeighborhoodSum(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
 
- //unsigned short* neighborhoodSum(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, unsigned short** imageOut /*= NULL*/, int device /*= 0*/)
- //{
-	// return cNeighborhoodSum(imageIn,dims,kernelDims,kernel,imageOut,device);
- //}
+ unsigned short* neighborhoodSum(const unsigned char* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, unsigned short** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cNeighborhoodSum(imageIn,dims,kernelDims,kernel,imageOut,device);
+ }
 
- //unsigned int* neighborhoodSum(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, unsigned int** imageOut /*= NULL*/, int device /*= 0*/)
- //{
-	// return cNeighborhoodSum(imageIn, dims, kernelDims, kernel, imageOut, device);
- //}
+ unsigned int* neighborhoodSum(const unsigned short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, unsigned int** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cNeighborhoodSum(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
 
- //int* neighborhoodSum(const short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, int** imageOut /*= NULL*/, int device /*= 0*/)
- //{
-	// return cNeighborhoodSum(imageIn, dims, kernelDims, kernel, imageOut, device);
- //}
+ int* neighborhoodSum(const short* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, int** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cNeighborhoodSum(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
 
- //double* neighborhoodSum(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
- //{
-	// return cNeighborhoodSum(imageIn, dims, kernelDims, kernel, imageOut, device);
- //}
+ double* neighborhoodSum(const unsigned int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cNeighborhoodSum(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
 
- //double* neighborhoodSum(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
- //{
-	// return cNeighborhoodSum(imageIn, dims, kernelDims, kernel, imageOut, device);
- //}
+ double* neighborhoodSum(const int* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cNeighborhoodSum(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
 
- //double* neighborhoodSum(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
- //{
-	// return cNeighborhoodSum(imageIn, dims, kernelDims, kernel, imageOut, device);
- //}
+ double* neighborhoodSum(const float* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cNeighborhoodSum(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
 
- //double* neighborhoodSum(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
- //{
-	// return cNeighborhoodSum(imageIn, dims, kernelDims, kernel, imageOut, device);
- //}
+ double* neighborhoodSum(const double* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel /*= NULL*/, double** imageOut /*= NULL*/, int device /*= 0*/)
+ {
+	 return cNeighborhoodSum(imageIn, dims, kernelDims, kernel, imageOut, device);
+ }
 
 
  double normalizedCovariance(const unsigned char* imageIn1, const unsigned char* imageIn2, Vec<size_t> dims, int device/*=0*/)

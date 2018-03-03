@@ -57,6 +57,7 @@
     <ClInclude Include="Cuda\CudaMorphologicalOperations.cuh" />
     <ClInclude Include="Cuda\CudaMultAddFilter.cuh" />
     <ClInclude Include="Cuda\CudaMultiplyImage.cuh" />
+    <ClInclude Include="Cuda\CudaNeighborhoodSum.cuh" />
     <ClInclude Include="Cuda\CudaNormalizedCovariance.cuh" />
     <ClInclude Include="Cuda\CudaPolyTransferFunc.cuh" />
     <ClInclude Include="Cuda\CudaPow.cuh" />
