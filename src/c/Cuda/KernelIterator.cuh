@@ -1,18 +1,22 @@
 #pragma once
 
 #include "Vec.h"
+#include "ImageDimensions.cuh"
 
 class KernelIterator
 {
 public:
-	__device__ KernelIterator(Vec<size_t> inputPos, Vec<size_t> inputSize, Vec<size_t> kernelSize);
+	__device__ KernelIterator(Vec<size_t> inputPos, ImageDimensions inputSize, Vec<size_t> kernelSize);
 	__device__ __host__ ~KernelIterator();
 
 	__device__ KernelIterator& operator++();
 	__device__ bool end() { return isEnd; }
 	__device__ void reset();
-	__device__ Vec<float> getImageCoordinate();
-	__device__ Vec<size_t> getKernelIdx();
+	__device__ Vec<float> getImageCoordinate() const;
+	__device__ unsigned int getChannel() const;
+	__device__ unsigned int getFrame() const;
+	__device__ size_t getKernelIdx() const;
+	__device__ ImageDimensions getFullPos() const;
 	
 private:
 	__device__ __host__ KernelIterator() {}
@@ -27,8 +31,12 @@ private:
 	// This is the last index of the kernel to use (e.g. end+1 is out of bounds)
 	Vec<size_t> kernelEndIdx;
 
+	// Save the number of channels and frames
+	unsigned int numChans;
+	unsigned int numFrames;
+
 	// This indicates the current position
-	Vec<size_t> iterator;
+	ImageDimensions iterator;
 
 	bool isEnd;
 };

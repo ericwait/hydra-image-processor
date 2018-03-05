@@ -5,45 +5,47 @@
 #include "ImageChunk.h"
 #include "CudaDeviceImages.cuh"
 #include "ImageContainer.h"
+#include "CudaUtilities.cuh"
 
 template <class PixelType>
-__global__ void cudaAddScaler( CudaImageContainer<PixelType> imageIn1, CudaImageContainer<PixelType> imageOut, double factor, 
-							  PixelType minValue, PixelType maxValue )
+__global__ void cudaAddScaler( CudaImageContainer<PixelType> imageIn1, CudaImageContainer<PixelType> imageOut, double factor, PixelType minValue, PixelType maxValue )
 {
-	Vec<size_t> coordinate;
-	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
-	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
-	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
+	Vec<size_t> coordinate = GetThreadBlockCoordinate();
 
 	if (coordinate<imageIn1.getDims())
 	{
-		double outValue = imageIn1(coordinate) + factor;
-		imageOut(coordinate) = (outValue>maxValue) ? (maxValue) : ((outValue<minValue) ? (minValue) : (outValue));
+		KernelIterator kIt(coordinate, imageIn1.getDims(), Vec<size_t>(1));
+		for(; !kIt.end(); ++kIt)
+		{
+			double outValue = imageIn1(kIt.getFullPos())+factor;
+			imageOut(kIt.getFullPos()) = (outValue>maxValue) ? (maxValue) : ((outValue<minValue) ? (minValue) : (outValue));
+		}
 	}
 }
 
 template <class PixelType>
-__global__ void cudaAddTwoImagesWithFactor( CudaImageContainer<PixelType> imageIn1, CudaImageContainer<PixelType> imageIn2,
-										   CudaImageContainer<PixelType> imageOut, double factor, PixelType minValue, PixelType maxValue )
+__global__ void cudaAddTwoImagesWithFactor( CudaImageContainer<PixelType> imageIn1, CudaImageContainer<PixelType> imageIn2, CudaImageContainer<PixelType> imageOut, double factor, PixelType minValue, PixelType maxValue )
 {
-	Vec<size_t> coordinate;
-	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
-	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
-	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
+	Vec<size_t> coordinate = GetThreadBlockCoordinate();
 
 	if (coordinate<imageIn1.getDims())
 	{
-		double additive = factor*(double)(imageIn2(coordinate));
-		double outValue = (double)(imageIn1(coordinate)) + additive;
+		KernelIterator kIt(coordinate, imageIn1.getDims(), Vec<size_t>(1));
+		for(; !kIt.end(); ++kIt)
+		{
+			double additive = factor* double(imageIn2(kIt.getFullPos()));
+			double outValue = double(imageIn1(kIt.getFullPos())) + additive;
 
-		imageOut(coordinate) = (outValue>(double)maxValue) ? (maxValue) : ((outValue<(double)minValue) ? (minValue) : ((PixelType)outValue));
+			imageOut(kIt.getFullPos()) = (outValue>(double)maxValue) ? (maxValue) : ((outValue<(double)minValue) ? (minValue) : ((PixelType)outValue));
+		}
 	}
 }
 
 template <class PixelTypeIn, class PixelTypeOut>
-ImageContainer<PixelTypeOut> cAddConstant(const ImageContainer<PixelTypeIn> imageIn, double additive, ImageContainer<PixelTypeOut> imageOut, int device=-1)
+void cAddConstant(const ImageContainer<PixelTypeIn> imageIn, double additive, ImageContainer<PixelTypeOut>& imageOut, int device=-1)
 {
-	ImageContainer<PixelTypeOut> imOut = setUpOutIm(imageIn, imageOut);
+	const int NUM_BUFF_NEEDED = 2;
+	setUpOutIm(imageIn.getDims(), imageOut);
 
 	PixelTypeOut minVal = std::numeric_limits<PixelTypeOut>::lowest();
 	PixelTypeOut maxVal = std::numeric_limits<PixelTypeOut>::max();
@@ -51,33 +53,31 @@ ImageContainer<PixelTypeOut> cAddConstant(const ImageContainer<PixelTypeIn> imag
 	int* deviceIdxList;
 	int numDevices;
 	size_t maxThreadsPerBlock;
-	size_t availMem = getCudaInfo(&deviceIdxList, numDevices, maxThreadsPerBlock,device);
+	size_t availMem = getCudaInfo(&deviceIdxList, numDevices, maxThreadsPerBlock, device);
 
     int blockSize = getKernelMaxThreads(cudaAddScaler<PixelTypeOut>);
 	maxThreadsPerBlock = MIN(maxThreadsPerBlock, size_t(blockSize));
 
-    std::vector<ImageChunk> chunks = calculateBuffers<PixelTypeOut>(dims, 2, (size_t)(availMem*MAX_MEM_AVAIL), sizeof(PixelTypeOut), maxThreadsPerBlock,Vec<size_t>(0, 0, 0));
+    std::vector<ImageChunk> chunks = calculateBuffers<PixelTypeOut>(imageIn.getDims(), NUM_BUFF_NEEDED, (size_t)(availMem*MAX_MEM_AVAIL), sizeof(PixelTypeOut), maxThreadsPerBlock, Vec<size_t>(0));
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages<PixelTypeOut> deviceImages(2,maxDeviceDims,device);
+	{// This is were the openMP should go
+		CudaDeviceImages<PixelTypeOut> deviceImages(NUM_BUFF_NEEDED, maxDeviceDims, deviceIdxList[0]);
 
-	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-	{
-		curChunk->sendROI(imageIn,dims,deviceImages.getCurBuffer());
-		deviceImages.setNextDims(curChunk->getFullChunkSize());
+		for(std::vector<ImageChunk>::iterator curChunk = chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+		{
+			curChunk->sendROI(imageIn, deviceImages.getCurBuffer());
+			deviceImages.setNextDims(curChunk->getFullChunkSize());
 
-		cudaAddScaler<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
-			additive,minVal,maxVal);
-		DEBUG_KERNEL_CHECK();
+			cudaAddScaler<<<curChunk->blocks, curChunk->threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), additive, minVal, maxVal);
+			DEBUG_KERNEL_CHECK();
 
-		deviceImages.incrementBuffer();
-
-		curChunk->retriveROI(imOut,dims,deviceImages.getCurBuffer());
+			deviceImages.incrementBuffer();
+			curChunk->retriveROI(imOut, deviceImages.getCurBuffer());
+		}
 	}
-
-	return imOut;
 }
 
 /*
@@ -85,43 +85,42 @@ ImageContainer<PixelTypeOut> cAddConstant(const ImageContainer<PixelTypeIn> imag
 *	which is multiplied to the passed in image prior to adding
 */
 template <class PixelType>
-PixelType* cAddImageWith(const PixelType* imageIn1, const PixelType* imageIn2, Vec<size_t> dims, double additive,
-						PixelType** imageOut=NULL, int device=0)
+void cAddImageWith(const ImageContainer<PixelType> imageIn1, const ImageContainer<PixelType> imageIn2, double additive, ImageContainer<PixelType> imageOut, int device=-1)
 {
-    cudaSetDevice(device);
 
-	PixelType* imOut = setUpOutIm(dims, imageOut);
+	const int NUM_BUFF_NEEDED = 3;
+	setUpOutIm(imageIn.getDims(), imageOut);
 
 	PixelType minVal = std::numeric_limits<PixelType>::lowest();
 	PixelType maxVal = std::numeric_limits<PixelType>::max();
 
-	cudaDeviceProp props;
-	cudaGetDeviceProperties(&props,device);
+	int* deviceIdxList;
+	int numDevices;
+	size_t maxThreadsPerBlock;
+	size_t availMem = getCudaInfo(&deviceIdxList, numDevices, maxThreadsPerBlock, device);
 
-	size_t availMem, total;
-	cudaMemGetInfo(&availMem,&total);
+	int blockSize = getKernelMaxThreads(cudaAddTwoImagesWithFactor<PixelType>);
+	maxThreadsPerBlock = MIN(maxThreadsPerBlock, size_t(blockSize));
 
-    int blockSize = getKernelMaxThreads(cudaAddTwoImagesWithFactor<PixelType>);
-
-	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(dims,3,(size_t)(availMem*MAX_MEM_AVAIL),props,Vec<size_t>(0,0,0),blockSize);
+	std::vector<ImageChunk> chunks = calculateBuffers<PixelType>(imageIn.getDims(), NUM_BUFF_NEEDED, (size_t)(availMem*MAX_MEM_AVAIL), sizeof(PixelType), maxThreadsPerBlock, Vec<size_t>(0));
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	CudaDeviceImages<PixelType> deviceImages(3,maxDeviceDims,device);
+	{// This is were the openMP should go
+		CudaDeviceImages<PixelTypeOut> deviceImages(NUM_BUFF_NEEDED, maxDeviceDims, deviceIdxList[0]);
 
-	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
-	{
-		deviceImages.setAllDims(curChunk->getFullChunkSize());
-		curChunk->sendROI(imageIn1,dims,deviceImages.getCurBuffer());
-		curChunk->sendROI(imageIn2,dims,deviceImages.getNextBuffer());
+		for(std::vector<ImageChunk>::iterator curChunk = chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+		{
+			deviceImages.setAllDims(curChunk->getFullChunkSize());
+			curChunk->sendROI(imageIn1, deviceImages.getCurBuffer());
+			curChunk->sendROI(imageIn1, deviceImages.getNextBuffer());
 
-		cudaAddTwoImagesWithFactor<<<curChunk->blocks,curChunk->threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()),
-			*(deviceImages.getThirdBuffer()),additive,minVal,maxVal);
-		DEBUG_KERNEL_CHECK();
+			cudaAddTwoImagesWithFactor<<<curChunk->blocks, curChunk->threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()),*(deviceImages.getThirdBuffer()), additive, minVal, maxVal);
+			DEBUG_KERNEL_CHECK();
 
-		curChunk->retriveROI(imOut,dims,deviceImages.getThirdBuffer());
+			deviceImages.incrementBuffer();
+			curChunk->retriveROI(imOut, deviceImages.getThirdBuffer());
+		}
 	}
-
-	return imOut;
 }

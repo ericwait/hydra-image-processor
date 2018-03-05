@@ -6,7 +6,7 @@
 
 #include "Vec.h"
 #include <vector>
-#include "ImageChunk.cuh"
+#include "ImageChunk.h"
 #include "CudaImageContainerClean.cuh"
 #include "Defines.h"
 #include "CudaUtilities.cuh"

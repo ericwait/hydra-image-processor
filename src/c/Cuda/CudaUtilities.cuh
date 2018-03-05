@@ -1,12 +1,14 @@
 #pragma once
 
-#include "cuda_runtime.h"
+#include "Vec.h"
+#include "Defines.h"
+#include "ImageDimensions.cuh"
+#include "ImageContainer.h"
+
+#include <cuda_runtime.h>
 #include <stdio.h>
 #include <stdexcept>
 #include <vector>
-#include "Vec.h"
-#include "Defines.h"
-
 #include <cuda_occupancy.h>
 #include <functional>
 
@@ -61,57 +63,33 @@ inline void gpuAssert(cudaError_t code, char *file, int line, bool abort=true)
 }
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 
-struct Lock 
-{
-	int* mutex;
-
-	Lock()
-	{
-#if __CUDA_ARCH__ >= 200
-		int state = 0;
-		HANDLE_ERROR(cudaMalloc((void**)&mutex,sizeof(int)));
-		HANDLE_ERROR(cudaMemcpy(mutex,&state,sizeof(int),cudaMemcpyHostToDevice));
-#endif
-	}
-
-	~Lock()
-	{
-#if __CUDA_ARCH__ >= 200
-		cudaFree(mutex);
-#endif
-	}
-
-	__device__ void lock()
-	{
-#if __CUDA_ARCH__ >= 200
-		while(atomicCAS(mutex,0,1) != 0);
-#endif
-	}
-
-	__device__ void unlock()
-	{
-#if __CUDA_ARCH__ >= 200
-		atomicExch(mutex,0);
-#endif
-	}
-};
-
 template <class PixelType>
-PixelType* setUpOutIm(Vec<size_t> dims, PixelType** imageOut)
+void setUpOutIm(ImageDimensions dims, ImageContainer<PixelType>& imageOut)
 {
-	PixelType* imOut;
-	if (imageOut==NULL)
-		imOut = new PixelType[dims.product()];
-	else
-		imOut = *imageOut;
+	if(imageOut.getPtr()==NULL)
+	{
+		imageOut.getPtr() = new PixelType[dims.getNumElements()];
+		imageOut.dimensions = dims;
+	}
+	else if(imageOut.dimensions!=dims)
+	{
+		throw std::runtime_error("Image out buffer malformed!");
+	}
+}
 
-	return imOut;
+Vec<size_t> GetThreadBlockCoordinate()
+{
+	Vec<size_t> coordinate;
+	coordinate.x = threadIdx.x+blockIdx.x * blockDim.x;
+	coordinate.y = threadIdx.y+blockIdx.y * blockDim.y;
+	coordinate.z = threadIdx.z+blockIdx.z * blockDim.z;
+
+	return coordinate;
 }
 
 size_t memoryAvailable(int device, size_t* totalOut=NULL);
 bool checkFreeMemory(size_t needed, int device, bool throws=false);
-void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads,
-					 size_t maxThreads=std::numeric_limits<size_t>::max());
+void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads, size_t maxThreads=std::numeric_limits<size_t>::max());
 Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernel, Vec<int>& iterations);
 Vec<size_t> createLoGKernel(Vec<float> sigma, float** kernelOut, size_t& kernSize);
 Vec<size_t> createGaussianKernelFull(Vec<float> sigma, float** kernelOut, Vec<size_t> maxKernelSize = Vec<size_t>(std::numeric_limits<size_t>::max()));

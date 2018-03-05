@@ -1,14 +1,12 @@
 #include "CudaUtilities.cuh"
 
-void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &blocks, dim3 &threads,
-					 size_t maxThreads/*=std::numeric_limits<size_t>::max()*/)
+void calcBlockThread(const Vec<size_t>& dims, size_t maxThreads, dim3 &blocks, dim3 &threads)
 {
-	size_t mxThreads = MIN(prop.maxThreadsPerBlock,maxThreads);
 	if (dims.z <= 1)
 	{
 		if (dims.y <= 1)
 		{
-			if (dims.x < mxThreads)
+			if (dims.x < maxThreads)
 			{
 				threads.x = (unsigned int)dims.x;
 				threads.y = 1;
@@ -16,14 +14,14 @@ void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &
 			} 
 			else
 			{
-				threads.x = (unsigned int)mxThreads;
+				threads.x = (unsigned int)maxThreads;
 				threads.y = 1;
 				threads.z = 1;
 			}
 		}
 		else
 		{
-			if (dims.x*dims.y < mxThreads)
+			if (dims.x*dims.y < maxThreads)
 			{
 				threads.x = (unsigned int)dims.x;
 				threads.y = (unsigned int)dims.y;
@@ -31,7 +29,7 @@ void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &
 			} 
 			else
 			{
-				int dim = (unsigned int)sqrt((double)mxThreads);
+				int dim = (unsigned int)sqrt((double)maxThreads);
 
 				threads.x = dim;
 				threads.y = dim;
@@ -41,7 +39,7 @@ void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &
 	}
 	else
 	{
-		if(dims.x*dims.y*dims.z < mxThreads)
+		if(dims.x*dims.y*dims.z < maxThreads)
 		{
 			threads.x = (unsigned int)dims.x;
 			threads.y = (unsigned int)dims.y;
@@ -50,7 +48,7 @@ void calcBlockThread(const Vec<size_t>& dims, const cudaDeviceProp &prop, dim3 &
 		else
 		{
 			unsigned long index;
-			_BitScanReverse(&index,unsigned long(mxThreads));
+			_BitScanReverse(&index,unsigned long(maxThreads));
 
 			int dim = index/3;
 			threads.x = 1 << MAX(dim,(int)index - 2*dim);

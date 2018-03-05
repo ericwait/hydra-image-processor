@@ -3,7 +3,7 @@
 #include <limits.h>
 #include <float.h>
 
-__device__ KernelIterator::KernelIterator(Vec<size_t> inputPos, Vec<size_t> inputSize, Vec<size_t> kernelSize)
+__device__ KernelIterator::KernelIterator(Vec<size_t> inputPos, ImageDimensions inputSize, Vec<size_t> kernelSize)
 {
 	Vec<float> inputCoordinate(inputPos);
 
@@ -20,18 +20,20 @@ __device__ KernelIterator::KernelIterator(Vec<size_t> inputPos, Vec<size_t> inpu
 
 	// This should be the last place in the image that will be considered
 	Vec<float> imageEndCoordinate = inputStartCoordinate + Vec<float>(kernelSize-1);
-	Vec<float> outOfBoundsAmount = imageEndCoordinate - Vec<float>(inputSize-1);
+	Vec<float> outOfBoundsAmount = imageEndCoordinate - Vec<float>(inputSize.dims-1);
 
 	kernelEndIdx = kernelSize - Vec<size_t>(Vec<float>::max(1, outOfBoundsAmount +1));
 
-	iterator = Vec<size_t>(0);
+	iterator = ImageDimensions(0,0,0);
 	isEnd = false;
 }
 
 __device__ __host__ KernelIterator::~KernelIterator()
 {
 	isEnd = true;
-	iterator = Vec<size_t>(ULLONG_MAX);
+	iterator.dims = Vec<size_t>(ULLONG_MAX);
+	iterator.chan = INT_MAX;
+	iterator.frame = INT_MAX;
 	inputStartCoordinate = Vec<float>(FLT_MAX_EXP);
 	kernelStartIdx = Vec<size_t>(ULLONG_MAX);
 	kernelEndIdx = Vec<size_t>(0);
@@ -39,17 +41,24 @@ __device__ __host__ KernelIterator::~KernelIterator()
 
 __device__ KernelIterator& KernelIterator::operator++()
 {
-	if(++iterator.x>kernelEndIdx.x)
+	if(++iterator.dims.x>kernelEndIdx.x)
 	{
-		iterator.x = kernelStartIdx.x;
-		
-		if(++iterator.y>kernelEndIdx.y)
+		iterator.dims.x = kernelStartIdx.x;
+		if(++iterator.dims.y>kernelEndIdx.y)
 		{
-			iterator.y = kernelStartIdx.y;
-			if(++iterator.z>kernelEndIdx.z)
+			iterator.dims.y = kernelStartIdx.y;
+			if(++iterator.dims.z>kernelEndIdx.z)
 			{
-				iterator.z = kernelEndIdx.z;
-				isEnd = true;
+				iterator.dims.z = kernelEndIdx.z;
+				if(++iterator.chan>numChans)
+				{
+					iterator.chan = 0;
+					if(++iterator.frame>numFrames)
+					{
+						iterator.frame = 0;
+						isEnd = true;
+					}
+				}
 			}
 		}
 	}
@@ -60,15 +69,30 @@ __device__ KernelIterator& KernelIterator::operator++()
 __device__ void KernelIterator::reset()
 {
 	isEnd = false;
-	iterator = Vec<size_t>(0);
+	iterator = ImageDimensions(Vec<size_t>(0), 0, 0);
 }
 
-__device__ Vec<float> KernelIterator::getImageCoordinate()
+__device__ Vec<float> KernelIterator::getImageCoordinate() const
 {
-	return inputStartCoordinate + Vec<float>(iterator);
+	return inputStartCoordinate + Vec<float>(iterator.dims);
 }
 
-__device__ Vec<size_t> KernelIterator::getKernelIdx()
+__device__ unsigned int KernelIterator::getChannel() const
+{
+	return iterator.chan;
+}
+
+__device__ unsigned int KernelIterator::getFrame() const
+{
+	return iterator.frame;
+}
+
+__device__ size_t KernelIterator::getKernelIdx() const
+{
+	return iterator.dims.product();
+}
+
+__device__ ImageDimensions KernelIterator::getFullPos() const
 {
 	return iterator;
 }

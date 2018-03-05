@@ -2,7 +2,7 @@
 #include "CudaImageContainer.cuh"
 
 #include "Vec.h"
-#include "ImageChunk.cuh"
+#include "ImageChunk.h"
 
 template <class PixelType>
 __global__ void cudaImageCopy(CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut)

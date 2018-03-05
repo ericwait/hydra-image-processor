@@ -158,6 +158,9 @@
     <ClInclude Include="Cuda\KernelGenerators.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cuda\ImageDimensions.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cuda\CHelpers.cpp">
@@ -169,9 +172,6 @@
     <ClCompile Include="Cuda\CudaDeviceInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Cuda\ImageChunk.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Cuda\CudaUtilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -179,6 +179,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Cuda\LoGKernel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cuda\ImageChunk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

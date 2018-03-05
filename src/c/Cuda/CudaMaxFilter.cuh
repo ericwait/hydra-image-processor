@@ -6,7 +6,7 @@
 #include <vector>
 #include "CHelpers.h"
 #include "CudaUtilities.cuh"
-#include "ImageChunk.cuh"
+#include "ImageChunk.h"
 #include "CudaDeviceImages.cuh"
 
 #ifndef CUDA_CONST_KERNEL
@@ -15,31 +15,29 @@ __constant__ float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM]
 #endif
 
 template <class PixelType>
-__global__ void cudaMaxFilter( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, Vec<size_t> hostKernelDims,
-							  PixelType minVal, PixelType maxVal)
+__global__ void cudaMaxFilter( CudaImageContainer<PixelType> imageIn, CudaImageContainer<PixelType> imageOut, Vec<size_t> hostKernelDims, PixelType minVal, PixelType maxVal)
 {
-	Vec<size_t> coordinate;
-	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
-	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
-	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
+	Vec<size_t> coordinate_xyz;
+	coordinate_xyz.x = threadIdx.x + blockIdx.x * blockDim.x;
+	coordinate_xyz.y = threadIdx.y + blockIdx.y * blockDim.y;
+	coordinate_xyz.z = threadIdx.z + blockIdx.z * blockDim.z;
 
-	if (coordinate<imageIn.getDims())
+	if (coordinate_xyz<imageIn.getSpatialDims())
 	{
-		double localMaxVal = imageIn(coordinate);
+		double localMaxVal = imageIn(coordinate_xyz);
 
 		Vec<size_t> kernelDims = hostKernelDims;
-		KernelIterator kIt(coordinate, imageIn.getDims(), kernelDims);
+		KernelIterator kIt(coordinate_xyz, imageIn.getDims(), kernelDims);
 
 		for(; !kIt.end(); ++kIt)
 		{
-			Vec<size_t> kernIdx(kIt.getKernelIdx());
-			float kernVal = cudaConstKernel[kernelDims.linearAddressAt(kernIdx)];
+			float kernVal = cudaConstKernel[kIt.getKernelIdx()];
 
 			if(kernVal==0)
 				continue;
 
 			Vec<float> imageCoord(kIt.getImageCoordinate());
-			double temp = imageIn(imageCoord) * kernVal;
+			double temp = imageIn(imageCoord,kIt.getChannel(),kIt.getFrame()) * kernVal;
 
 			if(temp>localMaxVal)
 			{
@@ -47,13 +45,12 @@ __global__ void cudaMaxFilter( CudaImageContainer<PixelType> imageIn, CudaImageC
 			}
 		}
 
-		imageOut(coordinate) = (localMaxVal>maxVal) ? (maxVal) : ((PixelType)localMaxVal);
+		imageOut(coordinate_xyz) = (localMaxVal>maxVal) ? (maxVal) : ((PixelType)localMaxVal);
 	}
 }
 
 template <class PixelType>
-PixelType* cMaxFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, PixelType** imageOut=NULL,
-					 int device=0)
+PixelType* cMaxFilter(const PixelType* imageIn, Vec<size_t> dims, Vec<size_t> kernelDims, float* kernel=NULL, PixelType** imageOut=NULL, int device=-1)
 {
     cudaSetDevice(device);
 	PixelType* imOut = setUpOutIm(dims, imageOut);

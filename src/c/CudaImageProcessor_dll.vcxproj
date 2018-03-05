@@ -74,12 +74,14 @@
     <ClInclude Include="Cuda\Defines.h" />
     <ClInclude Include="Cuda\ImageChunk.h" />
     <ClInclude Include="Cuda\ImageContainer.h" />
+    <ClInclude Include="Cuda\ImageDimensions.cuh" />
     <ClInclude Include="Cuda\KernelGenerators.h" />
     <ClInclude Include="Cuda\KernelIterator.cuh" />
     <ClInclude Include="Cuda\Vec.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cuda\CHelpers.cpp" />
+    <ClCompile Include="Cuda\ImageChunk.cpp" />
     <ClCompile Include="Cuda\LoGKernel.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -92,9 +94,6 @@
     </ClCompile>
     <CudaCompile Include="Cuda\CWrappers.cu" />
     <ClCompile Include="Cuda\GaussianKernel.cpp" />
-    <ClCompile Include="Cuda\ImageChunk.cpp">
-      <FileType>Document</FileType>
-    </ClCompile>
     <CudaCompile Include="Cuda\KernelIterator.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

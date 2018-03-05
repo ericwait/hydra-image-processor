@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Vec.h"
+#include "CudaUtilities.cuh"
+#include "ImageContainer.h"
 
 #include <string>
-#include "CudaUtilities.cuh"
+
 
 template <class PixelType>
 class CudaImageContainer
@@ -32,24 +34,24 @@ public:
 
 	__device__ PixelType* getImagePointer(){return image;}
 
-	__device__ PixelType& operator()( Vec<size_t> coordinate )
+	__device__ PixelType& operator()( ImageDimensions coordinate)
 	{
         return accessValue(coordinate);
 	}
 
-	__device__ const PixelType& operator()( Vec<size_t> coordinate ) const
+	__device__ const PixelType& operator()( ImageDimensions coordinate) const
 	{
         return accessValue(coordinate);
 	}
 
-	__device__ const PixelType operator()(Vec<float> pos) const
+	__device__ const PixelType operator()(Vec<float> pos, unsigned int chan=0, unsigned	int frame=0) const
 	{
 		Vec<size_t> curPos(0);
 		double val = 0;
 		if(pos.floor()==pos)
 		{
 			curPos = Vec<size_t>(pos);
-			val = accessValue(curPos);
+			val = accessValue(curPos,chan,frame);
 			return val;
 		}
 
@@ -67,35 +69,35 @@ public:
 		Vec<size_t> minPos(0, 0, 0);
 		curPos = Vec<size_t>(i, j, k);
 		if(curPos>=minPos && curPos<roiSizes)
-			val += (1-alpha) * (1-beta)  * (1-gamma) * accessValue(curPos);
+			val += (1-alpha) * (1-beta)  * (1-gamma) * accessValue(curPos, chan, frame);
 
 		curPos = Vec<size_t>(i+1, j, k);
 		if(curPos>=minPos && curPos<roiSizes)
-			val += alpha  * (1-beta)  * (1-gamma) * accessValue(curPos);
+			val += alpha  * (1-beta)  * (1-gamma) * accessValue(curPos, chan, frame);
 
 		curPos = Vec<size_t>(i, j+1, k);
 		if(curPos>=minPos && curPos<roiSizes)
-			val += (1-alpha) *    beta   * (1-gamma) * accessValue(curPos);
+			val += (1-alpha) *    beta   * (1-gamma) * accessValue(curPos, chan, frame);
 
 		curPos = Vec<size_t>(i+1, j+1, k);
 		if(curPos>=minPos && curPos<roiSizes)
-			val += alpha  *    beta   * (1-gamma) * accessValue(curPos);
+			val += alpha  *    beta   * (1-gamma) * accessValue(curPos, chan, frame);
 
 		curPos = Vec<size_t>(i, j, k+1);
 		if(curPos>=minPos && curPos<roiSizes)
-			val += (1-alpha) * (1-beta)  *    gamma  * accessValue(curPos);
+			val += (1-alpha) * (1-beta)  *    gamma  * accessValue(curPos, chan, frame);
 
 		curPos = Vec<size_t>(i+1, j, k+1);
 		if(curPos>=minPos && curPos<roiSizes)
-            val += alpha  * (1-beta)  *    gamma  * accessValue(curPos);
+            val += alpha  * (1-beta)  *    gamma  * accessValue(curPos, chan, frame);
 
 		curPos = Vec<size_t>(i, j+1, k+1);
 		if(curPos>=minPos && curPos<roiSizes)
-			val += (1-alpha) *    beta   *    gamma  * accessValue(curPos);
+			val += (1-alpha) *    beta   *    gamma  * accessValue(curPos, chan, frame);
 
 		curPos = Vec<size_t>(i+1, j+1, k+1);
 		if(curPos>=minPos && curPos<roiSizes)
-			val += alpha  *    beta   *    gamma  * accessValue(curPos);
+			val += alpha  *    beta   *    gamma  * accessValue(curPos, chan, frame);
 
 		return val;
 	}
@@ -110,21 +112,24 @@ public:
         return accessValue(idx);
 	}
 
-	__host__ __device__ const Vec<size_t>& getDims() const { return roiSizes; }
-	__host__ __device__ size_t getWidth() const { return roiSizes.x; }
-	__host__ __device__ size_t getHeight() const { return roiSizes.y; }
-	__host__ __device__ size_t getDepth() const { return roiSizes.z; }
+	__host__ __device__ const ImageDimensions& getDims() const { return roiSizes; }
+	__host__ __device__ const Vec<size_t> getSpatialDims() const { return roiSizes.dims; }
+	__host__ __device__ size_t getWidth() const { return roiSizes.dims.x; }
+	__host__ __device__ size_t getHeight() const { return roiSizes.dims.y; }
+	__host__ __device__ size_t getDepth() const { return roiSizes.dims.z; }
+	__host__ __device__ unsigned int getNumChans() const { return roiSizes.chan; }
+	__host__ __device__ unsigned int getNumFrames() const { return roiSizes.frame; }
 
-	bool setDims(Vec<size_t> dims)
+	bool setDims(ImageDimensions dims)
 	{
-		if (maxImageDims.product()<dims.product())
+		if (maxImageDims.getNumElements()<dims.getNumElements())
 			return false;
 
 		imageDims = dims;
 
 		return true;
 	}
-	bool setROIstart(Vec<size_t> starts)
+	bool setROIstart(ImageDimensions starts)
 	{
 		if(starts>=imageDims)
 			return false;
@@ -132,7 +137,7 @@ public:
 		roiStarts = starts;
 		return true;
 	}
-	bool setROIsize(Vec<size_t> sizes)
+	bool setROIsize(ImageDimensions sizes)
 	{
 		if(roiStarts+sizes>imageDims)
 			return false;
@@ -146,21 +151,21 @@ public:
 		roiSizes = imageDims;
 	}
 
-	void loadImage(const PixelType* imageIn,Vec<size_t> dims)
+	void loadImage(const ImageContainer<PixelType> imageIn)
 	{
 		HANDLE_ERROR(cudaSetDevice(device));
-		if(dims!=imageDims)
+		if(imageIn.dims!=imageDims)
 		{
 			if(image!=NULL)
 			{
 				HANDLE_ERROR(cudaFree(image));
 			}
-			checkFreeMemory(sizeof(PixelType)*dims.product(),device,true);
-			HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(PixelType)*dims.product()));
-			imageDims = dims;
+			checkFreeMemory(sizeof(PixelType)*imageIn.dims.getNumElements(),device,true);
+			HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(PixelType)*imageIn.dims.getNumElements()));
+			imageDims = imageIn.dims;
 		}
 
-		HANDLE_ERROR(cudaMemcpy(image,imageIn,sizeof(PixelType)*dims.product(),cudaMemcpyHostToDevice));
+		HANDLE_ERROR(cudaMemcpy(image,imageIn.getConstPtr(),sizeof(PixelType)*imageIn.dims.getNumElements(),cudaMemcpyHostToDevice));
 	}
 
 protected:
@@ -170,28 +175,35 @@ protected:
 		image = NULL;
 	}
 
-	CudaImageContainer(const PixelType* imageIn,Vec<size_t> dims,int device=0) {}
+	CudaImageContainer(const PixelType* imageIn,ImageDimensions dims,int device=0) {}
 
-	CudaImageContainer(Vec<size_t> dims,int device=0) {}
+	CudaImageContainer(ImageDimensions dims,int device=0) {}
 
 	__host__ __device__ void defaults()
 	{
-		maxImageDims = Vec<size_t>(0, 0, 0);
-		imageDims = Vec<size_t>(0,0,0);
+		maxImageDims = ImageDimensions(Vec<size_t>(0), 0, 0));
+		imageDims = ImageDimensions(Vec<size_t>(0), 0, 0));
 		device = 0;
-		roiStarts = Vec<size_t>(0, 0, 0);
-		roiSizes = Vec<size_t>(0, 0, 0);
+		roiStarts = ImageDimensions(Vec<size_t>(0), 0, 0));
+		roiSizes = ImageDimensions(Vec<size_t>(0), 0, 0));
 	}
 
-    __device__ PixelType& accessValue(Vec<size_t> coordinate)
+    __device__ PixelType& accessValue(Vec<size_t> coordinate, unsigned int chan = 0, unsigned int frame = 0)
     {
-        return image[getIdx(coordinate)];
+		ImageDimensions curCoord(coordinate, chan, frame);
+        return image[getIdx(curCoord)];
     }
     
-    __device__ const PixelType& accessValue(Vec<size_t> coordinate) const
+    __device__ const PixelType& accessValue(ImageDimensions coordinate) const
     {
         return image[getIdx(coordinate)];
     }
+
+	__device__ const PixelType& accessValue(Vec<size_t> dims, unsigned int chan, unsigned int frame) const
+	{
+		ImageDimensions coordinate(dims, chan, frame);
+		return image[getIdx(coordinate)];
+	}
 
     __device__ PixelType& accessValue(size_t idx)
     {
@@ -203,28 +215,27 @@ protected:
         return image[getIdx(idx)];
     }
 
-    __device__ size_t getIdx(Vec<size_t> coordinate) const
+    __device__ size_t getIdx(ImageDimensions coordinate) const
     {
-        coordinate += Vec<size_t>(roiStarts);
+        coordinate += roiStarts;
 
         return imageDims.linearAddressAt(coordinate);
     }
 
     __device__ size_t getIdx(size_t idx) const
     {
-        Vec<size_t> deviceStarts = Vec<size_t>(roiStarts);
-        if(deviceStarts==Vec<size_t>(0, 0, 0))
+        if(roiStarts==ImageDimensions(0,0,0))
             return idx;
 
-        Vec<size_t> coordinate = imageDims.coordAddressOf(idx) + deviceStarts;
+        ImageDimensions coordinate = imageDims.coordAddressOf(idx) + roiStarts;
 
         return imageDims.linearAddressAt(coordinate);
     }
 
 	int device;
-	Vec<size_t> maxImageDims;
-	Vec<size_t> imageDims;
-	Vec<size_t> roiStarts;
-	Vec<size_t> roiSizes;
+	ImageDimensions maxImageDims;
+	ImageDimensions imageDims;
+	ImageDimensions roiStarts;
+	ImageDimensions roiSizes;
 	PixelType*	image;
 };

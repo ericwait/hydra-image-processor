@@ -4,7 +4,7 @@
 #include "Vec.h"
 #include <vector>
 #include "CHelpers.h"
-#include "ImageChunk.cuh"
+#include "ImageChunk.h"
 #include "CudaDeviceImages.cuh"
 
 template <class PixelType>

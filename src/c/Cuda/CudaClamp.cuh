@@ -2,7 +2,7 @@
 #include "Vec.h"
 #include "CudaImageContainer.cuh"
 #include "CHelpers.h"
-#include "ImageChunk.cuh"
+#include "ImageChunk.h"
 #include "CudaDeviceImages.cuh"
 
 template <class PixelType>

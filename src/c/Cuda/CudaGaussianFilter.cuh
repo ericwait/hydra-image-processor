@@ -2,7 +2,7 @@
 
 #include "Vec.h"
 #include <vector>
-#include "ImageChunk.cuh"
+#include "ImageChunk.h"
 #include "CudaDeviceImages.cuh"
 #include "CudaMultAddFilter.cuh"
 #include "CudaUtilities.cuh"

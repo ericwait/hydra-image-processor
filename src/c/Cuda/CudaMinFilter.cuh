@@ -6,7 +6,7 @@
 #include <vector>
 #include "CHelpers.h"
 #include "CudaUtilities.cuh"
-#include "ImageChunk.cuh"
+#include "ImageChunk.h"
 #include "CudaDeviceImages.cuh"
 
 #ifndef CUDA_CONST_KERNEL

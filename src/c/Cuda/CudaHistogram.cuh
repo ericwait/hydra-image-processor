@@ -4,7 +4,7 @@
 #include "Vec.h"
 #include <vector>
 #include "CudaUtilities.cuh"
-#include "ImageChunk.cuh"
+#include "ImageChunk.h"
 #include "CudaDeviceImages.cuh"
 #include "Defines.h"
 

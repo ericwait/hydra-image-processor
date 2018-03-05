@@ -3,7 +3,7 @@
 #include "CudaImageContainer.cuh"
 #include "Vec.h"
 #include <vector>
-#include "ImageChunk.cuh"
+#include "ImageChunk.h"
 #include "CudaDeviceImages.cuh"
 #include "CHelpers.h"
 #include "CudaHistogram.cuh"

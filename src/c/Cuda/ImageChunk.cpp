@@ -1,237 +1,265 @@
 #include "ImageChunk.h"
 #include "CudaUtilities.h"
 
-void setMaxDeviceDims(std::vector<ImageChunk> &chunks, Vec<size_t> &maxDeviceDims)
+void setMaxDeviceDims(std::vector<ImageChunk> &chunks, ImageDimensions &maxDeviceDims)
 {
-	maxDeviceDims = Vec<size_t>(0,0,0);
+	maxDeviceDims.dims = Vec<size_t>(0, 0, 0);
 
-	for (std::vector<ImageChunk>::iterator curChunk=chunks.begin(); curChunk!=chunks.end(); ++curChunk)
+	for(std::vector<ImageChunk>::iterator curChunk = chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
-		Vec<size_t> curDim = curChunk->getFullChunkSize();
+		ImageDimensions curDim = curChunk->getFullChunkSize();
 
-		if (curDim.x>maxDeviceDims.x)
-			maxDeviceDims.x = curDim.x;
+		if(curDim.dims.x>maxDeviceDims.dims.x)
+			maxDeviceDims.dims.x = curDim.dims.x;
 
-		if (curDim.y>maxDeviceDims.y)
-			maxDeviceDims.y = curDim.y;
+		if(curDim.dims.y>maxDeviceDims.dims.y)
+			maxDeviceDims.dims.y = curDim.dims.y;
 
-		if (curDim.z>maxDeviceDims.z)
-			maxDeviceDims.z = curDim.z;
+		if(curDim.dims.z>maxDeviceDims.dims.z)
+			maxDeviceDims.dims.z = curDim.dims.z;
+
+		if(curDim.chan>maxDeviceDims.chan)
+			maxDeviceDims.chan = curDim.chan;
+
+		if(curDim.frame>maxDeviceDims.frame)
+			maxDeviceDims.frame = curDim.frame;
 	}
 }
 
-std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, Vec<size_t> deviceDims, size_t maxThreads, Vec<size_t> kernalDims/*=Vec<size_t>(0,0,0)*/)
+std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, ImageDimensions deviceDims, size_t maxThreads, Vec<size_t> kernalDims /*= Vec<size_t>(0, 0, 0)*/)
 {
 	std::vector<ImageChunk> localChunks;
-	Vec<size_t> margin((kernalDims + 1)/2); //integer round
-	Vec<size_t> chunkDelta(deviceDims-margin*2);
-	Vec<size_t> numChunks(1,1,1);
+	Vec<size_t> margin((kernalDims+1)/2); //integer round
+	ImageDimensions chunkDelta(Vec<size_t>(1), 1, 1);
+	chunkDelta.dims = deviceDims.dims-margin*2;
+	ImageDimensions numChunks;
+	numChunks.dims = Vec<size_t>(1, 1, 1);
+	numChunks.chan = 1;
+	numChunks.frame = 1;
 
-	Vec<size_t> spatialDimensions = imageDims.spatialDimensions;
+	Vec<size_t> devSpatialDims = deviceDims.dims;
 
-	if (spatialDimensions.x>deviceDims.x)
-		numChunks.x = (size_t)ceil((double)spatialDimensions.x/chunkDelta.x);
+	if(imageDims.dims.x>deviceDims.dims.x)
+		numChunks.dims.x = (size_t)ceil((double)imageDims.dims.x/chunkDelta.x);
 	else
-		chunkDelta.x = spatialDimensions.x;
+		chunkDelta.dims.x = imageDims.dims.x;
 
-	if (spatialDimensions.y>deviceDims.y)
-		numChunks.y = (size_t)ceil((double)spatialDimensions.y/chunkDelta.y);
+	if(imageDims.dims.y>deviceDims.dims.y)
+		numChunks.dims.y = (size_t)ceil((double)imageDims.dims.y/chunkDelta.y);
 	else
-		chunkDelta.y = spatialDimensions.y;
+		chunkDelta.dims.y = imageDims.dims.y;
 
-	if (spatialDimensions.z>deviceDims.z)
-		numChunks.z = (size_t)ceil((double)spatialDimensions.z/chunkDelta.z);
+	if(imageDims.dims.z>deviceDims.dims.z)
+		numChunks.dims.z = (size_t)ceil((double)imageDims.dims.z/chunkDelta.z);
 	else
-		chunkDelta.z = spatialDimensions.z;
+		chunkDelta.dims.z = imageDims.dims.z;
 
-	localChunks.resize(numChunks.product());
+	if(imageDims.chan>deviceDims.chan)
+		numChunks.chan = (size_t)ceil((double)imageDims.chan/deviceDims.chan);
+	else
+		chunkDelta.chan = imageDims.chan;
 
-	Vec<size_t> curChunk(0,0,0);
-	Vec<size_t> imageStart(0,0,0);
-	Vec<size_t> chunkROIstart(0,0,0);
-	Vec<size_t> imageROIstart(0,0,0);
-	Vec<size_t> imageEnd(0,0,0);
-	Vec<size_t> chunkROIend(0,0,0);
-	Vec<size_t> imageROIend(0,0,0);
+	if(imageDims.chan>deviceDims.chan)
+		numChunks.chan = (size_t)ceil((double)imageDims.chan/deviceDims.chan);
+	else
+		chunkDelta.chan = imageDims.chan;
 
-	for (curChunk.z=0; curChunk.z<numChunks.z; ++curChunk.z)
+	localChunks.resize(numChunks.getNumElements());
+
+	ImageDimensions curChunk(Vec<size_t>(0), 0, 0);
+	Vec<size_t> imageStart(0, 0, 0);
+	Vec<size_t> chunkROIstart(0, 0, 0);
+	Vec<size_t> imageROIstart(0, 0, 0);
+	unsigned int chanStart = 0;
+	unsigned int frameStart = 0;
+	Vec<size_t> imageEnd(0, 0, 0);
+	Vec<size_t> chunkROIend(0, 0, 0);
+	Vec<size_t> imageROIend(0, 0, 0);
+	unsigned int chanEnd = 0;
+	unsigned int frameEnd = 0;
+
+	for(curChunk.frame = 0; curChunk.frame<numChunks.frame; ++curChunk.frame)
 	{
-		for (curChunk.y=0; curChunk.y<numChunks.y; ++curChunk.y)
+		for(curChunk.chan = 0; curChunk.chan<numChunks.chan; ++curChunk.chan)
 		{
-			for (curChunk.x=0; curChunk.x<numChunks.x; ++curChunk.x)
+			for(curChunk.dims.z = 0; curChunk.dims.z<numChunks.dims.z; ++curChunk.dims.z)
 			{
-				imageROIstart = chunkDelta * curChunk;
-				imageROIend = Vec<size_t>::min(imageROIstart + chunkDelta, imageDims -1);
-				imageStart = Vec<size_t>(Vec<int>::max(Vec<int>(imageROIstart)-Vec<int>(margin), Vec<int>(0,0,0)));
-				imageEnd = Vec<size_t>::min(imageROIend + margin, imageDims-1);
-				chunkROIstart = imageROIstart - imageStart;
-				chunkROIend = imageROIend - imageStart;
+				for(curChunk.dims.y = 0; curChunk.dims.y<numChunks.dims.y; ++curChunk.dims.y)
+				{
+					for(curChunk.dims.x = 0; curChunk.dims.x<numChunks.dims.x; ++curChunk.dims.x)
+					{
+						imageROIstart = chunkDelta.dims * curChunk.dims;
+						imageROIend = Vec<size_t>::min(imageROIstart+chunkDelta.dims, imageDims.dims-1);
+						imageStart = Vec<size_t>(Vec<int>::max(Vec<int>(imageROIstart)-Vec<int>(margin), Vec<int>(0, 0, 0)));
+						imageEnd = Vec<size_t>::min(imageROIend+margin, imageDims.dims-1);
+						chunkROIstart = imageROIstart-imageStart;
+						chunkROIend = imageROIend-imageStart;
+						chanStart = chunkDelta.chan * curChunk.chan;
+						chanEnd = chanStart+chunkDelta.chan-1;
+						frameStart = chunkDelta.frame* curChunk.frame;
+						frameEnd = frameStart+chunkDelta.frame-1;
 
-				ImageChunk* curImageBuffer = &localChunks[numChunks.linearAddressAt(curChunk)];
+						ImageChunk* curImageBuffer = &localChunks[numChunks.linearAddressAt(curChunk)];
 
-				curImageBuffer->imageStart = imageStart;
-				curImageBuffer->chunkROIstart = chunkROIstart;
-				curImageBuffer->imageROIstart = imageROIstart;
-				curImageBuffer->imageEnd = imageEnd;
-				curImageBuffer->chunkROIend = chunkROIend;
-				curImageBuffer->imageROIend = imageROIend;
+						curImageBuffer->imageStart = imageStart;
+						curImageBuffer->chunkROIstart = chunkROIstart;
+						curImageBuffer->imageROIstart = imageROIstart;
+						curImageBuffer->imageEnd = imageEnd;
+						curImageBuffer->chunkROIend = chunkROIend;
+						curImageBuffer->imageROIend = imageROIend;
+						curImageBuffer->channelStart = chanStart;
+						curImageBuffer->channelEnd = chanEnd;
+						curImageBuffer->frameStart = frameStart;
+						curImageBuffer->frameEnd = frameEnd;
 
-				calcBlockThread(curImageBuffer->getFullChunkSize(),maxThreads,curImageBuffer->blocks,curImageBuffer->threads);
+						calcBlockThread(curImageBuffer->getFullChunkSize().dims, maxThreads, curImageBuffer->blocks, curImageBuffer->threads);
+					}
+				}
 			}
-
-			curChunk.x = 0;
 		}
-
-		curChunk.y = 0;
 	}
 
 	return localChunks;
 }
 
-
-std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffersNeeded, size_t memAvailable, size_t bytesPerVal, size_t maxThreads, Vec<size_t> kernelDims/*=Vec<size_t>(0,0,0)*/)
+std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffersNeeded, size_t memAvailable, size_t bytesPerVal, size_t maxThreads, Vec<size_t> kernelDims /*= Vec<size_t>(0, 0, 0)*/)
 {
-	size_t numVoxels = (size_t)(memAvailable / (bytesPerVal*numBuffersNeeded));
-	Vec<size_t> spatialDimensions = imageDims.spatialDimensions;
+	size_t numVoxels = (size_t)(memAvailable/(bytesPerVal*numBuffersNeeded));
+	Vec<size_t> dims = imageDims.dims;
 
 	Vec<size_t> overlapVolume;
-	overlapVolume.x = (kernelDims.x - 1) * spatialDimensions.y * spatialDimensions.z;
-	overlapVolume.y = spatialDimensions.x * (kernelDims.y - 1) * spatialDimensions.z;
-	overlapVolume.z = spatialDimensions.x * spatialDimensions.y * (kernelDims.z - 1);
+	overlapVolume.x = (kernelDims.x-1) * dims.y * dims.z;
+	overlapVolume.y = dims.x * (kernelDims.y-1) * dims.z;
+	overlapVolume.z = dims.x * dims.y * (kernelDims.z-1);
 
-	Vec<size_t> deviceSpatialDims(0, 0, 0);
+	Vec<size_t> deviceDims(0, 0, 0);
 
-	if (overlapVolume.x > overlapVolume.y && overlapVolume.x > overlapVolume.z) // chunking in X is the worst
+	if(overlapVolume.x>overlapVolume.y && overlapVolume.x>overlapVolume.z) // chunking in X is the worst
 	{
-		deviceSpatialDims.x = spatialDimensions.x;
-		double leftOver = (double)numVoxels / spatialDimensions.x;
+		deviceDims.x = dims.x;
+		double leftOver = (double)numVoxels/dims.x;
 		double squareDim = sqrt(leftOver);
 
-		if (overlapVolume.y < overlapVolume.z) // chunking in Y is second worst
+		if(overlapVolume.y<overlapVolume.z) // chunking in Y is second worst
 		{
-			if (squareDim > spatialDimensions.y)
-				deviceSpatialDims.y = spatialDimensions.y;
+			if(squareDim>dims.y)
+				deviceDims.y = dims.y;
 			else
-				deviceSpatialDims.y = (size_t)squareDim;
+				deviceDims.y = (size_t)squareDim;
 
-			deviceSpatialDims.z = (size_t)(numVoxels / (deviceSpatialDims.y*deviceSpatialDims.x));
+			deviceDims.z = (size_t)(numVoxels/(deviceDims.y*deviceDims.x));
 
-			if (deviceSpatialDims.z > spatialDimensions.z)
+			if(deviceDims.z>dims.z)
 			{
-				deviceSpatialDims.z = spatialDimensions.z;
+				deviceDims.z = dims.z;
 				// give some back to y
-				deviceSpatialDims.y = (size_t)(numVoxels / (deviceSpatialDims.z*deviceSpatialDims.x));
-				deviceSpatialDims.y = MIN(deviceSpatialDims.y, spatialDimensions.y);
+				deviceDims.y = (size_t)(numVoxels/(deviceDims.z*deviceDims.x));
+				deviceDims.y = MIN(deviceDims.y, dims.y);
 			}
-		}
-		else // chunking in Z is second worst
+		} else // chunking in Z is second worst
 		{
-			if (squareDim > spatialDimensions.z)
-				deviceSpatialDims.z = spatialDimensions.z;
+			if(squareDim>dims.z)
+				deviceDims.z = dims.z;
 			else
-				deviceSpatialDims.z = (size_t)squareDim;
+				deviceDims.z = (size_t)squareDim;
 
-			deviceSpatialDims.y = (size_t)(numVoxels / (deviceSpatialDims.z*deviceSpatialDims.x));
+			deviceDims.y = (size_t)(numVoxels/(deviceDims.z*deviceDims.x));
 
-			if (deviceSpatialDims.y > spatialDimensions.y)
+			if(deviceDims.y>dims.y)
 			{
-				deviceSpatialDims.y = spatialDimensions.y;
+				deviceDims.y = dims.y;
 				// give some back to z
-				deviceSpatialDims.z = (size_t)(numVoxels / (deviceSpatialDims.y*deviceSpatialDims.x));
-				deviceSpatialDims.z = MIN(deviceSpatialDims.z, spatialDimensions.z);
+				deviceDims.z = (size_t)(numVoxels/(deviceDims.y*deviceDims.x));
+				deviceDims.z = MIN(deviceDims.z, dims.z);
 			}
 		}
-	}
-	else if (overlapVolume.y > overlapVolume.z) // chunking in Y is the worst
+	} else if(overlapVolume.y>overlapVolume.z) // chunking in Y is the worst
 	{
-		deviceSpatialDims.y = spatialDimensions.y;
-		double leftOver = (double)numVoxels / spatialDimensions.y;
+		deviceDims.y = dims.y;
+		double leftOver = (double)numVoxels/dims.y;
 		double squareDim = sqrt(leftOver);
 
-		if (overlapVolume.x < overlapVolume.z)
+		if(overlapVolume.x<overlapVolume.z)
 		{
-			if (squareDim > spatialDimensions.x)
-				deviceSpatialDims.x = spatialDimensions.x;
+			if(squareDim>dims.x)
+				deviceDims.x = dims.x;
 			else
-				deviceSpatialDims.x = (size_t)squareDim;
+				deviceDims.x = (size_t)squareDim;
 
-			deviceSpatialDims.z = (size_t)(numVoxels / (deviceSpatialDims.x*deviceSpatialDims.y));
+			deviceDims.z = (size_t)(numVoxels/(deviceDims.x*deviceDims.y));
 
-			if (deviceSpatialDims.z > spatialDimensions.z)
+			if(deviceDims.z>dims.z)
 			{
-				deviceSpatialDims.z = spatialDimensions.z;
+				deviceDims.z = dims.z;
 				// give some back to x
-				deviceSpatialDims.x = (size_t)(numVoxels / (deviceSpatialDims.z*deviceSpatialDims.x));
-				deviceSpatialDims.x = MIN(deviceSpatialDims.x, spatialDimensions.x);
+				deviceDims.x = (size_t)(numVoxels/(deviceDims.z*deviceDims.x));
+				deviceDims.x = MIN(deviceDims.x, dims.x);
 			}
-		}
-		else
+		} else
 		{
-			if (squareDim > spatialDimensions.z)
-				deviceSpatialDims.z = spatialDimensions.z;
+			if(squareDim>dims.z)
+				deviceDims.z = dims.z;
 			else
-				deviceSpatialDims.z = (size_t)squareDim;
+				deviceDims.z = (size_t)squareDim;
 
-			deviceSpatialDims.x = (size_t)(numVoxels / (deviceSpatialDims.z*deviceSpatialDims.y));
+			deviceDims.x = (size_t)(numVoxels/(deviceDims.z*deviceDims.y));
 
-			if (deviceSpatialDims.x > spatialDimensions.x)
+			if(deviceDims.x>dims.x)
 			{
-				deviceSpatialDims.x = spatialDimensions.x;
+				deviceDims.x = dims.x;
 				// give some back to z
-				deviceSpatialDims.z = (size_t)(numVoxels / (deviceSpatialDims.y*deviceSpatialDims.x));
-				deviceSpatialDims.z = MIN(deviceSpatialDims.z, spatialDimensions.z);
+				deviceDims.z = (size_t)(numVoxels/(deviceDims.y*deviceDims.x));
+				deviceDims.z = MIN(deviceDims.z, dims.z);
 			}
 		}
-	}
-	else // chunking in Z is the worst
+	} else // chunking in Z is the worst
 	{
-		deviceSpatialDims.z = spatialDimensions.z;
-		double leftOver = (double)numVoxels / spatialDimensions.z;
+		deviceDims.z = dims.z;
+		double leftOver = (double)numVoxels/dims.z;
 		double squareDim = sqrt(leftOver);
 
-		if (overlapVolume.x < overlapVolume.y)
+		if(overlapVolume.x<overlapVolume.y)
 		{
-			if (squareDim > spatialDimensions.x)
-				deviceSpatialDims.x = spatialDimensions.x;
+			if(squareDim>dims.x)
+				deviceDims.x = dims.x;
 			else
-				deviceSpatialDims.x = (size_t)squareDim;
+				deviceDims.x = (size_t)squareDim;
 
-			deviceSpatialDims.y = (size_t)(numVoxels / (deviceSpatialDims.x*deviceSpatialDims.z));
+			deviceDims.y = (size_t)(numVoxels/(deviceDims.x*deviceDims.z));
 
-			if (deviceSpatialDims.y > spatialDimensions.y)
+			if(deviceDims.y>dims.y)
 			{
-				deviceSpatialDims.y = spatialDimensions.y;
+				deviceDims.y = dims.y;
 				// give some back to x
-				deviceSpatialDims.x = (size_t)(numVoxels / (deviceSpatialDims.z*deviceSpatialDims.x));
-				deviceSpatialDims.x = MIN(deviceSpatialDims.x, spatialDimensions.x);
+				deviceDims.x = (size_t)(numVoxels/(deviceDims.z*deviceDims.x));
+				deviceDims.x = MIN(deviceDims.x, dims.x);
 			}
-		}
-		else
+		} else
 		{
-			if (squareDim > spatialDimensions.y)
-				deviceSpatialDims.y = spatialDimensions.y;
+			if(squareDim>dims.y)
+				deviceDims.y = dims.y;
 			else
-				deviceSpatialDims.y = (size_t)squareDim;
+				deviceDims.y = (size_t)squareDim;
 
-			deviceSpatialDims.x = (size_t)(numVoxels / (deviceSpatialDims.y*deviceSpatialDims.z));
+			deviceDims.x = (size_t)(numVoxels/(deviceDims.y*deviceDims.z));
 
-			if (deviceSpatialDims.x > spatialDimensions.x)
+			if(deviceDims.x>dims.x)
 			{
-				deviceSpatialDims.x = spatialDimensions.x;
+				deviceDims.x = dims.x;
 				// give some back to y
-				deviceSpatialDims.y = (size_t)(numVoxels / (deviceSpatialDims.z*deviceSpatialDims.x));
-				deviceSpatialDims.y = MIN(deviceSpatialDims.y, spatialDimensions.y);
+				deviceDims.y = (size_t)(numVoxels/(deviceDims.z*deviceDims.x));
+				deviceDims.y = MIN(deviceDims.y, dims.y);
 			}
 		}
 	}
 
-	ImageDimensions deviceDims;
-	deviceDims.spatialDimensions = deviceSpatialDims;
+	ImageDimensions deviceImageDims;
+	deviceImageDims.dims = deviceDims;
 
 	// check to see how many channels will fit on the device
-	if (numVoxels>)
+	size_t numVoxelsPerDevice = deviceDims.product();
+	deviceImageDims.chan = MAX(1, numVoxels/numVoxelsPerDevice);
+	deviceImageDims.frame = MAX(1, numVoxels/(deviceImageDims.chan*numVoxelsPerDevice));
 
-
-	return calculateChunking(imageDims, deviceSpatialDims, maxThreads, kernelDims);
+	return calculateChunking(imageDims, deviceImageDims, maxThreads, kernelDims);
 }
-

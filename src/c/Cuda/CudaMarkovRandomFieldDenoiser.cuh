@@ -1,7 +1,7 @@
 #pragma once
 #include "Vec.h"
 #include "Defines.h"
-#include "ImageChunk.cuh"
+#include "ImageChunk.h"
 #include "CudaDeviceImages.cuh"
 #include "CudaMultAddFilter.cuh"
 #include "CudaVariance.cuh"
