@@ -11,6 +11,7 @@
 #define c_to_mat(x) ((x)+1)
 
 #define SIGN(x) (((x)>0) ? (1) : (((x)<0.000001 || (x)>-0.00001) ? (0) : (-1)))
+#define CLAMP(val,minVal,maxVal) ((val>maxVal) ? (maxVal) : ((val<minVal) ? (minVal) : (val)))
 
 //Percent of memory that can be used on the device
 const double MAX_MEM_AVAIL = 0.95;
