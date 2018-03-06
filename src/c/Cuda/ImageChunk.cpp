@@ -122,9 +122,9 @@ std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, ImageDimens
 	return localChunks;
 }
 
-std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffersNeeded, size_t memAvailable, size_t bytesPerVal, size_t maxThreads, Vec<size_t> kernelDims /*= Vec<size_t>(0, 0, 0)*/)
+std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffersNeeded, CudaDevices cudaDevs, size_t bytesPerVal, Vec<size_t> kernelDims /*= Vec<size_t>(0, 0, 0)*/)
 {
-	size_t numVoxels = (size_t)(memAvailable/(bytesPerVal*numBuffersNeeded));
+	size_t numVoxels = (size_t)(cudaDevs.getMinAvailMem()/(bytesPerVal*numBuffersNeeded));
 	Vec<size_t> dims = imageDims.dims;
 
 	Vec<size_t> overlapVolume;
@@ -261,5 +261,5 @@ std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffe
 	deviceImageDims.chan = MAX(1, numVoxels/numVoxelsPerDevice);
 	deviceImageDims.frame = MAX(1, numVoxels/(deviceImageDims.chan*numVoxelsPerDevice));
 
-	return calculateChunking(imageDims, deviceImageDims, maxThreads, kernelDims);
+	return calculateChunking(imageDims, deviceImageDims, cudaDevs.getMaxThreadsPerBlock(), kernelDims);
 }

@@ -2,6 +2,7 @@
 #include "Vec.h"
 #include "CudaImageContainer.cuh"
 #include "ImageDimensions.cuh"
+#include "CudaDeviceInfo.h"
 
 #include <cuda_runtime.h>
 #include <vector>
@@ -200,4 +201,4 @@ void setMaxDeviceDims(std::vector<ImageChunk> &chunks, ImageDimensions &maxDevic
 
 std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, ImageDimensions deviceDims, size_t maxThreads, Vec<size_t> kernalDims = Vec<size_t>(0, 0, 0));
 
-std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffersNeeded, size_t memAvailable, size_t bytesPerVal, size_t maxThreads, Vec<size_t> kernelDims = Vec<size_t>(0, 0, 0));
+std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffersNeeded, CudaDevices cudaDevs, size_t bytesPerVal, Vec<size_t> kernelDims = Vec<size_t>(0, 0, 0));
