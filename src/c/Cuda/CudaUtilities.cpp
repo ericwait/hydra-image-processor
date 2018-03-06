@@ -1,5 +1,7 @@
 #include "CudaUtilities.h"
 
+#include <cuda_runtime.h>
+
 void calcBlockThread(const Vec<size_t>& dims, size_t maxThreads, dim3 &blocks, dim3 &threads)
 {
 	if (dims.z <= 1)
@@ -89,3 +91,4 @@ bool checkFreeMemory(size_t needed, int device, bool throws/*=false*/)
 	}
 	return true;
 }
+
