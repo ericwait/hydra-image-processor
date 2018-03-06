@@ -50,9 +50,11 @@ __device__ KernelIterator& KernelIterator::operator++()
 			if(++iterator.dims.z>kernelEndIdx.z)
 			{
 				iterator.dims.z = kernelEndIdx.z;
+				isChannelEnd = true;
 				if(++iterator.chan>numChans)
 				{
 					iterator.chan = 0;
+					isFrameEnd = true;
 					if(++iterator.frame>numFrames)
 					{
 						iterator.frame = 0;
