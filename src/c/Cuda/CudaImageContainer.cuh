@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Vec.h"
-#include "CudaUtilities.cuh"
+#include "CudaUtilities.h"
 #include "ImageContainer.h"
 
 #include <string>
@@ -181,11 +181,11 @@ protected:
 
 	__host__ __device__ void defaults()
 	{
-		maxImageDims = ImageDimensions(Vec<size_t>(0), 0, 0));
-		imageDims = ImageDimensions(Vec<size_t>(0), 0, 0));
+		maxImageDims = ImageDimensions(Vec<size_t>(0), 0, 0);
+		imageDims = ImageDimensions(Vec<size_t>(0), 0, 0);
 		device = 0;
-		roiStarts = ImageDimensions(Vec<size_t>(0), 0, 0));
-		roiSizes = ImageDimensions(Vec<size_t>(0), 0, 0));
+		roiStarts = ImageDimensions(Vec<size_t>(0), 0, 0);
+		roiSizes = ImageDimensions(Vec<size_t>(0), 0, 0);
 	}
 
     __device__ PixelType& accessValue(Vec<size_t> coordinate, unsigned int chan = 0, unsigned int frame = 0)
@@ -239,3 +239,16 @@ protected:
 	ImageDimensions roiSizes;
 	PixelType*	image;
 };
+
+template <class PixelType>
+ImageContainer<PixelType> setUpOutIm(Vec<size_t> dims, PixelType** imageOut)
+{
+
+	PixelType* imOut;
+	if (imageOut == NULL)
+		imOut = new PixelType[dims.product()];
+	else
+		imOut = *imageOut;
+
+	return imOut;
+}

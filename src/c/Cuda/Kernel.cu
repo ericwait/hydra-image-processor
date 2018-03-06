@@ -1,5 +1,5 @@
 #include "Kernel.cuh"
-#include "CudaUtilities.cuh"
+#include "CudaUtilities.h"
 
 Kernel::Kernel(Vec<size_t> dimensions)
 {

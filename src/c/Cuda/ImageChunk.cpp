@@ -40,17 +40,17 @@ std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, ImageDimens
 	Vec<size_t> devSpatialDims = deviceDims.dims;
 
 	if(imageDims.dims.x>deviceDims.dims.x)
-		numChunks.dims.x = (size_t)ceil((double)imageDims.dims.x/chunkDelta.x);
+		numChunks.dims.x = (size_t)ceil((double)imageDims.dims.x/chunkDelta.dims.x);
 	else
 		chunkDelta.dims.x = imageDims.dims.x;
 
 	if(imageDims.dims.y>deviceDims.dims.y)
-		numChunks.dims.y = (size_t)ceil((double)imageDims.dims.y/chunkDelta.y);
+		numChunks.dims.y = (size_t)ceil((double)imageDims.dims.y/chunkDelta.dims.y);
 	else
 		chunkDelta.dims.y = imageDims.dims.y;
 
 	if(imageDims.dims.z>deviceDims.dims.z)
-		numChunks.dims.z = (size_t)ceil((double)imageDims.dims.z/chunkDelta.z);
+		numChunks.dims.z = (size_t)ceil((double)imageDims.dims.z/chunkDelta.dims.z);
 	else
 		chunkDelta.dims.z = imageDims.dims.z;
 

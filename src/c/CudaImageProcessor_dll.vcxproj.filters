@@ -20,25 +20,7 @@
     <ClInclude Include="Cuda\Vec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cuda\CudaAdd.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaContrastEnhancement.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Cuda\CudaDeviceImages.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaGaussianFilter.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaGetMinMax.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaGetROI.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaHistogram.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Cuda\CudaImageContainer.cuh">
@@ -47,103 +29,16 @@
     <ClInclude Include="Cuda\CudaImageContainerClean.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cuda\CudaIntensityProjection.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaMask.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaMaxFilter.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaMeanFilter.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaMedianFilter.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaMinFilter.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaMorphologicalOperations.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaMultAddFilter.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaMultiplyImage.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaNormalizedCovariance.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaPolyTransferFunc.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaPow.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaSum.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaThreshold.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaSegment.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaMarkovRandomFieldDenoiser.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaVariance.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaConvertType.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Cuda\CudaDeviceCount.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaImageCopy.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaLinearUnmixing.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaMemoryStats.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaRidgidRegistaration.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaStdFilter.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Cuda\CWrappers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cuda\CudaRegionGrowing.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaClamp.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Cuda\CudaDeviceStats.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cuda\CudaResize.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaEntropyFilter.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaLoG.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Cuda\KernelIterator.cuh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaNeighborhoodSum.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Cuda\ImageContainer.h">
@@ -159,6 +54,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Cuda\ImageDimensions.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaDeviceInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\FooValueManipulation.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\FooKernel.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\Kernel.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaMemoryStats.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -190,6 +100,9 @@
       <Filter>Source Files</Filter>
     </CudaCompile>
     <CudaCompile Include="Cuda\KernelIterator.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Cuda\Kernel.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
   </ItemGroup>

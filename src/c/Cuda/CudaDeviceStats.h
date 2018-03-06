@@ -20,3 +20,6 @@ struct DevStats
 };
 
 int cDeviceStats(DevStats** stats);
+size_t memoryAvailable(int device, size_t* totalOut = NULL);
+bool checkFreeMemory(size_t needed, int device, bool throws = false);
+

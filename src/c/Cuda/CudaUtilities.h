@@ -1,13 +1,13 @@
 #pragma once
 
-#include "cuda_runtime.h"
-#include <stdio.h>
-#include <stdexcept>
-#include <vector>
 #include "Vec.h"
 #include "Defines.h"
 #include "ImageContainer.h"
 
+#include <cuda_runtime.h>
+#include <stdio.h>
+#include <stdexcept>
+#include <vector>
 #include <cuda_occupancy.h>
 
 template <typename T, typename U>
@@ -61,19 +61,5 @@ inline void gpuAssert(cudaError_t code, char *file, int line, bool abort=true)
 }
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 
-template <class PixelType>
-ImageContainer<PixelType> setUpOutIm(Vec<size_t> dims, PixelType** imageOut)
-{
 
-	PixelType* imOut;
-	if (imageOut==NULL)
-		imOut = new PixelType[dims.product()];
-	else
-		imOut = *imageOut;
-
-	return imOut;
-}
-
-size_t memoryAvailable(int device, size_t* totalOut=NULL);
-bool checkFreeMemory(size_t needed, int device, bool throws=false);
 void calcBlockThread(const Vec<size_t>& dims, size_t maxThreads, dim3 &blocks, dim3 &threads);

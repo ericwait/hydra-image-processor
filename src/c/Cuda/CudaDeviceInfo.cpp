@@ -1,4 +1,5 @@
 #include "CudaDeviceInfo.h"
+#include "CudaDeviceStats.h"
 #include "Defines.h"
 
 #include <cuda_runtime.h>
@@ -37,9 +38,9 @@ void CudaDevices::getCudaInfo(int device/*=-1*/)
 	availMem = ULLONG_MAX;
 	for (int i=0; i<numDevices; ++i)
 	{
-		cudaDeviceProp* props;
+		cudaDeviceProp props;
 		cudaGetDeviceProperties(&props, deviceIdxList[i]);
-		size_t mTPB = props->maxThreadsPerBlock;
+		size_t mTPB = props.maxThreadsPerBlock;
 		if (maxThreadsPerBlock > mTPB)
 			maxThreadsPerBlock = mTPB;
 

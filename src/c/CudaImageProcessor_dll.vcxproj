@@ -23,58 +23,26 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Cuda\CudaAdd.cuh">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaClamp.cuh" />
-    <ClInclude Include="Cuda\CudaContrastEnhancement.cuh" />
-    <ClInclude Include="Cuda\CudaConvertType.cuh" />
     <ClInclude Include="Cuda\CudaDeviceCount.cuh" />
     <ClInclude Include="Cuda\CudaDeviceImages.cuh" />
+    <ClInclude Include="Cuda\CudaDeviceInfo.h" />
     <ClInclude Include="Cuda\CudaDeviceStats.h" />
-    <ClInclude Include="Cuda\CudaEntropyFilter.cuh" />
-    <ClInclude Include="Cuda\CudaGaussianFilter.cuh" />
-    <ClInclude Include="Cuda\CudaGetMinMax.cuh" />
-    <ClInclude Include="Cuda\CudaGetROI.cuh" />
-    <ClInclude Include="Cuda\CudaHistogram.cuh" />
     <ClInclude Include="Cuda\CudaImageContainer.cuh" />
     <ClInclude Include="Cuda\CudaImageContainerClean.cuh" />
-    <ClInclude Include="Cuda\CudaImageCopy.cuh" />
-    <ClInclude Include="Cuda\CudaIntensityProjection.cuh" />
-    <ClInclude Include="Cuda\CudaLinearUnmixing.cuh" />
-    <ClInclude Include="Cuda\CudaLoG.cuh">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="Cuda\CudaMarkovRandomFieldDenoiser.cuh" />
-    <ClInclude Include="Cuda\CudaMask.cuh" />
-    <ClInclude Include="Cuda\CudaMaxFilter.cuh" />
-    <ClInclude Include="Cuda\CudaMeanFilter.cuh" />
-    <ClInclude Include="Cuda\CudaMedianFilter.cuh" />
     <ClInclude Include="Cuda\CudaMemoryStats.cuh" />
-    <ClInclude Include="Cuda\CudaMinFilter.cuh" />
-    <ClInclude Include="Cuda\CudaMorphologicalOperations.cuh" />
-    <ClInclude Include="Cuda\CudaMultAddFilter.cuh" />
-    <ClInclude Include="Cuda\CudaMultiplyImage.cuh" />
-    <ClInclude Include="Cuda\CudaNeighborhoodSum.cuh" />
-    <ClInclude Include="Cuda\CudaNormalizedCovariance.cuh" />
-    <ClInclude Include="Cuda\CudaPolyTransferFunc.cuh" />
-    <ClInclude Include="Cuda\CudaPow.cuh" />
-    <ClInclude Include="Cuda\CudaRegionGrowing.cuh" />
-    <ClInclude Include="Cuda\CudaResize.cuh" />
-    <ClInclude Include="Cuda\CudaRidgidRegistaration.cuh" />
-    <ClInclude Include="Cuda\CudaSegment.cuh" />
-    <ClInclude Include="Cuda\CudaStdFilter.cuh" />
-    <ClInclude Include="Cuda\CudaSum.cuh" />
-    <ClInclude Include="Cuda\CudaThreshold.cuh" />
     <ClInclude Include="Cuda\CudaUtilities.h" />
-    <ClInclude Include="Cuda\CudaVariance.cuh" />
     <ClInclude Include="Cuda\CWrappers.h" />
     <ClInclude Include="Cuda\Defines.h" />
+    <ClInclude Include="Cuda\FooKernel.cuh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="Cuda\FooValueManipulation.cuh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Cuda\ImageChunk.h" />
     <ClInclude Include="Cuda\ImageContainer.h" />
     <ClInclude Include="Cuda\ImageDimensions.cuh" />
+    <ClInclude Include="Cuda\Kernel.cuh" />
     <ClInclude Include="Cuda\KernelGenerators.h" />
     <ClInclude Include="Cuda\KernelIterator.cuh" />
     <ClInclude Include="Cuda\Vec.h" />
@@ -82,6 +50,9 @@
   <ItemGroup>
     <ClCompile Include="Cuda\CHelpers.cpp" />
     <ClCompile Include="Cuda\ImageChunk.cpp" />
+    <CudaCompile Include="Cuda\Kernel.cu">
+      <FileType>CppCode</FileType>
+    </CudaCompile>
     <ClCompile Include="Cuda\LoGKernel.cpp" />
   </ItemGroup>
   <ItemGroup>
