@@ -77,4 +77,3 @@ ImageContainer<PixelType> setUpOutIm(Vec<size_t> dims, PixelType** imageOut)
 size_t memoryAvailable(int device, size_t* totalOut=NULL);
 bool checkFreeMemory(size_t needed, int device, bool throws=false);
 void calcBlockThread(const Vec<size_t>& dims, size_t maxThreads, dim3 &blocks, dim3 &threads);
-size_t getCudaInfo(int** deviceIdxList, int& numDevices, int device=-1);
