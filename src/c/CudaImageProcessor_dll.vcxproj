@@ -29,6 +29,7 @@
     <ClInclude Include="Cuda\CudaDeviceStats.h" />
     <ClInclude Include="Cuda\CudaImageContainer.cuh" />
     <ClInclude Include="Cuda\CudaImageContainerClean.cuh" />
+    <ClInclude Include="Cuda\CudaMaxFilter.cuh" />
     <ClInclude Include="Cuda\CudaMemoryStats.cuh" />
     <ClInclude Include="Cuda\CudaUtilities.h" />
     <ClInclude Include="Cuda\CWrappers.h" />
