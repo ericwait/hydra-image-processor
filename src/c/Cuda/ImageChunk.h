@@ -20,7 +20,7 @@ public:
 			return false;
 
 		ImageDimensions stopPos(getFullChunkSize());
-		if(stopPos>=dims)
+		if(stopPos>=imageIn.getDims())
 		{
 			deviceImage->loadImage(imageIn);
 			return true;
@@ -38,10 +38,13 @@ public:
 						ImageDimensions curHostIdx(imageStart+curPos.dims, channelStart+curPos.chan, frameStart+curPos.frame);
 						ImageDimensions curDeviceIdx = curPos;
 
-						const PixelTypeIn* hostPtr = imageIn.getConstPtr()+imageIn.getDims().linearAddressAt(curHostIdx);
-						PixelTypeOut* buffPtr = deviceImage->getDeviceImagePointer()+deviceImage->getDims().linearAddressAt(curDeviceIdx);
+						size_t hostOffset = imageIn.getDims().linearAddressAt(curHostIdx);
+						const PixelType* hostPtr = imageIn.getPtr() +hostOffset;
 
-						HANDLE_ERROR(cudaMemcpy(buffPtr, hostPtr, sizeof(PixelTypeOut)*stopPos.dims.x, cudaMemcpyHostToDevice));
+						size_t deviceOffset = deviceImage->getDims().linearAddressAt(curDeviceIdx);
+						void* buffPtr = deviceImage->getDeviceImagePointer() + deviceOffset;
+
+						HANDLE_ERROR(cudaMemcpy(buffPtr, hostPtr, sizeof(PixelType)*stopPos.dims.x, cudaMemcpyHostToDevice));
 					}
 				}
 			}
@@ -92,7 +95,7 @@ public:
 		cudaThreadSynchronize();
 		gpuErrchk(cudaPeekAtLastError());
 
-		if(getFullChunkSize()==outImage.dims)
+		if(getFullChunkSize()==outImage.getDims())
 		{
 			HANDLE_ERROR(cudaMemcpy(outImage.getPtr(), deviceImage->getConstImagePointer(), sizeof(PixelType)*getFullChunkSize().getNumElements(), cudaMemcpyDeviceToHost));
 			return;
@@ -111,10 +114,13 @@ public:
 						ImageDimensions curHostIdx(imageStart+curPos.dims, channelStart+curPos.chan, frameStart+curPos.frame);
 						ImageDimensions curDeviceIdx = curPos;
 
-						const PixelTypeIn* hostPtr = outImage.getConstPtr() + outImage.getDims().linearAddressAt(curHostIdx);
-						PixelTypeOut* buffPtr = deviceImage->getDeviceImagePointer()+deviceImage->getDims().linearAddressAt(curDeviceIdx);
+						size_t hostOffset = outImage.getDims().linearAddressAt(curHostIdx);
+						PixelType* hostPtr = outImage.getPtr() + hostOffset;
 
-						HANDLE_ERROR(cudaMemcpy(hostPtr, buffPtr, sizeof(PixelTypeOut)*stopPos.dims.x, cudaMemcpyHostToDevice));
+						size_t deviceOffset = deviceImage->getDims().linearAddressAt(curDeviceIdx);
+						const PixelType* buffPtr = deviceImage->getDeviceImagePointer() + deviceOffset;
+
+						HANDLE_ERROR(cudaMemcpy(hostPtr, buffPtr, sizeof(PixelType)*stopPos.dims.x, cudaMemcpyHostToDevice));
 					}
 				}
 			}
@@ -153,13 +159,16 @@ public:
 							ImageDimensions curHostIdx(imageStart+curPos.dims, channelStart+curPos.chan, frameStart+curPos.frame);
 							ImageDimensions curDeviceIdx = curPos;
 
-							const PixelTypeIn* hostPtr = outImage.getConstPtr()+outImage.getDims().linearAddressAt(curHostIdx);
-							PixelTypeOut* buffPtr = deviceImage->getDeviceImagePointer()+deviceImage->getDims().linearAddressAt(curDeviceIdx);
+							PixelTypeOut* hostPtr = outImage.getPtr() + outImage.getDims().linearAddressAt(curHostIdx);
+							const PixelTypeIn* buffPtr = deviceImage->getDeviceImagePointer()+deviceImage->getDims().linearAddressAt(curDeviceIdx);
 
-							HANDLE_ERROR(cudaMemcpy(tempBuffer, buffPtr, sizeof(PixelTypeOut)*stopPos.dims.x, cudaMemcpyHostToDevice));
+							HANDLE_ERROR(cudaMemcpy(tempBuffer, buffPtr, sizeof(PixelTypeIn)*stopPos.dims.x, cudaMemcpyHostToDevice));
 							
-							for(size_t i = 0; i<stopPos.dims.x; ++i)
-								curHostIdx[i] = (PixelTypeOut)(tempBuffer[i]);
+							for (size_t i = 0; i < stopPos.dims.x; ++i)
+							{
+
+								hostPtr[i] = (PixelTypeOut)(tempBuffer[i]);
+							}
 						}
 					}
 				}

@@ -98,3 +98,12 @@ __device__ ImageDimensions KernelIterator::getFullPos() const
 {
 	return iterator;
 }
+
+
+__device__ void GetThreadBlockCoordinate(Vec<size_t>& coordinate)
+{
+	coordinate.x = threadIdx.x + blockIdx.x * blockDim.x;
+	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
+	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
+}
+

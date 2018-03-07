@@ -14,20 +14,21 @@ public:
 		maxImageDims = dims;
 		roiSizes = dims;
 		this->device = device;
-		loadImage(imageIn,dims);
+		ImageContainer<PixelType> im(imageIn, dims);
+		loadImage(im);
 	};
 
-	CudaImageContainerClean(ImageDimensions dims, int device=0) 
+	CudaImageContainerClean(ImageDimensions imDims, int device=0) 
 	{
 		defaults();
 		image = NULL;
-		maxImageDims = dims;
-		imageDims = dims;
-		roiSizes = dims;
+		maxImageDims = imDims;
+		imageDims = imDims;
+		roiSizes = imDims.dims;
 		this->device = device;
 		HANDLE_ERROR(cudaSetDevice(device));
-		HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(PixelType)*dims.getNumElements()));
-		HANDLE_ERROR(cudaMemset(image,0,sizeof(PixelType)*dims.getNumElements()));
+		HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(PixelType)*imDims.getNumElements()));
+		HANDLE_ERROR(cudaMemset(image,0,sizeof(PixelType)*imDims.getNumElements()));
 	};
 
 	~CudaImageContainerClean()

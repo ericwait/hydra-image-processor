@@ -52,6 +52,22 @@ public:
 		return outDims;
 	}
 
+	__host__ __device__ ImageDimensions& operator+=(ImageDimensions adder)
+	{
+		this->dims = this->dims + adder.dims;
+		this->chan = this->chan + adder.chan;
+		this->frame = this->frame + adder.frame;
+
+		return *this;
+	}
+
+	__host__ __device__ ImageDimensions& operator+=(Vec<size_t> adder)
+	{
+		this->dims = this->dims + adder;
+
+		return *this;
+	}
+
 	__host__ __device__ bool operator>=(const ImageDimensions& other) const
 	{
 		return dims>=other.dims && chan>=other.chan && frame>=other.frame;

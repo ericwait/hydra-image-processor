@@ -28,6 +28,13 @@ public:
 	size_t getMaxThreadsPerBlock()const { return maxThreadsPerBlock; }
 	size_t getMinAvailMem()const { return availMem; }
 	size_t getNumDevices() const { return deviceIdxList.size(); }
+	int getDeviceIdx(int deviceNum)
+	{
+		if (deviceNum >= deviceIdxList.size())
+			return -1;
+
+		return deviceIdxList.at(deviceNum);
+	}
 	
 private:
 	void reset();

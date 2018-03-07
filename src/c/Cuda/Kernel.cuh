@@ -4,25 +4,29 @@
 #include <cuda_runtime.h>
 #include <vector>
 
-#ifndef CUDA_CONST_KERNEL
-#define CUDA_CONST_KERNEL
-__constant__ float cudaConstKernel[MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM];
-#endif
-
 class Kernel
 {
 public:
-	Kernel(Vec<size_t> dimensions);
-	Kernel(Vec<size_t> dimensions, float* values);
+	__host__ Kernel(Vec<size_t> dimensions, float* values);
+	__host__ __device__ Kernel(const Kernel& other);
 
-	~Kernel() { kernel.clear(); }
+	__host__ __device__ ~Kernel() {}
+	__host__ void clean();
 
-	Vec<size_t> getDimensions() const { return dims; }
-	const float* getConstPtr() const { return kernel.data(); }
+	__host__ __device__ Vec<size_t> getDimensions() const { return dims; }
+	__device__ float operator[](size_t idx) { return cudaKernel[idx]; }
 	
 private:
-	Kernel();
-	void setOnes();
-	std::vector<float> kernel;
+	__host__ __device__ Kernel();
+
+	__host__ void init();
+	__host__ void setOnes();
+
 	Vec<size_t> dims;
+
+	float* kernel;
+	bool cleanUpHost;
+
+	float* cudaKernel;
+	bool cleanUpDevice;
 };

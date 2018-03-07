@@ -2,6 +2,7 @@
 
 #define NUM_BINS (256)
 #define MAX_KERNEL_DIM (25)
+#define CONST_KERNEL_NUM_EL (MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM)
 
 #define SQR(x) ((x)*(x))
 #define MAX(x,y) (((x)>(y))?(x):(y))

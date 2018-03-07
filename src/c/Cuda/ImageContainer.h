@@ -1,10 +1,17 @@
 #pragma once
 #include "ImageDimensions.cuh"
 
+#include <cassert>
+
 template<class PixelType>
 class ImageContainer
 {
 public:
+	ImageContainer()
+	{
+		reset();
+	}
+
 	ImageContainer(PixelType* imagePtr, Vec<size_t> dimsIn, unsigned char nChannels = 1, unsigned int nFrames = 1)
 	{
 		image = imagePtr;
@@ -21,19 +28,34 @@ public:
 
 	~ImageContainer()
 	{
-		image = NULL;
-		dimensions = ImageDimensions();
+		reset();
 	}
 
-	const PixelType* getConstPtr() { return image; }
-	PixelType* getPtr() { return image; }
+	void setPointer(PixelType* imagePtr, ImageDimensions dimsIn)
+	{
+		assert(image == NULL);
+		image = imagePtr;
+	}
+
+	void resize(ImageDimensions dims)
+	{
+		assert(image == NULL);
+		image = new PixelType[dims.getNumElements()];
+	}
+
+	const PixelType* getConstPtr() const { return image; }
+	PixelType* getPtr() const { return image; }
 	ImageDimensions getDims() const { return dimensions; }
 	Vec<size_t> getSpatialDims() const { return dimensions.dims; }
 	unsigned int getNumChannels() const { return dimensions.chan; }
 	unsigned int getNumFrames() const { return dimensions.frame; }
 	
 private:
-	ImageContainer();
+	void reset()
+	{
+		image = NULL;
+		dimensions = ImageDimensions();
+	}
 
 	PixelType* image;
 	ImageDimensions dimensions;

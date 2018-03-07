@@ -30,11 +30,11 @@ public:
 
 	int getDeviceNumber() const {return device;}
 
-	PixelType* getDeviceImagePointer(){return image;}
+	PixelType* getDeviceImagePointer()const {return image;}
 
 	__device__ PixelType* getImagePointer(){return image;}
 
-	__device__ PixelType& operator()( ImageDimensions coordinate)
+	__device__ PixelType& operator()(const ImageDimensions coordinate)
 	{
         return accessValue(coordinate);
 	}
@@ -112,13 +112,13 @@ public:
         return accessValue(idx);
 	}
 
-	__host__ __device__ const ImageDimensions& getDims() const { return roiSizes; }
-	__host__ __device__ const Vec<size_t> getSpatialDims() const { return roiSizes.dims; }
-	__host__ __device__ size_t getWidth() const { return roiSizes.dims.x; }
-	__host__ __device__ size_t getHeight() const { return roiSizes.dims.y; }
-	__host__ __device__ size_t getDepth() const { return roiSizes.dims.z; }
-	__host__ __device__ unsigned int getNumChans() const { return roiSizes.chan; }
-	__host__ __device__ unsigned int getNumFrames() const { return roiSizes.frame; }
+	__host__ __device__ const ImageDimensions& getDims() const { return imageDims; }
+	__host__ __device__ const Vec<size_t> getSpatialDims() const { return roiSizes; }
+	__host__ __device__ size_t getWidth() const { return roiSizes.x; }
+	__host__ __device__ size_t getHeight() const { return roiSizes.y; }
+	__host__ __device__ size_t getDepth() const { return roiSizes.z; }
+	__host__ __device__ unsigned int getNumChans() const { return imageDims.chan; }
+	__host__ __device__ unsigned int getNumFrames() const { return imageDims.frame; }
 
 	bool setDims(ImageDimensions dims)
 	{
@@ -154,18 +154,21 @@ public:
 	void loadImage(const ImageContainer<PixelType> imageIn)
 	{
 		HANDLE_ERROR(cudaSetDevice(device));
-		if(imageIn.dims!=imageDims)
+		if(imageIn.getDims()!=imageDims)
 		{
 			if(image!=NULL)
 			{
 				HANDLE_ERROR(cudaFree(image));
 			}
-			checkFreeMemory(sizeof(PixelType)*imageIn.dims.getNumElements(),device,true);
-			HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(PixelType)*imageIn.dims.getNumElements()));
-			imageDims = imageIn.dims;
+			checkFreeMemory(sizeof(PixelType)*imageIn.getDims().getNumElements(),device,true);
+			HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(PixelType)*imageIn.getDims().getNumElements()));
+			imageDims = imageIn.getDims();
 		}
 
-		HANDLE_ERROR(cudaMemcpy(image,imageIn.getConstPtr(),sizeof(PixelType)*imageIn.dims.getNumElements(),cudaMemcpyHostToDevice));
+		//const void* imPtr = (void*)imageIn.getConstPtr();
+		size_t numEl = sizeof(PixelType)*imageIn.getDims().getNumElements();
+		const void* imIn = imageIn.getConstPtr();
+		HANDLE_ERROR(cudaMemcpy(image, imIn, numEl, cudaMemcpyHostToDevice));
 	}
 
 protected:
@@ -184,8 +187,8 @@ protected:
 		maxImageDims = ImageDimensions(Vec<size_t>(0), 0, 0);
 		imageDims = ImageDimensions(Vec<size_t>(0), 0, 0);
 		device = 0;
-		roiStarts = ImageDimensions(Vec<size_t>(0), 0, 0);
-		roiSizes = ImageDimensions(Vec<size_t>(0), 0, 0);
+		roiStarts = Vec<size_t>(0);
+		roiSizes = Vec<size_t>(0);
 	}
 
     __device__ PixelType& accessValue(Vec<size_t> coordinate, unsigned int chan = 0, unsigned int frame = 0)
@@ -193,11 +196,11 @@ protected:
 		ImageDimensions curCoord(coordinate, chan, frame);
         return image[getIdx(curCoord)];
     }
-    
-    __device__ const PixelType& accessValue(ImageDimensions coordinate) const
-    {
-        return image[getIdx(coordinate)];
-    }
+
+	__device__ PixelType& accessValue(ImageDimensions coordinate) const
+	{
+		return image[getIdx(coordinate)];
+	}
 
 	__device__ const PixelType& accessValue(Vec<size_t> dims, unsigned int chan, unsigned int frame) const
 	{
@@ -224,10 +227,11 @@ protected:
 
     __device__ size_t getIdx(size_t idx) const
     {
-        if(roiStarts==ImageDimensions(0,0,0))
+        if(roiStarts==Vec<size_t>(0))
             return idx;
 
-        ImageDimensions coordinate = imageDims.coordAddressOf(idx) + roiStarts;
+		ImageDimensions coordinate(imageDims.coordAddressOf(idx));
+		coordinate.dims	+= roiStarts;
 
         return imageDims.linearAddressAt(coordinate);
     }
@@ -235,20 +239,16 @@ protected:
 	int device;
 	ImageDimensions maxImageDims;
 	ImageDimensions imageDims;
-	ImageDimensions roiStarts;
-	ImageDimensions roiSizes;
+	Vec<size_t> roiStarts;
+	Vec<size_t> roiSizes;
 	PixelType*	image;
 };
 
 template <class PixelType>
-ImageContainer<PixelType> setUpOutIm(Vec<size_t> dims, PixelType** imageOut)
+void setUpOutIm(ImageDimensions dims, ImageContainer<PixelType> imageOut)
 {
-
-	PixelType* imOut;
-	if (imageOut == NULL)
-		imOut = new PixelType[dims.product()];
-	else
-		imOut = *imageOut;
-
-	return imOut;
+	if (imageOut.getPtr() == NULL)
+	{
+		imageOut.resize(dims);
+	}
 }
