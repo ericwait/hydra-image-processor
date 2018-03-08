@@ -129,17 +129,17 @@ public:
 
 		return true;
 	}
-	bool setROIstart(ImageDimensions starts)
+	bool setROIstart(Vec<size_t> starts)
 	{
-		if(starts>=imageDims)
+		if(starts>=imageDims.dims)
 			return false;
 
 		roiStarts = starts;
 		return true;
 	}
-	bool setROIsize(ImageDimensions sizes)
+	bool setROIsize(Vec<size_t> sizes)
 	{
-		if(roiStarts+sizes>imageDims)
+		if(roiStarts+sizes>imageDims.dims)
 			return false;
 
 		roiSizes = sizes;
@@ -148,7 +148,7 @@ public:
 	void resetROI()
 	{
 		roiStarts = Vec<size_t>(0,0,0);
-		roiSizes = imageDims;
+		roiSizes = imageDims.dims;
 	}
 
 	void loadImage(const ImageContainer<PixelType> imageIn)
