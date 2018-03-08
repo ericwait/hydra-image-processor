@@ -35,12 +35,14 @@ public:
 	{
 		assert(image == NULL);
 		image = imagePtr;
+		dimensions = dimsIn;
 	}
 
 	void resize(ImageDimensions dims)
 	{
 		assert(image == NULL);
 		image = new PixelType[dims.getNumElements()];
+		dimensions = dims;
 	}
 
 	const PixelType* getConstPtr() const { return image; }
