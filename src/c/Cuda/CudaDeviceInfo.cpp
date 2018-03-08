@@ -24,12 +24,12 @@ void CudaDevices::getCudaInfo(int device/*=-1*/)
 	{
 		deviceIdxList.resize(numDevices);
 		for (unsigned char i = 0; i < numDevices; ++i)
-			deviceIdxList.push_back(i);
+			deviceIdxList[i] = i;
 	}
 	else
 	{
 		numDevices = 1;
-		deviceIdxList.resize(numDevices);
+		deviceIdxList.clear();
 		deviceIdxList.push_back(device);
 	}
 	
@@ -44,9 +44,9 @@ void CudaDevices::getCudaInfo(int device/*=-1*/)
 		if (maxThreadsPerBlock > mTPB)
 			maxThreadsPerBlock = mTPB;
 
-		size_t availMem = memoryAvailable(deviceIdxList[i]);
-		if (availMem > availMem)
-			availMem = availMem;
+		size_t curAvailMem = memoryAvailable(deviceIdxList[i]);
+		if (availMem > curAvailMem)
+			availMem = curAvailMem;
 	}
 
 	availMem *= MAX_MEM_AVAIL;
