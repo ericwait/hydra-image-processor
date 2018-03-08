@@ -26,6 +26,12 @@ public:
 		dimensions = dimsIn;
 	}
 
+	ImageContainer(const ImageContainer& other)
+	{
+		image = other.getPtr();
+		dimensions = other.getDims();
+	}
+
 	~ImageContainer()
 	{
 		reset();
