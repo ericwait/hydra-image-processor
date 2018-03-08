@@ -8,6 +8,27 @@ __constant__ float cudaConstKernel[CONST_KERNEL_NUM_EL];
 
 __host__ Kernel::Kernel(Vec<size_t> dimensions, float* values)
 {
+	load(dimensions, values);
+}
+
+__device__ Kernel::Kernel(const Kernel& other)
+{
+	dims = other.dims;
+	kernel = other.kernel;
+	cleanUpHost = other.cleanUpHost;
+	cudaKernel = other.cudaKernel;
+	cleanUpDevice = other.cleanUpDevice;
+}
+
+
+__host__ Kernel::Kernel(ImageContainer<float> kernelIn)
+{
+	load(kernelIn.getSpatialDims(), kernelIn.getPtr());
+}
+
+
+__host__ void Kernel::load(Vec<size_t> dimensions, float* values)
+{
 	init();
 
 	dims = dimensions;
@@ -32,16 +53,6 @@ __host__ Kernel::Kernel(Vec<size_t> dimensions, float* values)
 		cleanUpDevice = true;
 	}
 }
-
-__device__ Kernel::Kernel(const Kernel& other)
-{
-	dims = other.dims;
-	kernel = other.kernel;
-	cleanUpHost = other.cleanUpHost;
-	cudaKernel = other.cudaKernel;
-	cleanUpDevice = other.cleanUpDevice;
-}
-
 
 __host__ void Kernel::clean()
 {
