@@ -57,6 +57,8 @@ public:
 	Vec<size_t> getSpatialDims() const { return dimensions.dims; }
 	unsigned int getNumChannels() const { return dimensions.chan; }
 	unsigned int getNumFrames() const { return dimensions.frame; }
+
+	void clear() { delete[] image; dimensions = ImageDimensions(); }
 	
 private:
 	void reset()
