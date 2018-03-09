@@ -3,11 +3,21 @@
 #include <limits.h>
 #include <float.h>
 
-__device__ KernelIterator::KernelIterator(Vec<size_t> inputPos, ImageDimensions inputSize, Vec<size_t> kernelSize)
+__device__ KernelIterator::KernelIterator(Vec<size_t> inputPos, ImageDimensions inputSize, Vec<size_t> kernelSizeIn)
 {
+	reset();
+
+	if (!(inputSize.dims > Vec<size_t>(0)))
+		return;
+	if (inputSize.chan == 0)
+		return;
+	if (inputSize.frame == 0)
+		return;	
+
 	Vec<float> inputCoordinate(inputPos);
 
 	// If kernel size is odd, this will be integer, else we will get a real number
+	kernelSize = kernelSizeIn;
 	Vec<float> kernelHalfSize = (Vec<float>(kernelSize)-1)/2.0f;
 	
 	// This puts the first kernel position in the center of the voxel
@@ -24,8 +34,10 @@ __device__ KernelIterator::KernelIterator(Vec<size_t> inputPos, ImageDimensions 
 
 	kernelEndIdx = kernelSize - Vec<size_t>(Vec<float>::max(1, outOfBoundsAmount +1));
 
-	iterator = ImageDimensions(0,0,0);
-	isEnd = false;
+	iterator.dims = kernelStartIdx;
+	
+	numChans = inputSize.chan;
+	numFrames = inputSize.frame;
 }
 
 __device__ __host__ KernelIterator::~KernelIterator()
@@ -49,18 +61,8 @@ __device__ KernelIterator& KernelIterator::operator++()
 			iterator.dims.y = kernelStartIdx.y;
 			if(++iterator.dims.z>kernelEndIdx.z)
 			{
-				iterator.dims.z = kernelEndIdx.z;
-				isChannelEnd = true;
-				if(++iterator.chan>numChans)
-				{
-					iterator.chan = 0;
-					isFrameEnd = true;
-					if(++iterator.frame>numFrames)
-					{
-						iterator.frame = 0;
-						isEnd = true;
-					}
-				}
+				iterator.dims.z = kernelStartIdx.z;
+				isLastPosition = true;
 			}
 		}
 	}
@@ -68,9 +70,34 @@ __device__ KernelIterator& KernelIterator::operator++()
 	return *this;
 }
 
+__device__ void KernelIterator::nextChannel()
+{
+	isLastPosition = false;
+	if (++iterator.chan >= numChans)
+	{
+		iterator.chan = 0;
+		isLastChannel = true;
+	}
+}
+
+__device__ void KernelIterator::nextFrame()
+{
+	isLastChannel = false;
+	if (++iterator.frame >= numFrames)
+	{
+		iterator.frame = 0;
+		isLastFrame = true;
+		isEnd = true;
+	}
+}
+
 __device__ void KernelIterator::reset()
 {
+	isLastPosition = false;
+	isLastChannel = false;
+	isLastFrame = false;
 	isEnd = false;
+
 	iterator = ImageDimensions(Vec<size_t>(0), 0, 0);
 }
 
@@ -91,7 +118,7 @@ __device__ unsigned int KernelIterator::getFrame() const
 
 __device__ size_t KernelIterator::getKernelIdx() const
 {
-	return iterator.dims.product();
+	return kernelSize.linearAddressAt(iterator.dims);
 }
 
 __device__ ImageDimensions KernelIterator::getFullPos() const

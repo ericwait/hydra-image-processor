@@ -15,11 +15,12 @@ public:
 
 	__device__ KernelIterator& operator++();
 	__device__ bool end() const { return isEnd; }
-	__device__ bool channelEnd() const { return isChannelEnd; }
-	__device__ bool frameEnd() const { return isFrameEnd; }
+	__device__ bool lastPosition() const { return isLastPosition; }
+	__device__ bool lastChannel() const { return isLastChannel; }
+	__device__ bool lastFrame() const { return isLastFrame; }
 
-	__device__ void nextChannel() { isChannelEnd = false; }
-	__device__ void nextFrame() { isFrameEnd = false; }
+	__device__ void nextChannel();
+	__device__ void nextFrame();
 	__device__ void reset();
 
 	__device__ Vec<float> getImageCoordinate() const;
@@ -45,11 +46,13 @@ private:
 	unsigned int numChans;
 	unsigned int numFrames;
 
-	// This indicates the current position
+	// This indicates the current positions
 	ImageDimensions iterator;
 
-	bool isChannelEnd;
-	bool isFrameEnd;
+	bool isLastPosition;
+	bool isLastChannel;
+	bool isLastFrame;
 	bool isEnd;
+	Vec<size_t> kernelSize;
 };
 
