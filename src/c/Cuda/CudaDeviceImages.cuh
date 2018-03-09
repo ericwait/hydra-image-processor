@@ -75,6 +75,7 @@ public:
 
 	void incrementBuffer()
 	{
+		DEBUG_KERNEL_CHECK();
 		++curBuff;
 		if (curBuff >= numBuffers)
 			curBuff = 0;
