@@ -27,9 +27,9 @@ public:
 		}
 
 		ImageDimensions curPos(0, 0, 0);
-		for(curPos.frame = frameStart; curPos.frame<=stopPos.frame; ++curPos.frame)
+		for(curPos.frame = frameStart; curPos.frame<stopPos.frame; ++curPos.frame)
 		{
-			for(curPos.chan = channelStart; curPos.chan<=stopPos.chan; ++curPos.chan)
+			for(curPos.chan = channelStart; curPos.chan<stopPos.chan; ++curPos.chan)
 			{
 				for(curPos.dims.z = 0; curPos.dims.z<stopPos.dims.z; ++curPos.dims.z)
 				{
@@ -55,6 +55,7 @@ public:
 	template <typename PixelTypeIn, typename PixelTypeOut>
 	bool sendROI(const ImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut>* deviceImage)
 	{
+		DEBUG_KERNEL_CHECK();
 		if(!deviceImage->setDims(getFullChunkSize()))
 			return false;
 
@@ -62,9 +63,9 @@ public:
 
 		ImageDimensions curPos(0, 0, 0);
 		ImageDimensions stopPos(getFullChunkSize());
-		for(curPos.frame = frameStart; curPos.frame<=stopPos.frame; ++curPos.frame)
+		for(curPos.frame = frameStart; curPos.frame<stopPos.frame; ++curPos.frame)
 		{
-			for(curPos.chan = channelStart; curPos.chan<=stopPos.chan; ++curPos.chan)
+			for(curPos.chan = channelStart; curPos.chan<stopPos.chan; ++curPos.chan)
 			{
 				for(curPos.dims.z = 0; curPos.dims.z<stopPos.dims.z; ++curPos.dims.z)
 				{
@@ -93,7 +94,7 @@ public:
 	void retriveROI(ImageContainer<PixelType> outImage, const CudaImageContainer<PixelType>* deviceImage)
 	{
 		cudaThreadSynchronize();
-		gpuErrchk(cudaPeekAtLastError());
+		GPU_ERROR_CHK(cudaPeekAtLastError());
 
 		if(getFullChunkSize()==outImage.getDims())
 		{
@@ -103,9 +104,9 @@ public:
 
 		ImageDimensions curPos(0, 0, 0);
 		ImageDimensions stopPos(getFullChunkSize());
-		for(curPos.frame = frameStart; curPos.frame<=stopPos.frame; ++curPos.frame)
+		for(curPos.frame = frameStart; curPos.frame<stopPos.frame; ++curPos.frame)
 		{
-			for(curPos.chan = channelStart; curPos.chan<=stopPos.chan; ++curPos.chan)
+			for(curPos.chan = channelStart; curPos.chan<stopPos.chan; ++curPos.chan)
 			{
 				for(curPos.dims.z = 0; curPos.dims.z<stopPos.dims.z; ++curPos.dims.z)
 				{
@@ -131,7 +132,7 @@ public:
 	void retriveROI(ImageContainer<PixelTypeOut> outImage, const CudaImageContainer<PixelTypeIn>* deviceImage)
 	{
 		cudaThreadSynchronize();
-		gpuErrchk(cudaPeekAtLastError());
+		HANDLE_ERROR(cudaPeekAtLastError());
 
 		PixelTypeIn* tempBuffer;
 		if(getFullChunkSize()==outImage.dims)
@@ -148,9 +149,9 @@ public:
 			ImageDimensions curPos(0, 0, 0);
 			ImageDimensions stopPos(getFullChunkSize());
 			tempBuffer = new PixelTypeIn[stopPos.dims.x];
-			for(curPos.frame = frameStart; curPos.frame<=stopPos.frame; ++curPos.frame)
+			for(curPos.frame = frameStart; curPos.frame<stopPos.frame; ++curPos.frame)
 			{
-				for(curPos.chan = channelStart; curPos.chan<=stopPos.chan; ++curPos.chan)
+				for(curPos.chan = channelStart; curPos.chan<stopPos.chan; ++curPos.chan)
 				{
 					for(curPos.dims.z = 0; curPos.dims.z<stopPos.dims.z; ++curPos.dims.z)
 					{
