@@ -59,10 +59,10 @@ std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, ImageDimens
 	else
 		chunkDelta.chan = imageDims.chan;
 
-	if(imageDims.chan>deviceDims.chan)
-		numChunks.chan = (size_t)ceil((double)imageDims.chan/deviceDims.chan);
+	if(imageDims.frame>deviceDims.frame)
+		numChunks.frame = (size_t)ceil((double)imageDims.frame /deviceDims.frame);
 	else
-		chunkDelta.chan = imageDims.chan;
+		chunkDelta.frame = imageDims.frame;
 
 	localChunks.resize(numChunks.getNumElements());
 
@@ -258,8 +258,8 @@ std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffe
 
 	// check to see how many channels will fit on the device
 	size_t numVoxelsPerDevice = deviceDims.product();
-	deviceImageDims.chan = MAX(1, numVoxels/numVoxelsPerDevice);
-	deviceImageDims.frame = MAX(1, numVoxels/(deviceImageDims.chan*numVoxelsPerDevice));
+	deviceImageDims.chan = CLAMP(numVoxels/numVoxelsPerDevice, 1, imageDims.chan);
+	deviceImageDims.frame = CLAMP(numVoxels/(deviceImageDims.chan*numVoxelsPerDevice), 1, imageDims.frame);
 
 	return calculateChunking(imageDims, deviceImageDims, cudaDevs.getMaxThreadsPerBlock(), kernelDims);
 }
