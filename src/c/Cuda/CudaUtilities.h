@@ -32,13 +32,6 @@ int getKernelMaxThreads(T func, int threadLimit=0)
     return blockSizeMax;
 }
 
-
-#ifdef _DEBUG
-#define DEBUG_KERNEL_CHECK() { cudaThreadSynchronize(); gpuErrchk( cudaPeekAtLastError() ); }
-#else
-#define DEBUG_KERNEL_CHECK() {}
-#endif // _DEBUG
-
 static void HandleError( cudaError_t err, const char *file, int line ) 
 {
 	if (err != cudaSuccess) 
@@ -50,16 +43,21 @@ static void HandleError( cudaError_t err, const char *file, int line )
 }
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
-inline void gpuAssert(cudaError_t code, char *file, int line, bool abort=true)
+inline void GPUAssert(cudaError_t err, char *file, int line, bool abort=false)
 {
-	if (code != cudaSuccess) 
+	if (err != cudaSuccess)
 	{
 		char buff[255];
-		sprintf_s(buff, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+		sprintf_s(buff, "GPUassert: %s %s %d\n", cudaGetErrorString(err), file, line);
 		throw std::runtime_error(buff);
 	}
 }
-#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+#define GPU_ERROR_CHK(err) { GPUAssert((err), __FILE__, __LINE__); }
 
+#ifdef _DEBUG
+#define DEBUG_KERNEL_CHECK() { cudaThreadSynchronize(); GPU_ERROR_CHK( cudaPeekAtLastError() ); }
+#else
+#define DEBUG_KERNEL_CHECK() {}
+#endif // _DEBUG
 
 void calcBlockThread(const Vec<size_t>& dims, size_t maxThreads, dim3 &blocks, dim3 &threads);
