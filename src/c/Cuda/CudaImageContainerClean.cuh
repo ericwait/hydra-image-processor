@@ -7,14 +7,14 @@ template <class PixelType>
 class CudaImageContainerClean : public CudaImageContainer<PixelType>
 {
 public:
-	CudaImageContainerClean(const PixelType* imageIn, ImageDimensions dims, int device=0)
+	CudaImageContainerClean(const PixelType* imageIn, ImageDimensions imDims, int device=0)
 	{
 		defaults();
 		image = NULL;
-		maxImageDims = dims;
-		roiSizes = dims;
+		maxImageDims = imDims;
+		roiSizes = imDims.dims;
 		this->device = device;
-		ImageContainer<PixelType> im(imageIn, dims);
+		ImageContainer<PixelType> im(imageIn, imDims);
 		loadImage(im);
 	};
 
