@@ -35,7 +35,6 @@ void CudaDevices::getCudaInfo(int device/*=-1*/)
 	
 	// Figure out the lowest memory available to make chunking less complicated
 	// TODO: with some ambition, memory in ImageChunk could utilized each device independently
-	availMem = ULLONG_MAX;
 	for (int i=0; i<numDevices; ++i)
 	{
 		cudaDeviceProp props;
@@ -54,7 +53,8 @@ void CudaDevices::getCudaInfo(int device/*=-1*/)
 
 void CudaDevices::reset()
 {
+	signal(SIGABRT, &HandleAborts);
 	deviceIdxList.clear();
-	availMem = 0;
-	maxThreadsPerBlock = 0;
+	availMem = ULLONG_MAX;
+	maxThreadsPerBlock = ULLONG_MAX;
 }
