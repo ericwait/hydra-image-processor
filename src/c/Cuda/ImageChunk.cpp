@@ -26,7 +26,7 @@ void setMaxDeviceDims(std::vector<ImageChunk> &chunks, ImageDimensions &maxDevic
 	}
 }
 
-std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, ImageDimensions deviceDims, size_t maxThreads, Vec<size_t> kernalDims /*= Vec<size_t>(0, 0, 0)*/)
+std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, ImageDimensions deviceDims, CudaDevices cudaDevs, Vec<size_t> kernalDims /*= Vec<size_t>(1, 1, 1)*/)
 {
 	std::vector<ImageChunk> localChunks;
 	Vec<size_t> margin((kernalDims+1)/2); //integer round
@@ -54,15 +54,35 @@ std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, ImageDimens
 	else
 		chunkDelta.dims.z = imageDims.dims.z;
 
-	if(imageDims.chan>deviceDims.chan)
-		numChunks.chan = (size_t)ceil((double)imageDims.chan/deviceDims.chan);
+	if (imageDims.frame > deviceDims.frame)
+	{
+		numChunks.frame = (size_t)ceil((double)imageDims.frame / deviceDims.frame);
+	}
+	else if(cudaDevs.getNumDevices()>1)// chunk across devices 
+	{
+		deviceDims.frame = (size_t)ceil((double)imageDims.frame / cudaDevs.getNumDevices());
+		chunkDelta.frame = deviceDims.frame;
+		numChunks.frame = (size_t)ceil((double)imageDims.frame / deviceDims.frame);
+	}
 	else
-		chunkDelta.chan = imageDims.chan;
-
-	if(imageDims.frame>deviceDims.frame)
-		numChunks.frame = (size_t)ceil((double)imageDims.frame /deviceDims.frame);
-	else
+	{
 		chunkDelta.frame = imageDims.frame;
+	}
+
+	if (imageDims.chan > deviceDims.chan)
+	{
+		numChunks.chan = (size_t)ceil((double)imageDims.chan / deviceDims.chan);
+	}
+	else if (chunkDelta.frame == imageDims.frame)
+	{
+		deviceDims.chan = (size_t)ceil((double)imageDims.chan / cudaDevs.getNumDevices());
+		chunkDelta.chan = deviceDims.chan;
+		numChunks.chan = (size_t)ceil((double)imageDims.chan / deviceDims.chan);
+	}
+	else
+	{
+		chunkDelta.chan = imageDims.chan;
+	}
 
 	localChunks.resize(numChunks.getNumElements());
 
@@ -90,29 +110,37 @@ std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, ImageDimens
 					{
 						imageROIstart = chunkDelta.dims * curChunk.dims;
 						imageROIend = Vec<size_t>::min(imageROIstart+chunkDelta.dims, imageDims.dims-1);
+
 						imageStart = Vec<size_t>(Vec<int>::max(Vec<int>(imageROIstart)-Vec<int>(margin), Vec<int>(0, 0, 0)));
 						imageEnd = Vec<size_t>::min(imageROIend+margin, imageDims.dims-1);
+						
 						chunkROIstart = imageROIstart-imageStart;
 						chunkROIend = imageROIend-imageStart;
+						
 						chanStart = chunkDelta.chan * curChunk.chan;
-						chanEnd = chanStart+chunkDelta.chan-1;
+						chanEnd = MIN(imageDims.chan-1,chanStart+chunkDelta.chan-1);
+						
 						frameStart = chunkDelta.frame* curChunk.frame;
-						frameEnd = frameStart+chunkDelta.frame-1;
+						frameEnd = MIN(imageDims.frame-1,frameStart+chunkDelta.frame-1);
 
 						ImageChunk* curImageBuffer = &localChunks[numChunks.linearAddressAt(curChunk)];
 
-						curImageBuffer->imageStart = imageStart;
-						curImageBuffer->chunkROIstart = chunkROIstart;
 						curImageBuffer->imageROIstart = imageROIstart;
-						curImageBuffer->imageEnd = imageEnd;
-						curImageBuffer->chunkROIend = chunkROIend;
 						curImageBuffer->imageROIend = imageROIend;
+
+						curImageBuffer->imageStart = imageStart;
+						curImageBuffer->imageEnd = imageEnd;
+
+						curImageBuffer->chunkROIstart = chunkROIstart;
+						curImageBuffer->chunkROIend = chunkROIend;
+
 						curImageBuffer->channelStart = chanStart;
 						curImageBuffer->channelEnd = chanEnd;
+
 						curImageBuffer->frameStart = frameStart;
 						curImageBuffer->frameEnd = frameEnd;
 
-						calcBlockThread(curImageBuffer->getFullChunkSize().dims, maxThreads, curImageBuffer->blocks, curImageBuffer->threads);
+						calcBlockThread(curImageBuffer->getFullChunkSize().dims, cudaDevs.getMaxThreadsPerBlock(), curImageBuffer->blocks, curImageBuffer->threads);
 					}
 				}
 			}
@@ -253,7 +281,7 @@ std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffe
 		}
 	}
 
-	ImageDimensions deviceImageDims;
+	ImageDimensions deviceImageDims(Vec<size_t>(1),1,1);
 	deviceImageDims.dims = deviceDims;
 
 	// check to see how many channels will fit on the device
@@ -261,5 +289,5 @@ std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffe
 	deviceImageDims.chan = CLAMP(numVoxels/numVoxelsPerDevice, 1, imageDims.chan);
 	deviceImageDims.frame = CLAMP(numVoxels/(deviceImageDims.chan*numVoxelsPerDevice), 1, imageDims.frame);
 
-	return calculateChunking(imageDims, deviceImageDims, cudaDevs.getMaxThreadsPerBlock(), kernelDims);
+	return calculateChunking(imageDims, deviceImageDims, cudaDevs, kernelDims);
 }

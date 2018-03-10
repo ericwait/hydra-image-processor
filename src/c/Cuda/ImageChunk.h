@@ -80,9 +80,9 @@ public:
 		}
 
 		ImageDimensions curPos(0, 0, 0);
-		for(curPos.frame = frameStart; curPos.frame<stopPos.frame; ++curPos.frame)
+		for(curPos.frame = 0; curPos.frame<stopPos.frame; ++curPos.frame)
 		{
-			for(curPos.chan = channelStart; curPos.chan<stopPos.chan; ++curPos.chan)
+			for(curPos.chan = 0; curPos.chan<stopPos.chan; ++curPos.chan)
 			{
 				for(curPos.dims.z = 0; curPos.dims.z<stopPos.dims.z; ++curPos.dims.z)
 				{
@@ -119,9 +119,9 @@ public:
 
 		ImageDimensions curPos(0, 0, 0);
 		ImageDimensions stopPos(getFullChunkSize());
-		for(curPos.frame = frameStart; curPos.frame<stopPos.frame; ++curPos.frame)
+		for(curPos.frame = 0; curPos.frame<stopPos.frame; ++curPos.frame)
 		{
-			for(curPos.chan = channelStart; curPos.chan<stopPos.chan; ++curPos.chan)
+			for(curPos.chan = 0; curPos.chan<stopPos.chan; ++curPos.chan)
 			{
 				for(curPos.dims.z = 0; curPos.dims.z<stopPos.dims.z; ++curPos.dims.z)
 				{
