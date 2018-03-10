@@ -6,9 +6,9 @@
 __constant__ float cudaConstKernel[CONST_KERNEL_NUM_EL];
 #endif
 
-__host__ Kernel::Kernel(Vec<size_t> dimensions, float* values)
+__host__ Kernel::Kernel(Vec<size_t> dimensions, float* values, int deviceIn)
 {
-	load(dimensions, values);
+	load(dimensions, values, deviceIn);
 }
 
 __device__ Kernel::Kernel(const Kernel& other)
@@ -21,15 +21,16 @@ __device__ Kernel::Kernel(const Kernel& other)
 }
 
 
-__host__ Kernel::Kernel(ImageContainer<float> kernelIn)
+__host__ Kernel::Kernel(ImageContainer<float> kernelIn, int deviceIn)
 {
-	load(kernelIn.getSpatialDims(), kernelIn.getPtr());
+	load(kernelIn.getSpatialDims(), kernelIn.getPtr(), deviceIn);
 }
 
 
-__host__ void Kernel::load(Vec<size_t> dimensions, float* values)
+__host__ void Kernel::load(Vec<size_t> dimensions, float* values, int device)
 {
 	init();
+	cudaSetDevice(device);
 
 	dims = dimensions;
 

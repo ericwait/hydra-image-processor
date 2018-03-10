@@ -8,8 +8,8 @@
 class Kernel
 {
 public:
-	__host__ Kernel(Vec<size_t> dimensions, float* values);
-	__host__ Kernel(ImageContainer<float> kernelIn);
+	__host__ Kernel(Vec<size_t> dimensions, float* values, int deviceIn);
+	__host__ Kernel(ImageContainer<float> kernelIn, int deviceIn);
 	__host__ __device__ Kernel(const Kernel& other);
 
 	__host__ __device__ ~Kernel() {}
@@ -22,7 +22,7 @@ public:
 private:
 	__host__ __device__ Kernel();
 
-	__host__ void load(Vec<size_t> dimensions, float* values);
+	__host__ void load(Vec<size_t> dimensions, float* values, int deviceIn);
 
 	__host__ void init();
 	__host__ void setOnes();
@@ -34,4 +34,6 @@ private:
 
 	float* cudaKernel;
 	bool cleanUpDevice;
+
+	int device;
 };
