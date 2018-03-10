@@ -8,6 +8,7 @@ class CudaDeviceImages
 public:
 	CudaDeviceImages(int numBuffers, ImageDimensions maxDeviceDims, int device)
 	{
+		cudaSetDevice(device);
 		deviceImages = new CudaImageContainerClean<PixelType>*[numBuffers];
 
 		for (int i=0; i<numBuffers; ++i)
