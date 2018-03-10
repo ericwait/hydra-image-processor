@@ -36,8 +36,8 @@ static void HandleError( cudaError_t err, const char *file, int line )
 {
 	if (err != cudaSuccess) 
 	{
-		char* errorMessage = new char[255];
-		sprintf_s(errorMessage, 255, "%s in %s at line %d\n", cudaGetErrorString( err ),	file, line );
+		char errorMessage[255];
+		sprintf(errorMessage, "%s in %s at line %d\n", cudaGetErrorString( err ),	file, line );
 		throw std::runtime_error(errorMessage);
 	}
 }
@@ -48,7 +48,7 @@ inline void GPUAssert(cudaError_t err, char *file, int line, bool abort=false)
 	if (err != cudaSuccess)
 	{
 		char buff[255];
-		sprintf_s(buff, "GPUassert: %s %s %d\n", cudaGetErrorString(err), file, line);
+		sprintf(buff, "GPUassert: %s %s %d\n", cudaGetErrorString(err), file, line);
 		throw std::runtime_error(buff);
 	}
 }
