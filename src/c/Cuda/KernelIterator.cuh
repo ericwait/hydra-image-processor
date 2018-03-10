@@ -27,6 +27,7 @@ public:
 	__device__ unsigned int getChannel() const;
 	__device__ unsigned int getFrame() const;
 	__device__ size_t getKernelIdx() const;
+	__device__ Vec<size_t> getKernelCoordinate() const { return iterator.dims; }
 	__device__ ImageDimensions getFullPos() const;
 	
 private:

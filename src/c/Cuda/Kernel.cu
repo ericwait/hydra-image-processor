@@ -72,6 +72,18 @@ __host__ void Kernel::clean()
 }
 
 
+__device__ float Kernel::operator[](size_t idx)
+{
+	return cudaKernel[idx];
+}
+
+
+__device__ float Kernel::operator()(Vec<size_t> coordinate)
+{
+	return cudaKernel[dims.linearAddressAt(coordinate)];
+}
+
+
 __host__ void Kernel::init()
 {
 	dims = Vec<size_t>(0);

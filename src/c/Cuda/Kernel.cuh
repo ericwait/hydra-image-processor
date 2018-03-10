@@ -16,7 +16,8 @@ public:
 	__host__ void clean();
 
 	__host__ __device__ Vec<size_t> getDimensions() const { return dims; }
-	__device__ float operator[](size_t idx) { return cudaKernel[idx]; }
+	__device__ float operator[](size_t idx);
+	__device__ float operator()(Vec<size_t> coordinate);
 	
 private:
 	__host__ __device__ Kernel();
