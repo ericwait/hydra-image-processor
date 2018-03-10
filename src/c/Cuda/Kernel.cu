@@ -50,6 +50,7 @@ __host__ void Kernel::load(Vec<size_t> dimensions, float* values)
 	else
 	{
 		HANDLE_ERROR(cudaMalloc(&cudaKernel, sizeof(float)*dims.product()));
+		HANDLE_ERROR(cudaMemcpy(cudaKernel, values, sizeof(float)*dims.product(),cudaMemcpyHostToDevice));
 		cleanUpDevice = true;
 	}
 }
