@@ -7,10 +7,11 @@ class CudaDevices
 {
 public:
 	CudaDevices() { reset(); }
-	CudaDevices(int device) { getCudaInfo(device); }
+	CudaDevices(int device) { reset(); getCudaInfo(device); }
 	template <typename T>
 	CudaDevices(T func, int device=-1)
 	{
+		reset();
 		getCudaInfo(device);
 		setThreadsForFunction(func);
 	}

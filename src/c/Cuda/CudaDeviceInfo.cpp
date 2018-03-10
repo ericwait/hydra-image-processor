@@ -4,7 +4,14 @@
 
 #include <cuda_runtime.h>
 #include <limits.h>
+#include <signal.h>
 
+
+extern "C" void HandleAborts(int signal_number)
+{
+	// Put a break point here to help with debugging
+	fprintf(stderr, "Abort was called.");
+}
 
 void CudaDevices::getCudaInfo(int device/*=-1*/)
 {
