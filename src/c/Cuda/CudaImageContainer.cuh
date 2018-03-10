@@ -30,9 +30,9 @@ public:
 
 	int getDeviceNumber() const {return device;}
 
-	PixelType* getDeviceImagePointer()const {return image;}
+	PixelType* getDeviceImagePointer() {return image;}
 
-	__device__ PixelType* getImagePointer(){return image;}
+	__host__ __device__ PixelType* getImagePointer(){return image;}
 
 	__device__ PixelType& operator()(const ImageDimensions coordinate)
 	{
