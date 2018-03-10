@@ -44,8 +44,8 @@ __host__ void Kernel::load(Vec<size_t> dimensions, float* values)
 
 	if (dimensions.product() < CONST_KERNEL_NUM_EL)
 	{
+		HANDLE_ERROR(cudaGetSymbolAddress((void**)&cudaKernel, cudaConstKernel));
 		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, kernel, sizeof(float)*dims.product()));
-		cudaKernel = cudaConstKernel;
 	}
 	else
 	{
