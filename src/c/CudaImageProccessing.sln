@@ -3,11 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaImageProcessor_lib", "CudaImageProcessor_dll.vcxproj", "{F204D99B-C454-420D-BD1B-5FE4D9D07078}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaMex", "CudaMex.vcxproj", "{6698E8EC-49D9-421E-AA87-5BCC6B466347}"
 	ProjectSection(ProjectDependencies) = postProject
-		{F204D99B-C454-420D-BD1B-5FE4D9D07078} = {F204D99B-C454-420D-BD1B-5FE4D9D07078}
 		{3E663AF2-4E6F-487B-9072-CCA90C66A822} = {3E663AF2-4E6F-487B-9072-CCA90C66A822}
 	EndProjectSection
 EndProject
@@ -19,10 +16,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Debug|x64.ActiveCfg = Debug|x64
-		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Debug|x64.Build.0 = Debug|x64
-		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Release|x64.ActiveCfg = Release|x64
-		{F204D99B-C454-420D-BD1B-5FE4D9D07078}.Release|x64.Build.0 = Release|x64
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Debug|x64.ActiveCfg = Debug|x64
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Debug|x64.Build.0 = Debug|x64
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Release|x64.ActiveCfg = Release|x64

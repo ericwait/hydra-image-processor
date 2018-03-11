@@ -71,52 +71,29 @@
     <ClInclude Include="Cuda\Vec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cuda\CudaDeviceCount.cuh" />
+    <ClInclude Include="Cuda\CudaDeviceImages.cuh" />
+    <ClInclude Include="Cuda\CudaImageContainer.cuh" />
+    <ClInclude Include="Cuda\CudaImageContainerClean.cuh" />
+    <ClInclude Include="Cuda\CudaMemoryStats.cuh" />
+    <ClInclude Include="Cuda\Kernel.cuh" />
+    <ClInclude Include="Cuda\KernelIterator.cuh" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Cuda\CudaImageProcessor.def">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="Cuda\CudaDeviceCount.cuh">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="Cuda\CudaDeviceImages.cuh">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="Cuda\CudaImageContainer.cuh">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="Cuda\CudaImageContainerClean.cuh">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="Cuda\CudaMaxFilter.cuh">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="Cuda\CudaMemoryStats.cuh">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="Cuda\CWrappers.cu">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="Cuda\FooKernel.cuh">
-      <Filter>Header Files</Filter>
-    </None>
-    <None Include="Cuda\FooValueManipulation.cuh">
-      <Filter>Header Files</Filter>
-    </None>
     <None Include="Cuda\ImageDimensions.cuh">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="Cuda\Kernel.cu">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="Cuda\Kernel.cuh">
+    <None Include="Cuda\_TemplateKernel.cuh">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="Cuda\KernelIterator.cu">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="Cuda\KernelIterator.cuh">
-      <Filter>Header Files</Filter>
-    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="Cuda\CudaMaxFilter.cuh" />
+    <CudaCompile Include="Cuda\CWrappers.cu" />
+    <CudaCompile Include="Cuda\Kernel.cu" />
+    <CudaCompile Include="Cuda\KernelIterator.cu" />
   </ItemGroup>
 </Project>

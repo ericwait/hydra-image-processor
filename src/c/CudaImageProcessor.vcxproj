@@ -157,8 +157,7 @@
     <CudaCompile Include="Cuda\CWrappers.cu">
       <FileType>Document</FileType>
     </CudaCompile>
-    <None Include="Cuda\FooKernel.cuh" />
-    <None Include="Cuda\FooValueManipulation.cuh" />
+    <None Include="Cuda\_TemplateKernel.cuh" />
     <None Include="Cuda\ImageDimensions.cuh" />
     <CudaCompile Include="Cuda\Kernel.cu">
       <FileType>Document</FileType>
