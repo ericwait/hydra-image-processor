@@ -1,6 +1,7 @@
 #pragma once
 #include "Vec.h"
 #include "ScopedProcessMutex.h"
+#include "../Cuda/ImageDimensions.cuh"
 
 #include "mex.h"
 #include "windows.h"
@@ -216,8 +217,8 @@ protected:
 	}
 
 	// Helper function for MexCommands class
-	static size_t countDims(Vec<size_t> dims);
-	static void setupDims(const mxArray* im, Vec<size_t>* dims);
+	static size_t countDims(ImageDimensions dims, std::vector<size_t>& matDims);
+	static void setupDims(const mxArray* im, ImageDimensions& dims);
 
 	// Simple template-specialization map for C++ to mex types
 	template <typename T> struct TypeMap		{static const mxClassID mxType;};
@@ -237,7 +238,7 @@ protected:
 		return mxCreateNumericArray(ndim, dims, TypeMap<T>::mxType, mxREAL);
 	}
 
-	// Logical array creation specialziation
+	// Logical array creation specialization
 	template <>
 	static mxArray* createArray<bool>(mwSize ndim, const mwSize* dims)
 	{
@@ -245,29 +246,30 @@ protected:
 	}
 
 	template <typename T>
-	static void setupImagePointers(const mxArray* imageIn, T** image, Vec<size_t>* dims, mxArray** argOut = NULL, T** imageOut = NULL)
+	static void setupImagePointers(const mxArray* imageIn, T** image, ImageDimensions& dims, mxArray** argOut = NULL, T** imageOut = NULL)
 	{
 		setupInputPointers(imageIn, dims, image);
 		if (argOut!=NULL && imageOut!=NULL)
-			setupOutputPointers(argOut, *dims, imageOut);
+			setupOutputPointers(argOut, dims, imageOut);
 	}
 
 	template <typename T>
-	static void setupInputPointers(const mxArray* imageIn, Vec<size_t>* pDims, T** image)
+	static void setupInputPointers(const mxArray* imageIn, ImageDimensions& pDims, T** image)
 	{
 		setupDims(imageIn, pDims);
 		*image = (T*)mxGetData(imageIn);
 	}
 
 	template <typename T>
-	static void setupOutputPointers(mxArray** imageOut, Vec<size_t> dims, T** image)
+	static void setupOutputPointers(mxArray** imageOut, ImageDimensions& dims, T** image)
 	{
-		size_t numDims = countDims(dims);
+		std::vector<size_t> matDims;
+		size_t numDims = countDims(dims, matDims);
 
-		*imageOut = createArray<T>(numDims, dims.e);
+		*imageOut = createArray<T>(numDims, matDims.data());
 		*image = (T*)mxGetData(*imageOut);
 
-		memset(*image, 0, sizeof(T)*dims.product());
+		memset(*image, 0, sizeof(T)*dims.getNumElements());
 	}
 
 

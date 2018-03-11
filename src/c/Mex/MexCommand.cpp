@@ -151,24 +151,47 @@ void MexHelp::help(std::vector<std::string>& helpLines) const
 	helpLines.push_back("Print detailed usage information for the specified command.");
 }
 
-void MexCommand::setupDims(const mxArray* im, Vec<size_t>* dimsOut)
+void MexCommand::setupDims(const mxArray* im, ImageDimensions& dimsOut)
 {
-	*dimsOut = Vec<size_t>(1);
+	dimsOut.dims = Vec<size_t>(1);
+	dimsOut.chan = 1;
+	dimsOut.frame = 1;
 
     size_t numDims = mxGetNumberOfDimensions(im);
     const mwSize* DIMS = mxGetDimensions(im);
 
-	for ( int i=0; i < numDims; ++i )
-		dimsOut->e[i] = (size_t)DIMS[i];
+	for ( int i=0; i < MIN(numDims,3); ++i )
+		dimsOut.dims.e[i] = (size_t)DIMS[i];
+
+	if (numDims > 3)
+		dimsOut.chan = (unsigned int)DIMS[3];
+
+	if (numDims > 4)
+		dimsOut.frame = (unsigned int)DIMS[4];
 }
 
-size_t MexCommand::countDims(Vec<size_t> dims)
+size_t MexCommand::countDims(ImageDimensions dims, std::vector<size_t>& matDims)
 {
     size_t numDims = 0;
+	matDims.clear();
 	for ( int i=0; i < 3; ++i )
 	{
-		if ( dims.e[i] > 1)
+		if (dims.dims.e[i] > 1)
+		{
 			++numDims;
+			matDims.push_back(dims.dims.e[i]);
+		}
+	}
+	if (dims.chan > 1)
+	{
+		++numDims;
+		matDims.push_back(dims.chan);
+	}
+
+	if (dims.frame > 1)
+	{
+		++numDims;
+		matDims.push_back(dims.frame);
 	}
 
     return numDims;
