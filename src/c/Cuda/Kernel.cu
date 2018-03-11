@@ -27,9 +27,10 @@ __host__ Kernel::Kernel(ImageContainer<float> kernelIn, int deviceIn)
 }
 
 
-__host__ void Kernel::load(Vec<size_t> dimensions, float* values, int device)
+__host__ void Kernel::load(Vec<size_t> dimensions, float* values, int deviceIn)
 {
 	init();
+	device = deviceIn;
 	cudaSetDevice(device);
 
 	dims = dimensions;
