@@ -43,7 +43,7 @@ static void HandleError( cudaError_t err, const char *file, int line )
 }
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
-inline void GPUAssert(cudaError_t err, char *file, int line, bool abort=false)
+static void GPUAssert(cudaError_t err, const char *file, int line)
 {
 	if (err != cudaSuccess)
 	{
