@@ -61,15 +61,9 @@ for i=1:length(dList)
             protoIdx = regexpi(curLine,protoLineExpr);
             if (~isempty(protoIdx))
                 % remove the class part of the path
-                fprintf(f, '%s);\n',curLine([1:protoIdx,protoIdx+6:end-8]));
+                fprintf(f, '%s\n',curLine([1:protoIdx,protoIdx+6:end]));
                 continue;
             end
-
-            if (~isempty(regexpi(curLine,'Device --')))
-                % remove line
-                continue;
-            end
-
             % doesn't me other searches write as is
             fprintf(f,'%s\n',curLine);
             continue;

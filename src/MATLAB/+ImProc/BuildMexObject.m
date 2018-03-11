@@ -57,7 +57,7 @@ function makeStaticMethod(objectName, mexName, commandInfo, parentPackage)
     fprintf(methodFile, '%% %s - %s\n', commandInfo.command, summaryString);
 
     if ( length(commandInfo.helpLines) > 1 )
-        fprintf(methodFile, '%%    %s\n', makePrototypeString(commandInfo,objectName,parentPackage));
+        fprintf(methodFile, '%%    %s\n', makePrototypeString(commandInfo,objectName,parentPackage,true));
     end
 
     for i=2:length(commandInfo.helpLines)
@@ -105,7 +105,7 @@ function protoString = makePrototypeString(commandInfo, objectName, parentPackag
 
     protoString = '';
     if ( ~isempty(commandInfo.outArgs) )
-        protoString = makeCommaList(commandInfo.outArgs);
+        protoString = makeCommaList(commandInfo.outArgs,leaveOptBrackets);
 
         if ( length(commandInfo.outArgs) > 1 )
             protoString = ['[' protoString ']'];
@@ -125,6 +125,10 @@ function protoString = makePrototypeString(commandInfo, objectName, parentPackag
 end
 
 function commaStr = makeCommaList(inList, leaveOptBrackets)
+    if (~exist('leaveOptBrackets','var') || isempty(leaveOptBrackets))
+        leaveOptBrackets = false;
+    end
+    
     commaStr = '';
     if ( isempty(inList) )
         return;
@@ -137,11 +141,9 @@ function commaStr = makeCommaList(inList, leaveOptBrackets)
     commaStr = [commaStr removeOptBrackets(inList{end}, leaveOptBrackets)];
 end
 
-function removeOptBrackets(argName, leaveOptBrackets)
-    if ( leaveOptBrackets )
-        return argName;
-    else
-        return regexprep(argName, '\[(\w+)\]', '$1');
+function argName = removeOptBrackets(argName, leaveOptBrackets)
+    if ( ~leaveOptBrackets )
+        argName = regexprep(argName, '\[(\w+)\]', '$1');
     end
 end
 
