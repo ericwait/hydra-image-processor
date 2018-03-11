@@ -58,7 +58,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(MATLAB_DIR)\extern\lib\win64\microsoft;$(SolutionDir)Output\CudaImageProcessor_lib\$(Configuration)_$(PlatformName)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MATLAB_DIR)\extern\lib\win64\microsoft;$(SolutionDir)Output\CudaImageProcessor\$(Configuration)_$(PlatformName)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>CudaImageProcessor_d.lib;libmx.lib;libmex.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>$(SolutionDir)Mex\CudaMex.def</ModuleDefinitionFile>
     </Link>
@@ -81,7 +81,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(MATLAB_DIR)\extern\lib\win64\microsoft;$(SolutionDir)Output\CudaImageProcessor_lib\$(Configuration)_$(PlatformName)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MATLAB_DIR)\extern\lib\win64\microsoft;$(SolutionDir)Output\CudaImageProcessor\$(Configuration)_$(PlatformName)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>CudaImageProcessor.lib;libmx.lib;libmex.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>$(SolutionDir)Mex\CudaMex.def</ModuleDefinitionFile>
     </Link>
@@ -94,50 +94,15 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     <ClInclude Include="Cuda\Vec.h" />
     <ClInclude Include="Mex\CommandList.h" />
     <ClInclude Include="Mex\MexCommand.h" />
+    <ClInclude Include="Mex\MexKernel.h" />
     <ClInclude Include="Mex\ScopedProcessMutex.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp" />
-    <ClCompile Include="Mex\MexLoG.cpp" />
-    <ClCompile Include="Mex\MexAddConstant.cpp" />
-    <ClCompile Include="Mex\MexAddImageWith.cpp" />
-    <ClCompile Include="Mex\MexApplyPolyTransformation.cpp" />
     <ClCompile Include="Mex\MexCommand.cpp" />
-    <ClCompile Include="Mex\MexContrastEnhancement.cpp" />
     <ClCompile Include="Mex\MexDeviceCount.cpp" />
     <ClCompile Include="Mex\MexDeviceStats.cpp" />
-    <ClCompile Include="Mex\MexEntropyFilter.cpp" />
-    <ClCompile Include="Mex\MexGaussianFilter.cpp" />
-    <ClCompile Include="Mex\MexHistogram.cpp" />
-    <ClCompile Include="Mex\MexImagePow.cpp" />
-    <ClCompile Include="Mex\MexLinearUnmixing.cpp" />
-    <ClCompile Include="Mex\MexMarkovRandomFieldDenoiser.cpp" />
-    <ClCompile Include="Mex\MexMaxFilterEllipsoid.cpp" />
-    <ClCompile Include="Mex\MexMaxFilterKernel.cpp" />
-    <ClCompile Include="Mex\MexMaxFilterNeighborhood.cpp" />
-    <ClCompile Include="Mex\MexMeanFilter.cpp" />
-    <ClCompile Include="Mex\MexMedianFilter.cpp" />
-    <ClCompile Include="Mex\MexMinFilterEllipsoid.cpp" />
-    <ClCompile Include="Mex\MexMinFilterKernal.cpp" />
-    <ClCompile Include="Mex\MexMinFilterNeighborhood.cpp" />
-    <ClCompile Include="Mex\MexMinMax.cpp" />
-    <ClCompile Include="Mex\MexMorphologicalClosure.cpp" />
-    <ClCompile Include="Mex\MexMorphologicalOpening.cpp" />
-    <ClCompile Include="Mex\MexMultiplyImage.cpp" />
-    <ClCompile Include="Mex\MexMultiplyImageWith.cpp" />
-    <ClCompile Include="Mex\MexNeighborhoodSum.cpp" />
-    <ClCompile Include="Mex\MexNormalizedCovariance.cpp" />
-    <ClCompile Include="Mex\MexNormalizedHistogram.cpp" />
-    <ClCompile Include="Mex\MexOtsuThresholdFilter.cpp" />
-    <ClCompile Include="Mex\MexOtsuThresholdValue.cpp" />
-    <ClCompile Include="Mex\MexRegionGrowing.cpp" />
-    <ClCompile Include="Mex\MexResize.cpp" />
-    <ClCompile Include="Mex\MexSegment.cpp" />
-    <ClCompile Include="Mex\MexStdFilter.cpp" />
-    <ClCompile Include="Mex\MexSumArray.cpp" />
-    <ClCompile Include="Mex\MexThresholdFilter.cpp" />
-    <ClCompile Include="Mex\MexTileImage.cpp" />
-    <ClCompile Include="Mex\MexVariance.cpp" />
+    <ClCompile Include="Mex\MexMaxFilter.cpp" />
     <ClCompile Include="Mex\ScopedProcessMutex.cpp" />
   </ItemGroup>
   <ItemGroup>

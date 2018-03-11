@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3E663AF2-4E6F-487B-9072-CCA90C66A822}</ProjectGuid>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <Keyword>ManagedCProj</Keyword>
+    <RootNamespace>CudaImageProcessor</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CLRSupport>false</CLRSupport>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CLRSupport>false</CLRSupport>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 9.1.props" />
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\</OutDir>
+    <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\$(Configuration)_$(PlatformName)\</IntDir>
+    <TargetName>CudaImageProcessor_d</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)Output\$(ProjectName)\$(Configuration)_$(PlatformName)\</OutDir>
+    <IntDir>$(SolutionDir)Intermediate\$(ProjectName)\$(Configuration)_$(PlatformName)\</IntDir>
+    <TargetName>CudaImageProcessor</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies />
+    </Link>
+    <CudaCompile>
+      <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
+    </CudaCompile>
+    <CudaCompile>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <AdditionalCompilerOptions>
+      </AdditionalCompilerOptions>
+      <Runtime>MDd</Runtime>
+      <CodeGeneration>compute_30,sm_30;compute_35,sm_35;compute_37,sm_37;compute_50,sm_50;compute_52,sm_52;compute_60,sm_60;compute_61,sm_61;</CodeGeneration>
+      <AdditionalOptions>-Xcompiler /openmp %(AdditionalOptions)</AdditionalOptions>
+    </CudaCompile>
+    <Lib>
+      <AdditionalDependencies>cudart_static.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies />
+    </Link>
+    <CudaCompile>
+      <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
+    </CudaCompile>
+    <CudaCompile>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <AdditionalCompilerOptions>
+      </AdditionalCompilerOptions>
+      <Runtime>MD</Runtime>
+      <CodeGeneration>compute_30,sm_30;compute_35,sm_35;compute_37,sm_37;compute_50,sm_50;compute_52,sm_52;compute_60,sm_60;compute_61,sm_61;</CodeGeneration>
+      <AdditionalOptions>-Xcompiler /openmp %(AdditionalOptions)</AdditionalOptions>
+    </CudaCompile>
+    <Lib>
+      <AdditionalDependencies>cudart_static.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Cuda\CHelpers.cpp" />
+    <ClCompile Include="Cuda\CudaDeviceInfo.cpp" />
+    <ClCompile Include="Cuda\CudaDeviceStats.cpp" />
+    <ClCompile Include="Cuda\CudaUtilities.cpp" />
+    <ClCompile Include="Cuda\GaussianKernel.cpp" />
+    <ClCompile Include="Cuda\ImageChunk.cpp" />
+    <ClCompile Include="Cuda\LoGKernel.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Cuda\CHelpers.h" />
+    <ClInclude Include="Cuda\CommandLineProgress.h" />
+    <ClInclude Include="Cuda\CudaDeviceInfo.h" />
+    <ClInclude Include="Cuda\CudaDeviceStats.h" />
+    <ClInclude Include="Cuda\CudaUtilities.h" />
+    <ClInclude Include="Cuda\CWrappers.h" />
+    <ClInclude Include="Cuda\Defines.h" />
+    <ClInclude Include="Cuda\ImageChunk.h" />
+    <ClInclude Include="Cuda\ImageContainer.h" />
+    <ClInclude Include="Cuda\KernelGenerators.h" />
+    <ClInclude Include="Cuda\Vec.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Cuda\CudaDeviceCount.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaDeviceImages.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaImageContainer.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaImageContainerClean.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <None Include="Cuda\CudaImageProcessor.def" />
+    <CudaCompile Include="Cuda\CudaMaxFilter.cuh">
+      <FileType>Document</FileType>
+    </CudaCompile>
+    <ClInclude Include="Cuda\CudaMemoryStats.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <CudaCompile Include="Cuda\CWrappers.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
+    <None Include="Cuda\FooKernel.cuh" />
+    <None Include="Cuda\FooValueManipulation.cuh" />
+    <None Include="Cuda\ImageDimensions.cuh" />
+    <CudaCompile Include="Cuda\Kernel.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
+    <ClInclude Include="Cuda\Kernel.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <CudaCompile Include="Cuda\KernelIterator.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
+    <ClInclude Include="Cuda\KernelIterator.cuh">
+      <FileType>Document</FileType>
+    </ClInclude>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 9.1.targets" />
+  </ImportGroup>
+</Project>

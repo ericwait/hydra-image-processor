@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Cuda\CHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cuda\CudaDeviceInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cuda\CudaDeviceStats.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cuda\CudaUtilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cuda\GaussianKernel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cuda\ImageChunk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cuda\LoGKernel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Cuda\CHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\CommandLineProgress.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaDeviceInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaDeviceStats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaUtilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\CWrappers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\Defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\ImageChunk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\ImageContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\KernelGenerators.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\Vec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Cuda\CudaImageProcessor.def">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Cuda\CudaDeviceCount.cuh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Cuda\CudaDeviceImages.cuh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Cuda\CudaImageContainer.cuh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Cuda\CudaImageContainerClean.cuh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Cuda\CudaMaxFilter.cuh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Cuda\CudaMemoryStats.cuh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Cuda\CWrappers.cu">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Cuda\FooKernel.cuh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Cuda\FooValueManipulation.cuh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Cuda\ImageDimensions.cuh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Cuda\Kernel.cu">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Cuda\Kernel.cuh">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="Cuda\KernelIterator.cu">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="Cuda\KernelIterator.cuh">
+      <Filter>Header Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

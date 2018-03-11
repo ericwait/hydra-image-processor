@@ -8,7 +8,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaMex", "CudaMex.vcxproj", "{6698E8EC-49D9-421E-AA87-5BCC6B466347}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F204D99B-C454-420D-BD1B-5FE4D9D07078} = {F204D99B-C454-420D-BD1B-5FE4D9D07078}
+		{3E663AF2-4E6F-487B-9072-CCA90C66A822} = {3E663AF2-4E6F-487B-9072-CCA90C66A822}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CudaImageProcessor", "CudaImageProcessor.vcxproj", "{3E663AF2-4E6F-487B-9072-CCA90C66A822}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +27,10 @@ Global
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Debug|x64.Build.0 = Debug|x64
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Release|x64.ActiveCfg = Release|x64
 		{6698E8EC-49D9-421E-AA87-5BCC6B466347}.Release|x64.Build.0 = Release|x64
+		{3E663AF2-4E6F-487B-9072-CCA90C66A822}.Debug|x64.ActiveCfg = Debug|x64
+		{3E663AF2-4E6F-487B-9072-CCA90C66A822}.Debug|x64.Build.0 = Debug|x64
+		{3E663AF2-4E6F-487B-9072-CCA90C66A822}.Release|x64.ActiveCfg = Release|x64
+		{3E663AF2-4E6F-487B-9072-CCA90C66A822}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
