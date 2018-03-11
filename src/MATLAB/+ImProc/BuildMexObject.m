@@ -90,7 +90,7 @@ function commandString = makeCommandString(objectName, mexName, commandInfo, par
     commandString = [commandString ')'];
 end
 
-function protoString = makePrototypeString(commandInfo, objectName, parentPackage)
+function protoString = makePrototypeString(commandInfo, objectName, parentPackage, leaveOptBrackets)
     if ( ~exist('objectName','var') )
         objectName = [];
     end
@@ -98,6 +98,9 @@ function protoString = makePrototypeString(commandInfo, objectName, parentPackag
         parentPackage = [];
     else
         parentPackage = [parentPackage '.'];
+    end
+    if ( ~exist('leaveOptBrackets','var') )
+        leaveOptBrackets = false;
     end
 
     protoString = '';
@@ -116,22 +119,30 @@ function protoString = makePrototypeString(commandInfo, objectName, parentPackag
 
     protoString = [protoString commandInfo.command '('];
     if ( ~isempty(commandInfo.inArgs) )
-         protoString = [protoString makeCommaList(commandInfo.inArgs)];
+         protoString = [protoString makeCommaList(commandInfo.inArgs, leaveOptBrackets)];
     end
     protoString = [protoString ')'];
 end
 
-function commaStr = makeCommaList(inList)
+function commaStr = makeCommaList(inList, leaveOptBrackets)
     commaStr = '';
     if ( isempty(inList) )
         return;
     end
 
     for i=1:length(inList)-1
-        commaStr = [commaStr inList{i} ','];
+        commaStr = [commaStr removeOptBrackets(inList{i}, leaveOptBrackets) ','];
     end
 
-    commaStr = [commaStr inList{end}];
+    commaStr = [commaStr removeOptBrackets(inList{end}, leaveOptBrackets)];
+end
+
+function removeOptBrackets(argName, leaveOptBrackets)
+    if ( leaveOptBrackets )
+        return argName;
+    else
+        return regexprep(argName, '\[(\w+)\]', '$1');
+    end
 end
 
 function cleanupFunc(oldPath)
