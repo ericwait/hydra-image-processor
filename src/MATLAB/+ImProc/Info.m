@@ -6,9 +6,10 @@
 %       commandInfo.inArgs - Cell array of input arguments
 %       commandInfo.helpLines - Cell array of input arguments
 function commandInfo = Info()
+     try
+          commandInfo = ImProc.Cuda.Info();
+     catch errMsg
+          commandInfo = ImProc.Local.Info();
+          warning(errMsg);
+     end
 end
-
-function imageOut = lclImagePow(imageIn,power)
-
-end
-
