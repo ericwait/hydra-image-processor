@@ -74,14 +74,14 @@ for i=1:length(dList)
         funcCall = regexpi(curLine,funcLineExpr,'names');
         if (~isempty(funcCall))
             funcCallFilled = funcCall;
-            fprintf(f,'function %s = %s(%s)\n',funcCall.out,funcCall.name,funcCall.param);
-            fprintf(f,'     try\n');
-            fprintf(f,'          %s = ImProc.Cuda.%s(%s);\n',funcCall.out,funcCall.name,funcCall.param);
-            fprintf(f,'     catch errMsg\n');
+            fprintf(f,'\nfunction %s = %s(%s)\n',funcCall.out,funcCall.name,funcCall.param);
+            fprintf(f,'    try\n');
+            fprintf(f,'        %s = ImProc.Cuda.%s(%s);\n',funcCall.out,funcCall.name,funcCall.param);
+            fprintf(f,'    catch errMsg\n');
             localFuctionCall = sprintf('%s = ImProc.Local.%s(%s)',funcCall.out,funcCall.name,funcCall.param);
-            fprintf(f,'          %s;\n', localFuctionCall);
-            fprintf(f,'          warning(errMsg);\n');
-            fprintf(f,'     end\n');
+            fprintf(f,'        warning(errMsg.message);\n');
+            fprintf(f,'        %s;\n', localFuctionCall);
+            fprintf(f,'    end\n');
             continue;
         end
 
