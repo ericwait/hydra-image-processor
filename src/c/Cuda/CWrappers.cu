@@ -27,6 +27,61 @@ void clearDevice()
 	 return cMemoryStats(stats);
  }
 
+ /// Example wrapper code
+ //void fooFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //{
+	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
+ //}
+
+
+ //void fooFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //{
+	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
+ //}
+
+
+ //void fooFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //{
+	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
+ //}
+
+
+ //void fooFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //{
+	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
+ //}
+
+
+ //void fooFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //{
+	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
+ //}
+
+
+ //void fooFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //{
+	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
+ //}
+
+
+ //void fooFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //{
+	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
+ //}
+
+
+ //void fooFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //{
+	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
+ //}
+
+
+ //void fooFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //{
+	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
+ //}
+
+
 
  void maxFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {

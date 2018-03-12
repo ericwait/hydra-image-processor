@@ -50,6 +50,9 @@
     <ClCompile Include="Mex\MexMaxFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mex\_TemplateMex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Mex\MexMinFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
