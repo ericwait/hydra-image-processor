@@ -71,12 +71,22 @@
     <ClInclude Include="Cuda\Vec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cuda\CudaDeviceCount.cuh" />
-    <ClInclude Include="Cuda\CudaDeviceImages.cuh" />
-    <ClInclude Include="Cuda\CudaImageContainer.cuh" />
-    <ClInclude Include="Cuda\CudaImageContainerClean.cuh" />
-    <ClInclude Include="Cuda\CudaMemoryStats.cuh" />
     <ClInclude Include="Cuda\CudaMinFilter.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaDeviceCount.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaDeviceImages.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaImageContainer.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaImageContainerClean.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\CudaMemoryStats.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Cuda\Kernel.cuh">
@@ -98,8 +108,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="Cuda\CudaMaxFilter.cuh" />
-    <CudaCompile Include="Cuda\CWrappers.cu" />
+    <CudaCompile Include="Cuda\CudaMaxFilter.cuh">
+      <Filter>Header Files</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Cuda\CWrappers.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
     <CudaCompile Include="Cuda\Kernel.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
