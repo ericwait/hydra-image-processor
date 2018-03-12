@@ -4,6 +4,7 @@
 #include "CudaMemoryStats.cuh"
 
 #include "CudaMaxFilter.cuh"
+#include "CudaMinFilter.cuh"
 
 
 void clearDevice()
@@ -78,4 +79,58 @@ void clearDevice()
  void maxFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ void minFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ void minFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ void minFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ void minFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ void minFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ void minFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ void minFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ void minFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ void minFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
  }

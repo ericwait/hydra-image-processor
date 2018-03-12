@@ -78,6 +78,9 @@
     <ClInclude Include="Cuda\CudaMemoryStats.cuh" />
     <ClInclude Include="Cuda\Kernel.cuh" />
     <ClInclude Include="Cuda\KernelIterator.cuh" />
+    <ClInclude Include="Cuda\CudaMinFilter.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Cuda\CudaImageProcessor.def">

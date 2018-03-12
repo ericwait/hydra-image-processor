@@ -29,3 +29,13 @@ IMAGE_PROCESSOR_API void maxFilter(const ImageContainer<int> imageIn, ImageConta
 IMAGE_PROCESSOR_API void maxFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
 IMAGE_PROCESSOR_API void maxFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
 IMAGE_PROCESSOR_API void maxFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+
+IMAGE_PROCESSOR_API void minFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void minFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void minFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void minFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void minFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void minFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void minFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void minFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void minFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
