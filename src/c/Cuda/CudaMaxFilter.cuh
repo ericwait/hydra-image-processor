@@ -33,11 +33,12 @@ __global__ void cudaMaxFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImage
 					Vec<float> imInPos = kIt.getImageCoordinate();
 					double inVal = (double)imageIn(imInPos, kIt.getChannel(), kIt.getFrame());
 					float kernVal = constKernelMem(kIt.getKernelCoordinate());
-					inVal *= kernVal;
-
-					if (outVal<inVal)
+					
+					if (kernVal!=0.0f)
 					{
-						outVal = inVal;
+						inVal *= kernVal;
+						if (outVal < inVal)
+							outVal = inVal;
 					}
 				}
 				ImageDimensions outPos = ImageDimensions(threadCoordinate, kIt.getChannel(), kIt.getFrame());
