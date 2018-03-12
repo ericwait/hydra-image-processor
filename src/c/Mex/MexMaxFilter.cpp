@@ -10,10 +10,10 @@ void MexMaxFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* 
 	int device = -1;
 	int numIterations = 1;
 
-	if (nrhs > 2)
+	if (!mxIsEmpty(prhs[2]))
 		numIterations = int(mxGetScalar(prhs[2]));
 
-	if (nrhs>3)
+	if (!mxIsEmpty(prhs[3]))
 		device = mat_to_c((int)mxGetScalar(prhs[3]));
 
 	ImageContainer<float> kernel = getKernel(prhs[1]);
@@ -116,7 +116,7 @@ void MexMaxFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* 
 
 std::string MexMaxFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const
 {
-	if (nrhs<2 || nrhs>4)
+	if (nrhs!=4)
 		return "Incorrect number of inputs!";
 
 	if (nlhs!=1)
@@ -130,7 +130,7 @@ std::string MexMaxFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxAr
 	if (kernDims<1 || kernDims>3)
 		return "Kernel can only be either 1-D, 2-D, or 3-D!";
 
-	if (nrhs>2)
+	if (!mxIsEmpty(prhs[2]))
 	{
 		int numIter = (int)mxGetScalar(prhs[2]);
 		if (numIter < 1)
@@ -145,8 +145,8 @@ void MexMaxFilter::usage(std::vector<std::string>& outArgs,std::vector<std::stri
 {
 	inArgs.push_back("arrayIn");
 	inArgs.push_back("kernel");
-	inArgs.push_back("numIterations");
-	inArgs.push_back("device");
+	inArgs.push_back("[numIterations]");
+	inArgs.push_back("[device]");
 	outArgs.push_back("arrayOut");
 }
 
@@ -164,12 +164,13 @@ void MexMaxFilter::help(std::vector<std::string>& helpLines) const
 	helpLines.push_back("\t\tIn other words, this can be viewed as a structuring element for the max neighborhood.");
 	helpLines.push_back("");
 
-	helpLines.push_back("\tnumIterations = This is the number of iterations to run the max filter for a given position.");
+	helpLines.push_back("\tnumIterations (optional) =  This is the number of iterations to run the max filter for a given position.");
 	helpLines.push_back("\t\tThis is useful for growing regions by the shape of the structuring element or for very large neighborhoods.");
+	helpLines.push_back("\t\tCan be empty an array [].");
 	helpLines.push_back("");
 
-	helpLines.push_back("\tdevice = Use this if you have multiple devices and want to select one explicitly. Otherwise set to -1.");
-	helpLines.push_back("\t\tSetting this to -1 allows the algorithm to either pick the best device and/or will try to split");
+	helpLines.push_back("\tdevice (optional) = Use this if you have multiple devices and want to select one explicitly.");
+	helpLines.push_back("\t\tSetting this to [] allows the algorithm to either pick the best device and/or will try to split");
 	helpLines.push_back("\t\tthe data across multiple devices.");
 	helpLines.push_back("");
 
