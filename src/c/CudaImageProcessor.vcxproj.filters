@@ -76,9 +76,13 @@
     <ClInclude Include="Cuda\CudaImageContainer.cuh" />
     <ClInclude Include="Cuda\CudaImageContainerClean.cuh" />
     <ClInclude Include="Cuda\CudaMemoryStats.cuh" />
-    <ClInclude Include="Cuda\Kernel.cuh" />
-    <ClInclude Include="Cuda\KernelIterator.cuh" />
     <ClInclude Include="Cuda\CudaMinFilter.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\Kernel.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\KernelIterator.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -96,7 +100,11 @@
   <ItemGroup>
     <CudaCompile Include="Cuda\CudaMaxFilter.cuh" />
     <CudaCompile Include="Cuda\CWrappers.cu" />
-    <CudaCompile Include="Cuda\Kernel.cu" />
-    <CudaCompile Include="Cuda\KernelIterator.cu" />
+    <CudaCompile Include="Cuda\Kernel.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
+    <CudaCompile Include="Cuda\KernelIterator.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
