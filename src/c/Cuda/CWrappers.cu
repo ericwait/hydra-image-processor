@@ -5,6 +5,7 @@
 
 #include "CudaMaxFilter.cuh"
 #include "CudaMinFilter.cuh"
+#include "CudaMultiplySum.cuh"
 
 
 void clearDevice()
@@ -189,3 +190,59 @@ void clearDevice()
  {
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
  }
+
+
+
+ IMAGE_PROCESSOR_API void multiplySum(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ IMAGE_PROCESSOR_API void multiplySum(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ IMAGE_PROCESSOR_API void multiplySum(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ IMAGE_PROCESSOR_API void multiplySum(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ IMAGE_PROCESSOR_API void multiplySum(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ IMAGE_PROCESSOR_API void multiplySum(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ IMAGE_PROCESSOR_API void multiplySum(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ IMAGE_PROCESSOR_API void multiplySum(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ IMAGE_PROCESSOR_API void multiplySum(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
+ }
+

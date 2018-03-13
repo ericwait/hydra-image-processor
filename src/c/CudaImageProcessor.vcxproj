@@ -127,6 +127,7 @@
     <ClInclude Include="Cuda\CudaDeviceInfo.h" />
     <ClInclude Include="Cuda\CudaDeviceStats.h" />
     <ClInclude Include="Cuda\CudaMinFilter.cuh" />
+    <ClInclude Include="Cuda\CudaMultiplySum.cuh" />
     <ClInclude Include="Cuda\CudaUtilities.h" />
     <ClInclude Include="Cuda\CWrappers.h" />
     <ClInclude Include="Cuda\Defines.h" />
