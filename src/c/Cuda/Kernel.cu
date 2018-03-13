@@ -6,9 +6,9 @@
 __constant__ float cudaConstKernel[CONST_KERNEL_NUM_EL];
 #endif
 
-__host__ Kernel::Kernel(Vec<size_t> dimensions, float* values, int deviceIn)
+__host__ Kernel::Kernel(Vec<size_t> dimensions, float* values, int deviceIn, size_t startOffset/* = 0*/)
 {
-	load(dimensions, values, deviceIn);
+	load(dimensions, values, deviceIn, startOffset);
 }
 
 __device__ Kernel::Kernel(const Kernel& other)
@@ -27,7 +27,7 @@ __host__ Kernel::Kernel(ImageContainer<float> kernelIn, int deviceIn)
 }
 
 
-__host__ void Kernel::load(Vec<size_t> dimensions, float* values, int deviceIn)
+__host__ void Kernel::load(Vec<size_t> dimensions, float* values, int deviceIn, size_t startOffset/* = 0*/)
 {
 	init();
 	device = deviceIn;
@@ -44,9 +44,10 @@ __host__ void Kernel::load(Vec<size_t> dimensions, float* values, int deviceIn)
 		kernel = values;
 	}
 
-	if (dimensions.product() < CONST_KERNEL_NUM_EL)
+	if (dimensions.product()+startOffset < CONST_KERNEL_NUM_EL)
 	{
 		HANDLE_ERROR(cudaGetSymbolAddress((void**)&cudaKernel, cudaConstKernel));
+		cudaKernel += startOffset;
 		HANDLE_ERROR(cudaMemcpyToSymbol(cudaConstKernel, kernel, sizeof(float)*dims.product()));
 	}
 	else
