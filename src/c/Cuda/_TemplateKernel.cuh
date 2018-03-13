@@ -35,11 +35,13 @@ __global__ void cudaFooFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImage
 					double inVal = (double)imageIn(imInPos, kIt.getChannel(), kIt.getFrame());
 					float kernVal = constKernelMem(kIt.getKernelCoordinate());
 
-					//////////////////////////////////////////////////////////
-					// Do something interesting here
-					// e.g. convolution
-					// outVal += inVal * kernval;
-					//////////////////////////////////////////////////////////
+					if (kernVal != 0.0f)
+					{
+						//////////////////////////////////////////////////////////
+						// Do something interesting here
+						// outVal += inVal * kernval;
+						//////////////////////////////////////////////////////////
+					}
 				}
 				ImageDimensions outPos = ImageDimensions(threadCoordinate, kIt.getChannel(), kIt.getFrame());
 				imageOut(outPos) = (PixelTypeOut)CLAMP(outVal, minValue, maxValue);
