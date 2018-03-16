@@ -3,126 +3,52 @@
 #include <float.h>
 #include <functional>
 
-Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernelOut, Vec<int>& iterations)
+
+float* createGaussianKernel(Vec<double> sigmas, Vec<size_t>& dimsOut)
 {
-	Vec<size_t> kernelDims(1, 1, 1);
-	iterations = Vec<int>(1, 1, 1);
+	dimsOut.x = (size_t)MAX(1.0f, (3 * sigmas.x));
+	dimsOut.y = (size_t)MAX(1.0f, (3 * sigmas.y));
+	dimsOut.z = (size_t)MAX(1.0f, (3 * sigmas.z));
 
-	if ((sigma.x + sigma.y + sigma.z) * 3 > MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM)
+	dimsOut.x = (dimsOut.x % 2 == 0) ? (dimsOut.x + 1) : (dimsOut.x);
+	dimsOut.y = (dimsOut.y % 2 == 0) ? (dimsOut.y + 1) : (dimsOut.y);
+	dimsOut.z = (dimsOut.z % 2 == 0) ? (dimsOut.z + 1) : (dimsOut.z);
+
+	Vec<double> mid = Vec<double>(dimsOut) / 2.0;
+
+	float* kernelOut = new float[dimsOut.sum()];
+	for (int i = 0; i < 3; ++i)
 	{
-		iterations.x = (int)MAX(1.0f, ceil(9.0f*SQR(sigma.x) / SQR(MAX_KERNEL_DIM)));
-		iterations.y = (int)MAX(1.0f, ceil(9.0f*SQR(sigma.y) / SQR(MAX_KERNEL_DIM)));
-		iterations.z = (int)MAX(1.0f, ceil(9.0f*SQR(sigma.z) / SQR(MAX_KERNEL_DIM)));
+		size_t startOffset = 0;
+		if (i > 0)
+			startOffset += dimsOut.x;
 
-		//TODO: Optimize iterations per dim
-		sigma.x = sigma.x / sqrt((float)iterations.x);
-		sigma.y = sigma.y / sqrt((float)iterations.y);
-		sigma.z = sigma.z / sqrt((float)iterations.z);
-	}
+		if (i > 1)
+			startOffset += dimsOut.y;
 
-	kernelDims.x = (size_t)MAX(1.0f, (3 * sigma.x));
-	kernelDims.y = (size_t)MAX(1.0f, (3 * sigma.y));
-	kernelDims.z = (size_t)MAX(1.0f, (3 * sigma.z));
+		double curSigma = sigmas.e[i];
 
-	kernelDims.x = (kernelDims.x % 2 == 0) ? (kernelDims.x + 1) : (kernelDims.x);
-	kernelDims.y = (kernelDims.y % 2 == 0) ? (kernelDims.y + 1) : (kernelDims.y);
-	kernelDims.z = (kernelDims.z % 2 == 0) ? (kernelDims.z + 1) : (kernelDims.z);
-
-	Vec<size_t> mid;
-	mid.x = kernelDims.x / 2;
-	mid.y = kernelDims.y / 2;
-	mid.z = kernelDims.z / 2;
-
-	*kernelOut = new float[kernelDims.sum()];
-	float* kernel = *kernelOut;
-
-	float total = 0.0;
-	if (sigma.x == 0)
-	{
-		kernel[0] = 1.0f;
-	}
-	else
-	{
-		for (size_t x = 0; x < kernelDims.x; ++x)
-			total += kernel[x] = exp(-(int)(SQR(mid.x - x)) / (2 * SQR(sigma.x)));
-		for (size_t x = 0; x < kernelDims.x; ++x)
-			kernel[x] /= total;
-	}
-
-	total = 0.0;
-	if (sigma.y == 0)
-	{
-		kernel[kernelDims.x] = 1;
-	}
-	else
-	{
-		for (size_t y = 0; y < kernelDims.y; ++y)
-			total += kernel[y + kernelDims.x] = exp(-(int)(SQR(mid.y - y)) / (2 * SQR(sigma.y)));
-		for (size_t y = 0; y < kernelDims.y; ++y)
-			kernel[y + kernelDims.x] /= total;
-	}
-
-	total = 0.0;
-	if (sigma.z == 0)
-	{
-		kernel[kernelDims.x + kernelDims.y] = 1;
-	}
-	else
-	{
-		for (size_t z = 0; z < kernelDims.z; ++z)
-			total += kernel[z + kernelDims.x + kernelDims.y] = exp(-(int)(SQR(mid.z - z)) / (2 * SQR(sigma.z)));
-		for (size_t z = 0; z < kernelDims.z; ++z)
-			kernel[z + kernelDims.x + kernelDims.y] /= total;
-	}
-
-	return kernelDims;
-}
-
-Vec<size_t> createGaussianKernelFull(Vec<float> sigma, float** kernelOut, Vec<size_t> maxKernelSize)
-{
-	Vec<size_t> kernelDims = Vec<size_t>(sigma.clamp(Vec<float>(1.0f), FLT_MAX));
-
-	for (float numStd = 3.0f; numStd > 1.0f; numStd -= 0.2f)
-	{
-		if (sigma.product()*numStd < maxKernelSize.product())
+		if (curSigma == 0)
 		{
-			kernelDims = sigma*numStd + 0.9999f;
-			break;
+			kernelOut[startOffset] = 1.0f;
+			continue;
 		}
-	}
 
-	kernelDims = kernelDims.clamp(Vec<size_t>(1), Vec<size_t>(ULLONG_MAX));
-	sigma = sigma.clamp(Vec<float>(0.1f), Vec<float>(FLT_MAX));
-
-	if (kernelDims.product() > MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM)
-	{
-		kernelDims = Vec<size_t>(MAX_KERNEL_DIM, MAX_KERNEL_DIM, MAX_KERNEL_DIM);
-	}
-
-	Vec<float> center = (kernelDims - 1.0f) / 2.0f;
-
-	*kernelOut = new float[kernelDims.product()];
-	float* kernel = *kernelOut;
-
-	float total = 0.0f;
-	Vec<size_t> pos(0, 0, 0);
-
-	Vec<float> denominator = SQR(sigma) * 2;
-	for (pos.z = 0; pos.z < kernelDims.z; ++pos.z)
-	{
-		for (pos.y = 0; pos.y < kernelDims.y; ++pos.y)
+		double total = 0.0;
+		for (int j = 0; j < dimsOut.e[i]; ++j)
 		{
-			for (pos.x = 0; pos.x < kernelDims.x; ++pos.x)
-			{
-				Vec<float> mahal = SQR(center - pos) / denominator;
-				kernel[kernelDims.linearAddressAt(pos)] = exp(-(mahal.sum()));
-				total += kernel[kernelDims.linearAddressAt(pos)];
-			}
+			double expVal = -floor(SQR(mid.e[i] - (double)j));
+			expVal /= (2 * SQR(sigmas.e[i]));
+			double kernVal = exp(expVal);
+			kernelOut[startOffset + j] = kernVal;
+			total += kernVal;
 		}
+
+		float fTotal = (float)total;
+		for (int j = 0; j < dimsOut.e[i]; ++j)
+			kernelOut[startOffset + j] /= fTotal;
+
 	}
 
-	for (int i = 0; i < kernelDims.product(); ++i)
-		kernel[i] /= total;
-
-	return kernelDims;
+	return kernelOut;
 }
