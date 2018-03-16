@@ -32,6 +32,7 @@ public:
 	int getDeviceIdx(int deviceNum)
 	{
 		if (deviceNum >= deviceIdxList.size())
+			deviceNum = deviceNum % deviceIdxList.size();
 
 		int countDown = (int)deviceIdxList.size() - deviceNum - 1;
 		return deviceIdxList.at(countDown);
