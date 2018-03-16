@@ -32,9 +32,9 @@ public:
 	int getDeviceIdx(int deviceNum)
 	{
 		if (deviceNum >= deviceIdxList.size())
-			return -1;
 
-		return deviceIdxList.at(deviceNum);
+		int countDown = (int)deviceIdxList.size() - deviceNum - 1;
+		return deviceIdxList.at(countDown);
 	}
 	
 private:
