@@ -3,23 +3,13 @@
 #include <limits.h>
 #include <float.h>
 
-__device__ KernelIterator::KernelIterator(Vec<size_t> inputPos, ImageDimensions inputSize, Vec<size_t> kernelSizeIn)
+__device__ KernelIterator::KernelIterator(Vec<size_t> inputPos, Vec<size_t> inputSize, Vec<size_t> kernelSize)
 {
-	reset();
-
-	if (!(inputSize.dims > Vec<size_t>(0)))
-		return;
-	if (inputSize.chan == 0)
-		return;
-	if (inputSize.frame == 0)
-		return;	
-
 	Vec<float> inputCoordinate(inputPos);
 
 	// If kernel size is odd, this will be integer, else we will get a real number
-	kernelSize = kernelSizeIn;
-	Vec<float> kernelHalfSize = (Vec<float>(kernelSize)-1)/2.0f;
-	
+	Vec<float> kernelHalfSize = (Vec<float>(kernelSize) - 1) / 2.0f;
+
 	// This puts the first kernel position in the center of the voxel
 	// i.e. 1 is the second voxel position but 1.5 is an interpolated position between the first and second positions
 	inputStartCoordinate = inputCoordinate - kernelHalfSize;
@@ -29,23 +19,20 @@ __device__ KernelIterator::KernelIterator(Vec<size_t> inputPos, ImageDimensions 
 	kernelStartIdx = Vec<size_t>::max(Vec<size_t>(0), Vec<size_t>(-inputStartCoordinate));
 
 	// This should be the last place in the image that will be considered
-	Vec<float> imageEndCoordinate = inputStartCoordinate + Vec<float>(kernelSize-1);
-	Vec<float> outOfBoundsAmount = imageEndCoordinate - Vec<float>(inputSize.dims-1);
+	Vec<float> imageEndCoordinate = inputStartCoordinate + Vec<float>(kernelSize - 1);
+	Vec<float> outOfBoundsAmount = imageEndCoordinate - Vec<float>(inputSize - 1);
 
-	kernelEndIdx = kernelSize - Vec<size_t>(Vec<float>::max(1, outOfBoundsAmount +1));
+	kernelEndIdx = kernelSize - Vec<size_t>(Vec<float>::max(1, outOfBoundsAmount + 1));
 
-	iterator.dims = kernelStartIdx;
-	
-	numChans = inputSize.chan;
-	numFrames = inputSize.frame;
+	iterator = kernelStartIdx;
+	dims = kernelSize;
+	isEnd = false;
 }
 
 __device__ __host__ KernelIterator::~KernelIterator()
 {
 	isEnd = true;
-	iterator.dims = Vec<size_t>(ULLONG_MAX);
-	iterator.chan = INT_MAX;
-	iterator.frame = INT_MAX;
+	iterator = Vec<size_t>(ULLONG_MAX);
 	inputStartCoordinate = Vec<float>(FLT_MAX_EXP);
 	kernelStartIdx = Vec<size_t>(ULLONG_MAX);
 	kernelEndIdx = Vec<size_t>(0);
@@ -53,16 +40,20 @@ __device__ __host__ KernelIterator::~KernelIterator()
 
 __device__ KernelIterator& KernelIterator::operator++()
 {
-	if(++iterator.dims.x>kernelEndIdx.x)
+	isEnd = true;
+	return *this;
+
+	if (++iterator.x >= kernelEndIdx.x)
 	{
-		iterator.dims.x = kernelStartIdx.x;
-		if(++iterator.dims.y>kernelEndIdx.y)
+		iterator.x = kernelStartIdx.x;
+
+		if (++iterator.y >= kernelEndIdx.y)
 		{
-			iterator.dims.y = kernelStartIdx.y;
-			if(++iterator.dims.z>kernelEndIdx.z)
+			iterator.y = kernelStartIdx.y;
+			if (++iterator.z >= kernelEndIdx.z)
 			{
-				iterator.dims.z = kernelStartIdx.z;
-				isLastPosition = true;
+				iterator.z = kernelEndIdx.z;
+				isEnd = true;
 			}
 		}
 	}
@@ -70,62 +61,22 @@ __device__ KernelIterator& KernelIterator::operator++()
 	return *this;
 }
 
-__device__ void KernelIterator::nextChannel()
-{
-	isLastPosition = false;
-	if (++iterator.chan >= numChans)
-	{
-		iterator.chan = 0;
-		isLastChannel = true;
-	}
-}
-
-__device__ void KernelIterator::nextFrame()
-{
-	isLastChannel = false;
-	if (++iterator.frame >= numFrames)
-	{
-		iterator.frame = 0;
-		isLastFrame = true;
-		isEnd = true;
-	}
-}
-
 __device__ void KernelIterator::reset()
 {
-	isLastPosition = false;
-	isLastChannel = false;
-	isLastFrame = false;
 	isEnd = false;
-
-	iterator = ImageDimensions(Vec<size_t>(0), 0, 0);
+	iterator = Vec<size_t>(0);
 }
 
-__device__ Vec<float> KernelIterator::getImageCoordinate() const
+__device__ Vec<float> KernelIterator::getImageCoordinate()
 {
-	return inputStartCoordinate + Vec<float>(iterator.dims);
+	return inputStartCoordinate + Vec<float>(iterator);
 }
 
-__device__ unsigned int KernelIterator::getChannel() const
+__device__ size_t KernelIterator::getKernelIdx()
 {
-	return iterator.chan;
+	size_t idx = dims.linearAddressAt(iterator);
+	return idx;
 }
-
-__device__ unsigned int KernelIterator::getFrame() const
-{
-	return iterator.frame;
-}
-
-__device__ size_t KernelIterator::getKernelIdx() const
-{
-	return kernelSize.linearAddressAt(iterator.dims);
-}
-
-__device__ ImageDimensions KernelIterator::getFullPos() const
-{
-	return iterator;
-}
-
 
 __device__ void GetThreadBlockCoordinate(Vec<size_t>& coordinate)
 {
@@ -133,4 +84,3 @@ __device__ void GetThreadBlockCoordinate(Vec<size_t>& coordinate)
 	coordinate.y = threadIdx.y + blockIdx.y * blockDim.y;
 	coordinate.z = threadIdx.z + blockIdx.z * blockDim.z;
 }
-
