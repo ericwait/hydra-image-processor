@@ -1,39 +1,37 @@
 #pragma once
 
 #include "CudaImageContainer.cuh"
-#include "ImageDimensions.cuh"
 
 template <class PixelType>
 class CudaImageContainerClean : public CudaImageContainer<PixelType>
 {
 public:
-	CudaImageContainerClean(const PixelType* imageIn, ImageDimensions imDims, int device=0)
+	CudaImageContainerClean(const PixelType* imageIn, Vec<size_t> dims, int device = 0)
 	{
 		defaults();
 		image = NULL;
-		maxImageDims = imDims;
-		roiSizes = imDims.dims;
+		maxImageDims = dims;
+		roiSizes = dims;
 		this->device = device;
-		ImageContainer<PixelType> im(imageIn, imDims);
-		loadImage(im);
+		loadImage(imageIn, dims);
 	};
 
-	CudaImageContainerClean(ImageDimensions imDims, int device=0) 
+	CudaImageContainerClean(Vec<size_t> dims, int device = 0)
 	{
 		defaults();
 		image = NULL;
-		maxImageDims = imDims;
-		imageDims = imDims;
-		roiSizes = imDims.dims;
+		maxImageDims = dims;
+		imageDims = dims;
+		roiSizes = dims;
 		this->device = device;
 		HANDLE_ERROR(cudaSetDevice(device));
-		HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(PixelType)*imDims.getNumElements()));
-		HANDLE_ERROR(cudaMemset(image,0,sizeof(PixelType)*imDims.getNumElements()));
+		HANDLE_ERROR(cudaMalloc((void**)&image, sizeof(PixelType)*dims.product()));
+		HANDLE_ERROR(cudaMemset(image, 0, sizeof(PixelType)*dims.product()));
 	};
 
 	~CudaImageContainerClean()
 	{
-		if (image!=NULL)
+		if (image != NULL)
 		{
 			HANDLE_ERROR(cudaSetDevice(device));
 			try
@@ -42,7 +40,7 @@ public:
 			}
 			catch (char* err)
 			{
-				if (err!=NULL)
+				if (err != NULL)
 					err[0] = 'e';
 			}
 			image = NULL;
@@ -57,13 +55,13 @@ public:
 
 		HANDLE_ERROR(cudaSetDevice(device));
 
-		if (imageDims.getNumElements()>0)
+		if (imageDims > Vec<size_t>(0, 0, 0))
 		{
-			HANDLE_ERROR(cudaMalloc((void**)&image,sizeof(PixelType)*imageDims.getNumElements()));
-			HANDLE_ERROR(cudaMemcpy(image,other.getConstImagePointer(),sizeof(PixelType)*imageDims.getNumElements(),cudaMemcpyDeviceToDevice));
+			HANDLE_ERROR(cudaMalloc((void**)&image, sizeof(PixelType)*imageDims.product()));
+			HANDLE_ERROR(cudaMemcpy(image, other.getConstImagePointer(), sizeof(PixelType)*imageDims.product(), cudaMemcpyDeviceToDevice));
 		}
 	}
 
 protected:
-	CudaImageContainerClean() : CudaImageContainer(){};
+	CudaImageContainerClean() : CudaImageContainer() {};
 };
