@@ -1,6 +1,8 @@
 #pragma once
 #include "Vec.h"
 
+#include <type_traits>
+
 #ifdef __CUDACC__
 #define MIXED_PREFIX __host__ __device__
 #else
@@ -47,12 +49,22 @@ public:
 		return *this;
 	}
 
-	MIXED_PREFIX ImageDimensions operator+(ImageDimensions adder) const
+	MIXED_PREFIX ImageDimensions operator+(ImageDimensions adder)
 	{
 		ImageDimensions outDims;
 		outDims.dims = this->dims+adder.dims;
 		outDims.chan = this->chan+adder.chan;
 		outDims.frame = this->frame+adder.frame;
+
+		return outDims;
+	}
+
+	MIXED_PREFIX ImageDimensions operator-(ImageDimensions adder)
+	{
+		ImageDimensions outDims;
+		outDims.dims = this->dims - adder.dims;
+		outDims.chan = this->chan - adder.chan;
+		outDims.frame = this->frame - adder.frame;
 
 		return outDims;
 	}
