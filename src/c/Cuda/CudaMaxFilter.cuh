@@ -20,31 +20,25 @@ __global__ void cudaMaxFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImage
 	Vec<size_t> threadCoordinate;
 	GetThreadBlockCoordinate(threadCoordinate);
 
-	if (threadCoordinate < imageIn.getSpatialDims())
+	if (threadCoordinate < imageIn.getDims())
 	{
-		KernelIterator kIt(threadCoordinate, imageIn.getDims(), constKernelMem.getDimensions());
-		for (; !kIt.lastFrame(); kIt.nextFrame())
+		KernelIterator kIt(threadCoordinate, imageIn.getDims(), constKernelMem.getDims());
+		double outVal = 0;
+		for (; !kIt.end(); ++kIt)
 		{
-			for (; !kIt.lastChannel(); kIt.nextChannel())
+			Vec<float> imInPos = kIt.getImageCoordinate();
+			double inVal = (double)imageIn(imInPos);
+			Vec<size_t> coord = kIt.getKernelCoordinate();
+			float kernVal = constKernelMem(coord);
+
+			if (kernVal != 0.0f)
 			{
-				double outVal = minValue;
-				for (; !kIt.lastPosition(); ++kIt)
-				{
-					Vec<float> imInPos = kIt.getImageCoordinate();
-					double inVal = (double)imageIn(imInPos, kIt.getChannel(), kIt.getFrame());
-					float kernVal = constKernelMem(kIt.getKernelCoordinate());
-					
-					if (kernVal!=0.0f)
-					{
-						inVal *= kernVal;
-						if (outVal < inVal)
-							outVal = inVal;
-					}
-				}
-				ImageDimensions outPos = ImageDimensions(threadCoordinate, kIt.getChannel(), kIt.getFrame());
-				imageOut(outPos) = (PixelTypeOut)CLAMP(outVal,minValue,maxValue);
+				inVal = inVal*kernVal;
+				if (outVal > inVal)
+					outVal = inVal;
 			}
 		}
+		imageOut(threadCoordinate) = (PixelTypeOut)CLAMP(outVal, minValue, maxValue);
 	}
 }
 
@@ -63,29 +57,30 @@ void cMaxFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut
 	size_t maxTypeSize = MAX(sizeof(PixelTypeIn), sizeof(PixelTypeOut));
 	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, maxTypeSize, kernel.getSpatialDims());
 
-	ImageDimensions maxDeviceDims;
+	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	omp_set_dynamic(0);
-	omp_set_num_threads(2);
+	omp_set_num_threads(MIN(chunks.size(), cudaDevs.getNumDevices()));
 	#pragma omp parallel default(shared)
 	{
 		const int CUDA_IDX = omp_get_thread_num();
 		const int N_THREADS = omp_get_num_threads();
 		const int CUR_DEVICE = cudaDevs.getDeviceIdx(CUDA_IDX);
-		Kernel constKernelMem(kernel, CUR_DEVICE);
 
 		CudaDeviceImages<PixelTypeOut> deviceImages(NUM_BUFF_NEEDED, maxDeviceDims, CUR_DEVICE);
+		Kernel constKernelMem(kernel,CUR_DEVICE);
 
-		for (int i=CUDA_IDX; i<chunks.size(); i+=N_THREADS)
+		for (int i = CUDA_IDX; i < chunks.size(); i += N_THREADS)
 		{
-			chunks[i].sendROI(imageIn, deviceImages.getCurBuffer());
+			if (!chunks[i].sendROI(imageIn, deviceImages.getCurBuffer()))
+				std::runtime_error("Error sending ROI to device!");
+
 			deviceImages.setAllDims(chunks[i].getFullChunkSize());
 			DEBUG_KERNEL_CHECK();
 
 			for (int j = 0; j < numIterations; ++j)
 			{
-				cudaMaxFilter<<<chunks[i].blocks, chunks[i].threads>>> (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()),constKernelMem, MIN_VAL,MAX_VAL);
+				cudaMaxFilter << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constKernelMem, MIN_VAL, MAX_VAL);
 				DEBUG_KERNEL_CHECK();
 				deviceImages.incrementBuffer();
 			}
