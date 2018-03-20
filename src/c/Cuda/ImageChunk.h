@@ -11,7 +11,7 @@
 class ImageChunk
 {
 public:
-	ImageDimensions getFullChunkSize();
+	Vec<size_t> getFullChunkSize();
 	Vec<size_t> getROIsize() { return chunkROIend-chunkROIstart+1; }
 
 	template <typename PixelTypeOut, typename PixelTypeIn>
@@ -69,39 +69,43 @@ public:
 	template <typename PixelTypeIn, typename PixelTypeOut>
 	bool sendROI(ImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut>* deviceImage)
 	{
-		if(!deviceImage->setDims(getFullChunkSize().dims))
+		Vec<size_t> chunkVolSize = getFullChunkSize();
+		Vec<size_t> imVolSize = imageIn.getSpatialDims();
+		
+		if (!deviceImage->setDims(chunkVolSize))
 			return false;
 
-		ImageDimensions stopPos(getFullChunkSize());
-		if(stopPos>=imageIn.getDims() && std::is_same<PixelTypeIn,PixelTypeOut>::value)
+		if (chunkVolSize == imVolSize)
 		{
-			deviceImage->loadImage(imageIn.getPtr(),imageIn.getNumElements());
+			ImageDimensions curHostCoord(imageStart, channel,frame);
+
+			size_t hostOffset = imageIn.getDims().linearAddressAt(curHostCoord);
+			PixelTypeIn* hostPtr = imageIn.getPtr() + hostOffset;
+			PixelTypeOut* buffPtr = deviceImage->getDeviceImagePointer();
+
+			copyLine(buffPtr, hostPtr, chunkVolSize.product(), cudaMemcpyHostToDevice);
 			return true;
+
 		}
 
-		ImageDimensions curPos(0, 0, 0);
-		for(curPos.frame = 0; curPos.frame<stopPos.frame; ++curPos.frame)
+		Vec<size_t> curPos(0);
+		for (curPos.z = 0; curPos.z < chunkVolSize.z; ++curPos.z)
 		{
-			for(curPos.chan = 0; curPos.chan<stopPos.chan; ++curPos.chan)
+			for (curPos.y = 0; curPos.y < chunkVolSize.y; ++curPos.y)
 			{
-				for(curPos.dims.z = 0; curPos.dims.z<stopPos.dims.z; ++curPos.dims.z)
-				{
-					for(curPos.dims.y = 0; curPos.dims.y<stopPos.dims.y; ++curPos.dims.y)
-					{
-						ImageDimensions curHostIdx(imageStart+curPos);
-						ImageDimensions curDeviceIdx = curPos;
+				ImageDimensions curHostCoord(imageStart+curPos, channel, frame);
+				Vec<size_t> curDeviceCoord = curPos;
 
-						size_t hostOffset = imageIn.getDims().linearAddressAt(curHostIdx);
-						PixelTypeIn* hostPtr = imageIn.getPtr() +hostOffset;
+				size_t hostOffset = imageIn.getDims().linearAddressAt(curHostCoord);
+				PixelTypeIn* hostPtr = imageIn.getPtr() + hostOffset;
 
-						size_t deviceOffset = deviceImage->getDims().linearAddressAt(curDeviceIdx.dims);
-						PixelTypeOut* buffPtr = deviceImage->getDeviceImagePointer() + deviceOffset;
+				size_t deviceOffset = deviceImage->getDims().linearAddressAt(curDeviceCoord);
+				PixelTypeOut* buffPtr = deviceImage->getDeviceImagePointer() + deviceOffset;
 
-						copyLine(buffPtr, hostPtr, stopPos.dims.x, cudaMemcpyHostToDevice);
-					}
-				}
+				copyLine(buffPtr, hostPtr, chunkVolSize.x, cudaMemcpyHostToDevice);
 			}
 		}
+
 		return true;
 	}
 
@@ -111,40 +115,48 @@ public:
 		cudaThreadSynchronize();
 		GPU_ERROR_CHK(cudaPeekAtLastError());
 
-		if(getFullChunkSize()==outImage.getDims())
+		Vec<size_t> chunkVolSize = getFullChunkSize();
+		Vec<size_t> imVolSize = outImage.getSpatialDims();
+
+		if(chunkVolSize == imVolSize)
 		{
-			copyLine(outImage.getPtr(), deviceImage->getImagePointer(), getFullChunkSize().getNumElements(), cudaMemcpyDeviceToHost);
+			copyLine(outImage.getPtr(), deviceImage->getImagePointer(), chunkVolSize.product(), cudaMemcpyDeviceToHost);
 			return;
 		} 
 
-		ImageDimensions curPos(0, 0, 0);
-		ImageDimensions stopPos(getFullChunkSize());
-		for(curPos.frame = 0; curPos.frame<stopPos.frame; ++curPos.frame)
+		if (chunkVolSize == imVolSize)
 		{
-			for(curPos.chan = 0; curPos.chan<stopPos.chan; ++curPos.chan)
+			ImageDimensions curHostCoord(imageStart,channel,frame);
+
+			size_t hostOffset = outImage.getDims().linearAddressAt(curHostCoord);
+			PixelTypeOut* hostPtr = outImage.getPtr() + hostOffset;
+			PixelTypeIn* buffPtr = deviceImage->getDeviceImagePointer();
+
+			copyLine(hostPtr, buffPtr, chunkVolSize.product(), cudaMemcpyDeviceToHost);
+			return;
+		}
+
+		Vec<size_t> curPos(0);
+		for (curPos.z = 0; curPos.z < chunkVolSize.z; ++curPos.z)
+		{
+			for (curPos.y = 0; curPos.y < chunkVolSize.y; ++curPos.y)
 			{
-				for(curPos.dims.z = 0; curPos.dims.z<stopPos.dims.z; ++curPos.dims.z)
-				{
-					for(curPos.dims.y = 0; curPos.dims.y<stopPos.dims.y; ++curPos.dims.y)
-					{
-						ImageDimensions curHostIdx(imageStart+curPos);
-						ImageDimensions curDeviceIdx = curPos;
+				ImageDimensions curHostCoord(imageStart + curPos, channel, frame);
+				Vec<size_t> curDeviceCoord = curPos;
 
-						size_t hostOffset = outImage.getDims().linearAddressAt(curHostIdx);
-						PixelTypeOut* hostPtr = outImage.getPtr() + hostOffset;
+				size_t hostOffset = outImage.getDims().linearAddressAt(curHostCoord);
+				PixelTypeOut* hostPtr = outImage.getPtr() + hostOffset;
 
-						size_t deviceOffset = deviceImage->getDims().linearAddressAt(curDeviceIdx.dims);
-						PixelTypeIn* buffPtr = deviceImage->getDeviceImagePointer() + deviceOffset;
+				size_t deviceOffset = deviceImage->getDims().linearAddressAt(curDeviceCoord);
+				PixelTypeIn* buffPtr = deviceImage->getDeviceImagePointer() + deviceOffset;
 
-						copyLine(hostPtr, buffPtr, stopPos.dims.x, cudaMemcpyDeviceToHost);
-					}
-				}
+				copyLine(hostPtr, buffPtr, chunkVolSize.x, cudaMemcpyDeviceToHost);
 			}
 		}
 	}
 
 	// This chunk starts at this location in the original image
-	ImageDimensions imageStart;
+	Vec<size_t> imageStart;
 
 	// This is the start of the chunk to be evaluated
 	Vec<size_t> chunkROIstart;
@@ -152,12 +164,8 @@ public:
 	// This is where the chunk should go back to the original image
 	Vec<size_t> imageROIstart;
 
-	size_t channelStart;
-
-	size_t frameStart;
-
 	// This chunk ends at this location in the original image (inclusive)
-	ImageDimensions imageEnd;
+	Vec<size_t> imageEnd;
 
 	// This is the end of the chunk to be evaluated (inclusive)
 	Vec<size_t> chunkROIend;
@@ -165,9 +173,11 @@ public:
 	// This is where the chunk should go back to the original image (inclusive)
 	Vec<size_t> imageROIend;
 
-	size_t channelEnd;
+	// This is the channel that this chunk will operate on.
+	size_t channel;
 
-	size_t frameEnd;
+	// This is the frame that this chunk will operate on.
+	size_t frame;
 
 	dim3 blocks, threads;
 };

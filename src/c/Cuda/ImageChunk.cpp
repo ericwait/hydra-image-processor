@@ -7,7 +7,7 @@ void setMaxDeviceDims(std::vector<ImageChunk> &chunks, Vec<size_t> &maxDeviceDim
 
 	for(std::vector<ImageChunk>::iterator curChunk = chunks.begin(); curChunk!=chunks.end(); ++curChunk)
 	{
-		Vec<size_t> curDim = curChunk->getFullChunkSize().dims;
+		Vec<size_t> curDim = curChunk->getFullChunkSize();
 
 		if(curDim.x>maxDeviceDims.x)
 			maxDeviceDims.x = curDim.x;
@@ -25,7 +25,7 @@ std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, Vec<size_t>
 	std::vector<ImageChunk> localChunks;
 	Vec<size_t> margin((kernalDims+1)/2); //integer round
 	ImageDimensions chunkDelta(Vec<size_t>(1), 1, 1);
-	chunkDelta.dims = deviceDims-margin*2;
+	chunkDelta.dims = MAX(Vec<size_t>(1),deviceDims-margin*2);
 	ImageDimensions numChunks;
 	numChunks.dims = Vec<size_t>(1, 1, 1);
 	numChunks.chan = 1;
@@ -56,16 +56,14 @@ std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, Vec<size_t>
 	localChunks.resize(numChunks.getNumElements());
 
 	ImageDimensions curChunk(Vec<size_t>(0), 0, 0);
-	ImageDimensions imageStart(0, 0, 0);
+	ImageDimensions imageStart(Vec<size_t>(0), 0, 0);
 	Vec<size_t> chunkROIstart(0, 0, 0);
 	Vec<size_t> imageROIstart(0, 0, 0);
-	unsigned int chanStart = 0;
-	unsigned int frameStart = 0;
-	ImageDimensions imageEnd(0, 0, 0);
+	unsigned int chan = 0;
+	unsigned int frame = 0;
+	ImageDimensions imageEnd(Vec<size_t>(0), 0, 0);
 	Vec<size_t> chunkROIend(0, 0, 0);
 	Vec<size_t> imageROIend(0, 0, 0);
-	unsigned int chanEnd = 0;
-	unsigned int frameEnd = 0;
 
 	for(curChunk.frame = 0; curChunk.frame<numChunks.frame; ++curChunk.frame)
 	{
@@ -88,30 +86,25 @@ std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, Vec<size_t>
 						chunkROIstart = imageROIstart-imageStart.dims;
 						chunkROIend = imageROIend-imageStart.dims;
 						
-						chanStart = chunkDelta.chan * curChunk.chan;
-						chanEnd = MIN(imageDims.chan-1,chanStart+chunkDelta.chan-1);
+						chan = chunkDelta.chan * curChunk.chan;
 						
-						frameStart = chunkDelta.frame* curChunk.frame;
-						frameEnd = MIN(imageDims.frame-1,frameStart+chunkDelta.frame-1);
+						frame = chunkDelta.frame* curChunk.frame;
 
 						ImageChunk* curImageBuffer = &localChunks[numChunks.linearAddressAt(curChunk)];
 
 						curImageBuffer->imageROIstart = imageROIstart;
 						curImageBuffer->imageROIend = imageROIend;
 
-						curImageBuffer->imageStart = imageStart;
-						curImageBuffer->imageEnd = imageEnd;
+						curImageBuffer->imageStart = imageStart.dims;
+						curImageBuffer->imageEnd = imageEnd.dims;
 
 						curImageBuffer->chunkROIstart = chunkROIstart;
 						curImageBuffer->chunkROIend = chunkROIend;
 
-						curImageBuffer->channelStart = chanStart;
-						curImageBuffer->channelEnd = chanEnd;
+						curImageBuffer->channel = chan;
+						curImageBuffer->frame = frame;
 
-						curImageBuffer->frameStart = frameStart;
-						curImageBuffer->frameEnd = frameEnd;
-
-						calcBlockThread(curImageBuffer->getFullChunkSize().dims, cudaDevs.getMaxThreadsPerBlock(), curImageBuffer->blocks, curImageBuffer->threads);
+						calcBlockThread(curImageBuffer->getFullChunkSize(), cudaDevs.getMaxThreadsPerBlock(), curImageBuffer->blocks, curImageBuffer->threads);
 					}
 				}
 			}
@@ -256,9 +249,8 @@ std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffe
 }
 
 
-ImageDimensions ImageChunk::getFullChunkSize()
+Vec<size_t> ImageChunk::getFullChunkSize()
 {
-	ImageDimensions adder(Vec<size_t>(1), 1, 1);
-	return imageEnd -imageStart + adder;
+	return imageEnd - imageStart + Vec<size_t>(1);
 }
 

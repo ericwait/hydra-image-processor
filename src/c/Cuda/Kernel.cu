@@ -44,14 +44,14 @@ __device__ float Kernel::operator()(Vec<size_t> coordinate)
 	return val;
 }
 
-__host__ Kernel& Kernel::operator=(const Kernel& other)
-{
-	dims = other.dims;
-	cudaKernel = other.cudaKernel;
-	cleanUpDevice = other.cleanUpDevice;
-
-	return *this;
-}
+//__host__ Kernel& Kernel::operator=(const Kernel& other)
+//{
+//	dims = other.dims;
+//	cudaKernel = other.cudaKernel;
+//	cleanUpDevice = other.cleanUpDevice;
+//
+//	return *this;
+//}
 
 __host__ void Kernel::load(Vec<size_t> dimensions, float* values, size_t startOffset/* = 0*/)
 {
@@ -70,7 +70,7 @@ __host__ void Kernel::load(Vec<size_t> dimensions, float* values, size_t startOf
 		kernel = values;
 	}
 
-	if (dimensions.product()+startOffset < CONST_KERNEL_NUM_EL)
+	if (dimensions.product() + startOffset < CONST_KERNEL_NUM_EL)
 	{
 		HANDLE_ERROR(cudaGetSymbolAddress((void**)&cudaKernel, CUDA_KERNEL));
 		cudaKernel += startOffset;
@@ -112,16 +112,16 @@ __host__ void Kernel::setOnes(float** kernel)
 		(*kernel)[i] = 1.0f;
 }
 
-__host__ Kernel Kernel::getOffsetCopy(Vec<size_t> dimensions, size_t startOffset /*= 0*/)
+__host__ Kernel& Kernel::getOffsetCopy(Vec<size_t> dimensions, size_t startOffset /*= 0*/)
 {
-	Kernel kernOut;
-	kernOut.init();
+	Kernel* kernOut = new Kernel();
+	kernOut->init();
 
 	if (dims.product() < startOffset + dimensions.product())
 		std::runtime_error("Trying to make a Kernel that access outside of the original memory space!");
 
-	kernOut.dims = dimensions;
-	kernOut.cudaKernel = cudaKernel + startOffset;
+	kernOut->dims = dimensions;
+	kernOut->cudaKernel = cudaKernel + startOffset;
 
-	return kernOut;
+	return *kernOut;
 }

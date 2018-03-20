@@ -1,14 +1,12 @@
 #pragma once
 #include "CudaImageContainerClean.cuh"
-#include "ImageDimensions.cuh"
 
 template <typename PixelType>
 class CudaDeviceImages
 {
 public:
-	CudaDeviceImages(int numBuffers, ImageDimensions maxDeviceDims, int device)
+	CudaDeviceImages(int numBuffers, Vec<size_t> maxDeviceDims, int device)
 	{
-		cudaSetDevice(device);
 		deviceImages = new CudaImageContainerClean<PixelType>*[numBuffers];
 
 		for (int i=0; i<numBuffers; ++i)
@@ -82,13 +80,13 @@ public:
 			curBuff = 0;
 	}
 
-	void setAllDims(ImageDimensions dims)
+	void setAllDims(Vec<size_t> dims)
 	{
 		for (int i=0; i<numBuffers; ++i)
 			deviceImages[i]->setDims(dims);
 	}
 
-	void setNextDims(ImageDimensions dims)
+	void setNextDims(Vec<size_t> dims)
 	{
 		if (numBuffers>1)
 			deviceImages[getNextBuffNum()]->setDims(dims);

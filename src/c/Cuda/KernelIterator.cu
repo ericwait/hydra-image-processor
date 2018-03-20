@@ -40,17 +40,14 @@ __device__ __host__ KernelIterator::~KernelIterator()
 
 __device__ KernelIterator& KernelIterator::operator++()
 {
-	isEnd = true;
-	return *this;
-
-	if (++iterator.x >= kernelEndIdx.x)
+	if (++iterator.x > kernelEndIdx.x)
 	{
 		iterator.x = kernelStartIdx.x;
 
-		if (++iterator.y >= kernelEndIdx.y)
+		if (++iterator.y > kernelEndIdx.y)
 		{
 			iterator.y = kernelStartIdx.y;
-			if (++iterator.z >= kernelEndIdx.z)
+			if (++iterator.z > kernelEndIdx.z)
 			{
 				iterator.z = kernelEndIdx.z;
 				isEnd = true;

@@ -14,16 +14,16 @@ public:
 	__host__ __device__ Kernel(Kernel& other);
 	__host__ __device__ ~Kernel() { init(); }
 
-	__host__ Kernel& operator=(const Kernel& other);
+	//__host__ Kernel& operator=(const Kernel& other);
 	__host__ void clean();
 
 	__host__ __device__ float* getDevicePtr() { return cudaKernel; }
-	__host__ Kernel getOffsetCopy(Vec<size_t> dimensions, size_t startOffset = 0);
+	__host__ Kernel& getOffsetCopy(Vec<size_t> dimensions, size_t startOffset = 0);
 	__host__ __device__ Vec<size_t> getDims() const { return dims; }
 	__device__ float operator[](size_t idx);
 	__device__ float operator()(Vec<size_t> coordinate);
 	
-private:
+//private:
 	__host__ __device__ Kernel() { init(); }
 
 	__host__ void load(Vec<size_t> dimensions, float* values, size_t startOffset=0);
