@@ -14,7 +14,7 @@ float* createGaussianKernel(Vec<double> sigmas, Vec<size_t>& dimsOut)
 	dimsOut.y = (dimsOut.y % 2 == 0) ? (dimsOut.y + 1) : (dimsOut.y);
 	dimsOut.z = (dimsOut.z % 2 == 0) ? (dimsOut.z + 1) : (dimsOut.z);
 
-	Vec<double> mid = Vec<double>(dimsOut) / 2.0;
+	Vec<double> mid = Vec<double>(dimsOut) / 2.0 - 0.5;
 
 	float* kernelOut = new float[dimsOut.sum()];
 	for (int i = 0; i < 3; ++i)

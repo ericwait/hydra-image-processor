@@ -2,7 +2,7 @@
 #include "Vec.h"
 
 #include <limits.h>
+#include <vector>
 
-Vec<size_t> createGaussianKernel(Vec<float> sigma, float** kernel, Vec<int>& iterations);
+float* createGaussianKernel(Vec<double> sigmas, Vec<size_t>& dimsOut);
 Vec<size_t> createLoGKernel(Vec<float> sigma, float** kernelOut, size_t& kernSize);
-Vec<size_t> createGaussianKernelFull(Vec<float> sigma, float** kernelOut, Vec<size_t> maxKernelSize = Vec<size_t>(ULLONG_MAX));
