@@ -108,6 +108,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     <ClCompile Include="Mex\MexMaxFilter.cpp" />
     <ClCompile Include="Mex\MexMinFilter.cpp" />
     <ClCompile Include="Mex\MexMultiplySum.cpp" />
+    <ClCompile Include="Mex\MexOpener.cpp" />
     <ClCompile Include="Mex\ScopedProcessMutex.cpp" />
     <None Include="Mex\_TemplateMex.cpp" />
   </ItemGroup>

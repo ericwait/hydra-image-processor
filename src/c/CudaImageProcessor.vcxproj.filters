@@ -105,6 +105,9 @@
     <ClInclude Include="Cuda\CudaClosure.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cuda\CudaOpener.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Cuda\ImageDimensions.cuh">

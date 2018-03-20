@@ -8,6 +8,7 @@
 #include "CudaMaxFilter.cuh"
 #include "CudaMinFilter.cuh"
 #include "CudaMultiplySum.cuh"
+#include "CudaOpener.cuh"
 
 
 void clearDevice()
@@ -83,63 +84,47 @@ void clearDevice()
  // cFooFilter(imageIn, imageOut, kernel, numIterations, device);
  //}
 
- IMAGE_PROCESSOR_API void closure(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void closure(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
-
-
-
- IMAGE_PROCESSOR_API void closure(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ 
+ void closure(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
-
-
-
- IMAGE_PROCESSOR_API void closure(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ 
+ void closure(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
-
-
-
- IMAGE_PROCESSOR_API void closure(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ 
+ void closure(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
-
-
-
- IMAGE_PROCESSOR_API void closure(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ 
+ void closure(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
-
-
-
- IMAGE_PROCESSOR_API void closure(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ 
+ void closure(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
-
-
-
- IMAGE_PROCESSOR_API void closure(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ 
+ void closure(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
-
-
-
- IMAGE_PROCESSOR_API void closure(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ 
+ void closure(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
-
-
-
- IMAGE_PROCESSOR_API void closure(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ 
+ void closure(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
@@ -328,3 +313,48 @@ void clearDevice()
 	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
  }
  
+
+ void opener(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cOpener(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+ void opener(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cOpener(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+ void opener(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cOpener(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+ void opener(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cOpener(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+ void opener(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cOpener(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+ void opener(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cOpener(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+ void opener(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cOpener(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+ void opener(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cOpener(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+ void opener(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cOpener(imageIn, imageOut, kernel, numIterations, device);
+ }

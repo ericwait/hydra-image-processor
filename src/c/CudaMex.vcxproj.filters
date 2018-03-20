@@ -65,6 +65,9 @@
     <ClCompile Include="Mex\MexClosure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mex\MexOpener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Mex\CudaMex.def">
