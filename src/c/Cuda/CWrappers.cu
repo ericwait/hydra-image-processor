@@ -6,6 +6,7 @@
 #include "CudaClosure.cuh"
 #include "CudaGaussian.cuh"
 #include "CudaMaxFilter.cuh"
+#include "CudaMeanFilter.cuh"
 #include "CudaMinFilter.cuh"
 #include "CudaMultiplySum.cuh"
 #include "CudaOpener.cuh"
@@ -221,6 +222,53 @@ void clearDevice()
 	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
+
+ void meanFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+ void meanFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void meanFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void meanFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void meanFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void meanFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void meanFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+ void meanFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void meanFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
  void minFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);

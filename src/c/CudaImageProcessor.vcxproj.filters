@@ -108,6 +108,9 @@
     <ClInclude Include="Cuda\CudaOpener.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cuda\CudaMeanFilter.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Cuda\ImageDimensions.cuh">
