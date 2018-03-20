@@ -50,9 +50,6 @@
     <ClCompile Include="Mex\MexMaxFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mex\_TemplateMex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Mex\MexMinFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -65,10 +62,16 @@
     <ClCompile Include="Mex\MexGaussian.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mex\MexClosure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Mex\CudaMex.def">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Mex\_TemplateMex.cpp">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
 </Project>

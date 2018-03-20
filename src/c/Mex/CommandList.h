@@ -40,6 +40,7 @@ DEF_MEX_COMMAND(Help)
 // Additional specific mex commands should be added here.
 DEF_MEX_COMMAND(DeviceCount)
 DEF_MEX_COMMAND(DeviceStats)
+DEF_MEX_COMMAND(Closure)
 DEF_MEX_COMMAND(Gaussian)
 DEF_MEX_COMMAND(MaxFilter)
 DEF_MEX_COMMAND(MinFilter)
