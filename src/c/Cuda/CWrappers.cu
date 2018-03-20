@@ -5,6 +5,7 @@
 
 #include "CudaClosure.cuh"
 #include "CudaGaussian.cuh"
+#include "CudaLoG.cuh"
 #include "CudaMaxFilter.cuh"
 #include "CudaMeanFilter.cuh"
 #include "CudaMinFilter.cuh"
@@ -174,6 +175,52 @@ void clearDevice()
  void gaussian(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
+ }
+
+
+ void LoG(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+ }
+
+ void LoG(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+ }
+
+ void LoG(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+ }
+
+ void LoG(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+ }
+
+ void LoG(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+ }
+
+ void LoG(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+ }
+
+ void LoG(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+ }
+
+ void LoG(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+ }
+
+ void LoG(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
  }
 
 

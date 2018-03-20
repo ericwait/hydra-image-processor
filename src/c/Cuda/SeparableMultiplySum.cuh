@@ -1,3 +1,4 @@
+#pragma once
 #include "ImageChunk.h"
 #include "CudaDeviceImages.cuh"
 #include "Kernel.cuh"
