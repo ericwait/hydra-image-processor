@@ -98,11 +98,12 @@
     <ClInclude Include="Cuda\CudaMultiplySum.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cuda\CudaGaussian.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\SeparableMultiplySum.cuh" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Cuda\CudaImageProcessor.def">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="Cuda\ImageDimensions.cuh">
       <Filter>Header Files</Filter>
     </None>

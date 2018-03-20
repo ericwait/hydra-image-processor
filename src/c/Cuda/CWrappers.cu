@@ -3,6 +3,7 @@
 #include "CudaDeviceStats.h"
 #include "CudaMemoryStats.cuh"
 
+#include "CudaGaussian.cuh"
 #include "CudaMaxFilter.cuh"
 #include "CudaMinFilter.cuh"
 #include "CudaMultiplySum.cuh"
@@ -133,23 +134,108 @@ void clearDevice()
 
 
  void maxFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
+	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
+ }
+ 
+ void gaussian(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
+ }
+ 
+ void gaussian(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
+ }
+ 
+ void gaussian(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
+ }
+ 
+ void gaussian(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
+ }
+ 
+ void gaussian(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
+ }
+ 
+ void gaussian(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
+ }
+
+ void gaussian(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
+ }
+
+ void gaussian(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
  }
 
 
+ void maxFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void maxFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void maxFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void maxFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void maxFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void maxFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void maxFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void maxFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void maxFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
  void minFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
  }
-
-
+ 
  void minFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
  }
-
-
+ 
  void minFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
