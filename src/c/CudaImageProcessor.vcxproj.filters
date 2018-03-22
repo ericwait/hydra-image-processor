@@ -117,6 +117,9 @@
     <ClInclude Include="Cuda\CudaMedianFilter.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cuda\CudaElementWiseDifference.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Cuda\ImageDimensions.cuh">

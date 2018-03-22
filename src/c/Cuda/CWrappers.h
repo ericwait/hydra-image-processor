@@ -42,6 +42,16 @@ IMAGE_PROCESSOR_API void closure(const ImageContainer<unsigned int> imageIn, Ima
 IMAGE_PROCESSOR_API void closure(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
 IMAGE_PROCESSOR_API void closure(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
 
+IMAGE_PROCESSOR_API void elementWiseDifference(const ImageContainer<bool> image1In, ImageContainer<bool> image2In, ImageContainer<bool>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void elementWiseDifference(const ImageContainer<char> image1In, ImageContainer<char> image2In, ImageContainer<char>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void elementWiseDifference(const ImageContainer<unsigned char> image1In, ImageContainer<unsigned char> image2In, ImageContainer<unsigned char>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void elementWiseDifference(const ImageContainer<short> image1In, ImageContainer<short> image2In, ImageContainer<short>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void elementWiseDifference(const ImageContainer<unsigned short> image1In, ImageContainer<unsigned short> image2In, ImageContainer<unsigned short>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void elementWiseDifference(const ImageContainer<int> image1In, ImageContainer<int> image2In, ImageContainer<int>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void elementWiseDifference(const ImageContainer<unsigned int> image1In, ImageContainer<unsigned int> image2In, ImageContainer<unsigned int>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void elementWiseDifference(const ImageContainer<float> image1In, ImageContainer<float> image2In, ImageContainer<float>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void elementWiseDifference(const ImageContainer<double> image1In, ImageContainer<double> image2In, ImageContainer<double>& imageOut, int device = -1);
+
 IMAGE_PROCESSOR_API void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, Vec<double> sigmas, int numIterations = 1, int device = -1);
 IMAGE_PROCESSOR_API void gaussian(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, Vec<double> sigmas, int numIterations = 1, int device = -1);
 IMAGE_PROCESSOR_API void gaussian(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, Vec<double> sigmas, int numIterations = 1, int device = -1);
