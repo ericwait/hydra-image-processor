@@ -125,6 +125,7 @@
     <ClInclude Include="Cuda\CudaClosure.cuh" />
     <ClInclude Include="Cuda\CudaLoG.cuh" />
     <ClInclude Include="Cuda\CudaMeanFilter.cuh" />
+    <ClInclude Include="Cuda\CudaMedianFilter.cuh" />
     <ClInclude Include="Cuda\CudaOpener.cuh" />
     <ClInclude Include="Cuda\SeparableMultiplySum.cuh">
       <FileType>CppCode</FileType>

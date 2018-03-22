@@ -114,6 +114,9 @@
     <ClInclude Include="Cuda\CudaLoG.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cuda\CudaMedianFilter.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Cuda\ImageDimensions.cuh">
