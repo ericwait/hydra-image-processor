@@ -44,14 +44,14 @@ __device__ float Kernel::operator()(Vec<size_t> coordinate)
 	return val;
 }
 
-//__host__ Kernel& Kernel::operator=(const Kernel& other)
-//{
-//	dims = other.dims;
-//	cudaKernel = other.cudaKernel;
-//	cleanUpDevice = other.cleanUpDevice;
-//
-//	return *this;
-//}
+__host__ Kernel& Kernel::operator=(const Kernel& other)
+{
+	dims = other.dims;
+	cudaKernel = other.cudaKernel;
+	cleanUpDevice = other.cleanUpDevice;
+
+	return *this;
+}
 
 __host__ void Kernel::load(Vec<size_t> dimensions, float* values, size_t startOffset/* = 0*/)
 {

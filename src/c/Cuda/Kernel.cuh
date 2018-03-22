@@ -14,7 +14,7 @@ public:
 	__host__ __device__ Kernel(Kernel& other);
 	__host__ __device__ ~Kernel() { init(); }
 
-	//__host__ Kernel& operator=(const Kernel& other);
+	__host__ Kernel& operator=(const Kernel& other);
 	__host__ void clean();
 
 	__host__ __device__ float* getDevicePtr() { return cudaKernel; }
