@@ -23,7 +23,7 @@ __global__ void cudaMaxFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImage
 	if (threadCoordinate < imageIn.getDims())
 	{
 		KernelIterator kIt(threadCoordinate, imageIn.getDims(), constKernelMem.getDims());
-		double outVal = 0;
+		double outVal = minValue;
 		for (; !kIt.end(); ++kIt)
 		{
 			Vec<float> imInPos = kIt.getImageCoordinate();
@@ -34,7 +34,7 @@ __global__ void cudaMaxFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImage
 			if (kernVal != 0.0f)
 			{
 				inVal = inVal*kernVal;
-				if (outVal > inVal)
+				if (outVal < inVal)
 					outVal = inVal;
 			}
 		}
