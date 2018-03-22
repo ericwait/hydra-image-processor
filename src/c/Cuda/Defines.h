@@ -12,7 +12,7 @@
 #define c_to_mat(x) ((x)+1)
 
 #define SIGN(x) (((x)>0) ? (1) : (((x)<0.000001 || (x)>-0.00001) ? (0) : (-1)))
-#define CLAMP(val,minVal,maxVal) ((val>maxVal) ? (maxVal) : ((val<minVal) ? (minVal) : (val)))
+#define CLAMP(val,minVal,maxVal) ((val>=maxVal) ? (maxVal) : ((val<=minVal) ? (minVal) : (val)))
 
 //Percent of memory that can be used on the device
 const double MAX_MEM_AVAIL = 0.95;
@@ -22,7 +22,7 @@ enum ReductionMethods
 	REDUC_MEAN, REDUC_MEDIAN, REDUC_MIN, REDUC_MAX, REDUC_GAUS
 };
 
-// These defines check for non-narrowing (valid) implicit converstions from SrcType -> DstType
+// These defines check for non-narrowing (valid) implicit conversions from SrcType -> DstType
 #define NON_NARROWING_IMPLICIT(SrcType,DstType) std::is_same<typename std::common_type<SrcType,DstType>::type,DstType>::value
 
 #define VALID_IMPLICIT(SrcType,DstType) typename std::enable_if<NON_NARROWING_IMPLICIT(SrcType,DstType)>::type
