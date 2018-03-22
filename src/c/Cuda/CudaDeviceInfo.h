@@ -25,9 +25,11 @@ public:
 	{
 		maxThreadsPerBlock = MIN(maxThreadsPerBlock, getKernelMaxThreads(func));
 	}
+	void setMaxThreadsPerBlock(size_t newMax) { maxThreadsPerBlock = newMax; }
 
 	size_t getMaxThreadsPerBlock()const { return maxThreadsPerBlock; }
 	size_t getMinAvailMem()const { return availMem; }
+	size_t getMinSharedMem()const { return sharedMemPerBlock; }
 	size_t getNumDevices() const { return deviceIdxList.size(); }
 	int getDeviceIdx(int deviceNum)
 	{
@@ -43,4 +45,5 @@ private:
 	std::vector<int> deviceIdxList;
 	size_t maxThreadsPerBlock;
 	size_t availMem;
+	size_t sharedMemPerBlock;
 };

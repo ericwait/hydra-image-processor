@@ -53,6 +53,10 @@ void CudaDevices::getCudaInfo(int device/*=-1*/)
 		size_t curAvailMem = memoryAvailable(deviceIdxList[i]);
 		if (availMem > curAvailMem)
 			availMem = curAvailMem;
+
+		size_t curSharedMem = props.sharedMemPerBlock;
+		if (sharedMemPerBlock > curSharedMem)
+			sharedMemPerBlock = curSharedMem;
 	}
 
 	availMem *= MAX_MEM_AVAIL;
@@ -64,4 +68,5 @@ void CudaDevices::reset()
 	deviceIdxList.clear();
 	availMem = ULLONG_MAX;
 	maxThreadsPerBlock = ULLONG_MAX;
+	sharedMemPerBlock = ULLONG_MAX;
 }
