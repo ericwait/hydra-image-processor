@@ -77,7 +77,9 @@
     <ClCompile Include="Mex\MedianFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mex\ElementWiseDifference.cpp">
+    <ClCompile Include="Mex\MexElementWiseDifference.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

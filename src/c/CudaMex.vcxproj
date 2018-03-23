@@ -99,7 +99,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp" />
-    <ClCompile Include="Mex\ElementWiseDifference.cpp" />
+    <ClCompile Include="Mex\MexElementWiseDifference.cpp" />
     <ClCompile Include="Mex\MedianFilter.cpp" />
     <ClCompile Include="Mex\MexClosure.cpp" />
     <ClCompile Include="Mex\MexCommand.cpp" />
