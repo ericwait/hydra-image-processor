@@ -114,9 +114,9 @@ std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, Vec<size_t>
 	return localChunks;
 }
 
-std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffersNeeded, CudaDevices cudaDevs, size_t bytesPerVal, Vec<size_t> kernelDims /*= Vec<size_t>(0, 0, 0)*/)
+std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffersNeeded, CudaDevices cudaDevs, size_t bytesPerVal, Vec<size_t> kernelDims /*= Vec<size_t>(1, 1, 1)*/, float memMultiplier/*=1.0f*/)
 {
-	size_t numVoxels = (size_t)(cudaDevs.getMinAvailMem()/(bytesPerVal*numBuffersNeeded));
+	size_t numVoxels = (size_t)((cudaDevs.getMinAvailMem()*memMultiplier) /(bytesPerVal*numBuffersNeeded));
 	Vec<size_t> dims = imageDims.dims;
 
 	Vec<size_t> overlapVolume;
