@@ -101,7 +101,6 @@
     <ClInclude Include="Cuda\CudaGaussian.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cuda\SeparableMultiplySum.cuh" />
     <ClInclude Include="Cuda\CudaClosure.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -118,6 +117,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Cuda\CudaElementWiseDifference.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cuda\SeparableMultiplySum.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Cuda\BufferConversions.h">
