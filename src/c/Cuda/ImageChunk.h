@@ -3,10 +3,10 @@
 #include "CudaImageContainer.cuh"
 #include "ImageDimensions.cuh"
 #include "CudaDeviceInfo.h"
+#include "BufferConversions.h"
 
 #include <cuda_runtime.h>
 #include <vector>
-#include <type_traits>
 
 class ImageChunk
 {
@@ -20,45 +20,16 @@ public:
 		if (direction == cudaMemcpyHostToDevice)
 		{
 			PixelTypeOut* tempBuffer;
-			if (std::is_same<PixelTypeIn,PixelTypeOut>::value)
-			{
-				tempBuffer = src;
-			}
-			else
-			{
-				tempBuffer = new PixelTypeOut[length];
-				for (size_t i = 0; i < length; ++i)
-					tempBuffer[i] = (PixelTypeOut)(src[i]);
-			}
-
+			toDevice(&tempBuffer, src, length);
 			HANDLE_ERROR(cudaMemcpy(dst, tempBuffer, sizeof(PixelTypeOut)*length, direction));
-
-			if (!std::is_same<PixelTypeIn, PixelTypeOut>::value)
-			{
-				delete[] tempBuffer;
-			}
+			cleanBuffer(&tempBuffer, src);
 		}
 		else if(direction == cudaMemcpyDeviceToHost)
 		{
 			PixelTypeIn* tempBuffer;
-			if (std::is_same<PixelTypeIn, PixelTypeOut>::value)
-			{
-				tempBuffer = dst;
-			}
-			else
-			{
-				tempBuffer = new PixelTypeIn[length];
-			}
-
+			fromDevice(&tempBuffer, &dst, length);
 			HANDLE_ERROR(cudaMemcpy(tempBuffer, src, sizeof(PixelTypeIn)*length, direction));
-
-			if (!std::is_same<PixelTypeIn, PixelTypeOut>::value)
-			{
-				for (size_t i = 0; i < length; ++i)
-					dst[i] = (PixelTypeOut)(tempBuffer[i]);
-
-				delete[] tempBuffer;
-			}
+			copyBuffer(&dst, &tempBuffer, length);
 		}
 		else
 		{
