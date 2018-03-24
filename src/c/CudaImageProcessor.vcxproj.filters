@@ -122,6 +122,9 @@
     <ClInclude Include="Cuda\SeparableMultiplySum.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cuda\CudaHighPassFilter.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Cuda\BufferConversions.h">
       <Filter>Header Files</Filter>
     </ClInclude>

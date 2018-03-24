@@ -6,6 +6,7 @@
 #include "CudaClosure.cuh"
 #include "CudaElementWiseDifference.cuh"
 #include "CudaGaussian.cuh"
+#include "CudaHighPassFilter.cuh"
 #include "CudaLoG.cuh"
 #include "CudaMaxFilter.cuh"
 #include "CudaMedianFilter.cuh"
@@ -223,6 +224,52 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
  void gaussian(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
+ }
+
+
+ void highPassFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ {
+	 cHighPassFilter(imageIn, imageOut, sigmas, device);
+ }
+ 
+ void highPassFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ {
+	 cHighPassFilter(imageIn, imageOut, sigmas, device);
+ }
+ 
+ void highPassFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ {
+	 cHighPassFilter(imageIn, imageOut, sigmas, device);
+ }
+ 
+ void highPassFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ {
+	 cHighPassFilter(imageIn, imageOut, sigmas, device);
+ }
+ 
+ void highPassFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ {
+	 cHighPassFilter(imageIn, imageOut, sigmas, device);
+ }
+ 
+ void highPassFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ {
+	 cHighPassFilter(imageIn, imageOut, sigmas, device);
+ }
+ 
+ void highPassFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ {
+	 cHighPassFilter(imageIn, imageOut, sigmas, device);
+ }
+ 
+ void highPassFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ {
+	 cHighPassFilter(imageIn, imageOut, sigmas, device);
+ }
+ 
+ void highPassFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ {
+	 cHighPassFilter(imageIn, imageOut, sigmas, device);
  }
 
 

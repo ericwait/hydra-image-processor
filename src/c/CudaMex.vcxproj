@@ -106,6 +106,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     <ClCompile Include="Mex\MexDeviceCount.cpp" />
     <ClCompile Include="Mex\MexDeviceStats.cpp" />
     <ClCompile Include="Mex\MexGaussian.cpp" />
+    <ClCompile Include="Mex\MexHighPassFilter.cpp" />
     <ClCompile Include="Mex\MexKernel.cpp" />
     <ClCompile Include="Mex\MexLoG.cpp" />
     <ClCompile Include="Mex\MexMaxFilter.cpp" />

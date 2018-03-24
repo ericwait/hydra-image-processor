@@ -80,6 +80,7 @@
     <ClCompile Include="Mex\MexElementWiseDifference.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mex\MexHighPassFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
