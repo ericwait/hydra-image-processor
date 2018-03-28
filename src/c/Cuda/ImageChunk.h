@@ -89,12 +89,6 @@ public:
 		Vec<size_t> chunkVolSize = getFullChunkSize();
 		Vec<size_t> imVolSize = outImage.getSpatialDims();
 
-		if(chunkVolSize == imVolSize)
-		{
-			copyLine(outImage.getPtr(), deviceImage->getImagePointer(), chunkVolSize.product(), cudaMemcpyDeviceToHost);
-			return;
-		} 
-
 		if (chunkVolSize == imVolSize)
 		{
 			ImageDimensions curHostCoord(imageStart,channel,frame);
