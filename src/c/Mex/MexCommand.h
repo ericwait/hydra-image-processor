@@ -217,7 +217,6 @@ protected:
 	}
 
 	// Helper function for MexCommands class
-	static size_t countDims(ImageDimensions dims, std::vector<size_t>& matDims);
 	static void setupDims(const mxArray* im, ImageDimensions& dims);
 
 	// Simple template-specialization map for C++ to mex types
@@ -263,10 +262,14 @@ protected:
 	template <typename T>
 	static void setupOutputPointers(mxArray** imageOut, ImageDimensions& dims, T** image)
 	{
-		std::vector<size_t> matDims;
-		size_t numDims = countDims(dims, matDims);
+		mwSize matDims[5];
+		for (int i = 0; i < 3; ++i)
+			matDims[i] = dims.dims.e[i];
 
-		*imageOut = createArray<T>(numDims, matDims.data());
+		matDims[3] = dims.chan;
+		matDims[4] = dims.frame;
+
+		*imageOut = createArray<T>(5, matDims);
 		*image = (T*)mxGetData(*imageOut);
 
 		memset(*image, 0, sizeof(T)*dims.getNumElements());

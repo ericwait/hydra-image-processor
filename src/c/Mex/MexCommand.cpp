@@ -170,34 +170,6 @@ void MexCommand::setupDims(const mxArray* im, ImageDimensions& dimsOut)
 		dimsOut.frame = (unsigned int)DIMS[4];
 }
 
-size_t MexCommand::countDims(ImageDimensions dims, std::vector<size_t>& matDims)
-{
-    size_t numDims = 0;
-	matDims.clear();
-	for ( int i=0; i < 3; ++i )
-	{
-		if (dims.dims.e[i] > 1)
-		{
-			++numDims;
-			matDims.push_back(dims.dims.e[i]);
-		}
-	}
-	if (dims.chan > 1)
-	{
-		++numDims;
-		matDims.push_back(dims.chan);
-	}
-
-	if (dims.frame > 1)
-	{
-		++numDims;
-		matDims.push_back(dims.frame);
-	}
-
-    return numDims;
-}
-
-
 Vec<size_t> MexCommand::FillKernel(const mxArray* matKernelIn, float** kernel )
 {
     size_t numDims = mxGetNumberOfDimensions(matKernelIn);
