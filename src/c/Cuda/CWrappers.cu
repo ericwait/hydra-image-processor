@@ -14,6 +14,7 @@
 #include "CudaMinFilter.cuh"
 #include "CudaMultiplySum.cuh"
 #include "CudaOpener.cuh"
+#include "CudaStdFilter.cuh"
 
 
 void clearDevice()
@@ -592,4 +593,50 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
  void opener(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cOpener(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ void stdFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void stdFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void stdFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void stdFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void stdFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void stdFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void stdFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void stdFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void stdFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
  }

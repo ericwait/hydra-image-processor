@@ -74,13 +74,16 @@
     <ClCompile Include="Mex\MexLoG.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mex\MedianFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Mex\MexElementWiseDifference.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Mex\MexHighPassFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mex\MexStdFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mex\MexMedianFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
