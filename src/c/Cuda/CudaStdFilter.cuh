@@ -42,7 +42,8 @@ __global__ void cudaStdFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImage
 		kIt.reset();
 		double mu = outVal / kernVolume;
 
-		for (; !kIt.end() <; ++kIt)
+		outVal = 0.0;
+		for (; !kIt.end(); ++kIt)
 		{
 			Vec<float> imInPos = kIt.getImageCoordinate();
 			double inVal = (double)imageIn(imInPos);
@@ -55,7 +56,7 @@ __global__ void cudaStdFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImage
 			}
 		}
 
-		outVal = sqrt(outVal / (kernVolume - 1));
+		outVal = sqrt(outVal / MAX(1.0,((double)kernVolume-1.0)));
 		imageOut(threadCoordinate) = (PixelTypeOut)CLAMP(outVal, minValue, maxValue);
 	}
 }
