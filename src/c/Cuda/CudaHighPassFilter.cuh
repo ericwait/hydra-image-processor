@@ -31,9 +31,7 @@ void cHighPassFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTy
 	Vec<size_t> kernDims(0);
 	float* hostKernels = createGaussianKernel(sigmas, kernDims);
 
-	//float positionMemSize = sizeof(float) * 2.0f + sizeof(PixelTypeOut);
-	//float memMultiplier = (sizeof(float) * 2.0f) / positionMemSize;
-	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, sizeof(float), kernDims);// , memMultiplier);
+	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, sizeof(float), kernDims);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
