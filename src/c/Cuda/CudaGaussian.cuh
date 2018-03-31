@@ -19,20 +19,18 @@
 template <class PixelTypeIn, class PixelTypeOut>
 void cGaussian(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>& imageOut,	Vec<double> sigmas, int numIterations = 1, int device = -1)
 {
-	const PixelTypeOut MIN_VAL = std::numeric_limits<PixelTypeOut>::lowest();
-	const PixelTypeOut MAX_VAL = std::numeric_limits<PixelTypeOut>::max();
+	const float MIN_VAL = std::numeric_limits<float>::lowest();
+	const float MAX_VAL = std::numeric_limits<float>::max();
 	const int NUM_BUFF_NEEDED = 2;
 
 	setUpOutIm<PixelTypeOut>(imageIn.getDims(), imageOut);
 
-	CudaDevices cudaDevs(cudaMultiplySum<PixelTypeIn, PixelTypeOut>, device);
+	CudaDevices cudaDevs(cudaMultiplySum<float, float>, device);
 
 	Vec<size_t> kernDims(0);
 	float* hostKernels = createGaussianKernel(sigmas,kernDims);
 
-
-	size_t maxTypeSize = MAX(sizeof(PixelTypeIn), sizeof(PixelTypeOut));
-	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, maxTypeSize, kernDims);
+	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, sizeof(float), kernDims);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
@@ -44,7 +42,7 @@ void cGaussian(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>
 		const int N_THREADS = omp_get_num_threads();
 		const int CUR_DEVICE = cudaDevs.getDeviceIdx(CUDA_IDX);
 
-		CudaDeviceImages<PixelTypeOut> deviceImages(NUM_BUFF_NEEDED, maxDeviceDims, CUR_DEVICE);
+		CudaDeviceImages<float> deviceImages(NUM_BUFF_NEEDED, maxDeviceDims, CUR_DEVICE);
 		
 		Kernel constFullKern(kernDims.sum(), hostKernels,CUR_DEVICE);
 		Kernel constKernelMem_x = constFullKern.getOffsetCopy(Vec<size_t>(kernDims.x,1,1), 0);
