@@ -26,7 +26,7 @@ void cHighPassFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTy
 
 	setUpOutIm<PixelTypeOut>(imageIn.getDims(), imageOut);
 
-	CudaDevices cudaDevs(cudaMultiplySum<PixelTypeIn, PixelTypeOut>, device);
+	CudaDevices cudaDevs(cudaMultiplySum<float, float>, device);
 
 	Vec<size_t> kernDims(0);
 	float* hostKernels = createGaussianKernel(sigmas, kernDims);
