@@ -113,7 +113,22 @@ for i=1:length(dList)
     if (~exist(localFuncFileName,'file'))
         f = fopen(localFuncFileName,'wt');
         fprintf(f, 'function %s = %s(%s)\n',funcCallFilled.out,funcCallFilled.name,funcCallFilled.param);
-        fprintf(f, '     error(''%s not yet implemented in MATLAB!'');\n',funcCallFilled.name);
+        fprintf(f, '     error(''%s not yet implemented in MATLAB!''); %%delete this line when implemented\n',funcCallFilled.name);
+        fprintf(f, '     warning(''Falling back to matlab.'');\n');
+        fprintf(f, '     \n');
+        fprintf(f, '     if (~exist(''numIterations'',''var'') || isempty(numIterations))\n');
+        fprintf(f, '         numIterations = 1;\n');
+        fprintf(f, '     end\n');
+        fprintf(f, '     \n');
+        fprintf(f, '     arrayOut = arrayIn;\n');
+        fprintf(f, '     for t=1:size(arrayIn,5)\n');
+        fprintf(f, '         for c=1:size(arrayIn,4)\n');
+        fprintf(f, '             for i=1:numIterations\n');
+        fprintf(f, '                 %% implement this function here\n');
+        fprintf(f, '                 arrayOut(:,:,:,c,t) = arrayIn(:,:,:,c,t);\n');
+        fprintf(f, '             end\n');
+        fprintf(f, '         end\n');
+        fprintf(f, '     end\n');
         fprintf(f, 'end\n');
         fclose(f);
     end
