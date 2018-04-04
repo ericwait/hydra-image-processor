@@ -1,6 +1,6 @@
 #include "MexCommand.h"
-#include "Vec.h"
-#include "CWrappers.h"
+#include "../Cuda/Vec.h"
+#include "../Cuda/CWrappers.h"
 #include "../Cuda/ImageDimensions.cuh"
 #include "../Cuda/ImageContainer.h"
 #include "MexKernel.h"

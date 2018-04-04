@@ -1,10 +1,10 @@
 #pragma once
-#include "Vec.h"
+#include "../Cuda/Vec.h"
 #include "ScopedProcessMutex.h"
 #include "../Cuda/ImageDimensions.cuh"
 
-#include "mex.h"
-#include "windows.h"
+#include <mex.h>
+#include <windows.h>
 #undef min
 #undef max
 
