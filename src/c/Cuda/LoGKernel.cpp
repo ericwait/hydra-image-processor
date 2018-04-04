@@ -32,17 +32,17 @@ float* createLoGKernel(Vec<double> sigmas, Vec<size_t>& dimsOut)
 		double denominator = pow(2.0*PI, 3.0 / 2.0)*sigmas.product();
 
 		Vec<int> curPos(0, 0, 0);
-		for (curPos.z = 0; curPos.z < dimsOut.z || curPos.z == 0; ++curPos.z)
+		for (curPos.z = 0; curPos.z < dimsOut.z; ++curPos.z)
 		{
 			double zMuSub = SQR(curPos.z - mid.z);
 			double zMuSubSigSqr = zMuSub / (2 * sigmaSqr.z);
 			double zAdditive = zMuSub / sigma4th.z - 1.0 / sigmaSqr.z;
-			for (curPos.y = 0; curPos.y < dimsOut.y || curPos.y == 0; ++curPos.y)
+			for (curPos.y = 0; curPos.y < dimsOut.y; ++curPos.y)
 			{
 				double yMuSub = SQR(curPos.y - mid.y);
 				double yMuSubSigSqr = yMuSub / (2 * sigmaSqr.y);
 				double yAdditive = yMuSub / sigma4th.y - 1.0 / sigmaSqr.y;
-				for (curPos.x = 0; curPos.x < dimsOut.x || curPos.x == 0; ++curPos.x)
+				for (curPos.x = 0; curPos.x < dimsOut.x; ++curPos.x)
 				{
 					double xMuSub = SQR(curPos.x - mid.x);
 					double xMuSubSigSqr = xMuSub / (2 * sigmaSqr.x);
@@ -70,19 +70,19 @@ float* createLoGKernel(Vec<double> sigmas, Vec<size_t>& dimsOut)
 
 		Vec<double> gaussComp(0);
 		Vec<int> curPos(0, 0, 0);
-		for (curPos.z = 0; curPos.z < dimsOut.z || curPos.z == 0; ++curPos.z)
+		for (curPos.z = 0; curPos.z < dimsOut.z; ++curPos.z)
 		{
 			if (sigmas.z != 0)
 			{
 				gaussComp.z = SQR(curPos.z - mid.z) / twoSigmaSqr.z;
 			}
-			for (curPos.y = 0; curPos.y < dimsOut.y || curPos.y == 0; ++curPos.y)
+			for (curPos.y = 0; curPos.y < dimsOut.y; ++curPos.y)
 			{
 				if (sigmas.y != 0)
 				{
 					gaussComp.y = SQR(curPos.y - mid.y) / twoSigmaSqr.y;
 				}
-				for (curPos.x = 0; curPos.x < dimsOut.x || curPos.x == 0; ++curPos.x)
+				for (curPos.x = 0; curPos.x < dimsOut.x; ++curPos.x)
 				{
 					if (sigmas.x != 0)
 					{
