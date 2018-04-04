@@ -22,69 +22,83 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	ImageDimensions imageDims;
 	if (mxIsLogical(prhs[0]))
 	{
-		bool* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		bool* imageInPtr;
+		float* imageOutPtr;
+		setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<bool> imageIn(imageInPtr, imageDims);
-		ImageContainer<bool> imageOut(imageOutPtr, imageDims);
+		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
 		LoG(imageIn, imageOut, sigmas, numIterations, device);
 
 	}
 	else if (mxIsUint8(prhs[0]))
 	{
-		unsigned char* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		unsigned char* imageInPtr;
+		float* imageOutPtr;
+		setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
-		ImageContainer<unsigned char> imageOut(imageOutPtr, imageDims);
+		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
 		LoG(imageIn, imageOut, sigmas, numIterations, device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
-		unsigned short* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		unsigned short* imageInPtr;
+		float* imageOutPtr;
+		setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
-		ImageContainer<unsigned short> imageOut(imageOutPtr, imageDims);
+		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
 		LoG(imageIn, imageOut, sigmas, numIterations, device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
-		short* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		short* imageInPtr;
+		float* imageOutPtr;
+		setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<short> imageIn(imageInPtr, imageDims);
-		ImageContainer<short> imageOut(imageOutPtr, imageDims);
+		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
 		LoG(imageIn, imageOut, sigmas, numIterations, device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
-		unsigned int* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		unsigned int* imageInPtr;
+		float* imageOutPtr;
+		setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
-		ImageContainer<unsigned int> imageOut(imageOutPtr, imageDims);
+		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
 		LoG(imageIn, imageOut, sigmas, numIterations, device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
-		int* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		int* imageInPtr;
+		float* imageOutPtr;
+		setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<int> imageIn(imageInPtr, imageDims);
-		ImageContainer<int> imageOut(imageOutPtr, imageDims);
+		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
 		LoG(imageIn, imageOut, sigmas, numIterations, device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
-		float* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		float* imageInPtr;
+		float* imageOutPtr;
+		setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<float> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -93,11 +107,13 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
-		double* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		double* imageInPtr;
+		float* imageOutPtr;
+		setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<double> imageIn(imageInPtr, imageDims);
-		ImageContainer<double> imageOut(imageOutPtr, imageDims);
+		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
 		LoG(imageIn, imageOut, sigmas, numIterations, device);
 	}
