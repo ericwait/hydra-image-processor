@@ -112,9 +112,11 @@ for i=1:length(dList)
     localFuncFileName = fullfile(packagePath,'+Local',[funcCallFilled.name,'.m']);
     if (~exist(localFuncFileName,'file'))
         f = fopen(localFuncFileName,'wt');
-        fprintf(f, 'function %s = %s(%s)\n',funcCallFilled.out,funcCallFilled.name,funcCallFilled.param);
+        fprintf(f, 'function %s = %s(%s,suppressWarning)\n',funcCallFilled.out,funcCallFilled.name,funcCallFilled.param);
         fprintf(f, '     error(''%s not yet implemented in MATLAB!''); %%delete this line when implemented\n',funcCallFilled.name);
-        fprintf(f, '     warning(''Falling back to matlab.'');\n');
+        fprintf(f, '     if (~exist(''suppressWarning'',''var'') || isempty(suppressWarning) || ~suppressWarning)\n');
+        fprintf(f, '         warning(''Falling back to matlab.'');\n');
+        fprintf(f, '     end\n');
         fprintf(f, '     \n');
         fprintf(f, '     if (~exist(''numIterations'',''var'') || isempty(numIterations))\n');
         fprintf(f, '         numIterations = 1;\n');

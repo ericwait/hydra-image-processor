@@ -1,5 +1,7 @@
-function arrayOut = Gaussian(arrayIn,sigmas,numIterations,device)
-    arrayOut = arrayIn;
+function arrayOut = Gaussian(arrayIn,sigmas,numIterations,device,suppressWarning)
+    if (~exist('suppressWarning','var') || isempty(suppressWarning) || ~suppressWarning)
+        warning('Falling back to matlab.');
+    end
     
     if (~exist('numIterations','var') || isempty(numIterations))
         numIterations = 1;
