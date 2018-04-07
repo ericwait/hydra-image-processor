@@ -4,17 +4,20 @@ function times = MedianFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials)
     % third dimension is type
     numItters = length(sizeItter)*length(typeItter);
     
+    kernel = ones(5,5,3,'single');
+    
     times = zeros(length(sizeItter),5,length(typeItter));
     prgs = Utils.CmdlnProgress(numItters,true,'MedianFilter');
     j = 0;
-    for ty = typeItter
-        for i = sizeItter            
-            im = ones(2^sizes_rc(i),2^sizes_rc(i),2^(sizes_rc(i)-4),types{ty});
+    for i = sizeItter
+        szImage = rand(2^sizes_rc(i),2^sizes_rc(i),2^(sizes_rc(i)-4),2,3,'single');
+        for ty = typeItter
+            im = ImUtils.ConvertType(szImage,types{ty},true);
             times(i,1,ty) = numel(im);
 
             ts = zeros(numTrials,2);
             for j=1:numTrials
-                [ts(j,1),ts(j,2)] = Performance.MedianFilter(im,[5,5,3]);
+                [ts(j,1),ts(j,2)] = Performance.MedianFilter(im,kernel);
             end
             times(i,2:3,ty) = mean(ts,1);
             j = j +1;
