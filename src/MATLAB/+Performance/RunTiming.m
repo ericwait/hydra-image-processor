@@ -1,7 +1,13 @@
 ImProc.BuildScript;
 
 %%
-sizes_rc = [5,6,7,8,9,10,11];%,12];%,13];
+sizes_rc = [5,6,7,8,9,10,11,12];%,13];
+sizesMask = sizes_rc<log2((m.MemAvailableAllArrays/2/6)^(1/3));
+sizesMask(find(sizesMask,1,'last')) = false;
+sizes_rc = sizes_rc(sizesMask);
+if (~any(sizes_rc))
+    sizes_rc = 5;
+end
 sizeItter = length(sizes_rc):-1:1;
 numTrials = 3;
 types = {'uint8';'uint16';'single';'double'};
