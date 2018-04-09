@@ -1,8 +1,9 @@
 ImProc.BuildScript;
 
 %%
-sizes_rc = [5,6,7,8,9,10,11,12];%,13];
-sizesMask = sizes_rc<log2((m.MemAvailableAllArrays/2/6)^(1/3));
+m = memory;
+sizes_rc = [5,6,7,8,9,10,11,12];
+sizesMask = sizes_rc<=round(log2((m.MemAvailableAllArrays/2/6)^(1/3)));
 sizesMask(find(sizesMask,1,'last')) = false;
 sizes_rc = sizes_rc(sizesMask);
 if (~any(sizes_rc))
@@ -29,13 +30,21 @@ medTimes = Performance.MedianFilterGraph(sizes_rc,sizeItter,types,typeItter,numT
 stdTimes = Performance.StdFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
 
 %% GaussianFilter
-gaussTimes = Performance.GaussianFilterGraph(sizes_rc,sizeItter(1:end-1),types,typeItter,numTrials);
+sizeItterSm = sizeItter(1:end-1);
+if (isempty(sizeItterSm))
+    sizeItterSm = 1;
+end
+gaussTimes = Performance.GaussianFilterGraph(sizes_rc,sizeItterSm,types,typeItter,numTrials);
 
 %% EntropyFilter
 %entropyTimes = Performance.EntropyFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
 
 %% Contrast Enhancement
-hpTimes = Performance.HighPassFilterGraph(sizes_rc,sizeItter(1:end-1),types,typeItter,numTrials);
+sizeItterSm = sizeItter(1:end-1);
+if (isempty(sizeItterSm))
+    sizeItterSm = 1;
+end
+hpTimes = Performance.HighPassFilterGraph(sizes_rc,sizeItterSm,types,typeItter,numTrials);
 
 %% Save out results
 temp = what('ImProc');
