@@ -65,10 +65,8 @@ void cElementWiseDifference(ImageContainer<PixelType1In> image1In, ImageContaine
 				std::runtime_error("Error sending ROI to device!");
 
 			deviceImages.setAllDims(chunks[i].getFullChunkSize());
-			DEBUG_KERNEL_CHECK();
 
-			cudaElementWiseDifference << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()),				*(deviceImages.getNextBuffer()), *(deviceImages.getThirdBuffer()), MIN_VAL, MAX_VAL);
-			DEBUG_KERNEL_CHECK();
+			cudaElementWiseDifference << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()), *(deviceImages.getThirdBuffer()), MIN_VAL, MAX_VAL);
 
 			chunks[i].retriveROI(imageOut, deviceImages.getThirdBuffer());
 		}

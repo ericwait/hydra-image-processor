@@ -56,7 +56,6 @@ void cHighPassFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTy
 				std::runtime_error("Error sending ROI to device!");
 
 			deviceImagesIn.setAllDims(chunks[i].getFullChunkSize());
-			DEBUG_KERNEL_CHECK();
 
 			// blur the input image
 			SeparableMultiplySum(chunks[i], deviceImagesIn, constKernelMem_x, constKernelMem_y, constKernelMem_z, MIN_VAL, MAX_VAL);

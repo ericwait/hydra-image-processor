@@ -95,12 +95,10 @@ void cStdFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut
 				std::runtime_error("Error sending ROI to device!");
 
 			deviceImages.setAllDims(chunks[i].getFullChunkSize());
-			DEBUG_KERNEL_CHECK();
 
 			for (int j = 0; j < numIterations; ++j)
 			{
 				cudaStdFilter << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()), constKernelMem, MIN_VAL, MAX_VAL);
-				DEBUG_KERNEL_CHECK();
 				deviceImages.incrementBuffer();
 			}
 			chunks[i].retriveROI(imageOut, deviceImages.getCurBuffer());

@@ -164,7 +164,6 @@ void cMedianFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelType
 				std::runtime_error("Error sending ROI to device!");
 
 			deviceImages.setAllDims(chunks[i].getFullChunkSize());
-			DEBUG_KERNEL_CHECK();
 
 			size_t sharedMemorysize = kernel.getNumElements() * sizeof(PixelTypeIn) * chunks[i].threads.x * chunks[i].threads.y * chunks[i].threads.z;
 
@@ -172,7 +171,6 @@ void cMedianFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelType
 			{
 				cudaMedianFilter<<<chunks[i].blocks, chunks[i].threads,sharedMemorysize>>>(*(deviceImages.getCurBuffer()),
 					*(deviceImages.getNextBuffer()), constKernelMem, MIN_VAL, MAX_VAL);
-				DEBUG_KERNEL_CHECK();
 				deviceImages.incrementBuffer();
 			}
 			chunks[i].retriveROI(imageOut, deviceImages.getCurBuffer());

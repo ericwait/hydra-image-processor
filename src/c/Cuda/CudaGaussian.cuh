@@ -55,7 +55,6 @@ void cGaussian(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>
 				std::runtime_error("Error sending ROI to device!");
 
 			deviceImages.setAllDims(chunks[i].getFullChunkSize());
-			DEBUG_KERNEL_CHECK();
 
 			for (int j = 0; j < numIterations; ++j)
 			{
