@@ -199,8 +199,6 @@ public:
 	MIXED_PREFIX Vec<size_t> coordAddressOf(U idx)const
 	{
 		Vec<size_t> vecOut = Vec<size_t>(0,0,0);
-		if(x==0 && y==0 && z==0)
-			throw runtime_error("Not a valid vector to index into!");
 
 		if(x==0)
 		{
