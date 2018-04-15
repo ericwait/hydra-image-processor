@@ -1,7 +1,10 @@
 ImProc.BuildScript;
 
 %%
+numTrials = 3;
+
 m = memory;
+numDevices = ImProc.Cuda.DeviceCount();
 sizes_rc = [5,6,7,8,9,10,11,12];
 sizesMask = sizes_rc<=round(log2((m.MemAvailableAllArrays/2/6)^(1/3)));
 sizesMask(find(sizesMask,1,'last')) = false;
@@ -10,31 +13,30 @@ if (~any(sizes_rc))
     sizes_rc = 5;
 end
 sizeItter = length(sizes_rc):-1:1;
-numTrials = 3;
 types = {'uint8';'uint16';'single';'double'};
 typeItter = size(types,1):-1:1;
 
 %% Max Filter
-maxTimes = Performance.MaxFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
+maxTimes = Performance.MaxFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials,numDevices);
 
 %% Closure 
-closeTimes = Performance.ClosureGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
+closeTimes = Performance.ClosureGraph(sizes_rc,sizeItter,types,typeItter,numTrials,numDevices);
 
 %% Mean Filter
-meanTimes = Performance.MeanFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
+meanTimes = Performance.MeanFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials,numDevices);
 
 %% Median Filter
-medTimes = Performance.MedianFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
+medTimes = Performance.MedianFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials,numDevices);
 
 %% Std Filter
-stdTimes = Performance.StdFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
+stdTimes = Performance.StdFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials,numDevices);
 
 %% GaussianFilter
 sizeItterSm = sizeItter(1:end-1);
 if (isempty(sizeItterSm))
     sizeItterSm = 1;
 end
-gaussTimes = Performance.GaussianFilterGraph(sizes_rc,sizeItterSm,types,typeItter,numTrials);
+gaussTimes = Performance.GaussianFilterGraph(sizes_rc,sizeItterSm,types,typeItter,numTrials,numDevices);
 
 %% EntropyFilter
 %entropyTimes = Performance.EntropyFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
@@ -44,7 +46,7 @@ sizeItterSm = sizeItter(1:end-1);
 if (isempty(sizeItterSm))
     sizeItterSm = 1;
 end
-hpTimes = Performance.HighPassFilterGraph(sizes_rc,sizeItterSm,types,typeItter,numTrials);
+hpTimes = Performance.HighPassFilterGraph(sizes_rc,sizeItterSm,types,typeItter,numTrials,numDevices);
 
 %% Save out results
 temp = what('ImProc');
