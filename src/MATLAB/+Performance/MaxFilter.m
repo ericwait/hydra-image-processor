@@ -4,10 +4,12 @@ function [cTime,mTime,kernelName,c2Time] = MaxFilter(im,kernel,numDevices)
     cT = tic;
     imC = ImProc.MaxFilter(im,kernel,[],1);
     cTime = toc(cT);
+    clear imC
 
     mT = tic;
     imM = ImProc.Local.MaxFilter(im,kernel,[],[],true);
     mTime = toc(mT);
+    clear imM
     
     if (numDevices>1)
         c2T = tic;

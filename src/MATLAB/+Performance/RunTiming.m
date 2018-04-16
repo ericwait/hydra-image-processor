@@ -1,13 +1,12 @@
 ImProc.BuildScript;
 
 %%
-numTrials = 3;
+numTrials = 4;
 
 m = memory;
 numDevices = ImProc.Cuda.DeviceCount();
-sizes_rc = [5,6,7,8,9,10,11,12];
-sizesMask = sizes_rc<=round(log2((m.MemAvailableAllArrays/2/6)^(1/3)));
-sizesMask(find(sizesMask,1,'last')) = false;
+sizes_rc = 5:14;
+sizesMask = sizes_rc <= (round(log2((m.MemAvailableAllArrays/4)^(1/3)))-1);
 sizes_rc = sizes_rc(sizesMask);
 if (~any(sizes_rc))
     sizes_rc = 5;
@@ -32,7 +31,7 @@ medTimes = Performance.MedianFilterGraph(sizes_rc,sizeItter,types,typeItter,numT
 stdTimes = Performance.StdFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials,numDevices);
 
 %% GaussianFilter
-sizeItterSm = sizeItter(1:end-1);
+sizeItterSm = sizeItter(2:end);
 if (isempty(sizeItterSm))
     sizeItterSm = 1;
 end
@@ -42,7 +41,7 @@ gaussTimes = Performance.GaussianFilterGraph(sizes_rc,sizeItterSm,types,typeItte
 %entropyTimes = Performance.EntropyFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials);
 
 %% Contrast Enhancement
-sizeItterSm = sizeItter(1:end-1);
+sizeItterSm = sizeItter(2:end);
 if (isempty(sizeItterSm))
     sizeItterSm = 1;
 end

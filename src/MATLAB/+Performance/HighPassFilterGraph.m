@@ -2,11 +2,11 @@ function times = HighPassFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrial
     % times has size of image, cuda time, matlab time, cuda times faster,
     %   matlab over cuda
     % third dimension is type
-    numItters = length(sizeItter)*length(typeItter);
+    numItters = length(sizeItter)*length(typeItter)*numTrials;
     
     times = zeros(length(sizeItter),7,length(typeItter));
     prgs = Utils.CmdlnProgress(numItters,true,'HighPassFilter');
-    j = 0;
+    k = 0;
     
     
     for i = sizeItter
@@ -18,10 +18,10 @@ function times = HighPassFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrial
             ts = zeros(numTrials,4);
             for j=1:numTrials
                 [ts(j,1),ts(j,2),~,ts(j,3:4)] = Performance.HighPassFilter(im,[35,35,15],numDevices);
+                k = k +1;
+                prgs.PrintProgress(k);
             end
             times(i,2:5,ty) = mean(ts,1);
-            j = j +1;
-            prgs.PrintProgress(j);
         end
     end
     prgs.ClearProgress(true);

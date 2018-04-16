@@ -21,7 +21,7 @@ function PlotResults(times,kernelName,numDevices)
             loglog(times(:,1,i),times(:,4,i),'-*','markersize',16);
             legend('Cuda','Matlab',sprintf('Cuda %d devices',numDevices),'Location','northwest');
         else
-                legend('Cuda','Matlab','Location','northwest');
+            legend('Cuda','Matlab','Location','northwest');
         end
         hold off
         xlabel('Number of Voxels');
@@ -39,10 +39,10 @@ function PlotResults(times,kernelName,numDevices)
         for i=1:size(types,1)
             loglog(times(:,1,i),times(:,6,i),':*','markersize',16);
         end
+        typesDev = cellfun(@(x)([x,' multidevice']),types,'UniformOutput',false);
+        types = vertcat(types,typesDev);
     end
     
-    typesDev = cellfun(@(x)([x,' multidevice']),types,'UniformOutput',false);
-    types = vertcat(types,typesDev);
     legend(types,'Location','northwest');
 
     title(kernelName)

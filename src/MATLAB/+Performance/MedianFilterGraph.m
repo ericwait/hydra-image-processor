@@ -2,15 +2,15 @@ function times = MedianFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials,
     % times has size of image, cuda time, matlab time, cuda times faster,
     %   matlab over cuda
     % third dimension is type
-    numItters = length(sizeItter)*length(typeItter);
+    numItters = length(sizeItter)*length(typeItter)*numTrials;
     
     times = zeros(length(sizeItter),7,length(typeItter));
     prgs = Utils.CmdlnProgress(numItters,true,'MedianFilter');
-    j = 0;
+    k = 0;
     kernel = ones(5,5,3,'single');
     
     for i = sizeItter
-        szImage = rand(2^sizes_rc(i),2^sizes_rc(i),2^(sizes_rc(i)-4),2,3,'single');
+        szImage = rand(2^sizes_rc(i),2^sizes_rc(i),2^(sizes_rc(i)-4),2);
         for ty = typeItter
             im = ImUtils.ConvertType(szImage,types{ty},true);
             times(i,1,ty) = numel(im);
@@ -18,10 +18,10 @@ function times = MedianFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials,
             ts = zeros(numTrials,4);
             for j=1:numTrials
                 [ts(j,1),ts(j,2),~,ts(j,3:4)] = Performance.MedianFilter(im,kernel,numDevices);
+                k = k +1;
+                prgs.PrintProgress(k);
             end
             times(i,2:5,ty) = mean(ts,1);
-            j = j +1;
-            prgs.PrintProgress(j);
         end
     end
     prgs.ClearProgress(true);
