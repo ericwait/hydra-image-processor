@@ -15,8 +15,7 @@
 #include <omp.h>
 
 template <class PixelTypeIn, class PixelTypeOut>
-__global__ void cudaFooFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> imageOut,
-	Kernel constKernelMem, PixelTypeOut minValue, PixelTypeOut maxValue)
+__global__ void cudaFooFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> imageOut, Kernel constKernelMem, PixelTypeOut minValue, PixelTypeOut maxValue)
 {
 	Vec<size_t> threadCoordinate;
 	GetThreadBlockCoordinate(threadCoordinate);
@@ -46,8 +45,7 @@ __global__ void cudaFooFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImage
 
 
 template <class PixelTypeIn, class PixelTypeOut>
-void cFooFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>& imageOut,
-	ImageContainer<float> kernel, int numIterations = 1, int device = -1)
+void cFooFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1)
 {
 	const PixelTypeOut MIN_VAL = std::numeric_limits<PixelTypeOut>::lowest();
 	const PixelTypeOut MAX_VAL = std::numeric_limits<PixelTypeOut>::max();
@@ -58,8 +56,7 @@ void cFooFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut
 	CudaDevices cudaDevs(cudaFooFilter<PixelTypeIn, PixelTypeOut>, device);
 
 	size_t maxTypeSize = MAX(sizeof(PixelTypeIn), sizeof(PixelTypeOut));
-	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, maxTypeSize,
-		kernel.getSpatialDims());
+	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, maxTypeSize, kernel.getSpatialDims());
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
@@ -83,8 +80,7 @@ void cFooFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut
 
 			for (int j = 0; j < numIterations; ++j)
 			{
-				cudaFooFilter<<<chunks[i].blocks, chunks[i].threads>>>(*(deviceImages.getCurBuffer()),
-					*(deviceImages.getNextBuffer()), constKernelMem, MIN_VAL, MAX_VAL);
+				cudaFooFilter<<<chunks[i].blocks, chunks[i].threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constKernelMem, MIN_VAL, MAX_VAL);
 				deviceImages.incrementBuffer();
 			}
 			chunks[i].retriveROI(imageOut, deviceImages.getCurBuffer());
