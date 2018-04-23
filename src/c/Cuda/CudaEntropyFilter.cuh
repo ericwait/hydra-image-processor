@@ -8,14 +8,15 @@
 #include "ImageDimensions.cuh"
 #include "ImageChunk.h"
 #include "Defines.h"
-#include "../Cuda/Vec.h"
+#include "Vec.h"
+#include "CudaGetMinMax.cuh"
 
 #include <cuda_runtime.h>
 #include <limits>
 #include <omp.h>
 
 template <class PixelTypeIn>
-__global__ void cudaEntropyFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<float> imageOut, Kernel constKernelMem, float minValue, float maxValue)
+__global__ void cudaEntropyFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<float> imageOut, Kernel constKernelMem, const float minValue, const float maxValue)
 {
 	Vec<size_t> threadCoordinate;
 	GetThreadBlockCoordinate(threadCoordinate);
@@ -39,7 +40,7 @@ __global__ void cudaEntropyFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaI
 
 			if (kernVal != 0.0f)
 			{
-				int binNum = floor((double)(inVal * kernVal) / binWidth);
+				int binNum = floor((double)(inVal * kernVal - minValue) / binWidth);
 				++(histogram[binNum]);
 				++count;
 			}
@@ -52,7 +53,7 @@ __global__ void cudaEntropyFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaI
 				outVal += val*log2(val);
 		}
 
-		imageOut(threadCoordinate) = (float)CLAMP(-outVal, minValue, maxValue);
+		imageOut(threadCoordinate) = (float)-outVal;
 	}
 }
 
@@ -60,8 +61,8 @@ __global__ void cudaEntropyFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaI
 template <class PixelTypeIn>
 void cEntropyFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device = -1)
 {
-	const float MIN_VAL = std::numeric_limits<float>::lowest();
-	const float MAX_VAL = std::numeric_limits<float>::max();
+	float minVal, maxVal;
+	cGetMinMax(imageIn.getPtr(), imageIn.getNumElements(), minVal, maxVal, device);
 	const int NUM_BUFF_NEEDED = 2;
 
 	setUpOutIm<float>(imageIn.getDims(), imageOut);
