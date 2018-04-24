@@ -124,6 +124,7 @@
     <ClCompile Include="Cuda\LoGKernel.cpp" />
     <ClInclude Include="Cuda\BufferConversions.h" />
     <ClInclude Include="Cuda\CudaClosure.cuh" />
+    <ClInclude Include="Cuda\CudaEntropyFilter.cuh" />
     <ClInclude Include="Cuda\CudaGetMinMax.cuh" />
     <ClInclude Include="Cuda\CudaLoG.cuh" />
     <ClInclude Include="Cuda\CudaMeanFilter.cuh" />

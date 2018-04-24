@@ -62,7 +62,6 @@ template <class PixelTypeIn>
 void cEntropyFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device = -1)
 {
 	float minVal, maxVal;
-	cGetMinMax(imageIn.getPtr(), imageIn.getNumElements(), minVal, maxVal, device);
 	const int NUM_BUFF_NEEDED = 2;
 
 	setUpOutIm<float>(imageIn.getDims(), imageOut);
@@ -91,7 +90,9 @@ void cEntropyFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& 
 
 			deviceImages.setAllDims(chunks[i].getFullChunkSize());
 
-			cudaEntropyFilter<<<chunks[i].blocks, chunks[i].threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constKernelMem, MIN_VAL, MAX_VAL);
+			cGetMinMax(deviceImages.getCurBuffer(), minVal, maxVal);
+
+			cudaEntropyFilter<<<chunks[i].blocks, chunks[i].threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constKernelMem, minVal, maxVal);
 			
 			chunks[i].retriveROI(imageOut, deviceImages.getNextBuffer());
 		}
