@@ -58,55 +58,54 @@ __global__ void cudaGetMinMax(PixelType* arrayIn, PixelType* minsOut, PixelType*
 	__syncthreads();
 }
 
-template <class PixelType>
-void cGetMinMax(const PixelType* imageIn, size_t numValues, PixelType& minVal, PixelType& maxVal, int device = 0)
+template <typename PixelType>
+class MinMaxMem
 {
-	cudaSetDevice(device);
-
-	minVal = std::numeric_limits<PixelType>::max();
-	maxVal = std::numeric_limits<PixelType>::lowest();
-	PixelType initMin = std::numeric_limits<PixelType>::lowest();
-	PixelType initMax = std::numeric_limits<PixelType>::max();
-	PixelType* deviceMins;
-	PixelType* deviceMaxs;
-	PixelType* hostMins;
-	PixelType* hostMaxs;
-	PixelType* deviceBuffer;
-
-	cudaDeviceProp props;
-	cudaGetDeviceProperties(&props, device);
-
-	size_t availMem, total;
-	cudaMemGetInfo(&availMem, &total);
-
-	size_t numValsPerChunk = MIN(numValues, (size_t)((availMem*MAX_MEM_AVAIL) / sizeof(PixelType)));
-
-	int threads = getKernelMaxThreads(cudaGetMinMax<PixelType>);
-	int maxBlocks = (int)ceil((double)numValsPerChunk / (threads * 2));
-
-	HANDLE_ERROR(cudaMalloc((void**)&deviceBuffer, sizeof(PixelType)*numValsPerChunk));
-	HANDLE_ERROR(cudaMalloc((void**)&deviceMins, sizeof(PixelType)*maxBlocks));
-	HANDLE_ERROR(cudaMalloc((void**)&deviceMaxs, sizeof(PixelType)*maxBlocks));
-
-	hostMins = new PixelType[maxBlocks];
-	hostMaxs = new PixelType[maxBlocks];
-
-	for (size_t startIdx = 0; startIdx < n; startIdx += numValsPerChunk)
+public:
+	MinMaxMem()
 	{
-		size_t curNumVals = MIN(numValsPerChunk, n - startIdx);
+		initMin = std::numeric_limits<PixelType>::lowest();
+		initMax = std::numeric_limits<PixelType>::max();
 
-		HANDLE_ERROR(cudaMemcpy(deviceBuffer, imageIn + startIdx, sizeof(PixelType)*curNumVals, cudaMemcpyHostToDevice));
+		deviceMins = NULL;
+		deviceMaxs = NULL;
+		hostMins = NULL;
+		hostMaxs = NULL;
 
-		int blocks = (int)((double)curNumVals / (threads * 2));
-		size_t sharedMemSize = sizeof(PixelType)*threads * 2;
+		maxThreads = 0;
+		maxBlocks = 0;
+	}
 
-		cudaGetMinMax << <blocks, threads, sharedMemSize >> > (deviceBuffer, deviceMins, deviceMaxs, curNumVals, initMin, initMax);
-		DEBUG_KERNEL_CHECK();
+	~MinMaxMem()
+	{
+		HANDLE_ERROR(cudaFree(deviceMins));
+		HANDLE_ERROR(cudaFree(deviceMaxs));
 
-		HANDLE_ERROR(cudaMemcpy(hostMins, deviceMins, sizeof(PixelType)*blocks, cudaMemcpyDeviceToHost));
-		HANDLE_ERROR(cudaMemcpy(hostMaxs, deviceMaxs, sizeof(PixelType)*blocks, cudaMemcpyDeviceToHost));
+		delete[] hostMins;
+		delete[] hostMaxs;
+	}
 
-		for (int i = 0; i < blocks; ++i)
+	void memalloc(size_t numValsPerChunk, int& threads, int& blocks)
+	{
+		maxThreads = getKernelMaxThreads(cudaGetMinMax<PixelType>);
+		maxBlocks = (int)ceil((double)numValsPerChunk / ((double)maxThreads * 2.0));
+
+		HANDLE_ERROR(cudaMalloc((void**)&deviceMins, sizeof(PixelType)*maxBlocks));
+		HANDLE_ERROR(cudaMalloc((void**)&deviceMaxs, sizeof(PixelType)*maxBlocks));
+
+		hostMins = new PixelType[maxBlocks];
+		hostMaxs = new PixelType[maxBlocks];
+
+		threads = maxThreads;
+		blocks = maxBlocks;
+	}
+
+	void retrieve(PixelType& minVal, PixelType& maxVal)
+	{
+		HANDLE_ERROR(cudaMemcpy(hostMins, deviceMins, sizeof(PixelType)*maxBlocks, cudaMemcpyDeviceToHost));
+		HANDLE_ERROR(cudaMemcpy(hostMaxs, deviceMaxs, sizeof(PixelType)*maxBlocks, cudaMemcpyDeviceToHost));
+
+		for (int i = 0; i < maxBlocks; ++i)
 		{
 			if (minVal > hostMins[i])
 				minVal = hostMins[i];
@@ -115,10 +114,71 @@ void cGetMinMax(const PixelType* imageIn, size_t numValues, PixelType& minVal, P
 		}
 	}
 
-	HANDLE_ERROR(cudaFree(deviceMins));
-	HANDLE_ERROR(cudaFree(deviceMaxs));
-	HANDLE_ERROR(cudaFree(deviceBuffer));
+	PixelType initMin;
+	PixelType initMax;
+	PixelType* deviceMins;
+	PixelType* deviceMaxs;
+	PixelType* hostMins;
+	PixelType* hostMaxs;
 
-	delete[] hostMins;
-	delete[] hostMaxs;
+	int maxThreads;
+	int maxBlocks;
+};
+
+template <class PixelType>
+void cGetMinMax(CudaImageContainer<PixelType>* cudaImage, PixelType& minVal, PixelType& maxVal)
+{
+	minVal = std::numeric_limits<PixelType>::max();
+	maxVal = std::numeric_limits<PixelType>::lowest();
+
+	size_t numValsPerChunk = cudaImage->getDims().product();
+	int threads, blocks;
+
+	MinMaxMem<PixelType> minMaxMem;
+	minMaxMem.memalloc(numValsPerChunk, threads, blocks);
+
+	size_t sharedMemSize = sizeof(PixelType)*threads * 2;
+	cudaGetMinMax<<<blocks, threads, sharedMemSize>>>(cudaImage->getImagePointer(), minMaxMem.deviceMins, minMaxMem.deviceMaxs, numValsPerChunk, minMaxMem.initMin, minMaxMem.initMax);
+	DEBUG_KERNEL_CHECK();
+
+	minMaxMem.retrieve(minVal, maxVal);
+}
+
+template <class PixelType>
+void cGetMinMax(const PixelType* imageIn, size_t numValues, PixelType& minVal, PixelType& maxVal, int device = 0)
+{
+	cudaSetDevice(device);
+
+	minVal = std::numeric_limits<PixelType>::max();
+	maxVal = std::numeric_limits<PixelType>::lowest();
+	PixelType* deviceBuffer = NULL;
+	MinMaxMem<PixelType> minMaxMem;
+
+	cudaDeviceProp props;
+	cudaGetDeviceProperties(&props, device);
+
+	size_t availMem, total;
+	cudaMemGetInfo(&availMem, &total);
+
+	size_t numValsPerChunk = MIN(numValues, (size_t)((availMem*MAX_MEM_AVAIL) / sizeof(PixelType)));
+	int threads, maxBlocks;
+	minMaxMem.memalloc(numValsPerChunk, threads, maxBlocks);
+	HANDLE_ERROR(cudaMalloc((void**)&deviceBuffer, sizeof(PixelType)*numValsPerChunk));
+
+	for (size_t startIdx = 0; startIdx < numValues; startIdx += numValsPerChunk)
+	{
+		size_t curNumVals = MIN(numValsPerChunk, numValues - startIdx);
+
+		HANDLE_ERROR(cudaMemcpy(deviceBuffer, imageIn + startIdx, sizeof(PixelType)*curNumVals, cudaMemcpyHostToDevice));
+
+		int blocks = (int)((double)curNumVals / (threads * 2));
+		size_t sharedMemSize = sizeof(PixelType)*threads * 2;
+
+		cudaGetMinMax<<<blocks, threads, sharedMemSize>>>(deviceBuffer, minMaxMem.deviceMins, minMaxMem.deviceMaxs, curNumVals, minMaxMem.initMin, minMaxMem.initMax);
+		DEBUG_KERNEL_CHECK();
+
+		minMaxMem.retrieve(minVal, maxVal);
+	}
+
+	HANDLE_ERROR(cudaFree(deviceBuffer));
 }

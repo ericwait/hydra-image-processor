@@ -86,6 +86,9 @@
     <ClCompile Include="Mex\MexMedianFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mex\MexGetMinMax.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Mex\CudaMex.def">

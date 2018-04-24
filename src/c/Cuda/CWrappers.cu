@@ -6,6 +6,7 @@
 #include "CudaClosure.cuh"
 #include "CudaElementWiseDifference.cuh"
 #include "CudaGaussian.cuh"
+#include "CudaGetMinMax.cuh"
 #include "CudaHighPassFilter.cuh"
 #include "CudaLoG.cuh"
 #include "CudaMaxFilter.cuh"
@@ -225,6 +226,52 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
  void gaussian(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
+ }
+
+
+ void getMinMax(const bool* imageIn, size_t numElements, bool& minVal, bool& maxVal, int device /*= 0*/)
+ {
+	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
+ }
+
+ void getMinMax(const char* imageIn, size_t numElements, char& minVal, char& maxVal, int device /*= 0*/)
+ {
+	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
+ }
+
+ void getMinMax(const unsigned char* imageIn, size_t numElements, unsigned char& minVal, unsigned char& maxVal, int device /*= 0*/)
+ {
+	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
+ }
+
+ void getMinMax(const short* imageIn, size_t numElements, short& minVal, short& maxVal, int device /*= 0*/)
+ {
+	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
+ }
+
+ void getMinMax(const unsigned short* imageIn, size_t numElements, unsigned short& minVal, unsigned short& maxVal, int device /*= 0*/)
+ {
+	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
+ }
+
+ void getMinMax(const int* imageIn, size_t numElements, int& minVal, int& maxVal, int device /*= 0*/)
+ {
+	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
+ }
+
+ void getMinMax(const unsigned int* imageIn, size_t numElements, unsigned int& minVal, unsigned int& maxVal, int device /*= 0*/)
+ {
+	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
+ }
+
+ void getMinMax(const float* imageIn, size_t numElements, float& minVal, float& maxVal, int device /*= 0*/)
+ {
+	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
+ }
+
+ void getMinMax(const double* imageIn, size_t numElements, double& minVal, double& maxVal, int device /*= 0*/)
+ {
+	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
  }
 
 

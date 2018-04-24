@@ -100,6 +100,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp" />
     <ClCompile Include="Mex\MexElementWiseDifference.cpp" />
+    <ClCompile Include="Mex\MexGetMinMax.cpp" />
     <ClCompile Include="Mex\MexMedianFilter.cpp" />
     <ClCompile Include="Mex\MexClosure.cpp" />
     <ClCompile Include="Mex\MexCommand.cpp" />
