@@ -5,6 +5,7 @@
 
 #include "CudaClosure.cuh"
 #include "CudaElementWiseDifference.cuh"
+#include "CudaEntropyFilter.cuh"
 #include "CudaGaussian.cuh"
 #include "CudaGetMinMax.cuh"
 #include "CudaHighPassFilter.cuh"
@@ -180,6 +181,52 @@ void clearDevice()
  void elementWiseDifference(const ImageContainer<double> image1In, ImageContainer<double> image2In, ImageContainer<double>& imageOut, int device /*= -1*/)
  {
 	 cElementWiseDifference(image1In, image2In, imageOut, device);
+ }
+
+ 
+ void entropyFilter(const ImageContainer<bool> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ {
+	 cEntropyFilter(imageIn, imageOut, kernel, device);
+ }
+ 
+ void entropyFilter(const ImageContainer<char> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ {
+	 cEntropyFilter(imageIn, imageOut, kernel, device);
+ }
+ 
+ void entropyFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ {
+	 cEntropyFilter(imageIn, imageOut, kernel, device);
+ }
+
+ void entropyFilter(const ImageContainer<short> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ {
+	 cEntropyFilter(imageIn, imageOut, kernel, device);
+ }
+  
+ void entropyFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ {
+	 cEntropyFilter(imageIn, imageOut, kernel, device);
+ }
+ 
+ void entropyFilter(const ImageContainer<int> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ {
+	 cEntropyFilter(imageIn, imageOut, kernel, device);
+ }
+ 
+ void entropyFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ {
+	 cEntropyFilter(imageIn, imageOut, kernel, device);
+ }
+ 
+ void entropyFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ {
+	 cEntropyFilter(imageIn, imageOut, kernel, device);
+ }
+ 
+ void entropyFilter(const ImageContainer<double> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ {
+	 cEntropyFilter(imageIn, imageOut, kernel, device);
  }
 
 

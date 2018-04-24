@@ -23,6 +23,7 @@ IMAGE_PROCESSOR_API int memoryStats(size_t** stats);
 
 /// Example wrapper header calls 
 //IMAGE_PROCESSOR_API void fooFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+
 //IMAGE_PROCESSOR_API void fooFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
 //IMAGE_PROCESSOR_API void fooFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
 //IMAGE_PROCESSOR_API void fooFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
@@ -51,6 +52,16 @@ IMAGE_PROCESSOR_API void elementWiseDifference(const ImageContainer<int> image1I
 IMAGE_PROCESSOR_API void elementWiseDifference(const ImageContainer<unsigned int> image1In, ImageContainer<unsigned int> image2In, ImageContainer<unsigned int>& imageOut, int device = -1);
 IMAGE_PROCESSOR_API void elementWiseDifference(const ImageContainer<float> image1In, ImageContainer<float> image2In, ImageContainer<float>& imageOut, int device = -1);
 IMAGE_PROCESSOR_API void elementWiseDifference(const ImageContainer<double> image1In, ImageContainer<double> image2In, ImageContainer<double>& imageOut, int device = -1);
+
+IMAGE_PROCESSOR_API void entropyFilter(const ImageContainer<bool> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device = -1);
+IMAGE_PROCESSOR_API void entropyFilter(const ImageContainer<char> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device = -1);
+IMAGE_PROCESSOR_API void entropyFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device = -1);
+IMAGE_PROCESSOR_API void entropyFilter(const ImageContainer<short> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device = -1);
+IMAGE_PROCESSOR_API void entropyFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device = -1);
+IMAGE_PROCESSOR_API void entropyFilter(const ImageContainer<int> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device = -1);
+IMAGE_PROCESSOR_API void entropyFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device = -1);
+IMAGE_PROCESSOR_API void entropyFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device = -1);
+IMAGE_PROCESSOR_API void entropyFilter(const ImageContainer<double> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device = -1);
 
 IMAGE_PROCESSOR_API void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, Vec<double> sigmas, int numIterations = 1, int device = -1);
 IMAGE_PROCESSOR_API void gaussian(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, Vec<double> sigmas, int numIterations = 1, int device = -1);
