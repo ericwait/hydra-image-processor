@@ -1,5 +1,8 @@
 #pragma once
 
+//Percent of memory that can be used on the device
+const double MAX_MEM_AVAIL = 0.95;
+
 #define NUM_BINS (256)
 #define MAX_KERNEL_DIM (25)
 #define CONST_KERNEL_NUM_EL (MAX_KERNEL_DIM*MAX_KERNEL_DIM*MAX_KERNEL_DIM)
@@ -13,9 +16,6 @@
 
 #define SIGN(x) (((x)>0) ? (1) : (((x)<0.000001 || (x)>-0.00001) ? (0) : (-1)))
 #define CLAMP(val,minVal,maxVal) ((val>=maxVal) ? (maxVal) : ((val<=minVal) ? (minVal) : (val)))
-
-//Percent of memory that can be used on the device
-const double MAX_MEM_AVAIL = 0.95;
 
 enum ReductionMethods
 {
