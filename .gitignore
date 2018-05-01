@@ -28,7 +28,6 @@ src/c/ipch/*
 bin/Release_x64/CudaImageProccessing.lib
 src/c/CudaImageProccessing.sdf
 src/c/CudaMex.mexw64
-src/MATLAB/CudaMex.mexw64
 src/MATLAB/cudart32_55.dll
 src/MATLAB/cudart64_55.dll
 src/c/CudaImageProccessing.opensdf
