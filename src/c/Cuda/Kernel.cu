@@ -5,6 +5,7 @@ __constant__ float CUDA_KERNEL[CONST_KERNEL_NUM_EL];
 
 __host__ Kernel::Kernel(Vec<size_t> dimensions, float* values, int curDevice, size_t startOffset/* = 0*/)
 {
+	device = curDevice;
 	HANDLE_ERROR(cudaSetDevice(curDevice));
 	load(dimensions, values, startOffset);
 }
