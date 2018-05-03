@@ -25,18 +25,17 @@ void cLoG(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& imageOut, 
 
 	setUpOutIm<float>(imageIn.getDims(), imageOut);
 
-	CudaDevices cudaDevs(cudaMultiplySum<PixelTypeIn, float>, device);
+	CudaDevices cudaDevs(cudaMultiplySum<float, float>, device);
 
 	Vec<size_t> kernDims(0);
-	float* hostKernels = createLoGKernel(sigmas, kernDims);
+	float* hostKernels = createGaussianKernel(sigmas, kernDims);
 
 	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, sizeof(float), kernDims);
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
-	int numThreads = MIN(chunks.size(), cudaDevs.getNumDevices());
-	omp_set_num_threads(numThreads);
+	omp_set_num_threads(MIN(chunks.size(), cudaDevs.getNumDevices()));
 	#pragma omp parallel default(shared)
 	{
 		const int CUDA_IDX = omp_get_thread_num();
@@ -45,7 +44,10 @@ void cLoG(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& imageOut, 
 
 		CudaDeviceImages<float> deviceImages(NUM_BUFF_NEEDED, maxDeviceDims, CUR_DEVICE);
 
-		Kernel constKernelMem(kernDims.product(), hostKernels, CUR_DEVICE);
+		Kernel constFullKern(kernDims.sum(), hostKernels, CUR_DEVICE);
+		Kernel constKernelMem_x = constFullKern.getOffsetCopy(Vec<size_t>(kernDims.x, 1, 1), 0);
+		Kernel constKernelMem_y = constFullKern.getOffsetCopy(Vec<size_t>(1, kernDims.y, 1), kernDims.x);
+		Kernel constKernelMem_z = constFullKern.getOffsetCopy(Vec<size_t>(1, 1, kernDims.z), kernDims.x + kernDims.y);
 
 		for (int i = CUDA_IDX; i < chunks.size(); i += N_THREADS)
 		{
@@ -56,13 +58,12 @@ void cLoG(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& imageOut, 
 
 			for (int j = 0; j < numIterations; ++j)
 			{
-				cudaMultiplySum<<<chunks[i].blocks, chunks[i].threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constKernelMem, MIN_VAL, MAX_VAL);
-				deviceImages.incrementBuffer();
+				SeparableMultiplySum(chunks[i], deviceImages, constKernelMem_x, constKernelMem_y, constKernelMem_z, MIN_VAL, MAX_VAL);
 			}
 			chunks[i].retriveROI(imageOut, deviceImages.getCurBuffer());
 		}
 
-	constKernelMem.clean();
+		constFullKern.clean();
 	}
 
 	delete[] hostKernels;

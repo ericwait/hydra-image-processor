@@ -15,7 +15,7 @@
 #include <omp.h>
 
 template <class PixelTypeIn, class PixelTypeOut>
-__global__ void cudaMultiplySum(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> imageOut,	Kernel constKernelMem, PixelTypeOut minValue, PixelTypeOut maxValue)
+__global__ void cudaMultiplySum(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> imageOut, Kernel constKernelMem, PixelTypeOut minValue, PixelTypeOut maxValue, bool normalize=true)
 {
 	Vec<size_t> threadCoordinate;
 	GetThreadBlockCoordinate(threadCoordinate);
@@ -24,6 +24,7 @@ __global__ void cudaMultiplySum(CudaImageContainer<PixelTypeIn> imageIn, CudaIma
 	{
 		KernelIterator kIt(threadCoordinate, imageIn.getDims(), constKernelMem.getDims());
 		double outVal = 0;
+		double kernVals = 0;
 		for (; !kIt.end(); ++kIt)
 		{
 			Vec<float> imInPos = kIt.getImageCoordinate();
@@ -34,8 +35,13 @@ __global__ void cudaMultiplySum(CudaImageContainer<PixelTypeIn> imageIn, CudaIma
 			if (kernVal != 0.0f)
 			{
 				outVal += inVal * kernVal;
+				kernVals += kernVal;
 			}
 		}
+
+		if (normalize)
+			outVal /= kernVals;
+
 		imageOut(threadCoordinate) = (PixelTypeOut)CLAMP(outVal, minValue, maxValue);
 	}
 }

@@ -16,9 +16,9 @@ float* createLoGKernel(Vec<double> sigmas, Vec<size_t>& dimsOut)
 
 	Vec<double> mid = Vec<double>(dimsOut) / 2.0 - 0.5;
 
-	float* kernelOut = new float[dimsOut.product()];
+	float* kernelOut = new float[dimsOut.sum()];
 
-	bool is3d = sigmas != Vec<double>(0.0f, 0.0f, 0.0f);
+	bool is3d = sigmas != Vec<double>(0.0);
 
 	Vec<double> sigmaSqr = sigmas.pwr(2);
 	Vec<double> twoSigmaSqr = sigmaSqr * 2;
@@ -31,26 +31,35 @@ float* createLoGKernel(Vec<double> sigmas, Vec<size_t>& dimsOut)
 		double subtractor = (Vec<double>(1.0f, 1.0f, 1.0f) / sigmaSqr).sum();
 		double denominator = pow(2.0*PI, 3.0 / 2.0)*sigmas.product();
 
-		Vec<int> curPos(0, 0, 0);
-		for (curPos.z = 0; curPos.z < dimsOut.z; ++curPos.z)
+		for (int i =0; i<3; ++i)
 		{
-			double zMuSub = SQR(curPos.z - mid.z);
-			double zMuSubSigSqr = zMuSub / (2 * sigmaSqr.z);
-			double zAdditive = zMuSub / sigma4th.z - 1.0 / sigmaSqr.z;
-			for (curPos.y = 0; curPos.y < dimsOut.y; ++curPos.y)
-			{
-				double yMuSub = SQR(curPos.y - mid.y);
-				double yMuSubSigSqr = yMuSub / (2 * sigmaSqr.y);
-				double yAdditive = yMuSub / sigma4th.y - 1.0 / sigmaSqr.y;
-				for (curPos.x = 0; curPos.x < dimsOut.x; ++curPos.x)
-				{
-					double xMuSub = SQR(curPos.x - mid.x);
-					double xMuSubSigSqr = xMuSub / (2 * sigmaSqr.x);
-					double xAdditive = xMuSub / sigma4th.x - 1.0 / sigmaSqr.x;
+			size_t startOffset = 0;
+			if (i > 0)
+				startOffset += dimsOut.x;
 
-					kernelOut[dimsOut.linearAddressAt(curPos)] = ((xAdditive + yAdditive + zAdditive)*exp(-xMuSubSigSqr - yMuSubSigSqr - zMuSubSigSqr)) / denominator;
-				}
+			if (i > 1)
+				startOffset += dimsOut.y;
+
+			for (int j = 0; j<dimsOut.e[i]; ++j)
+			{
+				int firstOther = 0;
+				if (j == 0)
+					firstOther = 1;
+				int secondOther = 2;
+				if (j == 2)
+					secondOther = 1;
+
+				double firstAdditive = -1.0 / sigmaSqr.e[firstOther];
+				double secondAdditive = -1.0 / sigmaSqr.e[secondOther];
+
+				double muSub = SQR(j - mid.e[i]);
+				double muSubSigSqr = muSub / (2 * sigmaSqr.e[i]);
+				double additive = muSub / sigma4th.e[i] - 1.0 / sigmaSqr.e[i];
+
+				double posVal = ((additive + firstAdditive + secondAdditive) * exp(-muSubSigSqr)) / denominator;
+				kernelOut[startOffset + j] = (float)posVal;
 			}
+
 		}
 	}
 	else
@@ -68,29 +77,15 @@ float* createLoGKernel(Vec<double> sigmas, Vec<size_t>& dimsOut)
 
 		double denominator = -PI*sigProd;
 
-		Vec<double> gaussComp(0);
-		Vec<int> curPos(0, 0, 0);
-		for (curPos.z = 0; curPos.z < dimsOut.z; ++curPos.z)
+		for (int i=0; i<2; ++i)
 		{
-			if (sigmas.z != 0)
+			size_t startOffset = i*dimsOut.e[0];
+
+			for (int j = 0; j < dimsOut.e[i]; ++j)
 			{
-				gaussComp.z = SQR(curPos.z - mid.z) / twoSigmaSqr.z;
-			}
-			for (curPos.y = 0; curPos.y < dimsOut.y; ++curPos.y)
-			{
-				if (sigmas.y != 0)
-				{
-					gaussComp.y = SQR(curPos.y - mid.y) / twoSigmaSqr.y;
-				}
-				for (curPos.x = 0; curPos.x < dimsOut.x; ++curPos.x)
-				{
-					if (sigmas.x != 0)
-					{
-						gaussComp.x = SQR(curPos.x - mid.x) / twoSigmaSqr.x;
-					}
-					double gauss = gaussComp.sum();
-					kernelOut[dimsOut.linearAddressAt(curPos)] = ((1.0 - gauss)*exp(-gauss)) / denominator;
-				}
+				double gaussComp = SQR(j - mid.e[i]) / twoSigmaSqr.e[i];
+				double posVal = ((1.0 - gaussComp)*exp(-gaussComp)) / denominator;
+				kernelOut[startOffset + j] = (float)posVal;
 			}
 		}
 	}
