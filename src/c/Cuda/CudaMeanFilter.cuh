@@ -62,7 +62,7 @@ void cMeanFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOu
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
 	omp_set_num_threads(MIN(chunks.size(), cudaDevs.getNumDevices()));
-#pragma omp parallel default(shared)
+#	pragma omp parallel default(shared)
 	{
 		const int CUDA_IDX = omp_get_thread_num();
 		const int N_THREADS = omp_get_num_threads();
