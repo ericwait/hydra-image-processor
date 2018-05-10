@@ -123,6 +123,7 @@
     <ClCompile Include="Cuda\ImageChunk.cpp" />
     <ClCompile Include="Cuda\LoGKernel.cpp" />
     <ClInclude Include="Cuda\BufferConversions.h" />
+    <ClInclude Include="Cuda\CudaAddTwoImages.cuh" />
     <ClInclude Include="Cuda\CudaClosure.cuh" />
     <ClInclude Include="Cuda\CudaEntropyFilter.cuh" />
     <ClInclude Include="Cuda\CudaGetMinMax.cuh" />
