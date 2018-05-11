@@ -26,6 +26,7 @@ void cLoG(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& imageOut, 
 	setUpOutIm<float>(imageIn.getDims(), imageOut);
 
 	CudaDevices cudaDevs(cudaAddTwoImages<float,float,float>, device);
+	CudaDevices cudaDevs2(cudaMultiplySum<float, float>, device);
 
 	Vec<size_t> kernelDims(0);
 	float* hostLoG_GausKernels = createLoG_GausKernels(sigmas, kernelDims);
@@ -56,6 +57,8 @@ void cLoG(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& imageOut, 
 		Kernel constGausKernelMem_y = constFullKern.getOffsetCopy(Vec<size_t>(1, kernelDims.y, 1), kernelDims.x + logStride);
 		Kernel constGausKernelMem_z = constFullKern.getOffsetCopy(Vec<size_t>(1, 1, kernelDims.z), kernelDims.x + kernelDims.y + logStride);
 
+		Kernel nullKernel;
+
 		for (int i = CUDA_IDX; i < chunks.size(); i += N_THREADS)
 		{
 			size_t memsize = sizeof(float)*chunks[i].getFullChunkSize().product();
@@ -69,16 +72,16 @@ void cLoG(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& imageOut, 
 			{
 				if (!chunks[i].sendROI(imageIn, deviceImages.getCurBuffer()))
 					std::runtime_error("Error sending ROI to device!");
-				cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constLoGKernelMem_x, MIN_VAL, MAX_VAL, false);
+				cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constLoGKernelMem_x, MIN_VAL, MAX_VAL, constGausKernelMem_x, true);
 				deviceImages.incrementBuffer();
 				if (sigmas.y!=0)
 				{
-					cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constGausKernelMem_y, MIN_VAL, MAX_VAL);
+					cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constGausKernelMem_y, MIN_VAL, MAX_VAL, nullKernel);
 					deviceImages.incrementBuffer();
 				}
 				if (sigmas.z!=0)
 				{
-					cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constGausKernelMem_z, MIN_VAL, MAX_VAL);
+					cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constGausKernelMem_z, MIN_VAL, MAX_VAL, nullKernel);
 					deviceImages.incrementBuffer();
 				}
 				cudaAddTwoImages << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImagesScratch.getCurBuffer()), *(deviceImagesScratch.getCurBuffer()), MIN_VAL, MAX_VAL);
@@ -92,14 +95,14 @@ void cLoG(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& imageOut, 
 					std::runtime_error("Error sending ROI to device!");
 				if (sigmas.x!=0)
 				{
-					cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constGausKernelMem_x, MIN_VAL, MAX_VAL);
+					cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constGausKernelMem_x, MIN_VAL, MAX_VAL, nullKernel);
 					deviceImages.incrementBuffer();
 				}
-				cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constLoGKernelMem_y, MIN_VAL, MAX_VAL, false);
+				cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constLoGKernelMem_y, MIN_VAL, MAX_VAL, constGausKernelMem_y, true);
 				deviceImages.incrementBuffer();
 				if (sigmas.z!=0)
 				{
-					cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constGausKernelMem_z, MIN_VAL, MAX_VAL);
+					cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constGausKernelMem_z, MIN_VAL, MAX_VAL, nullKernel);
 					deviceImages.incrementBuffer();
 				}
 				cudaAddTwoImages << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImagesScratch.getCurBuffer()), *(deviceImagesScratch.getCurBuffer()), MIN_VAL, MAX_VAL);
@@ -113,15 +116,15 @@ void cLoG(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& imageOut, 
 					std::runtime_error("Error sending ROI to device!");
 				if (sigmas.x!=0)
 				{
-					cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constGausKernelMem_x, MIN_VAL, MAX_VAL);
+					cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constGausKernelMem_x, MIN_VAL, MAX_VAL, nullKernel);
 					deviceImages.incrementBuffer();
 				}
 				if(sigmas.y!=0)
 				{
-					cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constGausKernelMem_y, MIN_VAL, MAX_VAL);
+					cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constGausKernelMem_y, MIN_VAL, MAX_VAL, nullKernel);
 					deviceImages.incrementBuffer();
 				}
-				cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constLoGKernelMem_z, MIN_VAL, MAX_VAL, false);
+				cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constLoGKernelMem_z, MIN_VAL, MAX_VAL, constGausKernelMem_z, true);
 				deviceImages.incrementBuffer();
 				cudaAddTwoImages << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImagesScratch.getCurBuffer()), *(deviceImagesScratch.getCurBuffer()), MIN_VAL, MAX_VAL);
 				DEBUG_KERNEL_CHECK();

@@ -15,7 +15,7 @@
 #include <omp.h>
 
 template <class PixelTypeIn, class PixelTypeOut>
-__global__ void cudaMultiplySum(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> imageOut, Kernel constKernelMem, PixelTypeOut minValue, PixelTypeOut maxValue, bool normalize=true)
+__global__ void cudaMultiplySum(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> imageOut, Kernel constKernelMem, PixelTypeOut minValue, PixelTypeOut maxValue, Kernel constOtherKernel, bool normalize=true)
 {
 	Vec<size_t> threadCoordinate;
 	GetThreadBlockCoordinate(threadCoordinate);
@@ -24,23 +24,41 @@ __global__ void cudaMultiplySum(CudaImageContainer<PixelTypeIn> imageIn, CudaIma
 	{
 		KernelIterator kIt(threadCoordinate, imageIn.getDims(), constKernelMem.getDims());
 		double outVal = 0;
-		double kernVals = 0;
+		double biasVals = 0;
+		double normVal = 0;
+		double inVals = 0;
+		bool bias = true;
+		size_t numNeighborHood = 0;
+		Kernel* otherKern = &constOtherKernel;
+		if (constOtherKernel.dims == Vec<size_t>(0))
+		{
+			bias = false;
+			otherKern = &constKernelMem;
+		}
+
 		for (; !kIt.end(); ++kIt)
 		{
 			Vec<float> imInPos = kIt.getImageCoordinate();
-			double inVal = (double)imageIn(imInPos);
+			double curVal = (double)imageIn(imInPos);
 			Vec<size_t> coord = kIt.getKernelCoordinate();
 			float kernVal = constKernelMem(coord);
+			float otherKernVal = (*otherKern)(coord);
 
 			if (kernVal != 0.0f)
 			{
-				outVal += inVal * kernVal;
-				kernVals += kernVal;
+				outVal += curVal * kernVal;
+				biasVals += kernVal;
+				normVal += otherKernVal;
+				inVals += curVal;
+				++numNeighborHood;
 			}
 		}
 
+		if (bias)
+			outVal -= ((inVals/numNeighborHood) * biasVals);
+
 		if (normalize)
-			outVal /= kernVals;
+			outVal /= normVal;
 
 		imageOut(threadCoordinate) = (PixelTypeOut)CLAMP(outVal, minValue, maxValue);
 	}
@@ -73,6 +91,7 @@ void cMultiplySum(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeO
 
 		CudaDeviceImages<PixelTypeOut> deviceImages(NUM_BUFF_NEEDED, maxDeviceDims, CUR_DEVICE);
 		Kernel constKernelMem(kernel,CUR_DEVICE);
+		Kernel nullKernel;
 
 		for (int i = CUDA_IDX; i < chunks.size(); i += N_THREADS)
 		{
@@ -83,7 +102,7 @@ void cMultiplySum(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeO
 
 			for (int j = 0; j < numIterations; ++j)
 			{
-				cudaMultiplySum<<<chunks[i].blocks, chunks[i].threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()), constKernelMem, MIN_VAL, MAX_VAL);
+				cudaMultiplySum<<<chunks[i].blocks, chunks[i].threads>>>(*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()), constKernelMem, MIN_VAL, MAX_VAL, nullKernel);
 				deviceImages.incrementBuffer();
 			}
 			chunks[i].retriveROI(imageOut, deviceImages.getCurBuffer());
