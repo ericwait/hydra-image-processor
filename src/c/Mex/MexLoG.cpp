@@ -11,10 +11,7 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	int numIterations = 1;
 
 	if (!mxIsEmpty(prhs[2]))
-		numIterations = int(mxGetScalar(prhs[2]));
-
-	if (!mxIsEmpty(prhs[3]))
-		device = mat_to_c((int)mxGetScalar(prhs[3]));
+		device = mat_to_c((int)mxGetScalar(prhs[2]));
 
 	double* sigmasMat = (double*)mxGetData(prhs[1]);
 	Vec<double> sigmas(sigmasMat[0], sigmasMat[1], sigmasMat[2]);
@@ -30,7 +27,7 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		ImageContainer<bool> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
-		LoG(imageIn, imageOut, sigmas, numIterations, device);
+		LoG(imageIn, imageOut, sigmas, device);
 
 	}
 	else if (mxIsUint8(prhs[0]))
@@ -43,7 +40,7 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
-		LoG(imageIn, imageOut, sigmas, numIterations, device);
+		LoG(imageIn, imageOut, sigmas, device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
@@ -55,7 +52,7 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
-		LoG(imageIn, imageOut, sigmas, numIterations, device);
+		LoG(imageIn, imageOut, sigmas, device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
@@ -67,7 +64,7 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		ImageContainer<short> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
-		LoG(imageIn, imageOut, sigmas, numIterations, device);
+		LoG(imageIn, imageOut, sigmas, device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
@@ -79,7 +76,7 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
-		LoG(imageIn, imageOut, sigmas, numIterations, device);
+		LoG(imageIn, imageOut, sigmas, device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
@@ -91,7 +88,7 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		ImageContainer<int> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
-		LoG(imageIn, imageOut, sigmas, numIterations, device);
+		LoG(imageIn, imageOut, sigmas, device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
@@ -103,7 +100,7 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		ImageContainer<float> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
-		LoG(imageIn, imageOut, sigmas, numIterations, device);
+		LoG(imageIn, imageOut, sigmas, device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
@@ -115,7 +112,7 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		ImageContainer<double> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
-		LoG(imageIn, imageOut, sigmas, numIterations, device);
+		LoG(imageIn, imageOut, sigmas, device);
 	}
 	else
 	{
@@ -125,7 +122,7 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 std::string MexLoG::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
-	if (nrhs != 4)
+	if (nrhs != 3)
 		return "Incorrect number of inputs!";
 
 	if (nlhs != 1)
@@ -156,7 +153,6 @@ void MexLoG::usage(std::vector<std::string>& outArgs, std::vector<std::string>& 
 {
 	inArgs.push_back("arrayIn");
 	inArgs.push_back("sigmas");
-	inArgs.push_back("[numIterations]");
 	inArgs.push_back("[device]");
 	outArgs.push_back("arrayOut");
 }
@@ -172,11 +168,6 @@ void MexLoG::help(std::vector<std::string>& helpLines) const
 
 	helpLines.push_back("\tSigmas = This should be an array of three positive values that represent the standard deviation of a Gaussian curve.");
 	helpLines.push_back("\t\tZeros (0) in this array will not smooth in that direction.");
-	helpLines.push_back("");
-
-	helpLines.push_back("\tnumIterations (optional) =  This is the number of iterations to run the max filter for a given position.");
-	helpLines.push_back("\t\tThis is useful for growing regions by the shape of the structuring element or for very large neighborhoods.");
-	helpLines.push_back("\t\tCan be empty an array [].");
 	helpLines.push_back("");
 
 	helpLines.push_back("\tdevice (optional) = Use this if you have multiple devices and want to select one explicitly.");

@@ -1,4 +1,4 @@
-function arrayOut = LoG(arrayIn,sigmas,numIterations,device,suppressWarning)
+function arrayOut = LoG(arrayIn,sigmas,device,suppressWarning)
      error('LoG not yet implemented in MATLAB!'); %delete this line when implemented
      if (~exist('suppressWarning','var') || isempty(suppressWarning) || ~suppressWarning)
          warning('Falling back to matlab.');

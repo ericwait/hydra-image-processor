@@ -368,49 +368,49 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
  }
 
 
- void LoG(const ImageContainer<bool> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void LoG(const ImageContainer<bool> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
-	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<char> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void LoG(const ImageContainer<char> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
-	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<unsigned char> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void LoG(const ImageContainer<unsigned char> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
-	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<short> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void LoG(const ImageContainer<short> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
-	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<unsigned short> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void LoG(const ImageContainer<unsigned short> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
-	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<int> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void LoG(const ImageContainer<int> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
-	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<unsigned int> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void LoG(const ImageContainer<unsigned int> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
-	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void LoG(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
-	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<double> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void LoG(const ImageContainer<double> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
-	 cLoG(imageIn, imageOut, sigmas, numIterations, device);
+	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
 
