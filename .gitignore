@@ -45,3 +45,4 @@ src/MATLAB/\+ImProc/@Cuda/device02\.txt
 *.db-shm
 
 *.db-wal
+/src/c/Mex.mexw64
