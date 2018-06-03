@@ -4,24 +4,27 @@ function times = MedianFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials,
     % third dimension is type
     numItters = length(sizeItter)*length(typeItter)*numTrials;
     
-    times = zeros(length(sizeItter),7,length(typeItter));
+    times = ones(size(sizes_rc,1),6,length(typeItter))*inf;
     prgs = Utils.CmdlnProgress(numItters,true,'MedianFilter');
     k = 0;
     kernel = ones(5,5,3,'single');
+    m = memory;
+    memAvail = m.MemAvailableAllArrays/2;
     
     for i = sizeItter
-        szImage = rand(2^sizes_rc(i),2^sizes_rc(i),2^(sizes_rc(i)-4),2);
         for ty = typeItter
-            im = ImUtils.ConvertType(szImage,types{ty},true);
-            times(i,1,ty) = numel(im);
+            if (prod(sizes_rc(i,:))*(2^ty/2)<=memAvail)
+                im = ones(sizes_rc(i,:),types{ty});
+                times(i,1,ty) = numel(im);
 
-            ts = zeros(numTrials,4);
-            for j=1:numTrials
-                [ts(j,1),ts(j,2),~,ts(j,3:4)] = Performance.MedianFilter(im,kernel,numDevices);
-                k = k +1;
-                prgs.PrintProgress(k);
+                ts = zeros(numTrials,4);
+                for j=1:numTrials
+                    [ts(j,1),ts(j,2),~,ts(j,3:4)] = Performance.MedianFilter(im,kernel,numDevices);
+                    k = k +1;
+                    prgs.PrintProgress(k);
+                end
+                times(i,2:5,ty) = mean(ts,1);
             end
-            times(i,2:5,ty) = mean(ts,1);
         end
     end
     prgs.ClearProgress(true);

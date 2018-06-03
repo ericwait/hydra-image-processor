@@ -3,15 +3,18 @@ ImProc.BuildScript;
 %%
 numTrials = 4;
 
-m = memory;
 numDevices = ImProc.Cuda.DeviceCount();
-sizes_rc = 5:14;
-sizesMask = sizes_rc <= (round(log2((m.MemAvailableAllArrays/4)^(1/3)))-1);
-sizes_rc = sizes_rc(sizesMask);
-if (~any(sizes_rc))
-    sizes_rc = 5;
-end
-sizeItter = length(sizes_rc):-1:1;
+sizes_rc = [...
+    0512,0512,1,1,1; % single small images
+    1024,1024,1,1,1; % single medium image
+    2048,2048,1,1,1; % single large image
+    1024,1024,150,1,1; % 3D medium image
+    1024,1024,150,6,1; % 4D medium image
+    10000,10000,50,6,1; % huge 4D image
+    1024,1024,150,6,300; % multispectrial timelapse
+    ];
+
+sizeItter = size(sizes_rc,1):-1:1;
 types = {'uint8';'uint16';'single';'double'};
 typeItter = size(types,1):-1:1;
 
