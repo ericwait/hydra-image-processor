@@ -1,7 +1,7 @@
 ImProc.BuildScript;
 
 %%
-numTrials = 4;
+numTrials = 2;
 
 numDevices = ImProc.Cuda.DeviceCount();
 sizes_rc = [...
@@ -9,14 +9,17 @@ sizes_rc = [...
     1024,1024,1,1,1; % single medium image
     2048,2048,1,1,1; % single large image
     1024,1024,150,1,1; % 3D medium image
-    1024,1024,150,6,1; % 4D medium image
-    10000,10000,50,6,1; % huge 4D image
-    1024,1024,150,6,300; % multispectrial timelapse
+    1024,1024,150,2,1; % 4D medium image
+    1024,1024,150,3,2; % multispectrial timelapse
+    2048,2048,800,2,2; % MultiView timelapse
+    10000,10000,75,6,1; % huge 4D image
     ];
 
 sizeItter = size(sizes_rc,1):-1:1;
+%sizeItter = 1:size(sizes_rc,1);
 types = {'uint8';'uint16';'single';'double'};
 typeItter = size(types,1):-1:1;
+%typeItter = 1:size(types,1);
 
 %% Max Filter
 maxTimes = Performance.MaxFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials,numDevices);

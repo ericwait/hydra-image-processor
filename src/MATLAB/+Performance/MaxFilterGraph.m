@@ -5,15 +5,19 @@ function times = MaxFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials,num
     numItters = length(sizeItter)*length(typeItter)*numTrials;
     
     times = ones(size(sizes_rc,1),6,length(typeItter))*inf;
-    prgs = Utils.CmdlnProgress(numItters,true,'MaxFilter');
+    prgs = Utils.CmdlnProgress(numItters,false,'MaxFilter');
     k = 0;
     kernel = ones(5,5,3);
     m = memory;
-    memAvail = m.MemAvailableAllArrays/2;
+    cpu_memAvail = m.MemAvailableAllArrays/4;
+    m = ImProc.Cuda.DeviceStats;
+    gpu_memAvail = max(m.totalMem);
     
     for i = sizeItter
         for ty = typeItter
-            if (prod(sizes_rc(i,:))*(2^ty/2)<=memAvail)
+            imSizePerFrame = prod(sizes_rc(i,1:3))*(2^ty/2);
+            imSize = prod(sizes_rc(i,:))*(2^ty/2);
+            if (imSize<=cpu_memAvail && imSizePerFrame<=gpu_memAvail)
                 im = ones(sizes_rc(i,:),types{ty});
                 times(i,1,ty) = numel(im);
                 
@@ -24,8 +28,6 @@ function times = MaxFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials,num
                     prgs.PrintProgress(k);
                 end
                 times(i,2:4,ty) = mean(ts,1);
-            else
-                warning('Skipping %s',types{ty});
             end
         end
     end
