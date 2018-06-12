@@ -43,11 +43,11 @@ function PlotResults(times,kernelName,numDevices)
         types = vertcat(types,typesDev);
     end
     
-    legend(types,'Location','northwest');
+    legend(types,'Location','southwest');
 
     title(kernelName)
     xlabel('Number of Voxels');
-    ylabel('Cuda is this many times faster');
+    ylabel('Cuda Speedup');
     
     f.Units = 'normalized';
     f.Position = [0,0,1,1];

@@ -6,7 +6,7 @@ numTrials = 2;
 numDevices = ImProc.Cuda.DeviceCount();
 sizes_rc = [...
     0512,0512,1,1,1; % single small images
-    1024,1024,1,1,1; % single medium image
+    1024,1024,1,1,1; % single medium image 
     2048,2048,1,1,1; % single large image
     1024,1024,150,1,1; % 3D medium image
     1024,1024,150,2,1; % 4D medium image
