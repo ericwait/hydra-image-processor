@@ -84,7 +84,7 @@ public:
 	void retriveROI(ImageContainer<PixelTypeOut> outImage, CudaImageContainer<PixelTypeIn>* deviceImage)
 	{
 		cudaThreadSynchronize();
-		GPU_ERROR_CHK(cudaPeekAtLastError());
+		HANDLE_ERROR(cudaPeekAtLastError());
 
 		Vec<size_t> chunkVolSize = getFullChunkSize();
 		Vec<size_t> imVolSize = outImage.getSpatialDims();

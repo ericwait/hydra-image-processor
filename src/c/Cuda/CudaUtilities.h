@@ -45,19 +45,8 @@ static void HandleError( cudaError_t err, const char *file, int line )
 }
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
-static void GPUAssert(cudaError_t err, const char *file, int line)
-{
-	if (err != cudaSuccess)
-	{
-		char buff[255];
-		sprintf(buff, "GPUassert: %s %s %d\n", cudaGetErrorString(err), file, line);
-		throw std::runtime_error(buff);
-	}
-}
-#define GPU_ERROR_CHK(err) { GPUAssert((err), __FILE__, __LINE__); }
-
 #ifdef _DEBUG
-#define DEBUG_KERNEL_CHECK() { cudaThreadSynchronize(); GPU_ERROR_CHK( cudaPeekAtLastError() ); }
+#define DEBUG_KERNEL_CHECK() { cudaThreadSynchronize(); HandleError( cudaPeekAtLastError(), __FILE__, __LINE__ ); }
 #else
 #define DEBUG_KERNEL_CHECK() {}
 #endif // _DEBUG
