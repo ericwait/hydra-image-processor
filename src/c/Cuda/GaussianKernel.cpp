@@ -6,9 +6,9 @@
 
 float* createGaussianKernel(Vec<double> sigmas, Vec<size_t>& dimsOut)
 {
-	dimsOut.x = (size_t)MAX(1.0f, (3 * sigmas.x));
-	dimsOut.y = (size_t)MAX(1.0f, (3 * sigmas.y));
-	dimsOut.z = (size_t)MAX(1.0f, (3 * sigmas.z));
+	dimsOut.x = (size_t)MAX(1.0f, (5 * sigmas.x));
+	dimsOut.y = (size_t)MAX(1.0f, (5 * sigmas.y));
+	dimsOut.z = (size_t)MAX(1.0f, (5 * sigmas.z));
 
 	dimsOut.x = (dimsOut.x % 2 == 0) ? (dimsOut.x + 1) : (dimsOut.x);
 	dimsOut.y = (dimsOut.y % 2 == 0) ? (dimsOut.y + 1) : (dimsOut.y);
