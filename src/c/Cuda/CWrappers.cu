@@ -17,6 +17,7 @@
 #include "CudaMultiplySum.cuh"
 #include "CudaOpener.cuh"
 #include "CudaStdFilter.cuh"
+#include "CudaSum.cuh"
 #include "CudaWienerFilter.cuh"
 
 
@@ -734,6 +735,52 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
  void stdFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ void sum(const ImageContainer<bool> imageIn, size_t& valOut, int device /*= -1*/)
+ {
+	 cSum(imageIn, valOut, device);
+ }
+
+ void sum(const ImageContainer<char> imageIn, long long& valOut, int device /*= -1*/)
+ {
+	 cSum(imageIn, valOut, device);
+ }
+
+ void sum(const ImageContainer<unsigned char> imageIn, size_t& valOut, int device /*= -1*/)
+ {
+	 cSum(imageIn, valOut, device);
+ }
+
+ void sum(const ImageContainer<short> imageIn, long long& valOut, int device /*= -1*/)
+ {
+	 cSum(imageIn, valOut, device);
+ }
+
+ void sum(const ImageContainer<unsigned short> imageIn, size_t& valOut, int device /*= -1*/)
+ {
+	 cSum(imageIn, valOut, device);
+ }
+
+ void sum(const ImageContainer<int> imageIn, long long& valOut, int device /*= -1*/)
+ {
+	 cSum(imageIn, valOut, device);
+ }
+
+ void sum(const ImageContainer<unsigned int> imageIn, size_t& valOut, int device /*= -1*/)
+ {
+	 cSum(imageIn, valOut, device);
+ }
+
+ void sum(const ImageContainer<float> imageIn, double& valOut, int device /*= -1*/)
+ {
+	 cSum(imageIn, valOut, device);
+ }
+
+ void sum(const ImageContainer<double> imageIn, double& valOut, int device /*= -1*/)
+ {
+	 cSum(imageIn, valOut, device);
  }
 
 

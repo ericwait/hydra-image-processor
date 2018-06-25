@@ -183,3 +183,12 @@ IMAGE_PROCESSOR_API void wienerFilter(ImageContainer<unsigned int> imageIn, Imag
 IMAGE_PROCESSOR_API void wienerFilter(ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device = -1);
 IMAGE_PROCESSOR_API void wienerFilter(ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device = -1);
 
+IMAGE_PROCESSOR_API void sum(const ImageContainer<bool> imageIn, size_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageContainer<char> imageIn, long long& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageContainer<unsigned char> imageIn, size_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageContainer<short> imageIn, long long& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageContainer<unsigned short> imageIn, size_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageContainer<int> imageIn, long long& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageContainer<unsigned int> imageIn, size_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageContainer<float> imageIn, double& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageContainer<double> imageIn, double& valOut, int device = -1);

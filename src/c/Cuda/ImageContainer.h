@@ -12,6 +12,15 @@ public:
 		reset();
 	}
 
+	ImageContainer(PixelType val, Vec<size_t> dimsIn, unsigned char nChannels = 1, unsigned int nFrames = 1)
+	{
+		reset();
+		image = new PixelType[dimsIn.product()*nChannels*nFrames];
+		dimensions.dims = dimsIn;
+		dimensions.chan = nChannels;
+		dimensions.frame = nFrames;
+	}
+
 	ImageContainer(PixelType* imagePtr, Vec<size_t> dimsIn, unsigned char nChannels = 1, unsigned int nFrames = 1)
 	{
 		image = imagePtr;
