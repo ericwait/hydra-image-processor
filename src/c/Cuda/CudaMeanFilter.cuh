@@ -10,6 +10,8 @@
 #include "Defines.h"
 #include "Vec.h"
 
+#include "CudaMeanAndVariance.cuh"
+
 #include <cuda_runtime.h>
 #include <limits>
 #include <omp.h>
@@ -22,24 +24,10 @@ __global__ void cudaMeanFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImag
 
 	if (threadCoordinate < imageIn.getDims())
 	{
-		KernelIterator kIt(threadCoordinate, imageIn.getDims(), constKernelMem.getDims());
-		double outVal = 0;
-		size_t count = 0;
-		for (; !kIt.end(); ++kIt)
-		{
-			Vec<float> imInPos = kIt.getImageCoordinate();
-			double inVal = (double)imageIn(imInPos);
-			Vec<size_t> coord = kIt.getKernelCoordinate();
-			float kernVal = constKernelMem(coord);
+		double mu = 0.0;
+		deviceMean(threadCoordinate, imageIn, constKernelMem,mu);
 
-			if (kernVal != 0.0f)
-			{
-				outVal += inVal * kernVal;
-				++count;
-			}
-		}
-		outVal /= (double)count;
-		imageOut(threadCoordinate) = (PixelTypeOut)CLAMP(outVal, minValue, maxValue);
+		imageOut(threadCoordinate) = (PixelTypeOut)CLAMP(mu, minValue, maxValue);
 	}
 }
 

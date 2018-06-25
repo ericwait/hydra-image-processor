@@ -10,6 +10,8 @@
 #include "Defines.h"
 #include "Vec.h"
 
+#include "CudaMeanAndVariance.cuh"
+
 #include <cuda_runtime.h>
 #include <limits>
 #include <omp.h>
@@ -22,45 +24,12 @@ __global__ void cudaStdFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImage
 
 	if (threadCoordinate < imageIn.getDims())
 	{
-		KernelIterator kIt(threadCoordinate, imageIn.getDims(), constKernelMem.getDims());
-		double outVal = 0;
-		int kernVolume = 0;
-		for (; !kIt.end(); ++kIt)
-		{
-			Vec<float> imInPos = kIt.getImageCoordinate();
-			double inVal = (double)imageIn(imInPos);
-			Vec<size_t> coord = kIt.getKernelCoordinate();
-			float kernVal = constKernelMem(coord);
+		double mu=0.0, var=0.0;
+		deviceMeanAndVariance(threadCoordinate, imageIn, constKernelMem, mu,var);
 
-			if (kernVal != 0.0f)
-			{
-				outVal += kernVal*inVal;
-				++kernVolume;
-			}
-		}
-
-		kIt.reset();
-		double mu = outVal / kernVolume;
-
-		outVal = 0.0;
-		for (; !kIt.end(); ++kIt)
-		{
-			Vec<float> imInPos = kIt.getImageCoordinate();
-			double inVal = (double)imageIn(imInPos);
-			Vec<size_t> coord = kIt.getKernelCoordinate();
-			float kernVal = constKernelMem(coord);
-
-			if (kernVal != 0.0f)
-			{
-				outVal += SQR(kernVal*inVal - mu);
-			}
-		}
-
-		outVal = sqrt(outVal / MAX(1.0,((double)kernVolume-1.0)));
-		imageOut(threadCoordinate) = (PixelTypeOut)CLAMP(outVal, minValue, maxValue);
+		imageOut(threadCoordinate) = (PixelTypeOut)CLAMP(sqrt(var), minValue, maxValue);
 	}
 }
-
 
 template <class PixelTypeIn, class PixelTypeOut>
 void cStdFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1)
