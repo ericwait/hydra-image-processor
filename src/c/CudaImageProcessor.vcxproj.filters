@@ -140,6 +140,9 @@
     <ClInclude Include="Cuda\CudaAddTwoImages.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cuda\CudaWienerFilter.cuh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Cuda\CudaMeanAndVariance.cuh">
       <Filter>Header Files</Filter>
     </ClInclude>

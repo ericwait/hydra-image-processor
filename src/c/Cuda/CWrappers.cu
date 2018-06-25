@@ -17,6 +17,7 @@
 #include "CudaMultiplySum.cuh"
 #include "CudaOpener.cuh"
 #include "CudaStdFilter.cuh"
+#include "CudaWienerFilter.cuh"
 
 
 void clearDevice()
@@ -733,4 +734,50 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
  void stdFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+
+ void wienerFilter(ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ {						  
+	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
+ }		  
+	  
+ void wienerFilter(ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ {						  
+	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
+ }
+
+ void wienerFilter(ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ {
+	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
+ }
+
+ void wienerFilter(ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ {
+	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
+ }
+
+ void wienerFilter(ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ {
+	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
+ }
+
+ void wienerFilter(ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ {
+	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
+ }
+
+ void wienerFilter(ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ {
+	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
+ }
+
+ void wienerFilter(ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ {
+	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
+ }
+
+ void wienerFilter(ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ {
+	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
  }
