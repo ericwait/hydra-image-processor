@@ -143,6 +143,16 @@ IMAGE_PROCESSOR_API void minFilter(const ImageContainer<unsigned int> imageIn, I
 IMAGE_PROCESSOR_API void minFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
 IMAGE_PROCESSOR_API void minFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
 
+IMAGE_PROCESSOR_API void minMax(const ImageContainer<bool> imageIn, bool& minVal, bool& maxVal, int device = -1);
+IMAGE_PROCESSOR_API void minMax(const ImageContainer<char> imageIn, char& minVal, char& maxVal, int device = -1);
+IMAGE_PROCESSOR_API void minMax(const ImageContainer<unsigned char> imageIn, unsigned char& minVal, unsigned char& maxVal, int device = -1);
+IMAGE_PROCESSOR_API void minMax(const ImageContainer<short> imageIn, short& minVal, short& maxVal, int device = -1);
+IMAGE_PROCESSOR_API void minMax(const ImageContainer<unsigned short> imageIn, unsigned short& minVal, unsigned short& maxVal, int device = -1);
+IMAGE_PROCESSOR_API void minMax(const ImageContainer<int> imageIn, int& minVal, int& maxVal, int device = -1);
+IMAGE_PROCESSOR_API void minMax(const ImageContainer<unsigned int> imageIn, unsigned int& minVal, unsigned int& maxVal, int device = -1);
+IMAGE_PROCESSOR_API void minMax(const ImageContainer<float> imageIn, float& minVal, float& maxVal, int device = -1);
+IMAGE_PROCESSOR_API void minMax(const ImageContainer<double> imageIn, double& minVal, double& maxVal, int device = -1);
+
 IMAGE_PROCESSOR_API void multiplySum(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
 IMAGE_PROCESSOR_API void multiplySum(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
 IMAGE_PROCESSOR_API void multiplySum(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);

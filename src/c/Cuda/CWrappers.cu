@@ -14,6 +14,7 @@
 #include "CudaMedianFilter.cuh"
 #include "CudaMeanFilter.cuh"
 #include "CudaMinFilter.cuh"
+#include "CudaMinMax.cuh"
 #include "CudaMultiplySum.cuh"
 #include "CudaOpener.cuh"
 #include "CudaStdFilter.cuh"
@@ -599,6 +600,52 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
+
+ void minMax(const ImageContainer<bool> imageIn, bool& minVal, bool& maxVal, int device /*= -1*/)
+ {
+	 cMinMax(imageIn, minVal, maxVal, device);
+ }
+
+ void minMax(const ImageContainer<char> imageIn, char& minVal, char& maxVal, int device /*= -1*/)
+ {
+	 cMinMax(imageIn, minVal, maxVal, device);
+ }
+
+ void minMax(const ImageContainer<unsigned char> imageIn, unsigned char& minVal, unsigned char& maxVal, int device /*= -1*/)
+ {
+	 cMinMax(imageIn, minVal, maxVal, device);
+ }
+
+ void minMax(const ImageContainer<short> imageIn, short& minVal, short& maxVal, int device /*= -1*/)
+ {
+	 cMinMax(imageIn, minVal, maxVal, device);
+ }
+
+ void minMax(const ImageContainer<unsigned short> imageIn, unsigned short& minVal, unsigned short& maxVal, int device /*= -1*/)
+ {
+	 cMinMax(imageIn, minVal, maxVal, device);
+ }
+
+ void minMax(const ImageContainer<int> imageIn, int& minVal, int& maxVal, int device /*= -1*/)
+ {
+	 cMinMax(imageIn, minVal, maxVal, device);
+ }
+
+ void minMax(const ImageContainer<unsigned int> imageIn, unsigned int& minVal, unsigned int& maxVal, int device /*= -1*/)
+ {
+	 cMinMax(imageIn, minVal, maxVal, device);
+ }
+
+ void minMax(const ImageContainer<float> imageIn, float& minVal, float& maxVal, int device /*= -1*/)
+ {
+	 cMinMax(imageIn, minVal, maxVal, device);
+ }
+
+ void minMax(const ImageContainer<double> imageIn, double& minVal, double& maxVal, int device /*= -1*/)
+ {
+	 cMinMax(imageIn, minVal, maxVal, device);
+ }
+
 
  void multiplySum(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
