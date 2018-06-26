@@ -146,5 +146,5 @@ void MexSum::help(std::vector<std::string>& helpLines) const
 	helpLines.push_back("\t\tthe data across multiple devices.");
 	helpLines.push_back("");
 
-	helpLines.push_back("\timageOut = This will be an array of the same type and shape as the input array.");
+	helpLines.push_back("\tvalueOut = This is the summation of the entire array.");
 }
