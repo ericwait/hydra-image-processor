@@ -16,6 +16,22 @@
 #include <limits>
 #include <omp.h>
 
+
+template <class PixelTypeIn, class PixelTypeOut>
+__global__ void cudaVarFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> imageOut, Kernel constKernelMem, PixelTypeOut minValue, PixelTypeOut maxValue)
+{
+	Vec<size_t> threadCoordinate;
+	GetThreadBlockCoordinate(threadCoordinate);
+
+	if (threadCoordinate < imageIn.getDims())
+	{
+		double mu = 0.0, var = 0.0;
+		deviceMeanAndVariance(threadCoordinate, imageIn, constKernelMem, mu, var);
+
+		imageOut(threadCoordinate) = (PixelTypeOut)CLAMP(var, minValue, maxValue);
+	}
+}
+
 template <class PixelTypeIn, class PixelTypeOut>
 __global__ void cudaStdFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> imageOut, Kernel constKernelMem, PixelTypeOut minValue, PixelTypeOut maxValue)
 {
