@@ -74,6 +74,9 @@ void sumBuffer(ImageChunk &chunk, CudaImageContainer<PixelTypeIn>* buffer, OutTy
 
 	size_t sharedMemSize = threads*sizeof(OutType);
 
+	HANDLE_ERROR(cudaMemset(deviceSum, 0, sizeof(OutType)*blocks));
+	memset(hostSum, 0, sizeof(OutType)*blocks);
+
 	cudaSum<<<blocks, threads, sharedMemSize>>>(buffer->getConstImagePointer(), deviceSum, chunk.getFullChunkSize().product());
 
 	DEBUG_KERNEL_CHECK();
