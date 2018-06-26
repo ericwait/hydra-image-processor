@@ -53,9 +53,10 @@ __global__ void cudaSum(const PixelTypeIn* arrayIn, OutType* arrayOut, size_t n)
 }
 
 template <class PixelTypeIn, class OutType>
-void sumBuffer(ImageChunk &chunk, CudaDeviceImages<PixelTypeIn> &deviceImages, OutType& sum, OutType* deviceSum=NULL, OutType* hostSum=NULL)
+void sumBuffer(ImageChunk &chunk, CudaImageContainer<PixelTypeIn>* buffer, OutType& sum, OutType* deviceSum=NULL, OutType* hostSum=NULL)
 {
 	int blocks = chunk.blocks.x*chunk.blocks.y*chunk.blocks.z;
+	blocks = (int)(ceil((double)blocks / 2.0));
 	int threads = chunk.threads.x*chunk.threads.y*chunk.threads.z;
 
 	bool cleanGPU = false;
@@ -73,7 +74,7 @@ void sumBuffer(ImageChunk &chunk, CudaDeviceImages<PixelTypeIn> &deviceImages, O
 
 	size_t sharedMemSize = threads*sizeof(OutType);
 
-	cudaSum<<<blocks, threads, sharedMemSize>>>(deviceImages.getCurBuffer()->getConstImagePointer(), deviceSum, chunk.getFullChunkSize().product());
+	cudaSum<<<blocks, threads, sharedMemSize>>>(buffer->getConstImagePointer(), deviceSum, chunk.getFullChunkSize().product());
 
 	DEBUG_KERNEL_CHECK();
 	HANDLE_ERROR(cudaMemcpy(hostSum, deviceSum, sizeof(OutType)*blocks, cudaMemcpyDeviceToHost));
@@ -137,7 +138,7 @@ void cSum(ImageContainer<PixelTypeIn> imageIn, OutType& outVal, int device=-1)
 		sums[CUDA_IDX] = 0;
 		OutType* deviceSum;
 
-		int maxBlocks = (int)ceil((double)chunks[0].getFullChunkSize().product() / (chunks[0].threads.x * 2));
+		int maxBlocks = (int)ceil((double)chunks[0].getFullChunkSize().product() / (chunks[0].threads.x*chunks[0].threads.y*chunks[0].threads.z * 2));
 
 		HANDLE_ERROR(cudaMalloc((void**)&deviceSum, sizeof(OutType)*maxBlocks));
 		OutType* hostSum = new OutType[maxBlocks];
@@ -149,7 +150,7 @@ void cSum(ImageContainer<PixelTypeIn> imageIn, OutType& outVal, int device=-1)
 
 			deviceImages.setAllDims(chunks[i].getFullChunkSize());
 
-			sumBuffer(chunks[i], deviceImages, sums[CUDA_IDX], deviceSum, hostSum);
+			sumBuffer(chunks[i], deviceImages.getCurBuffer(), sums[CUDA_IDX], deviceSum, hostSum);
 		}
 
 		HANDLE_ERROR(cudaFree(deviceSum));
