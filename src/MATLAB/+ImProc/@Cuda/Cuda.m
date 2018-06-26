@@ -20,6 +20,7 @@ methods (Static)
     arrayOut = Opener(arrayIn,kernel,numIterations,device)
     arrayOut = StdFilter(arrayIn,kernel,numIterations,device)
     valueOut = Sum(arrayIn,device)
+    arrayOut = VarFilter(arrayIn,kernel,numIterations,device)
     arrayOut = WienerFilter(arrayIn,kernel,noiseVariance,device)
     shapeElement = ImProc.MakeBallMask(radius)
 end

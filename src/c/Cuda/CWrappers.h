@@ -193,6 +193,17 @@ IMAGE_PROCESSOR_API void sum(const ImageContainer<unsigned int> imageIn, size_t&
 IMAGE_PROCESSOR_API void sum(const ImageContainer<float> imageIn, double& valOut, int device = -1);
 IMAGE_PROCESSOR_API void sum(const ImageContainer<double> imageIn, double& valOut, int device = -1);
 
+
+IMAGE_PROCESSOR_API void varFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void varFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void varFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void varFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void varFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void varFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void varFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void varFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+IMAGE_PROCESSOR_API void varFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
+
 IMAGE_PROCESSOR_API void wienerFilter(ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, double noiseVariance = -1.0, int device = -1);
 IMAGE_PROCESSOR_API void wienerFilter(ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, double noiseVariance = -1.0, int device = -1);
 IMAGE_PROCESSOR_API void wienerFilter(ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, double noiseVariance = -1.0, int device = -1);

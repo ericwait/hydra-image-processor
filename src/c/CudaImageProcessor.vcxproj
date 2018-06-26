@@ -137,6 +137,7 @@
     <ClInclude Include="Cuda\CudaHighPassFilter.cuh" />
     <ClInclude Include="Cuda\CudaStdFilter.cuh" />
     <ClInclude Include="Cuda\CudaSum.cuh" />
+    <ClInclude Include="Cuda\CudaVarFilter.cuh" />
     <ClInclude Include="Cuda\CudaWienerFilter.cuh" />
     <ClInclude Include="Cuda\SeparableMultiplySum.cuh">
       <FileType>CppCode</FileType>

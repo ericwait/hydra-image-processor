@@ -19,6 +19,7 @@
 #include "CudaOpener.cuh"
 #include "CudaStdFilter.cuh"
 #include "CudaSum.cuh"
+#include "CudaVarFilter.cuh"
 #include "CudaWienerFilter.cuh"
 
 
@@ -828,6 +829,52 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
  void sum(const ImageContainer<double> imageIn, double& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
+ }
+
+
+ void varFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void varFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+ void varFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void varFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void varFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+ void varFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+ void varFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+
+ void varFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
+ }
+ 
+ void varFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ {
+	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
 

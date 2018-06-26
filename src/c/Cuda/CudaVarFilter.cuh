@@ -16,25 +16,24 @@
 #include <limits>
 #include <omp.h>
 
-
-
 template <class PixelTypeIn, class PixelTypeOut>
-__global__ void cudaStdFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> imageOut, Kernel constKernelMem, PixelTypeOut minValue, PixelTypeOut maxValue)
+__global__ void cudaVarFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> imageOut, Kernel constKernelMem, PixelTypeOut minValue, PixelTypeOut maxValue)
 {
 	Vec<size_t> threadCoordinate;
 	GetThreadBlockCoordinate(threadCoordinate);
 
 	if (threadCoordinate < imageIn.getDims())
 	{
-		double mu=0.0, var=0.0;
-		deviceMeanAndVariance(threadCoordinate, imageIn, constKernelMem, mu,var);
+		double mu = 0.0, var = 0.0;
+		deviceMeanAndVariance(threadCoordinate, imageIn, constKernelMem, mu, var);
 
-		imageOut(threadCoordinate) = (PixelTypeOut)CLAMP(sqrt(var), minValue, maxValue);
+		imageOut(threadCoordinate) = (PixelTypeOut)CLAMP(var, minValue, maxValue);
 	}
 }
 
+
 template <class PixelTypeIn, class PixelTypeOut>
-void cStdFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1)
+void cVarFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1)
 {
 	const PixelTypeOut MIN_VAL = std::numeric_limits<PixelTypeOut>::lowest();
 	const PixelTypeOut MAX_VAL = std::numeric_limits<PixelTypeOut>::max();
@@ -45,13 +44,13 @@ void cStdFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut
 	CudaDevices cudaDevs(cudaStdFilter<PixelTypeIn, PixelTypeOut>, device);
 
 	size_t maxTypeSize = MAX(sizeof(PixelTypeIn), sizeof(PixelTypeOut));
-	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, maxTypeSize, 	kernel.getSpatialDims());
+	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, maxTypeSize, kernel.getSpatialDims());
 
 	Vec<size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
 	omp_set_num_threads(MIN(chunks.size(), cudaDevs.getNumDevices()));
-	#pragma omp parallel default(shared)
+#pragma omp parallel default(shared)
 	{
 		const int CUDA_IDX = omp_get_thread_num();
 		const int N_THREADS = omp_get_num_threads();
@@ -69,7 +68,7 @@ void cStdFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut
 
 			for (int j = 0; j < numIterations; ++j)
 			{
-				cudaStdFilter << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()),*(deviceImages.getNextBuffer()), constKernelMem, MIN_VAL, MAX_VAL);
+				cudaVarFilter << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constKernelMem, MIN_VAL, MAX_VAL);
 				deviceImages.incrementBuffer();
 			}
 			chunks[i].retriveROI(imageOut, deviceImages.getCurBuffer());
