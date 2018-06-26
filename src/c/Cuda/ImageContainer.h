@@ -15,7 +15,11 @@ public:
 	ImageContainer(PixelType val, Vec<size_t> dimsIn, unsigned char nChannels = 1, unsigned int nFrames = 1)
 	{
 		reset();
-		image = new PixelType[dimsIn.product()*nChannels*nFrames];
+		size_t numEl = dimsIn.product()*nChannels*nFrames;
+		image = new PixelType[numEl];
+		for (int i = 0; i < numEl; ++i)
+			image[i] = val;
+
 		dimensions.dims = dimsIn;
 		dimensions.chan = nChannels;
 		dimensions.frame = nFrames;

@@ -8,20 +8,19 @@
 void MexWienerFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	int device = -1;
-	double noiseVar = 0.0;
+	double noiseVar = -1.0;
 
+	ImageContainer<float> kernel;
 	if (mxIsEmpty(prhs[1]))
-	{
-		;
-	}
+		kernel = ImageContainer<float>(1.0f,Vec<size_t>(3));
+	else
+		kernel = getKernel(prhs[1]);
 
 	if (!mxIsEmpty(prhs[2]))
 		noiseVar = mxGetScalar(prhs[2]);
 
 	if (!mxIsEmpty(prhs[3]))
 		device = mat_to_c((int)mxGetScalar(prhs[3]));
-
-	ImageContainer<float> kernel = getKernel(prhs[1]);
 
 	if (kernel.getDims().getNumElements() == 0)
 	{

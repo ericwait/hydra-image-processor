@@ -36,7 +36,7 @@ __global__ void cudaWienerFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaIm
 }
 
 template <class PixelTypeIn, class PixelTypeOut>
-void cWienerFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device = -1)
+void cWienerFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>& imageOut, ImageContainer<float> kernel, double noiseVariance= -1.0, int device = -1)
 {
 	const PixelTypeOut MIN_VAL = std::numeric_limits<PixelTypeOut>::lowest();
 	const PixelTypeOut MAX_VAL = std::numeric_limits<PixelTypeOut>::max();
@@ -69,7 +69,19 @@ void cWienerFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelType
 
 			deviceImages.setAllDims(chunks[i].getFullChunkSize());
 
-			cudaWienerFilter<<<chunks[i].blocks, chunks[i].threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constKernelMem, noiseVariance, MIN_VAL, MAX_VAL);
+			double lclNoiceVar = noiseVariance;
+			if (lclNoiceVar == -1.0)
+			{
+				cudaVarFilter<<<chunks[i].blocks, chunks[i].threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constKernelMem, MIN_VAL, MAX_VAL);
+				double sum = 0.0;
+				sumBuffer(chunks[i], deviceImages.getNextBuffer(), sum);
+				lclNoiceVar = sum / chunks[i].getFullChunkSize().product();// this differs from MATLAB because of the edge errors that MATLAB has in its neighborhood variance 
+				PixelTypeIn minVal, maxVal;
+				minMaxBuffer(chunks[i], deviceImages.getCurBuffer(), minVal, maxVal, cudaDevs.getMinSharedMem());
+				lclNoiceVar *= SQR((double)maxVal);
+			}
+
+			cudaWienerFilter<<<chunks[i].blocks, chunks[i].threads>>>(*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constKernelMem, lclNoiceVar, MIN_VAL, MAX_VAL);
 			deviceImages.incrementBuffer();
 			chunks[i].retriveROI(imageOut, deviceImages.getCurBuffer());
 		}
