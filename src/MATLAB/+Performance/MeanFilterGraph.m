@@ -10,7 +10,7 @@ function times = MeanFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials,nu
     kernel = ones(5,5,3,'single');
     m = memory;
     cpu_memAvail = m.MemAvailableAllArrays/4;
-    m = ImProc.Cuda.DeviceStats;
+    m = HSP.Cuda.DeviceStats;
     gpu_memAvail = max(m.totalMem);
     
     for i = sizeItter

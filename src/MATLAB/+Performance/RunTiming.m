@@ -1,9 +1,9 @@
-ImProc.BuildScript;
+HSP.BuildScript;
 
 %%
 numTrials = 2;
 
-numDevices = ImProc.Cuda.DeviceCount();
+numDevices = HSP.Cuda.DeviceCount();
 sizes_rc = [...
     0512,0512,1,1,1; % single small images
     1024,1024,1,1,1; % single medium image 
@@ -54,8 +54,8 @@ end
 hpTimes = Performance.HighPassFilterGraph(sizes_rc,sizeItterSm,types,typeItter,numTrials,numDevices);
 
 %% Save out results
-temp = what('ImProc');
-ImProcPath = temp.path;
+temp = what('HSP');
+HSPPath = temp.path;
 compName = getenv('computername');
 
-save(fullfile(ImProcPath,[compName,'.mat']),'maxTimes','closeTimes','meanTimes','medTimes','stdTimes','medTimes','gaussTimes','hpTimes');
+save(fullfile(HSPPath,[compName,'.mat']),'maxTimes','closeTimes','meanTimes','medTimes','stdTimes','medTimes','gaussTimes','hpTimes');
