@@ -30,7 +30,6 @@ function makeClassdef(objectName, mexName, commandList)
     for i=1:length(commandList)
         fprintf(objFile, '    %s\n', makePrototypeString(commandList(i)));
     end
-    fprintf(objFile, '    shapeElement = HSP.MakeBallMask(radius)\n');
     fprintf(objFile, 'end\n');
 
     fprintf(objFile, 'methods (Static, Access = private)\n');
