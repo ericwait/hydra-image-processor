@@ -10,3 +10,5 @@ Hydra Signal Processor is a hardware accelerated signal processing library writt
 ##Install Guide
 
 ##MATLAB User Guide
+
+##Attach a debugger
