@@ -1,19 +1,19 @@
 function arrayOut = LoG(arrayIn,sigmas,device,suppressWarning)
-     error('LoG not yet implemented in MATLAB!'); %delete this line when implemented
      if (~exist('suppressWarning','var') || isempty(suppressWarning) || ~suppressWarning)
-         warning('Falling back to matlab.');
+         warning('Falling back to 2D matlab.');
      end
      
-     if (~exist('numIterations','var') || isempty(numIterations))
-         numIterations = 1;
-     end
+     hsize = sigmas.*10;
+     hsize = hsize(1:2);
+     sigmas = sigmas(1:2);
+     
+     h = fspecial('log',hsize,sigmas(1));
      
      arrayOut = arrayIn;
      for t=1:size(arrayIn,5)
          for c=1:size(arrayIn,4)
-             for i=1:numIterations
-                 % implement this function here
-                 arrayOut(:,:,:,c,t) = arrayIn(:,:,:,c,t);
+             for z=1:size(arrayIn,3)
+                 arrayOut(:,:,z,c,t) = imfilter(arrayIn(:,:,z,c,t),h);
              end
          end
      end

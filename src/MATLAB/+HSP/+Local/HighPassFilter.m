@@ -3,11 +3,6 @@ function arrayOut = HighPassFilter(arrayIn,sigmas,device,suppressWarning)
         warning('Falling back to matlab.');
     end     
      
-     arrayOut = arrayIn;
-     for t=1:size(arrayIn,5)
-         for c=1:size(arrayIn,4)
-             arrayOut(:,:,:,c,t) = imgaussfilt3(arrayIn(:,:,:,c,t),sigmas);
-             arrayOut(:,:,:,c,t) = arrayIn(:,:,:,c,t) - arrayOut(:,:,:,c,t);
-         end
-     end
+    arrayOut = HSP.Local.Gaussian(arrayIn,sigmas,[],[],true);
+    arrayOut = arrayOut - arrayIn;
 end
