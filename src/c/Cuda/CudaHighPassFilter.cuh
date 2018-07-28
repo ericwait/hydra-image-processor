@@ -60,12 +60,9 @@ void cHighPassFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTy
 			// blur the input image
 			SeparableMultiplySum(chunks[i], deviceImagesIn, constKernelMem_x, constKernelMem_y, constKernelMem_z, MIN_VAL, MAX_VAL);
 
-			chunks[i].retriveROI(imageOut, deviceImagesIn.getCurBuffer());
-
 			// subtract the blurred image from the original
 			chunks[i].sendROI(imageIn, deviceImagesIn.getNextBuffer());
 			cudaElementWiseDifference<<<chunks[i].blocks, chunks[i].threads>>>(*(deviceImagesIn.getNextBuffer()), *(deviceImagesIn.getCurBuffer()), *(deviceImagesIn.getThirdBuffer()), 0.0f, MAX_VAL);
-
 
 			chunks[i].retriveROI(imageOut, deviceImagesIn.getThirdBuffer());
 		}
