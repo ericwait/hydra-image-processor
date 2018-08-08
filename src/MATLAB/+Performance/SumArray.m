@@ -1,10 +1,10 @@
 function [cTime,mTime,kernelName] = SumArray(im)
     kernelName = 'SumArray';
     cT = tic;
-    imC = HSP.SumArray(im);
+    imC = HIP.SumArray(im);
     cTime = toc(cT);
 
     mT = tic;
-    imM = HSP.SumArray(im,true);
+    imM = HIP.SumArray(im,true);
     mTime = toc(mT);
 end

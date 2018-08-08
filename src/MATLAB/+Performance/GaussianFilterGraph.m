@@ -10,7 +10,7 @@ function times = GaussianFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrial
 
     m = memory;
     cpu_memAvail = m.MemAvailableAllArrays/4;
-    m = HSP.Cuda.DeviceStats;
+    m = HIP.Cuda.DeviceStats;
     gpu_memAvail = max(m.totalMem);
     
     for i = sizeItter

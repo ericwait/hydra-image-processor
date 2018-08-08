@@ -10,7 +10,7 @@ function times = MaxFilterGraph(sizes_rc,sizeItter,types,typeItter,numTrials,num
     kernel = ones(5,5,3);
     m = memory;
     cpu_memAvail = m.MemAvailableAllArrays/4;
-    m = HSP.Cuda.DeviceStats;
+    m = HIP.Cuda.DeviceStats;
     gpu_memAvail = max(m.totalMem);
     
     for i = sizeItter

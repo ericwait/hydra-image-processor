@@ -1,9 +1,9 @@
-HSP.BuildScript;
+HIP.BuildScript;
 
 %%
 numTrials = 2;
 
-numDevices = HSP.Cuda.DeviceCount();
+numDevices = HIP.Cuda.DeviceCount();
 sizes_rc = [...
     0512,0512,1,1,1; % single small images
     1024,1024,1,1,1; % single medium image 
@@ -17,7 +17,8 @@ sizes_rc = [...
 
 sizeItter = size(sizes_rc,1):-1:1;
 %sizeItter = 1:size(sizes_rc,1);
-types = {'uint8';'uint16';'single';'double'};
+%types = {'uint8';'uint16';'single';'double'};
+types = {'unit16'};
 typeItter = size(types,1):-1:1;
 %typeItter = 1:size(types,1);
 
@@ -54,8 +55,8 @@ end
 hpTimes = Performance.HighPassFilterGraph(sizes_rc,sizeItterSm,types,typeItter,numTrials,numDevices);
 
 %% Save out results
-temp = what('HSP');
-HSPPath = temp.path;
+temp = what('HIP');
+HIPPath = temp.path;
 compName = getenv('computername');
 
-save(fullfile(HSPPath,[compName,'.mat']),'maxTimes','closeTimes','meanTimes','medTimes','stdTimes','medTimes','gaussTimes','hpTimes');
+save(fullfile(HIPPath,[compName,'.mat']),'maxTimes','closeTimes','meanTimes','medTimes','stdTimes','medTimes','gaussTimes','hpTimes');

@@ -1,10 +1,10 @@
 function [cTime,mTime,kernelName] = (im,)
     kernelName = '';
     cT = tic;
-    imC = HSP.(im,);
+    imC = HIP.(im,);
     cTime = toc(cT);
 
     mT = tic;
-    imM = HSP.(im,,true);
+    imM = HIP.(im,,true);
     mTime = toc(mT);
 end
