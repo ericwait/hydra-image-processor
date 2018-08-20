@@ -286,4 +286,5 @@ private:
 };
 
 
-#include "CommandList.h"
+#include "MexWrapDef.h"
+#include "../WrapCmds/CommandList.h"

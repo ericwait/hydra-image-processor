@@ -33,7 +33,7 @@ void MexVarFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		ImageContainer<bool> imageIn(imageInPtr, imageDims);
 		ImageContainer<bool> imageOut(imageOutPtr, imageDims);
 
-		stdFilter(imageIn, imageOut, kernel, numIterations, device);
+		varFilter(imageIn, imageOut, kernel, numIterations, device);
 
 	}
 	else if (mxIsUint8(prhs[0]))
@@ -44,7 +44,7 @@ void MexVarFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned char> imageOut(imageOutPtr, imageDims);
 
-		stdFilter(imageIn, imageOut, kernel, numIterations, device);
+		varFilter(imageIn, imageOut, kernel, numIterations, device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
@@ -54,7 +54,7 @@ void MexVarFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned short> imageOut(imageOutPtr, imageDims);
 
-		stdFilter(imageIn, imageOut, kernel, numIterations, device);
+		varFilter(imageIn, imageOut, kernel, numIterations, device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
@@ -64,7 +64,7 @@ void MexVarFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		ImageContainer<short> imageIn(imageInPtr, imageDims);
 		ImageContainer<short> imageOut(imageOutPtr, imageDims);
 
-		stdFilter(imageIn, imageOut, kernel, numIterations, device);
+		varFilter(imageIn, imageOut, kernel, numIterations, device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
@@ -74,7 +74,7 @@ void MexVarFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned int> imageOut(imageOutPtr, imageDims);
 
-		stdFilter(imageIn, imageOut, kernel, numIterations, device);
+		varFilter(imageIn, imageOut, kernel, numIterations, device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
@@ -84,7 +84,7 @@ void MexVarFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		ImageContainer<int> imageIn(imageInPtr, imageDims);
 		ImageContainer<int> imageOut(imageOutPtr, imageDims);
 
-		stdFilter(imageIn, imageOut, kernel, numIterations, device);
+		varFilter(imageIn, imageOut, kernel, numIterations, device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
@@ -94,7 +94,7 @@ void MexVarFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		ImageContainer<float> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
-		stdFilter(imageIn, imageOut, kernel, numIterations, device);
+		varFilter(imageIn, imageOut, kernel, numIterations, device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
@@ -104,7 +104,7 @@ void MexVarFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		ImageContainer<double> imageIn(imageInPtr, imageDims);
 		ImageContainer<double> imageOut(imageOutPtr, imageDims);
 
-		stdFilter(imageIn, imageOut, kernel, numIterations, device);
+		varFilter(imageIn, imageOut, kernel, numIterations, device);
 	}
 	else
 	{

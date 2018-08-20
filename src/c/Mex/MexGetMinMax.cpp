@@ -7,6 +7,7 @@
 
 void MexGetMinMax::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
+	// TODO: Why is this the only device with a 0 default?
 	int device = 0;
 
 	if (!mxIsEmpty(prhs[1]))

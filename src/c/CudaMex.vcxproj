@@ -92,10 +92,11 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Cuda\Vec.h" />
-    <ClInclude Include="Mex\CommandList.h" />
     <ClInclude Include="Mex\MexCommand.h" />
+    <ClInclude Include="Mex\MexWrapDef.h" />
     <ClInclude Include="Mex\MexKernel.h" />
     <ClInclude Include="Mex\ScopedProcessMutex.h" />
+    <ClInclude Include="WrapCmds\CommandList.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp" />

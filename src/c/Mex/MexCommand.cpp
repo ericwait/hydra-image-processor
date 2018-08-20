@@ -1,11 +1,13 @@
 #include "MexCommand.h"
 
 #define INSTANCE_COMMANDS
-#include "CommandList.h"
+#include "MexWrapDef.h"
+#include "../WrapCmds/CommandList.h"
 #undef INSTANCE_COMMANDS
 
 #define BUILD_COMMANDS
-#include "CommandList.h"
+#include "MexWrapDef.h"
+#include "../WrapCmds/CommandList.h"
 #undef BUILD_COMMANDS
 
 // Module name info

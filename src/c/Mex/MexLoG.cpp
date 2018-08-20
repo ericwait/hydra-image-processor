@@ -109,6 +109,7 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		setupInputPointers(prhs[0], imageDims, &imageInPtr);
 		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
+		// TODO: Do we really want to use float outputs here?
 		ImageContainer<double> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
 
