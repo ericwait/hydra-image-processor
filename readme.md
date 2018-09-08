@@ -54,5 +54,44 @@ imOut = HIP.Gaussian(im,[25,25,10],[],[]);
 * ```[]``` The first empty array indicates that this is an optional parameter. For Gaussian smoothing this parameter is to indicate how many times this smoothing should be performed.
 * ```[]``` The last parameter is to indicate which GPU to use. Passing an empty array indicates that all devices can be utilized. HIP will distribute work across each device when appropriate.
 
+## Python Bindings (alpha)
+Requirements:
+* Windows 7 or above
+* Visual Studio 2015 Community Edition
+* Python (64-bit) 3.4 or greater
+* Numpy 1.12 or greater
+* [CUDA capable device](https://developer.nvidia.com/cuda-gpus) with the latest drivers installed
+* Watchdog registry values set (see [Registry Changes](#registry-changes))
+
+Experimental Python bindings have been created for the Hydra Image Processing library, however, they must currently be built from source, since Python versions only support limited binary compatibility.
+
+### Windows Build
+The full Hydra Image Processing library can be built using the Visual Studio solution file ```src/c/CudaImageProccessing.sln```. Python bindings are built as part of the main solution, or can be built separately by ```src/c/CudaPy3DLL.vcxproj```.
+
+Two environment variables must be defined for a successful build:
+  1. PYTHON3_DIR - Root directory of the Python 3.x installation to build against
+  2. NUMPY3_DIR - Root directory of the Numpy installation to build against.
+
+It is currently simplest to build Python bindings using the full solution file, at present, as the Python project is dependant on the core image processing library. NOTE: Unless you have ```Debug``` build of Python 3.x, the bindings must be built in ```Release``` mode.
+
+### Installation and Usage
+After a successful build the file ```src/Python/HIP.pyd``` should be placed in a directory on the PYTHON_PATH to make the Hydra Image Processing tools accessible from Python.
+
+For use in Python import the HIP module:
+
+```
+import HIP
+```
+
+Exmple of blurring a random numpy volume:
+
+```
+import HIP
+import numpy as np
+
+im = np.random.randint(0,256, size=(512,512,25), dtype=np.uint8)
+imOut = HIP.Gaussian(im, [25,25,10])
+```
+
 # Feedback
-If you would like to provide feedback about this tutorial or HIP in general, please use the forum [here](https://www.hydraimageprocessor.com/forum).
+If you would like to provide feedback about this tutorial or HIP in general, please use the forum [here](https://www.imageprocessor.com/forum).
