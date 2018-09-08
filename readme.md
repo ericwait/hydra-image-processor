@@ -57,9 +57,9 @@ imOut = HIP.Gaussian(im,[25,25,10],[],[]);
 ## Python Bindings (alpha)
 Requirements:
 * Windows 7 or above
-* Visual Studio 2015 Community Edition
-* Python (64-bit) 3.4 or greater
-* Numpy 1.12 or greater
+* [Visual Studio 2015 Community Edition](https://visualstudio.microsoft.com/vs/older-downloads)
+* [Python (64-bit) 3.4 or greater](https://www.python.org/downloads)
+* [Numpy 1.12 or greater](http://www.numpy.org)
 * [CUDA capable device](https://developer.nvidia.com/cuda-gpus) with the latest drivers installed
 * Watchdog registry values set (see [Registry Changes](#registry-changes))
 
@@ -70,7 +70,7 @@ The full Hydra Image Processing library can be built using the Visual Studio sol
 
 Two environment variables must be defined for a successful build:
   1. PYTHON3_DIR - Root directory of the Python 3.x installation to build against
-  2. NUMPY3_DIR - Root directory of the Numpy installation to build against.
+  2. NUMPY3_DIR - Root directory of the Numpy installation to build against
 
 It is currently simplest to build Python bindings using the full solution file, at present, as the Python project is dependant on the core image processing library. NOTE: Unless you have ```Debug``` build of Python 3.x, the bindings must be built in ```Release``` mode.
 
@@ -94,4 +94,4 @@ imOut = HIP.Gaussian(im, [25,25,10])
 ```
 
 # Feedback
-If you would like to provide feedback about this tutorial or HIP in general, please use the forum [here](https://www.imageprocessor.com/forum).
+If you would like to provide feedback about this tutorial or HIP in general, please use the forum [here](https://www.hydraimageprocessor.com/forum).
