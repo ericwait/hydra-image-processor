@@ -72,7 +72,7 @@ Two environment variables must be defined for a successful build:
   1. PYTHON3_DIR - Root directory of the Python 3.x installation to build against
   2. NUMPY3_DIR - Root directory of the Numpy installation to build against
 
-It is currently simplest to build Python bindings using the full solution file, at present, as the Python project is dependant on the core image processing library. NOTE: Unless you have ```Debug``` build of Python 3.x, the bindings must be built in ```Release``` mode.
+It is currently simplest to build Python bindings using the full solution file, at present, as the Python project is dependent on the core image processing library. NOTE: Unless you have ```Debug``` build of Python 3.x, the bindings must be built in ```Release``` mode.
 
 ### Installation and Usage
 After a successful build the file ```src/Python/HIP.pyd``` should be placed in a directory on the PYTHON_PATH to make the Hydra Image Processing tools accessible from Python.
@@ -83,7 +83,7 @@ For use in Python import the HIP module:
 import HIP
 ```
 
-Exmple of blurring a random numpy volume:
+Example of blurring a random numpy volume:
 
 ```
 import HIP
