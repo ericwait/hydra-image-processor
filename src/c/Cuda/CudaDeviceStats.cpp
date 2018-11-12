@@ -55,7 +55,7 @@ bool checkFreeMemory(std::size_t needed, int device, bool throws/*=false*/)
 		if (throws)
 		{
 			char buff[255];
-			sprintf_s(buff, "Out of CUDA Memory!\nNeed: %zu\nHave: %zu\n", needed, free);
+			sprintf(buff, "Out of CUDA Memory!\nNeed: %zu\nHave: %zu\n", needed, free);
 			throw std::runtime_error(buff);
 		}
 		return false;
