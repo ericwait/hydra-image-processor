@@ -16,7 +16,7 @@ extern "C" void HandleAborts(int signal_number)
 void CudaDevices::getCudaInfo(int device/*=-1*/)
 {
 	// Get device count
-	int numDevices;
+	int numDevices = 0;
 	cudaGetDeviceCount(&numDevices);
 
 	if (numDevices==0)
