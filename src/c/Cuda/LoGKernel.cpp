@@ -4,8 +4,6 @@
 
 float* createLoG_GausKernels(Vec<double> sigmas, Vec<std::size_t>& dimsOut)
 {
-	const double PI = std::atan(1.0) * 4;
-
 	dimsOut.x = (std::size_t)MAX(1.0f, (10 * sigmas.x));
 	dimsOut.y = (std::size_t)MAX(1.0f, (10 * sigmas.y));
 	dimsOut.z = (std::size_t)MAX(1.0f, (10 * sigmas.z));

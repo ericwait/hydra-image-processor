@@ -5,7 +5,7 @@
 
 #include <string>
 #include <iostream>
-#include <math.h>
+#include <cmath>
 #include <stdio.h>
 
 #ifdef _WIN32
