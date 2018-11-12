@@ -333,22 +333,22 @@ public:
         return coordinate.x+coordinate.y*x+coordinate.z*y*x;
 	}
 
-	MIXED_PREFIX double EuclideanDistanceTo(const Vec<T>& other)
+	MIXED_PREFIX double EuclideanDistanceTo(const Vec<T>& other) const
 	{
 		return std::sqrt((double)(SQR(x-other.x)+SQR(y-other.y)+SQR(z-other.z)));
 	}
 
-	MIXED_PREFIX double lengthSqr()
+	MIXED_PREFIX double lengthSqr() const
 	{
 		return SQR(x) + SQR(y) + SQR(z);
 	}
 
-	MIXED_PREFIX double length()
+	MIXED_PREFIX double length() const
 	{
 		return std::sqrt(lengthSqr());
 	}
 
-	MIXED_PREFIX Vec<double> normal()
+	MIXED_PREFIX Vec<double> normal() const
 	{
 		return ((*this) / length());
 	}
