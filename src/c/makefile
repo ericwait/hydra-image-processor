@@ -34,10 +34,13 @@ PY_LIB = -L$(PYTHON_LIB) -l$(PYTHON_VER)
 #########################################
 # Passed to both Nvidia compiler and gcc/clang
 CPP_FLAGS = -std=c++11
-# Passed to gcc/clang and passthrough (--compiler-flags) in nvcc
+
+# Passed to gcc/clang and passthrough (--compiler-options) in nvcc
 # NOTE: Any warning flags such as '-Wall' should go here
 C_FLAGS = -fopenmp -fPIC
 
+# Pass-through linker arguments (--linker-options) in nvcc linking step
+LD_FLAGS = --no-undefined
 #########################################
 # Nvidia nvcc parameters
 #########################################
@@ -74,10 +77,10 @@ matlab: Mex.mexa64
 # link it all together
 #########################################
 HIP.so: $(CUDA_OBJ) $(PY_CPP_OBJ) $(CUDA_CPP_OBJ)
-	$(NVCC_PATH) $(GCC_LIBS) $(PY_LIB) -shared $^ -o HIP.so $(SMODEL) --linker-options '--no-undefined'
+	$(NVCC_PATH) $(GCC_LIBS) $(PY_LIB) -shared $^ -o HIP.so $(SMODEL) --linker-options '$(LD_FLAGS)'
 
 Mex.mexa64: $(CUDA_OBJ) $(MEX_CPP_OBJ) $(CUDA_CPP_OBJ)
-	$(NVCC_PATH) $(GCC_LIB) $(MEX_LIB) -shared $^ -o Mex.mexa64 $(SMODEL) --linker-options '--no-undefined'
+	$(NVCC_PATH) $(GCC_LIB) $(MEX_LIB) -shared $^ -o Mex.mexa64 $(SMODEL) --linker-options '$(LD_FLAGS)'
 
 #########################################
 # compile the cuda library files
