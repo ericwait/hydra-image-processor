@@ -54,7 +54,7 @@ PyObject* PyWrapElementWiseDifference::execute(PyObject*self, PyObject* args)
 		ImageDimensions image2Dims;
 		setupInputPointers(im2Contig, image2Dims, &image2InPtr);
 
-		imageDims = ImageDimensions(Vec<size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
+		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
 		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<bool> image1In(image1InPtr, image1Dims);
@@ -73,7 +73,7 @@ PyObject* PyWrapElementWiseDifference::execute(PyObject*self, PyObject* args)
 		ImageDimensions image2Dims;
 		setupInputPointers(im2Contig, image2Dims, &image2InPtr);
 
-		imageDims = ImageDimensions(Vec<size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
+		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
 		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned char> image1In(image1InPtr, image1Dims);
@@ -91,7 +91,7 @@ PyObject* PyWrapElementWiseDifference::execute(PyObject*self, PyObject* args)
 		ImageDimensions image2Dims;
 		setupInputPointers(im2Contig, image2Dims, &image2InPtr);
 
-		imageDims = ImageDimensions(Vec<size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
+		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
 		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned short> image1In(image1InPtr, image1Dims);
@@ -109,7 +109,7 @@ PyObject* PyWrapElementWiseDifference::execute(PyObject*self, PyObject* args)
 		ImageDimensions image2Dims;
 		setupInputPointers(im2Contig, image2Dims, &image2InPtr);
 
-		imageDims = ImageDimensions(Vec<size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
+		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
 		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<short> image1In(image1InPtr, image1Dims);
@@ -127,7 +127,7 @@ PyObject* PyWrapElementWiseDifference::execute(PyObject*self, PyObject* args)
 		ImageDimensions image2Dims;
 		setupInputPointers(im2Contig, image2Dims, &image2InPtr);
 
-		imageDims = ImageDimensions(Vec<size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
+		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
 		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned int> image1In(image1InPtr, image1Dims);
@@ -145,7 +145,7 @@ PyObject* PyWrapElementWiseDifference::execute(PyObject*self, PyObject* args)
 		ImageDimensions image2Dims;
 		setupInputPointers(im2Contig, image2Dims, &image2InPtr);
 
-		imageDims = ImageDimensions(Vec<size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
+		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
 		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<int> image1In(image1InPtr, image1Dims);
@@ -163,7 +163,7 @@ PyObject* PyWrapElementWiseDifference::execute(PyObject*self, PyObject* args)
 		ImageDimensions image2Dims;
 		setupInputPointers(im2Contig, image2Dims, &image2InPtr);
 
-		imageDims = ImageDimensions(Vec<size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
+		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
 		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<float> image1In(image1InPtr, image1Dims);
@@ -181,7 +181,7 @@ PyObject* PyWrapElementWiseDifference::execute(PyObject*self, PyObject* args)
 		ImageDimensions image2Dims;
 		setupInputPointers(im2Contig, image2Dims, &image2InPtr);
 
-		imageDims = ImageDimensions(Vec<size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
+		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
 		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<double> image1In(image1InPtr, image1Dims);

@@ -196,9 +196,9 @@ public:
 	}
 
 	template<typename U>
-	MIXED_PREFIX Vec<size_t> coordAddressOf(U idx)const
+	MIXED_PREFIX Vec<std::size_t> coordAddressOf(U idx)const
 	{
-		Vec<size_t> vecOut = Vec<size_t>(0,0,0);
+		Vec<std::size_t> vecOut = Vec<std::size_t>(0,0,0);
 
 		if(x==0)
 		{
@@ -327,7 +327,7 @@ public:
 	}
 
 	// Returns the linear memory map if this is the dimensions and the passed in Vec is the coordinate
-	MIXED_PREFIX size_t linearAddressAt(const Vec<T>& coordinate) const
+	MIXED_PREFIX std::size_t linearAddressAt(const Vec<T>& coordinate) const
 	{
         return coordinate.x+coordinate.y*x+coordinate.z*y*x;
 	}

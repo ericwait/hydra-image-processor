@@ -35,10 +35,10 @@ int cDeviceStats(DevStats** stats)
     return cnt;
 }
 
-size_t memoryAvailable(int device, size_t* totalOut/*=NULL*/)
+std::size_t memoryAvailable(int device, std::size_t* totalOut/*=NULL*/)
 {
 	HANDLE_ERROR(cudaSetDevice(device));
-	size_t free, total;
+	std::size_t free, total;
 	HANDLE_ERROR(cudaMemGetInfo(&free, &total));
 
 	if (totalOut != NULL)
@@ -47,9 +47,9 @@ size_t memoryAvailable(int device, size_t* totalOut/*=NULL*/)
 	return free;
 }
 
-bool checkFreeMemory(size_t needed, int device, bool throws/*=false*/)
+bool checkFreeMemory(std::size_t needed, int device, bool throws/*=false*/)
 {
-	size_t free = memoryAvailable(device);
+	std::size_t free = memoryAvailable(device);
 	if (needed > free)
 	{
 		if (throws)

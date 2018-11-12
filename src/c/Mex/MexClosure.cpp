@@ -122,11 +122,11 @@ std::string MexClosure::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	if (nlhs != 1)
 		return "Requires one output!";
 
-	size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
+	std::size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
 	if (imgNumDims > 5)
 		return "Image can have a maximum of five dimensions!";
 
-	size_t kernDims = mxGetNumberOfDimensions(prhs[1]);
+	std::size_t kernDims = mxGetNumberOfDimensions(prhs[1]);
 	if (kernDims < 1 || kernDims>3)
 		return "Kernel can only be either 1-D, 2-D, or 3-D!";
 

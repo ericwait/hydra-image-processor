@@ -21,7 +21,7 @@ void MexSum::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 		ImageContainer<bool> imageIn(imageInPtr, imageDims);
 
-		size_t out = 0;
+		std::size_t out = 0;
 		sum(imageIn, out, device);
 		outVal = double(out);
 	}
@@ -32,7 +32,7 @@ void MexSum::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
 
-		size_t out = 0;
+		std::size_t out = 0;
 		sum(imageIn, out, device);
 		outVal = double(out);
 	}
@@ -43,7 +43,7 @@ void MexSum::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
 
-		size_t out = 0;
+		std::size_t out = 0;
 		sum(imageIn, out, device);
 		outVal = double(out);
 	}
@@ -65,7 +65,7 @@ void MexSum::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
 
-		size_t out = 0;
+		std::size_t out = 0;
 		sum(imageIn, out, device);
 		outVal = double(out);
 	}
@@ -118,7 +118,7 @@ std::string MexSum::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* pr
 	if (nlhs != 1)
 		return "Requires one output!";
 
-	size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
+	std::size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
 	if (imgNumDims > 5)
 		return "Image can have a maximum of five dimensions!";
 

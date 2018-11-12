@@ -28,12 +28,12 @@ void cLoG(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& imageOut, 
 	CudaDevices cudaDevs(cudaAddTwoImages<float,float,float>, device);
 	CudaDevices cudaDevs2(cudaMultiplySum<float, float>, device);
 
-	Vec<size_t> kernelDims(0);
+	Vec<std::size_t> kernelDims(0);
 	float* hostLoG_GausKernels = createLoG_GausKernels(sigmas, kernelDims);
 
 	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, sizeof(float), kernelDims);
 
-	Vec<size_t> maxDeviceDims;
+	Vec<std::size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
 	omp_set_num_threads(MIN(chunks.size(), cudaDevs.getNumDevices()));
@@ -46,22 +46,22 @@ void cLoG(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& imageOut, 
 		CudaDeviceImages<float> deviceImages(NUM_BUFF_NEEDED-1, maxDeviceDims, CUR_DEVICE);
 		CudaDeviceImages<float> deviceImagesScratch(1, maxDeviceDims, CUR_DEVICE);
 
-		size_t logStride = kernelDims.sum();
+		std::size_t logStride = kernelDims.sum();
 		Kernel constFullKern(logStride*2, hostLoG_GausKernels, CUR_DEVICE);
 
-		Kernel constLoGKernelMem_x = constFullKern.getOffsetCopy(Vec<size_t>(kernelDims.x, 1, 1), 0);
-		Kernel constLoGKernelMem_y = constFullKern.getOffsetCopy(Vec<size_t>(1, kernelDims.y, 1), kernelDims.x);
-		Kernel constLoGKernelMem_z = constFullKern.getOffsetCopy(Vec<size_t>(1, 1, kernelDims.z), kernelDims.x + kernelDims.y);
+		Kernel constLoGKernelMem_x = constFullKern.getOffsetCopy(Vec<std::size_t>(kernelDims.x, 1, 1), 0);
+		Kernel constLoGKernelMem_y = constFullKern.getOffsetCopy(Vec<std::size_t>(1, kernelDims.y, 1), kernelDims.x);
+		Kernel constLoGKernelMem_z = constFullKern.getOffsetCopy(Vec<std::size_t>(1, 1, kernelDims.z), kernelDims.x + kernelDims.y);
 
-		Kernel constGausKernelMem_x = constFullKern.getOffsetCopy(Vec<size_t>(kernelDims.x, 1, 1), logStride);
-		Kernel constGausKernelMem_y = constFullKern.getOffsetCopy(Vec<size_t>(1, kernelDims.y, 1), kernelDims.x + logStride);
-		Kernel constGausKernelMem_z = constFullKern.getOffsetCopy(Vec<size_t>(1, 1, kernelDims.z), kernelDims.x + kernelDims.y + logStride);
+		Kernel constGausKernelMem_x = constFullKern.getOffsetCopy(Vec<std::size_t>(kernelDims.x, 1, 1), logStride);
+		Kernel constGausKernelMem_y = constFullKern.getOffsetCopy(Vec<std::size_t>(1, kernelDims.y, 1), kernelDims.x + logStride);
+		Kernel constGausKernelMem_z = constFullKern.getOffsetCopy(Vec<std::size_t>(1, 1, kernelDims.z), kernelDims.x + kernelDims.y + logStride);
 
 		Kernel nullKernel;
 
 		for (int i = CUDA_IDX; i < chunks.size(); i += N_THREADS)
 		{
-			size_t memsize = sizeof(float)*chunks[i].getFullChunkSize().product();
+			std::size_t memsize = sizeof(float)*chunks[i].getFullChunkSize().product();
 			deviceImages.setAllDims(chunks[i].getFullChunkSize());
 			deviceImagesScratch.setAllDims(chunks[i].getFullChunkSize());
 

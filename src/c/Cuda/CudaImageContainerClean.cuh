@@ -6,7 +6,7 @@ template <class PixelType>
 class CudaImageContainerClean : public CudaImageContainer<PixelType>
 {
 public:
-	CudaImageContainerClean(const PixelType* imageIn, Vec<size_t> dims, int device = 0)
+	CudaImageContainerClean(const PixelType* imageIn, Vec<std::size_t> dims, int device = 0)
 	{
 		defaults();
 		image = NULL;
@@ -16,7 +16,7 @@ public:
 		loadImage(imageIn, dims);
 	};
 
-	CudaImageContainerClean(Vec<size_t> dims, int device = 0)
+	CudaImageContainerClean(Vec<std::size_t> dims, int device = 0)
 	{
 		defaults();
 		image = NULL;
@@ -55,7 +55,7 @@ public:
 
 		HANDLE_ERROR(cudaSetDevice(device));
 
-		if (imageDims > Vec<size_t>(0, 0, 0))
+		if (this->imageDims > Vec<std::size_t>(0, 0, 0))
 		{
 			HANDLE_ERROR(cudaMalloc((void**)&image, sizeof(PixelType)*imageDims.product()));
 			HANDLE_ERROR(cudaMemcpy(image, other.getConstImagePointer(), sizeof(PixelType)*imageDims.product(), cudaMemcpyDeviceToDevice));

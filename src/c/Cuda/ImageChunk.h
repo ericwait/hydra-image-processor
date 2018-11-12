@@ -8,14 +8,15 @@
 #include <cuda_runtime.h>
 #include <vector>
 
+#pragma optimize("",off)
 class ImageChunk
 {
 public:
-	Vec<size_t> getFullChunkSize();
-	Vec<size_t> getROIsize() { return chunkROIend-chunkROIstart+1; }
+	Vec<std::size_t> getFullChunkSize();
+	Vec<std::size_t> getROIsize() { return chunkROIend-chunkROIstart+1; }
 
 	template <typename PixelTypeOut, typename PixelTypeIn>
-	void copyLine(PixelTypeOut* dst, PixelTypeIn* src, size_t length, cudaMemcpyKind direction)
+	void copyLine(PixelTypeOut* dst, PixelTypeIn* src, std::size_t length, cudaMemcpyKind direction)
 	{
 		if (direction == cudaMemcpyHostToDevice)
 		{
@@ -40,8 +41,8 @@ public:
 	template <typename PixelTypeIn, typename PixelTypeOut>
 	bool sendROI(ImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut>* deviceImage)
 	{
-		Vec<size_t> chunkVolSize = getFullChunkSize();
-		Vec<size_t> imVolSize = imageIn.getSpatialDims();
+		Vec<std::size_t> chunkVolSize = getFullChunkSize();
+		Vec<std::size_t> imVolSize = imageIn.getSpatialDims();
 		
 		if (!deviceImage->setDims(chunkVolSize))
 			return false;
@@ -50,7 +51,7 @@ public:
 		{
 			ImageDimensions curHostCoord(imageStart, channel,frame);
 
-			size_t hostOffset = imageIn.getDims().linearAddressAt(curHostCoord);
+			std::size_t hostOffset = imageIn.getDims().linearAddressAt(curHostCoord);
 			PixelTypeIn* hostPtr = imageIn.getPtr() + hostOffset;
 			PixelTypeOut* buffPtr = deviceImage->getDeviceImagePointer();
 
@@ -59,18 +60,18 @@ public:
 
 		}
 
-		Vec<size_t> curPos(0);
+		Vec<std::size_t> curPos(0);
 		for (curPos.z = 0; curPos.z < chunkVolSize.z; ++curPos.z)
 		{
 			for (curPos.y = 0; curPos.y < chunkVolSize.y; ++curPos.y)
 			{
 				ImageDimensions curHostCoord(imageStart+curPos, channel, frame);
-				Vec<size_t> curDeviceCoord = curPos;
+				Vec<std::size_t> curDeviceCoord = curPos;
 
-				size_t hostOffset = imageIn.getDims().linearAddressAt(curHostCoord);
+				std::size_t hostOffset = imageIn.getDims().linearAddressAt(curHostCoord);
 				PixelTypeIn* hostPtr = imageIn.getPtr() + hostOffset;
 
-				size_t deviceOffset = deviceImage->getDims().linearAddressAt(curDeviceCoord);
+				std::size_t deviceOffset = deviceImage->getDims().linearAddressAt(curDeviceCoord);
 				PixelTypeOut* buffPtr = deviceImage->getDeviceImagePointer() + deviceOffset;
 
 				copyLine(buffPtr, hostPtr, chunkVolSize.x, cudaMemcpyHostToDevice);
@@ -86,14 +87,14 @@ public:
 		cudaThreadSynchronize();
 		HANDLE_ERROR(cudaPeekAtLastError());
 
-		Vec<size_t> chunkVolSize = getFullChunkSize();
-		Vec<size_t> imVolSize = outImage.getSpatialDims();
+		Vec<std::size_t> chunkVolSize = getFullChunkSize();
+		Vec<std::size_t> imVolSize = outImage.getSpatialDims();
 
 		if (chunkVolSize == imVolSize)
 		{
 			ImageDimensions curHostCoord(imageStart,channel,frame);
 
-			size_t hostOffset = outImage.getDims().linearAddressAt(curHostCoord);
+			std::size_t hostOffset = outImage.getDims().linearAddressAt(curHostCoord);
 			PixelTypeOut* hostPtr = outImage.getPtr() + hostOffset;
 			PixelTypeIn* buffPtr = deviceImage->getDeviceImagePointer();
 
@@ -101,18 +102,18 @@ public:
 			return;
 		}
 
-		Vec<size_t> curPos(0);
+		Vec<std::size_t> curPos(0);
 		for (curPos.z = 0; curPos.z < chunkVolSize.z; ++curPos.z)
 		{
 			for (curPos.y = 0; curPos.y < chunkVolSize.y; ++curPos.y)
 			{
 				ImageDimensions curHostCoord(imageStart + curPos, channel, frame);
-				Vec<size_t> curDeviceCoord = curPos;
+				Vec<std::size_t> curDeviceCoord = curPos;
 
-				size_t hostOffset = outImage.getDims().linearAddressAt(curHostCoord);
+				std::size_t hostOffset = outImage.getDims().linearAddressAt(curHostCoord);
 				PixelTypeOut* hostPtr = outImage.getPtr() + hostOffset;
 
-				size_t deviceOffset = deviceImage->getDims().linearAddressAt(curDeviceCoord);
+				std::size_t deviceOffset = deviceImage->getDims().linearAddressAt(curDeviceCoord);
 				PixelTypeIn* buffPtr = deviceImage->getDeviceImagePointer() + deviceOffset;
 
 				copyLine(hostPtr, buffPtr, chunkVolSize.x, cudaMemcpyDeviceToHost);
@@ -121,34 +122,34 @@ public:
 	}
 
 	// This chunk starts at this location in the original image
-	Vec<size_t> imageStart;
+	Vec<std::size_t> imageStart;
 
 	// This is the start of the chunk to be evaluated
-	Vec<size_t> chunkROIstart;
+	Vec<std::size_t> chunkROIstart;
 
 	// This is where the chunk should go back to the original image
-	Vec<size_t> imageROIstart;
+	Vec<std::size_t> imageROIstart;
 
 	// This chunk ends at this location in the original image (inclusive)
-	Vec<size_t> imageEnd;
+	Vec<std::size_t> imageEnd;
 
 	// This is the end of the chunk to be evaluated (inclusive)
-	Vec<size_t> chunkROIend;
+	Vec<std::size_t> chunkROIend;
 
 	// This is where the chunk should go back to the original image (inclusive)
-	Vec<size_t> imageROIend;
+	Vec<std::size_t> imageROIend;
 
 	// This is the channel that this chunk will operate on.
-	size_t channel;
+	std::size_t channel;
 
 	// This is the frame that this chunk will operate on.
-	size_t frame;
+	std::size_t frame;
 
 	dim3 blocks, threads;
 };
 
-void setMaxDeviceDims(std::vector<ImageChunk> &chunks, Vec<size_t> &maxDeviceDims);
+void setMaxDeviceDims(std::vector<ImageChunk> &chunks, Vec<std::size_t> &maxDeviceDims);
 
-std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, Vec<size_t> deviceDims, CudaDevices maxThreads, Vec<size_t> kernalDims = Vec<size_t>(1, 1, 1));
+std::vector<ImageChunk> calculateChunking(ImageDimensions imageDims, Vec<std::size_t> deviceDims, CudaDevices maxThreads, Vec<std::size_t> kernalDims = Vec<std::size_t>(1, 1, 1));
 
-std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffersNeeded, CudaDevices cudaDevs, size_t bytesPerVal, Vec<size_t> kernelDims = Vec<size_t>(1, 1, 1), float memMultiplier=1.0f);
+std::vector<ImageChunk> calculateBuffers(ImageDimensions imageDims, int numBuffersNeeded, CudaDevices cudaDevs, std::size_t bytesPerVal, Vec<std::size_t> kernelDims = Vec<std::size_t>(1, 1, 1), float memMultiplier=1.0f);

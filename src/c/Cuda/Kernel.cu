@@ -3,7 +3,7 @@
 
 __constant__ float CUDA_KERNEL[CONST_KERNEL_NUM_EL];
 
-__host__ Kernel::Kernel(Vec<size_t> dimensions, float* values, int curDevice, size_t startOffset/* = 0*/)
+__host__ Kernel::Kernel(Vec<std::size_t> dimensions, float* values, int curDevice, std::size_t startOffset/* = 0*/)
 {
 	device = curDevice;
 	HANDLE_ERROR(cudaSetDevice(curDevice));
@@ -26,21 +26,21 @@ __host__ Kernel::Kernel(ImageContainer<float> kernelIn, int curDevice)
 	load(kernelIn.getSpatialDims(), kernelIn.getPtr());
 }
 
-__host__ Kernel::Kernel(size_t dimensions, float* values, int curDevice, size_t startOffset /*= 0*/)
+__host__ Kernel::Kernel(std::size_t dimensions, float* values, int curDevice, std::size_t startOffset /*= 0*/)
 {
 	HANDLE_ERROR(cudaSetDevice(curDevice));
-	load(Vec<size_t>(dimensions, 1, 1), values, startOffset);
+	load(Vec<std::size_t>(dimensions, 1, 1), values, startOffset);
 }
 
-__device__ float Kernel::operator[](size_t idx)
+__device__ float Kernel::operator[](std::size_t idx)
 {
 	float val = cudaKernel[idx];
 	return val;
 }
 
-__device__ float Kernel::operator()(Vec<size_t> coordinate)
+__device__ float Kernel::operator()(Vec<std::size_t> coordinate)
 {
-	size_t idx = dims.linearAddressAt(coordinate);
+	std::size_t idx = dims.linearAddressAt(coordinate);
 	float val = cudaKernel[idx];
 	return val;
 }
@@ -54,7 +54,7 @@ __host__ Kernel& Kernel::operator=(const Kernel& other)
 	return *this;
 }
 
-__host__ void Kernel::load(Vec<size_t> dimensions, float* values, size_t startOffset/* = 0*/)
+__host__ void Kernel::load(Vec<std::size_t> dimensions, float* values, std::size_t startOffset/* = 0*/)
 {
 	init();
 
@@ -101,7 +101,7 @@ __host__ void Kernel::clean()
 
 __host__ __device__ void Kernel::init()
 {
-	dims = Vec<size_t>(0);
+	dims = Vec<std::size_t>(0);
 	cudaKernel = NULL;
 	cleanUpDevice = false;
 }
@@ -113,7 +113,7 @@ __host__ void Kernel::setOnes(float** kernel)
 		(*kernel)[i] = 1.0f;
 }
 
-__host__ Kernel& Kernel::getOffsetCopy(Vec<size_t> dimensions, size_t startOffset /*= 0*/)
+__host__ Kernel& Kernel::getOffsetCopy(Vec<std::size_t> dimensions, std::size_t startOffset /*= 0*/)
 {
 	Kernel* kernOut = new Kernel();
 	kernOut->init();

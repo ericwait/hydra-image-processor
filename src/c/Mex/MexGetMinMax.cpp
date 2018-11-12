@@ -100,7 +100,7 @@ std::string MexGetMinMax::check(int nlhs, mxArray* plhs[], int nrhs, const mxArr
 	if (nlhs != 2)
 		return "Requires two outputs!";
 
-	size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
+	std::size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
 	if (imgNumDims > 5)
 		return "Image can have a maximum of five dimensions!";
 

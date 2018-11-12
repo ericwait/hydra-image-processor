@@ -4,6 +4,7 @@
 
 #include <string>
 #include "CudaUtilities.h"
+#include "CudaDeviceStats.h"
 
 template <class PixelType>
 class CudaImageContainer
@@ -32,23 +33,23 @@ public:
 
 	__host__ __device__ PixelType* getImagePointer(){return image;}
 
-	__device__ PixelType& operator()(const Vec<size_t> coordinate)
+	__device__ PixelType& operator()(const Vec<std::size_t> coordinate)
 	{
         return accessValue(coordinate);
 	}
 
-	__device__ const PixelType& operator()( Vec<size_t> coordinate) const
+	__device__ const PixelType& operator()( Vec<std::size_t> coordinate) const
 	{
         return accessValue(coordinate);
 	}
 
 	__device__ const PixelType operator()(Vec<float> pos) const
 	{
-		Vec<size_t> curPos(0);
+		Vec<std::size_t> curPos(0);
 		double val = 0;
 		if(pos.floor()==pos)
 		{
-			curPos = Vec<size_t>(pos);
+			curPos = Vec<std::size_t>(pos);
 			val = accessValue(curPos);
 			return val;
 		}
@@ -57,66 +58,66 @@ public:
 		// Math example from http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#linear-filtering
 
 		Vec<float> betaPos = pos-0.5f;
-		size_t i = floor(betaPos.x);
-		size_t j = floor(betaPos.y);
-		size_t k = floor(betaPos.z);
+		std::size_t i = floor(betaPos.x);
+		std::size_t j = floor(betaPos.y);
+		std::size_t k = floor(betaPos.z);
 		float alpha = betaPos.x-floor(betaPos.x);
 		float beta = betaPos.y-floor(betaPos.y);
 		float gamma = betaPos.z-floor(betaPos.z);
 
-		Vec<size_t> minPos(0, 0, 0);
-		curPos = Vec<size_t>(i, j, k);
+		Vec<std::size_t> minPos(0, 0, 0);
+		curPos = Vec<std::size_t>(i, j, k);
 		if(curPos>=minPos && curPos<roiSizes)
 			val += (1-alpha) * (1-beta)  * (1-gamma) * accessValue(curPos);
 
-		curPos = Vec<size_t>(i+1, j, k);
+		curPos = Vec<std::size_t>(i+1, j, k);
 		if(curPos>=minPos && curPos<roiSizes)
 			val += alpha  * (1-beta)  * (1-gamma) * accessValue(curPos);
 
-		curPos = Vec<size_t>(i, j+1, k);
+		curPos = Vec<std::size_t>(i, j+1, k);
 		if(curPos>=minPos && curPos<roiSizes)
 			val += (1-alpha) *    beta   * (1-gamma) * accessValue(curPos);
 
-		curPos = Vec<size_t>(i+1, j+1, k);
+		curPos = Vec<std::size_t>(i+1, j+1, k);
 		if(curPos>=minPos && curPos<roiSizes)
 			val += alpha  *    beta   * (1-gamma) * accessValue(curPos);
 
-		curPos = Vec<size_t>(i, j, k+1);
+		curPos = Vec<std::size_t>(i, j, k+1);
 		if(curPos>=minPos && curPos<roiSizes)
 			val += (1-alpha) * (1-beta)  *    gamma  * accessValue(curPos);
 
-		curPos = Vec<size_t>(i+1, j, k+1);
+		curPos = Vec<std::size_t>(i+1, j, k+1);
 		if(curPos>=minPos && curPos<roiSizes)
             val += alpha  * (1-beta)  *    gamma  * accessValue(curPos);
 
-		curPos = Vec<size_t>(i, j+1, k+1);
+		curPos = Vec<std::size_t>(i, j+1, k+1);
 		if(curPos>=minPos && curPos<roiSizes)
 			val += (1-alpha) *    beta   *    gamma  * accessValue(curPos);
 
-		curPos = Vec<size_t>(i+1, j+1, k+1);
+		curPos = Vec<std::size_t>(i+1, j+1, k+1);
 		if(curPos>=minPos && curPos<roiSizes)
 			val += alpha  *    beta   *    gamma  * accessValue(curPos);
 
 		return val;
 	}
 
-	__device__ PixelType& operator[](size_t idx)
+	__device__ PixelType& operator[](std::size_t idx)
 	{
         return accessValue(idx);
 	}
 
-	__device__ const PixelType& operator[]( size_t idx) const
+	__device__ const PixelType& operator[]( std::size_t idx) const
 	{
         return accessValue(idx);
 	}
 
-	__host__ __device__ const Vec<size_t> getDims() const { return imageDims; }
-	__host__ __device__ const Vec<size_t> getROIDims() const { return roiSizes; }
-	__host__ __device__ size_t getWidth() const { return roiSizes.x; }
-	__host__ __device__ size_t getHeight() const { return roiSizes.y; }
-	__host__ __device__ size_t getDepth() const { return roiSizes.z; }
+	__host__ __device__ const Vec<std::size_t> getDims() const { return imageDims; }
+	__host__ __device__ const Vec<std::size_t> getROIDims() const { return roiSizes; }
+	__host__ __device__ std::size_t getWidth() const { return roiSizes.x; }
+	__host__ __device__ std::size_t getHeight() const { return roiSizes.y; }
+	__host__ __device__ std::size_t getDepth() const { return roiSizes.z; }
 
-	bool setDims(Vec<size_t> dims)
+	bool setDims(Vec<std::size_t> dims)
 	{
 		if (maxImageDims.product()<dims.product())
 			return false;
@@ -125,7 +126,7 @@ public:
 
 		return true;
 	}
-	bool setROIstart(Vec<size_t> starts)
+	bool setROIstart(Vec<std::size_t> starts)
 	{
 		if (starts >= imageDims)
 			return false;
@@ -133,7 +134,7 @@ public:
 		roiStarts = starts;
 		return true;
 	}
-	bool setROIsize(Vec<size_t> sizes)
+	bool setROIsize(Vec<std::size_t> sizes)
 	{
 		if (roiStarts + sizes > imageDims)
 			return false;
@@ -143,11 +144,11 @@ public:
 	}
 	void resetROI()
 	{
-		roiStarts = Vec<size_t>(0, 0, 0);
+		roiStarts = Vec<std::size_t>(0, 0, 0);
 		roiSizes = imageDims;
 	}
 
-	void loadImage(const PixelType* imageIn, Vec<size_t> dims)
+	void loadImage(const PixelType* imageIn, Vec<std::size_t> dims)
 	{
 		HANDLE_ERROR(cudaSetDevice(device));
 		if (dims != imageDims)
@@ -171,62 +172,62 @@ protected:
 		image = NULL;
 	}
 
-	CudaImageContainer(const PixelType* imageIn, Vec<size_t> dims, int device = 0) {}
+	CudaImageContainer(const PixelType* imageIn, Vec<std::size_t> dims, int device = 0) {}
 
-	CudaImageContainer(Vec<size_t> dims, int device = 0) {}
+	CudaImageContainer(Vec<std::size_t> dims, int device = 0) {}
 
 	__host__ __device__ void defaults()
 	{
-		maxImageDims = Vec<size_t>(0, 0, 0);
-		imageDims = Vec<size_t>(0, 0, 0);
+		maxImageDims = Vec<std::size_t>(0, 0, 0);
+		imageDims = Vec<std::size_t>(0, 0, 0);
 		device = 0;
-		roiStarts = Vec<size_t>(0, 0, 0);
-		roiSizes = Vec<size_t>(0, 0, 0);
+		roiStarts = Vec<std::size_t>(0, 0, 0);
+		roiSizes = Vec<std::size_t>(0, 0, 0);
 	}
 
-	__device__ PixelType& accessValue(Vec<size_t> coordinate)
+	__device__ PixelType& accessValue(Vec<std::size_t> coordinate)
 	{
 		return image[getIdx(coordinate)];
 	}
 
-	__device__ const PixelType& accessValue(Vec<size_t> coordinate) const
+	__device__ const PixelType& accessValue(Vec<std::size_t> coordinate) const
 	{
 		return image[getIdx(coordinate)];
 	}
 
-	__device__ PixelType& accessValue(size_t idx)
+	__device__ PixelType& accessValue(std::size_t idx)
 	{
 		return image[getIdx(idx)];
 	}
 
-	__device__ const PixelType& accessValue(size_t idx) const
+	__device__ const PixelType& accessValue(std::size_t idx) const
 	{
 		return image[getIdx(idx)];
 	}
 
-	__device__ size_t getIdx(Vec<size_t> coordinate) const
+	__device__ std::size_t getIdx(Vec<std::size_t> coordinate) const
 	{
-		coordinate += Vec<size_t>(roiStarts);
+		coordinate += Vec<std::size_t>(roiStarts);
 
 		return imageDims.linearAddressAt(coordinate);
 	}
 
-	__device__ size_t getIdx(size_t idx) const
+	__device__ std::size_t getIdx(std::size_t idx) const
 	{
-		Vec<size_t> deviceStarts = Vec<size_t>(roiStarts);
-		if (deviceStarts == Vec<size_t>(0, 0, 0))
+		Vec<std::size_t> deviceStarts = Vec<std::size_t>(roiStarts);
+		if (deviceStarts == Vec<std::size_t>(0, 0, 0))
 			return idx;
 
-		Vec<size_t> coordinate = imageDims.coordAddressOf(idx) + deviceStarts;
+		Vec<std::size_t> coordinate = imageDims.coordAddressOf(idx) + deviceStarts;
 
 		return imageDims.linearAddressAt(coordinate);
 	}
 
 	int device;
-	Vec<size_t> maxImageDims;
-	Vec<size_t> imageDims;
-	Vec<size_t> roiStarts;
-	Vec<size_t> roiSizes;
+	Vec<std::size_t> maxImageDims;
+	Vec<std::size_t> imageDims;
+	Vec<std::size_t> roiStarts;
+	Vec<std::size_t> roiSizes;
 	PixelType*	image;
 };
 

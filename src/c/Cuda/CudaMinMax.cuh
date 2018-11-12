@@ -13,14 +13,14 @@
 #include <omp.h>
 
 template <class PixelType>
-__global__ void cudaMinMax(const PixelType* arrayIn, PixelType* minsOut, PixelType* maxsOut, size_t n, const PixelType MIN_VAL, const PixelType MAX_VAL)
+__global__ void cudaMinMax(const PixelType* arrayIn, PixelType* minsOut, PixelType* maxsOut, std::size_t n, const PixelType MIN_VAL, const PixelType MAX_VAL)
 {
 	extern __shared__ unsigned char sharedMem[];
 	PixelType* mins = (PixelType*)sharedMem;
 	PixelType* maxs = mins + blockDim.x;
 
-	size_t i = threadIdx.x + blockIdx.x*blockDim.x;
-	size_t imStride = blockDim.x*gridDim.x;
+	std::size_t i = threadIdx.x + blockIdx.x*blockDim.x;
+	std::size_t imStride = blockDim.x*gridDim.x;
 
 	if (i < n)
 	{
@@ -69,7 +69,7 @@ __global__ void cudaMinMax(const PixelType* arrayIn, PixelType* minsOut, PixelTy
 }
 
 template <class PixelType>
-void minMaxBuffer(ImageChunk &chunk, CudaImageContainer<PixelType>* buffer, PixelType& minVal, PixelType& maxVal, size_t maxShared, PixelType* deviceMin = NULL, PixelType* deviceMax = NULL, PixelType* hostMin = NULL, PixelType* hostMax = NULL)
+void minMaxBuffer(ImageChunk &chunk, CudaImageContainer<PixelType>* buffer, PixelType& minVal, PixelType& maxVal, std::size_t maxShared, PixelType* deviceMin = NULL, PixelType* deviceMax = NULL, PixelType* hostMin = NULL, PixelType* hostMax = NULL)
 {
 	const PixelType MIN_VAL = std::numeric_limits<PixelType>::lowest();
 	const PixelType MAX_VAL = std::numeric_limits<PixelType>::max();
@@ -77,7 +77,7 @@ void minMaxBuffer(ImageChunk &chunk, CudaImageContainer<PixelType>* buffer, Pixe
 	int blocks = chunk.blocks.x*chunk.blocks.y*chunk.blocks.z;
 	blocks = (int)(ceil((double)blocks / 2.0));
 	int threads = chunk.threads.x*chunk.threads.y*chunk.threads.z;
-	size_t sharedMemSize = threads * sizeof(PixelType) * 2;
+	std::size_t sharedMemSize = threads * sizeof(PixelType) * 2;
 
 	minVal = MAX_VAL;
 	maxVal = MIN_VAL;
@@ -157,7 +157,7 @@ void cMinMax(ImageContainer<PixelType> imageIn, PixelType& outMin, PixelType& ou
 	if (imageIn.getNumElements() <= cudaDevs.getMaxThreadsPerBlock())
 	{
 		const PixelType* imPtr = imageIn.getConstPtr();
-		for (size_t i = 0; i < imageIn.getNumElements(); ++i)
+		for (std::size_t i = 0; i < imageIn.getNumElements(); ++i)
 		{
 			if (outMin > imPtr[i])
 				outMin = imPtr[i];
@@ -170,7 +170,7 @@ void cMinMax(ImageContainer<PixelType> imageIn, PixelType& outMin, PixelType& ou
 
 	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, sizeof(PixelType));
 
-	Vec<size_t> maxDeviceDims;
+	Vec<std::size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
 	int numThreads = MIN(chunks.size(), cudaDevs.getNumDevices());

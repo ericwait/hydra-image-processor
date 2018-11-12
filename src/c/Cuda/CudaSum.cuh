@@ -13,13 +13,13 @@
 #include <omp.h>
 
 template <class PixelTypeIn, class OutType>
-__global__ void cudaSum(const PixelTypeIn* arrayIn, OutType* arrayOut, size_t n)
+__global__ void cudaSum(const PixelTypeIn* arrayIn, OutType* arrayOut, std::size_t n)
 {
 	extern __shared__ unsigned char sharedMem[];
 	OutType* sums = (OutType*)sharedMem;
 
-	size_t i = threadIdx.x + blockIdx.x*blockDim.x;
-	size_t imStride = blockDim.x*gridDim.x;
+	std::size_t i = threadIdx.x + blockIdx.x*blockDim.x;
+	std::size_t imStride = blockDim.x*gridDim.x;
 
 	if (i<n)
 	{
@@ -72,7 +72,7 @@ void sumBuffer(ImageChunk &chunk, CudaImageContainer<PixelTypeIn>* buffer, OutTy
 		cleanCPU = true;
 	}
 
-	size_t sharedMemSize = threads*sizeof(OutType);
+	std::size_t sharedMemSize = threads*sizeof(OutType);
 
 	HANDLE_ERROR(cudaMemset(deviceSum, 0, sizeof(OutType)*blocks));
 	memset(hostSum, 0, sizeof(OutType)*blocks);
@@ -113,7 +113,7 @@ void cSum(ImageContainer<PixelTypeIn> imageIn, OutType& outVal, int device=-1)
 	if (imageIn.getNumElements() <= cudaDevs.getMaxThreadsPerBlock())
 	{
 		const PixelTypeIn* imPtr = imageIn.getConstPtr();
-		for (size_t i = 0; i <imageIn.getNumElements(); ++i)
+		for (std::size_t i = 0; i <imageIn.getNumElements(); ++i)
 		{
 			outVal += imPtr[i];
 		}
@@ -122,7 +122,7 @@ void cSum(ImageContainer<PixelTypeIn> imageIn, OutType& outVal, int device=-1)
 
 	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, sizeof(PixelTypeIn));
 
-	Vec<size_t> maxDeviceDims;
+	Vec<std::size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
 	int numThreads = MIN(chunks.size(), cudaDevs.getNumDevices());

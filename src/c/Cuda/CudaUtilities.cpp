@@ -2,7 +2,7 @@
 
 #include <cuda_runtime.h>
 
-void calcBlockThread(const Vec<size_t>& dims, size_t maxThreads, dim3 &blocks, dim3 &threads)
+void calcBlockThread(const Vec<std::size_t>& dims, std::size_t maxThreads, dim3 &blocks, dim3 &threads)
 {
 	if (dims.z <= 1)
 	{

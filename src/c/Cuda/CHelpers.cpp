@@ -2,7 +2,7 @@
 #include <vector>
 #include "Defines.h"
 
-float* createEllipsoidKernel(Vec<size_t> radii, Vec<size_t>& kernelDims)
+float* createEllipsoidKernel(Vec<std::size_t> radii, Vec<std::size_t>& kernelDims)
 {
 	kernelDims = radii*2 +1;
 

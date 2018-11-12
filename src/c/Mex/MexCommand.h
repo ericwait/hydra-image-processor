@@ -46,10 +46,10 @@ private:
 
 		std::string path(pathBuffer);
 
-		size_t startOffset = path.find_last_of('\\') + 1;
+		std::size_t startOffset = path.find_last_of('\\') + 1;
 		path = path.substr(startOffset);
 
-		size_t endOffset = path.find_last_of('.');
+		std::size_t endOffset = path.find_last_of('.');
 
 		return path.substr(0,endOffset);
 	}
@@ -276,10 +276,10 @@ protected:
 	}
 
 
-    static Vec<size_t> MexCommand::FillKernel(const mxArray* matKernelIn, float** kernel);
+    static Vec<std::size_t> MexCommand::FillKernel(const mxArray* matKernelIn, float** kernel);
 
 private:
-	static const size_t m_numCommands;
+	static const std::size_t m_numCommands;
 	static MexCommand* const m_commands[];
 
 	std::string m_cmdString;

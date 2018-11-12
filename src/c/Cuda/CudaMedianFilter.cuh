@@ -41,12 +41,12 @@ __device__ PixelType* SubDivide(PixelType* pB, PixelType* pE)
 }
 
 template <class PixelType>
-__device__ void SelectElement(PixelType* pB, PixelType* pE, size_t k)
+__device__ void SelectElement(PixelType* pB, PixelType* pE, std::size_t k)
 {
 	while (true)
 	{
 		PixelType* pPivot = SubDivide(pB, pE);
-		size_t n = pPivot - pB;
+		std::size_t n = pPivot - pB;
 
 		if (n == k)
 			break;
@@ -74,13 +74,13 @@ __global__ void cudaMedianFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaIm
 	extern __shared__ unsigned char valsShared[];
 	PixelTypeIn* vals = (PixelTypeIn*)valsShared;
 
-	Vec<size_t> threadCoordinate;
+	Vec<std::size_t> threadCoordinate;
 	GetThreadBlockCoordinate(threadCoordinate);
 
 	if (threadCoordinate < imageIn.getDims())
 	{
-		Vec<size_t> blockDimVec(blockDim.x, blockDim.y, blockDim.z);
-		size_t linearThreadIdx = blockDimVec.linearAddressAt(Vec<size_t>(threadIdx.x, threadIdx.y, threadIdx.z));
+		Vec<std::size_t> blockDimVec(blockDim.x, blockDim.y, blockDim.z);
+		std::size_t linearThreadIdx = blockDimVec.linearAddressAt(Vec<std::size_t>(threadIdx.x, threadIdx.y, threadIdx.z));
 		int sharedMemOffset = linearThreadIdx*constKernelMem.getDims().product();
 		int kernelVolume = 0;
 
@@ -89,7 +89,7 @@ __global__ void cudaMedianFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaIm
 		{
 			Vec<float> imInPos = kIt.getImageCoordinate();
 			double inVal = (double)imageIn(imInPos);
-			Vec<size_t> coord = kIt.getKernelCoordinate();
+			Vec<std::size_t> coord = kIt.getKernelCoordinate();
 			float kernVal = constKernelMem(coord);
 
 			if (kernVal != 0.0f)
@@ -113,7 +113,7 @@ void cMedianFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelType
 
 	setUpOutIm<PixelTypeOut>(imageIn.getDims(), imageOut);
 
-	if (kernel.getSpatialDims()==Vec<size_t>(1))
+	if (kernel.getSpatialDims()==Vec<std::size_t>(1))
 	{
 		if (std::is_same<PixelTypeIn, PixelTypeOut>::value)
 		{
@@ -123,7 +123,7 @@ void cMedianFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelType
 		{
 			PixelTypeOut* outPtr = imageOut.getPtr();
 			PixelTypeIn* inPtr = imageIn.getPtr();
-			for (size_t i = 0; i < imageOut.getNumElements(); ++i)
+			for (std::size_t i = 0; i < imageOut.getNumElements(); ++i)
 			{
 				outPtr[i] = (PixelTypeOut)inPtr[i];
 			}
@@ -133,8 +133,8 @@ void cMedianFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelType
 
 	CudaDevices cudaDevs(cudaMedianFilter<PixelTypeIn, PixelTypeOut>, device);
 
-	size_t sizeOfsharedMem = kernel.getNumElements() * sizeof(PixelTypeIn);
-	size_t numThreads = (size_t)floor((double)cudaDevs.getMinSharedMem() / (double)sizeOfsharedMem);
+	std::size_t sizeOfsharedMem = kernel.getNumElements() * sizeof(PixelTypeIn);
+	std::size_t numThreads = (std::size_t)floor((double)cudaDevs.getMinSharedMem() / (double)sizeOfsharedMem);
 	
 	if (numThreads < 32) // TODO: Use global memory
 		throw std::runtime_error("Median neighborhood is too large to fit in shared memory on the GPU");
@@ -142,10 +142,10 @@ void cMedianFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelType
 	numThreads = MIN(numThreads, cudaDevs.getMaxThreadsPerBlock());
 	cudaDevs.setMaxThreadsPerBlock(numThreads);
 
-	size_t maxTypeSize = MAX(sizeof(PixelTypeIn), sizeof(PixelTypeOut));
+	std::size_t maxTypeSize = MAX(sizeof(PixelTypeIn), sizeof(PixelTypeOut));
 	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, maxTypeSize,kernel.getSpatialDims());
 
-	Vec<size_t> maxDeviceDims;
+	Vec<std::size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
 	omp_set_num_threads(MIN(chunks.size(), cudaDevs.getNumDevices()));
@@ -165,7 +165,7 @@ void cMedianFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelType
 
 			deviceImages.setAllDims(chunks[i].getFullChunkSize());
 
-			size_t sharedMemorysize = kernel.getNumElements() * sizeof(PixelTypeIn) * chunks[i].threads.x * chunks[i].threads.y * chunks[i].threads.z;
+			std::size_t sharedMemorysize = kernel.getNumElements() * sizeof(PixelTypeIn) * chunks[i].threads.x * chunks[i].threads.y * chunks[i].threads.z;
 
 			for (int j = 0; j < numIterations; ++j)
 			{

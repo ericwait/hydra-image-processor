@@ -2,6 +2,7 @@
 #include "ImageDimensions.cuh"
 
 #include <cassert>
+#include <cstddef>
 
 template<class PixelType>
 class ImageContainer
@@ -12,10 +13,10 @@ public:
 		reset();
 	}
 
-	ImageContainer(PixelType val, Vec<size_t> dimsIn, unsigned char nChannels = 1, unsigned int nFrames = 1)
+	ImageContainer(PixelType val, Vec<std::size_t> dimsIn, unsigned char nChannels = 1, unsigned int nFrames = 1)
 	{
 		reset();
-		size_t numEl = dimsIn.product()*nChannels*nFrames;
+		std::size_t numEl = dimsIn.product()*nChannels*nFrames;
 		image = new PixelType[numEl];
 		for (int i = 0; i < numEl; ++i)
 			image[i] = val;
@@ -25,7 +26,7 @@ public:
 		dimensions.frame = nFrames;
 	}
 
-	ImageContainer(PixelType* imagePtr, Vec<size_t> dimsIn, unsigned char nChannels = 1, unsigned int nFrames = 1)
+	ImageContainer(PixelType* imagePtr, Vec<std::size_t> dimsIn, unsigned char nChannels = 1, unsigned int nFrames = 1)
 	{
 		image = imagePtr;
 		dimensions.dims = dimsIn;
@@ -67,10 +68,10 @@ public:
 	const PixelType* getConstPtr() const { return image; }
 	PixelType* getPtr() const { return image; }
 	ImageDimensions getDims() const { return dimensions; }
-	Vec<size_t> getSpatialDims() const { return dimensions.dims; }
+	Vec<std::size_t> getSpatialDims() const { return dimensions.dims; }
 	unsigned int getNumChannels() const { return dimensions.chan; }
 	unsigned int getNumFrames() const { return dimensions.frame; }
-	size_t getNumElements() const { return dimensions.getNumElements(); }
+	std::size_t getNumElements() const { return dimensions.getNumElements(); }
 
 	void clear() { delete[] image; dimensions = ImageDimensions(); }
 	

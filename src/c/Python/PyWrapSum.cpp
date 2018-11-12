@@ -46,7 +46,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 
 		ImageContainer<bool> imageIn(imageInPtr, imageDims);
 
-		size_t outVal = 0;
+		std::size_t outVal = 0;
 		sum(imageIn, outVal, device);
 
 		outSum = PyLong_FromLongLong(outVal);
@@ -59,7 +59,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 
 		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
 
-		size_t outVal = 0;
+		std::size_t outVal = 0;
 		sum(imageIn, outVal, device);
 
 		outSum = PyLong_FromLongLong(outVal);
@@ -72,7 +72,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 
 		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
 
-		size_t outVal = 0;
+		std::size_t outVal = 0;
 		sum(imageIn, outVal, device);
 
 		outSum = PyLong_FromLongLong(outVal);
@@ -98,7 +98,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 
 		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
 
-		size_t outVal = 0;
+		std::size_t outVal = 0;
 		sum(imageIn, outVal, device);
 
 		outSum = PyLong_FromLongLong(outVal);

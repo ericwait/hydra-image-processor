@@ -129,7 +129,7 @@ std::string MexLoG::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* pr
 	if (nlhs != 1)
 		return "Requires one output!";
 
-	size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
+	std::size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
 	if (imgNumDims > 5)
 		return "Image can have a maximum of five dimensions!";
 

@@ -13,7 +13,7 @@ PyObject* PyWrapDeviceCount::execute(PyObject* self, PyObject* args)
 	if ( !PyArg_ParseTuple(args, "") )
 		return nullptr;
 
-	size_t* memStats;
+	std::size_t* memStats;
 	int numDevices = memoryStats(&memStats);
 
 	PyObject* py_mem = PyList_New(numDevices);

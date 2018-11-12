@@ -12,7 +12,7 @@ void MexWienerFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray
 
 	ImageContainer<float> kernel;
 	if (mxIsEmpty(prhs[1]))
-		kernel = ImageContainer<float>(1.0f,Vec<size_t>(3));
+		kernel = ImageContainer<float>(1.0f,Vec<std::size_t>(3));
 	else
 		kernel = getKernel(prhs[1]);
 
@@ -126,13 +126,13 @@ std::string MexWienerFilter::check(int nlhs, mxArray* plhs[], int nrhs, const mx
 	if (nlhs != 1)
 		return "Requires one output!";
 
-	size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
+	std::size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
 	if (imgNumDims > 5)
 		return "Image can have a maximum of five dimensions!";
 
 	if (!mxIsEmpty(prhs[1]))
 	{
-		size_t kernDims = mxGetNumberOfDimensions(prhs[1]);
+		std::size_t kernDims = mxGetNumberOfDimensions(prhs[1]);
 		if (kernDims < 1 || kernDims>3)
 			return "Kernel can only be either 1-D, 2-D, or 3-D!";
 	}

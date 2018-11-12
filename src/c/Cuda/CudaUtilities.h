@@ -51,6 +51,6 @@ static void HandleError( cudaError_t err, const char *file, int line )
 #define DEBUG_KERNEL_CHECK() {}
 #endif // _DEBUG
 
-void calcBlockThread(const Vec<size_t>& dims, size_t maxThreads, dim3 &blocks, dim3 &threads);
+void calcBlockThread(const Vec<std::size_t>& dims, std::size_t maxThreads, dim3 &blocks, dim3 &threads);
 
 #pragma optimize("",on)

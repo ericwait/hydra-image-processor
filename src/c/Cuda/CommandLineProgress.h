@@ -55,7 +55,7 @@ uint64 GetTimeMs64()
 #endif
 }
 
-char* PrintTime(size_t timeInMS)
+char* PrintTime(std::size_t timeInMS)
 {
 	char* buff = new char[256];
 	double hr = floor(timeInMS / 3.6e+6);

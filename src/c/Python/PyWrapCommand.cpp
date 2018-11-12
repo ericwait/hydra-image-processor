@@ -14,7 +14,7 @@
 
 void setupDims(PyArrayObject* im, ImageDimensions& dimsOut)
 {
-	dimsOut.dims = Vec<size_t>(1);
+	dimsOut.dims = Vec<std::size_t>(1);
 	dimsOut.chan = 1;
 	dimsOut.frame = 1;
 
@@ -22,7 +22,7 @@ void setupDims(PyArrayObject* im, ImageDimensions& dimsOut)
 	const npy_intp* DIMS = PyArray_DIMS(im);
 
 	for ( int i=0; i < std::min(numDims, 3); ++i )
-		dimsOut.dims.e[i] = (size_t)DIMS[i];
+		dimsOut.dims.e[i] = (std::size_t)DIMS[i];
 
 	if ( numDims > 3 )
 		dimsOut.chan = (unsigned int)DIMS[3];
@@ -33,7 +33,7 @@ void setupDims(PyArrayObject* im, ImageDimensions& dimsOut)
 
 
 template <typename T, typename U>
-void converter(void* in, void* out, size_t len)
+void converter(void* in, void* out, std::size_t len)
 {
 	for ( int i=0; i < len; ++i )
 		((U*)out)[i] = static_cast<U>(((T*)in)[i]);
