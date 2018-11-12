@@ -63,5 +63,5 @@ public:
 	}
 
 protected:
-	CudaImageContainerClean() : CudaImageContainer() {};
+	CudaImageContainerClean<PixelType>() : CudaImageContainer<PixelType>() {};
 };
