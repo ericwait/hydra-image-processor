@@ -18,6 +18,7 @@
 
 #include "Defines.h"
 
+#include <cmath>
 #include <type_traits>
 
 #undef min
@@ -334,7 +335,7 @@ public:
 
 	MIXED_PREFIX double EuclideanDistanceTo(const Vec<T>& other)
 	{
-		return sqrt((double)(SQR(x-other.x)+SQR(y-other.y)+SQR(z-other.z)));
+		return std::sqrt((double)(SQR(x-other.x)+SQR(y-other.y)+SQR(z-other.z)));
 	}
 
 	MIXED_PREFIX double lengthSqr()
@@ -344,7 +345,7 @@ public:
 
 	MIXED_PREFIX double length()
 	{
-		return sqrt(lengthSqr());
+		return std::sqrt(lengthSqr());
 	}
 
 	MIXED_PREFIX Vec<double> normal()
