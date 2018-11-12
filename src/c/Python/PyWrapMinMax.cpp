@@ -25,7 +25,6 @@ const char PyWrapMinMax::docString[] = "minOut,maxOut = HIP.MinMax(imageIn,[devi
 PyObject* PyWrapMinMax::execute(PyObject* self, PyObject* args)
 {
 	PyObject* imIn;
-	PyObject* inKern;
 
 	int device = -1;
 

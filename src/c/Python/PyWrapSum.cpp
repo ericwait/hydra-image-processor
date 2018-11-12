@@ -24,7 +24,6 @@ const char PyWrapSum::docString[] = "valueOut = HIP.Sum(imageIn, [device])\n\n"\
 PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 {
 	PyObject* imIn;
-	PyObject* inKern;
 
 	int device = -1;
 
@@ -53,7 +52,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT8 )
 	{
-		unsigned char* imageInPtr, minVal, maxVal;
+		unsigned char* imageInPtr;
 
 		setupImagePointers(imContig, &imageInPtr, imageDims);
 
@@ -66,7 +65,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT16 )
 	{
-		unsigned short* imageInPtr, minVal, maxVal;
+		unsigned short* imageInPtr;
 
 		setupImagePointers(imContig, &imageInPtr, imageDims);
 
@@ -79,7 +78,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_INT16 )
 	{
-		short* imageInPtr, minVal, maxVal;
+		short* imageInPtr;
 
 		setupImagePointers(imContig, &imageInPtr, imageDims);
 
@@ -92,7 +91,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT32 )
 	{
-		unsigned int* imageInPtr, minVal, maxVal;
+		unsigned int* imageInPtr;
 
 		setupImagePointers(imContig, &imageInPtr, imageDims);
 
@@ -105,7 +104,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_INT32 )
 	{
-		int* imageInPtr, minVal, maxVal;
+		int* imageInPtr;
 
 		setupImagePointers(imContig, &imageInPtr, imageDims);
 
@@ -118,7 +117,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_FLOAT )
 	{
-		float* imageInPtr, minVal, maxVal;
+		float* imageInPtr;
 
 		setupImagePointers(imContig, &imageInPtr, imageDims);
 
@@ -131,7 +130,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_DOUBLE )
 	{
-		double* imageInPtr, minVal, maxVal;
+		double* imageInPtr;
 
 		setupImagePointers(imContig, &imageInPtr, imageDims);
 

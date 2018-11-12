@@ -39,13 +39,13 @@ void converter(void* in, void* out, std::size_t len)
 		((U*)out)[i] = static_cast<U>(((T*)in)[i]);
 }
 
-bool pyarrayToVec(PyObject* ar, Vec<double>& outVec)
+bool pyarrayToVec(PyArrayObject* ar, Vec<double>& outVec)
 {
 	int ndim = PyArray_NDIM(ar);
 	if ( ndim > 1 )
 		return false;
 
-	int array_size = PyArray_DIM(ar, 0);
+	std::size_t array_size = PyArray_DIM(ar, 0);
 	if ( array_size != 3 )
 		return false;
 
@@ -95,7 +95,7 @@ bool pyobjToVec(PyObject* list_array, Vec<double>& outVec)
 		return pylistToVec(list_array, outVec);
 
 	else if ( PyArray_Check(list_array) )
-		return pyarrayToVec(list_array, outVec);
+		return pyarrayToVec((PyArrayObject*)list_array, outVec);
 
 	return false;
 }

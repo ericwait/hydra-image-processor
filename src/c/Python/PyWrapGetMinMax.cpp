@@ -23,7 +23,6 @@ const char PyWrapGetMinMax::docString[] = "minValue,maxValue = HIP.GetMinMax(ima
 PyObject* PyWrapGetMinMax::execute(PyObject* self, PyObject* args)
 {
 	PyObject* imIn;
-	PyObject* inKern;
 
 	int device = -1;
 
