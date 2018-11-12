@@ -32,13 +32,17 @@ PY_LIB = -L$(PYTHON_LIB) -l$(PYTHON_VER)
 #########################################
 # Common parameters
 #########################################
-COMPILE_FLAGS = -std=c++11
+# Passed to both Nvidia compiler and gcc/clang
+CPP_FLAGS = -std=c++11
+# Passed to gcc/clang and passthrough (--compiler-flags) in nvcc
+# NOTE: Any warning flags such as '-Wall' should go here
+C_FLAGS = -fopenmp -fPIC
 
 #########################################
 # Nvidia nvcc parameters
 #########################################
 NVCC_PATH = nvcc
-NVCC_FLAGS = $(COMPILE_FLAGS)
+NVCC_FLAGS = $(CPP_FLAGS)
 SMODEL = -arch=sm_30
 NVCC_INC = -I/usr/include
 
@@ -51,7 +55,7 @@ OMP_LIB = -liomp5
 #########################################
 # gcc/g++/clang parameters
 #########################################
-GCC_FLAGS = $(COMPILE_FLAGS) -fopenmp -fPIC
+GCC_FLAGS = $(CPP_FLAGS) $(C_FLAGS)
 GCC_LIBS = $(OMP_LIB)
 
 #########################################
@@ -79,7 +83,7 @@ Mex.mexa64: $(CUDA_OBJ) $(MEX_CPP_OBJ) $(CUDA_CPP_OBJ)
 # compile the cuda library files
 #########################################
 %.o: Cuda/%.cu
-	$(NVCC_PATH) $(NVCC_FLAGS) $(SMODEL) --compiler-options '$(GCC_FLAGS)' -c $< -o $@ $(NVCC_INC) -dc
+	$(NVCC_PATH) $(NVCC_FLAGS) $(SMODEL) --compiler-options '$(C_FLAGS)' -c $< -o $@ $(NVCC_INC) -dc
 
 %.o: Cuda/%.cpp
 	$(C_COMPILER) $(GCC_FLAGS) $(CUDA_INC) -c $< -o $@
