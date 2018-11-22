@@ -4,60 +4,11 @@
 #include "../Cuda/ImageDimensions.cuh"
 
 #include <mex.h>
-#include <windows.h>
-#undef min
-#undef max
 
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <exception>
-
-// Static class for holding some module information
-class ModuleInfo
-{
-public:
-	static void setModuleHandle(HMODULE handle)
-	{
-		hModule = handle;
-	}
-
-	static void initModuleInfo()
-	{
-		if(name.length() == 0)
-			name = initName();
-	}
-
-	static const std::string& getName()
-	{
-		return name;
-	}
-
-private:
-	static std::string initName()
-	{
-		if(hModule == NULL)
-			return "";
-
-		char pathBuffer[1024];
-		DWORD result = GetModuleFileName((HMODULE)hModule,pathBuffer,1024);
-		if(FAILED(result))
-			return "";
-
-		std::string path(pathBuffer);
-
-		std::size_t startOffset = path.find_last_of('\\') + 1;
-		path = path.substr(startOffset);
-
-		std::size_t endOffset = path.find_last_of('.');
-
-		return path.substr(0,endOffset);
-	}
-
-private:
-	static std::string name;
-	static HMODULE hModule;
-};
 
 // Abstract base class for mex commands
 class MexCommand
@@ -77,8 +28,6 @@ public:
 	// Runs through any registered commands.
 	static void run(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[])
 	{
-		ModuleInfo::initModuleInfo();
-
 		// Require a string as command input.
 		if(nrhs < 1 || !mxIsChar(prhs[0]))
 			mexErrMsgTxt(MexCommand::printUsageList().c_str());
@@ -118,9 +67,7 @@ public:
 		std::string offset("   ");
 		std::string usageStr;
 
-		ModuleInfo::initModuleInfo();
-
-		usageStr += offset + ModuleInfo::getName() + "(command, ...)\n\n";
+		usageStr += offset + mexName + "(command, ...)\n\n";
 		usageStr += offset + "Command List:\n";
 
 		for(int i=0; i < m_numCommands; ++i)
@@ -146,7 +93,7 @@ protected:
 		for(int i=0; i < m_numCommands; ++i)
 			usageStr += "  " + buildUsageString(m_commands[i]) + "\n";
 
-		usageStr += "\nUse " + ModuleInfo::getName() + "('help',command) for detailed command info.\n";
+		usageStr += "\nUse " + mexName + "('help',command) for detailed command info.\n";
 
 		return usageStr;
 	}
@@ -199,7 +146,7 @@ protected:
 			usageString += outputs[outputs.size()-1] + "] = ";
 		}
 
-		usageString += ModuleInfo::getName();
+		usageString += mexName;
 		usageString += "(";
 		usageString += "'" + mexCmd->m_cmdString + "'";
 
@@ -279,6 +226,8 @@ protected:
     static Vec<std::size_t> MexCommand::FillKernel(const mxArray* matKernelIn, float** kernel);
 
 private:
+	static std::string mexName;
+
 	static const std::size_t m_numCommands;
 	static MexCommand* const m_commands[];
 

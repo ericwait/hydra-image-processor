@@ -10,18 +10,6 @@
 #include "../WrapCmds/CommandList.h"
 #undef BUILD_COMMANDS
 
-// Module name info
-HMODULE ModuleInfo::hModule;
-std::string ModuleInfo::name;
-
-BOOL WINAPI DllMain(HINSTANCE hInstDLL,DWORD fdwReason,LPVOID lpReserved)
-{
-	if(fdwReason == DLL_PROCESS_ATTACH)
-		ModuleInfo::setModuleHandle(hInstDLL);
-
-	return TRUE;
-}
-
 
 // MexCommandInfo - This command can be used to provide an easy to parse matlab command info structure for all MEX commands.
 std::string MexInfo::check(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]) const
