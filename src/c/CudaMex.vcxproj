@@ -95,7 +95,6 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     <ClInclude Include="Mex\MexCommand.h" />
     <ClInclude Include="Mex\MexWrapDef.h" />
     <ClInclude Include="Mex\MexKernel.h" />
-    <ClInclude Include="Mex\ScopedProcessMutex.h" />
     <ClInclude Include="WrapCmds\CommandList.h" />
   </ItemGroup>
   <ItemGroup>
@@ -122,7 +121,6 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     <ClCompile Include="Mex\MexSum.cpp" />
     <ClCompile Include="Mex\MexVarFilter.cpp" />
     <ClCompile Include="Mex\MexWienerFilter.cpp" />
-    <ClCompile Include="Mex\ScopedProcessMutex.cpp" />
     <None Include="Mex\_TemplateMex.cpp" />
   </ItemGroup>
   <ItemGroup>

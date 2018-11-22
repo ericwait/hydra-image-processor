@@ -1,6 +1,5 @@
 #pragma once
 #include "../Cuda/Vec.h"
-#include "ScopedProcessMutex.h"
 #include "../Cuda/ImageDimensions.cuh"
 
 #include <mex.h>
@@ -51,7 +50,6 @@ public:
 
 		try
 		{
-			ScopedProcessMutex("CudaMutex");
 			mexCmd->execute(nlhs,plhs,cmdNRHS,cmdPRHS);
 		} catch(const std::runtime_error& err)
 		{

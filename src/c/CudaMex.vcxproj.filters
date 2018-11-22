@@ -21,9 +21,6 @@
     <ClInclude Include="Mex\MexCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mex\ScopedProcessMutex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Mex\MexKernel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -42,9 +39,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Mex\MexDeviceStats.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\ScopedProcessMutex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Mex\MexDeviceCount.cpp">
