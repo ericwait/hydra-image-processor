@@ -23,8 +23,8 @@ MEX_CPP_OBJ = $(notdir $(MEX_CPP_FILES:.cpp=.o))
 PY_CPP_OBJ = $(notdir $(PY_CPP_FILES:.cpp=.o))
 
 CUDA_INC = -I./Cuda
-MEX_INC = -I./WrapCmds -I./Mex -I$(MATALAB_DIR)/extern/include
-PY_INC = -I./WrapCmds -I./Python -I./Python/py3c -I$(PYTHON3_INC) -I$(NUMPY3_INC)
+MEX_INC = -I./WrapCmds -I./Mex -I./external -I$(MATALAB_DIR)/extern/include
+PY_INC = -I./WrapCmds -I./Python -I./Python -I./external -I$(PYTHON3_INC) -I$(NUMPY3_INC)
 
 MEX_LIB = -L$(MATALAB_DIR)/bin/glnxa64/libmx.so -L$(MATALAB_DIR)/bin/glnxa64/libmex.so
 PY_LIB = -L$(PYTHON_LIB) -l$(PYTHON_VER)

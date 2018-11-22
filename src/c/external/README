@@ -1,0 +1,5 @@
+This folder contains external source-only dependencies which are distributed along with this project for build simplicity
+
+External dependencies:
+ - py3c - https://py3c.readthedocs.io
+ 
