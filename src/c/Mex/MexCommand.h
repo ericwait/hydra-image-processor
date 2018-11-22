@@ -10,6 +10,18 @@
 #include <algorithm>
 #include <exception>
 
+// Simple template-specialization map for C++ to mex types
+template <typename T> struct TypeMap { static const mxClassID mxType; };
+template <> struct TypeMap<char> { static const mxClassID mxType = mxINT8_CLASS; };
+template <> struct TypeMap<short> { static const mxClassID mxType = mxINT16_CLASS; };
+template <> struct TypeMap<int> { static const mxClassID mxType = mxINT32_CLASS; };
+template <> struct TypeMap<unsigned char> { static const mxClassID mxType = mxUINT8_CLASS; };
+template <> struct TypeMap<unsigned short> { static const mxClassID mxType = mxUINT16_CLASS; };
+template <> struct TypeMap<unsigned int> { static const mxClassID mxType = mxUINT32_CLASS; };
+template <> struct TypeMap<float> { static const mxClassID mxType = mxSINGLE_CLASS; };
+template <> struct TypeMap<double> { static const mxClassID mxType = mxDOUBLE_CLASS; };
+
+
 // Abstract base class for mex commands
 class MexCommand
 {
@@ -164,17 +176,6 @@ protected:
 
 	// Helper function for MexCommands class
 	static void setupDims(const mxArray* im, ImageDimensions& dims);
-
-	// Simple template-specialization map for C++ to mex types
-	template <typename T> struct TypeMap		{static const mxClassID mxType;};
-	template <> struct TypeMap<char>			{static const mxClassID mxType = mxINT8_CLASS;};
-	template <> struct TypeMap<short>			{static const mxClassID mxType = mxINT16_CLASS;};
-	template <> struct TypeMap<int>				{static const mxClassID mxType = mxINT32_CLASS;};
-	template <> struct TypeMap<unsigned char>	{static const mxClassID mxType = mxUINT8_CLASS;};
-	template <> struct TypeMap<unsigned short>	{static const mxClassID mxType = mxUINT16_CLASS;};
-	template <> struct TypeMap<unsigned int>	{static const mxClassID mxType = mxUINT32_CLASS;};
-	template <> struct TypeMap<float>			{static const mxClassID mxType = mxSINGLE_CLASS;};
-	template <> struct TypeMap<double>			{static const mxClassID mxType = mxDOUBLE_CLASS;};
 
 	// General array creation method
 	template <typename T>
