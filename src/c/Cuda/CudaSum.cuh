@@ -9,6 +9,7 @@
 #include "Vec.h"
 
 #include <cuda_runtime.h>
+#include <cstring>
 #include <limits>
 #include <omp.h>
 
@@ -75,7 +76,7 @@ void sumBuffer(ImageChunk &chunk, CudaImageContainer<PixelTypeIn>* buffer, OutTy
 	std::size_t sharedMemSize = threads*sizeof(OutType);
 
 	HANDLE_ERROR(cudaMemset(deviceSum, 0, sizeof(OutType)*blocks));
-	memset(hostSum, 0, sizeof(OutType)*blocks);
+	std::memset(hostSum, 0, sizeof(OutType)*blocks);
 
 	cudaSum<<<blocks, threads, sharedMemSize>>>(buffer->getConstImagePointer(), deviceSum, chunk.getFullChunkSize().product());
 
@@ -94,7 +95,7 @@ void sumBuffer(ImageChunk &chunk, CudaImageContainer<PixelTypeIn>* buffer, OutTy
 	}
 
 	if (!cleanCPU)
-		memset(hostSum, 0, sizeof(OutType)*blocks);
+		std::memset(hostSum, 0, sizeof(OutType)*blocks);
 	else
 	{
 		delete[] hostSum;

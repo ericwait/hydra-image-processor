@@ -1,13 +1,16 @@
-#include "CHelpers.h"
-#include <vector>
 #include "Defines.h"
+#include "CHelpers.h"
+
+#include <cstring>
+#include <vector>
+
 
 float* createEllipsoidKernel(Vec<std::size_t> radii, Vec<std::size_t>& kernelDims)
 {
 	kernelDims = radii*2 +1;
 
 	float* kernel = new float[kernelDims.product()];
-	memset(kernel,0,sizeof(float)*kernelDims.product());
+	std::memset(kernel,0,sizeof(float)*kernelDims.product());
 
 	Vec<int> mid((kernelDims-1)/2);
 	Vec<float> dimScale = Vec<float>(1,1,1) / Vec<float>(radii.pwr(2));

@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <cstring>
 #include <algorithm>
 
 #include "../Cuda/Vec.h"
@@ -59,7 +60,7 @@ void setupOutputPointers(PyArrayObject** imageOut, ImageDimensions& dims, T** im
 	*imageOut = createArray<T>(5, pyDims);
 	*image = (T*)PyArray_DATA(*imageOut);
 
-	memset(*image, 0, sizeof(T)*dims.getNumElements());
+	std::memset(*image, 0, sizeof(T)*dims.getNumElements());
 }
 
 

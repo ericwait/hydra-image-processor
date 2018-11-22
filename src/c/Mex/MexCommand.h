@@ -4,6 +4,7 @@
 
 #include <mex.h>
 
+#include <cstring>
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -217,7 +218,7 @@ protected:
 		*imageOut = createArray<T>(5, matDims);
 		*image = (T*)mxGetData(*imageOut);
 
-		memset(*image, 0, sizeof(T)*dims.getNumElements());
+		std::memset(*image, 0, sizeof(T)*dims.getNumElements());
 	}
 
 

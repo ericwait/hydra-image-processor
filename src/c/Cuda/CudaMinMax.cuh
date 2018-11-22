@@ -9,6 +9,7 @@
 #include "Vec.h"
 
 #include <cuda_runtime.h>
+#include <cstring>
 #include <limits>
 #include <omp.h>
 
@@ -130,8 +131,8 @@ void minMaxBuffer(ImageChunk &chunk, CudaImageContainer<PixelType>* buffer, Pixe
 
 	if (!cleanCPU)
 	{
-		memset(hostMin, 0, sizeof(PixelType)*blocks);
-		memset(hostMax, 0, sizeof(PixelType)*blocks);
+		std::memset(hostMin, 0, sizeof(PixelType)*blocks);
+		std::memset(hostMax, 0, sizeof(PixelType)*blocks);
 	}
 	else
 	{
