@@ -46,8 +46,10 @@
   <ItemGroup>
     <ClInclude Include="Python\PyIncludes.h" />
     <ClInclude Include="Python\PyKernel.h" />
+    <ClInclude Include="Python\PyTypes.h" />
     <ClInclude Include="Python\PyWrapCommand.h" />
     <ClInclude Include="Python\PyWrapDef.h" />
+    <ClInclude Include="WrapCmds\ScriptHelpers.h" />
     <ClInclude Include="WrapCmds\CommandList.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

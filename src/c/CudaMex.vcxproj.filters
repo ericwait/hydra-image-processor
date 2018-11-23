@@ -30,6 +30,15 @@
     <ClInclude Include="Mex\MexWrapDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Mex\MexIncludes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mex\MexTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp">

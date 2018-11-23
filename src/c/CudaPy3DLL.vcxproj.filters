@@ -101,5 +101,11 @@
     <ClInclude Include="Python\PyIncludes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptHelpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Python\PyTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

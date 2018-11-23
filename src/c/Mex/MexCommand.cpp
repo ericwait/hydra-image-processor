@@ -141,25 +141,6 @@ void MexHelp::help(std::vector<std::string>& helpLines) const
 	helpLines.push_back("Print detailed usage information for the specified command.");
 }
 
-void MexCommand::setupDims(const mxArray* im, ImageDimensions& dimsOut)
-{
-	dimsOut.dims = Vec<std::size_t>(1);
-	dimsOut.chan = 1;
-	dimsOut.frame = 1;
-
-    std::size_t numDims = mxGetNumberOfDimensions(im);
-    const mwSize* DIMS = mxGetDimensions(im);
-
-	for ( int i=0; i < MIN(numDims,3); ++i )
-		dimsOut.dims.e[i] = (std::size_t)DIMS[i];
-
-	if (numDims > 3)
-		dimsOut.chan = (unsigned int)DIMS[3];
-
-	if (numDims > 4)
-		dimsOut.frame = (unsigned int)DIMS[4];
-}
-
 Vec<std::size_t> MexCommand::FillKernel(const mxArray* matKernelIn, float** kernel )
 {
     std::size_t numDims = mxGetNumberOfDimensions(matKernelIn);
