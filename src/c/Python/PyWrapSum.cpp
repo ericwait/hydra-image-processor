@@ -40,8 +40,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	if ( PyArray_TYPE(imContig) == NPY_BOOL )
 	{
 		bool* imageInPtr;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<bool> imageIn(imageInPtr, imageDims);
 
@@ -53,8 +52,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_UINT8 )
 	{
 		unsigned char* imageInPtr;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
 
@@ -66,8 +64,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_UINT16 )
 	{
 		unsigned short* imageInPtr;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
 
@@ -79,8 +76,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_INT16 )
 	{
 		short* imageInPtr;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<short> imageIn(imageInPtr, imageDims);
 
@@ -92,8 +88,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_UINT32 )
 	{
 		unsigned int* imageInPtr;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
 
@@ -105,8 +100,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_INT32 )
 	{
 		int* imageInPtr;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<int> imageIn(imageInPtr, imageDims);
 
@@ -118,8 +112,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_FLOAT )
 	{
 		float* imageInPtr;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<float> imageIn(imageInPtr, imageDims);
 
@@ -131,8 +124,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_DOUBLE )
 	{
 		double* imageInPtr;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<double> imageIn(imageInPtr, imageDims);
 

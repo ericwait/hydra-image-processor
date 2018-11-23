@@ -38,7 +38,7 @@ PyObject* PyWrapLoG::execute(PyObject* self, PyObject* args)
 
 
 	Vec<double> sigmas;
-	if ( !pyobjToVec(inSigmas, sigmas) )
+	if ( !Script::pyobjToVec(inSigmas, sigmas) )
 	{
 		PyErr_SetString(PyExc_TypeError, "Sigmas must be a 3-element numeric list");
 		return nullptr;
@@ -54,8 +54,8 @@ PyObject* PyWrapLoG::execute(PyObject* self, PyObject* args)
 		bool* imageInPtr;
 		float* imageOutPtr;
 
-		setupInputPointers(imContig, imageDims, &imageInPtr);
-		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
+		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
+		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<bool> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -68,8 +68,8 @@ PyObject* PyWrapLoG::execute(PyObject* self, PyObject* args)
 		unsigned char* imageInPtr;
 		float* imageOutPtr;
 
-		setupInputPointers(imContig, imageDims, &imageInPtr);
-		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
+		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
+		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -81,8 +81,8 @@ PyObject* PyWrapLoG::execute(PyObject* self, PyObject* args)
 		unsigned short* imageInPtr;
 		float* imageOutPtr;
 
-		setupInputPointers(imContig, imageDims, &imageInPtr);
-		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
+		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
+		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -94,8 +94,8 @@ PyObject* PyWrapLoG::execute(PyObject* self, PyObject* args)
 		short* imageInPtr;
 		float* imageOutPtr;
 
-		setupInputPointers(imContig, imageDims, &imageInPtr);
-		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
+		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
+		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<short> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -107,8 +107,8 @@ PyObject* PyWrapLoG::execute(PyObject* self, PyObject* args)
 		unsigned int* imageInPtr;
 		float* imageOutPtr;
 
-		setupInputPointers(imContig, imageDims, &imageInPtr);
-		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
+		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
+		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -120,8 +120,8 @@ PyObject* PyWrapLoG::execute(PyObject* self, PyObject* args)
 		int* imageInPtr;
 		float* imageOutPtr;
 
-		setupInputPointers(imContig, imageDims, &imageInPtr);
-		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
+		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
+		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<int> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -133,8 +133,8 @@ PyObject* PyWrapLoG::execute(PyObject* self, PyObject* args)
 		float* imageInPtr;
 		float* imageOutPtr;
 
-		setupInputPointers(imContig, imageDims, &imageInPtr);
-		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
+		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
+		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		ImageContainer<float> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -146,8 +146,8 @@ PyObject* PyWrapLoG::execute(PyObject* self, PyObject* args)
 		double* imageInPtr;
 		float* imageOutPtr;
 
-		setupInputPointers(imContig, imageDims, &imageInPtr);
-		setupOutputPointers(&imOut, imageDims, &imageOutPtr);
+		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
+		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
 
 		// TODO: Do we really want to use float outputs here?
 		ImageContainer<double> imageIn(imageInPtr, imageDims);

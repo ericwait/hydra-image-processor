@@ -42,8 +42,7 @@ PyObject* PyWrapMinMax::execute(PyObject* self, PyObject* args)
 	{
 		bool* imageInPtr;
 		bool minVal, maxVal;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<bool> imageIn(imageInPtr, imageDims);
 
@@ -56,8 +55,7 @@ PyObject* PyWrapMinMax::execute(PyObject* self, PyObject* args)
 	{
 		unsigned char* imageInPtr;
 		unsigned char minVal, maxVal;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
 
@@ -70,8 +68,7 @@ PyObject* PyWrapMinMax::execute(PyObject* self, PyObject* args)
 	{
 		unsigned short* imageInPtr;
 		unsigned short minVal, maxVal;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
 
@@ -83,8 +80,7 @@ PyObject* PyWrapMinMax::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_INT16 )
 	{
 		short* imageInPtr, minVal, maxVal;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<short> imageIn(imageInPtr, imageDims);
 
@@ -97,8 +93,7 @@ PyObject* PyWrapMinMax::execute(PyObject* self, PyObject* args)
 	{
 		unsigned int* imageInPtr;
 		unsigned int minVal, maxVal;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
 
@@ -111,8 +106,7 @@ PyObject* PyWrapMinMax::execute(PyObject* self, PyObject* args)
 	{
 		int* imageInPtr;
 		int minVal, maxVal;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<int> imageIn(imageInPtr, imageDims);
 
@@ -125,8 +119,7 @@ PyObject* PyWrapMinMax::execute(PyObject* self, PyObject* args)
 	{
 		float* imageInPtr;
 		float minVal, maxVal;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<float> imageIn(imageInPtr, imageDims);
 
@@ -139,8 +132,7 @@ PyObject* PyWrapMinMax::execute(PyObject* self, PyObject* args)
 	{
 		double* imageInPtr;
 		double minVal, maxVal;
-
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		ImageContainer<double> imageIn(imageInPtr, imageDims);
 
