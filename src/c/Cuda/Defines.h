@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 
 //Percent of memory that can be used on the device
 const double MAX_MEM_AVAIL = 0.95;
@@ -22,12 +23,20 @@ enum ReductionMethods
 	REDUC_MEAN, REDUC_MEDIAN, REDUC_MIN, REDUC_MAX, REDUC_GAUS
 };
 
-// These defines check for non-narrowing (valid) implicit conversions from SrcType -> DstType
-#define NON_NARROWING_IMPLICIT(SrcType,DstType) std::is_same<typename std::common_type<SrcType,DstType>::type,DstType>::value
+// Helper macros to clean up SFINAE code a little
+// TODO: Prefer to use type aliases and templated constexpr, but doesn't mix well with top-level macros
+#define IS_BOOL(Type) std::is_same<Type,bool>::value
+// Convenience macro for getting implicit binary operation output type
+#define BINOP_TYPE(TypeA,TypeB) typename std::common_type<TypeA,TypeB>::type
+// Check for non-narrowing (valid) implicit conversions from SrcType -> DstType
+#define NON_NARROWING(SrcType,DstType) std::is_same<BINOP_TYPE(SrcType,DstType),DstType>::value
 
-#define VALID_IMPLICIT(SrcType,DstType) typename std::enable_if<NON_NARROWING_IMPLICIT(SrcType,DstType)>::type
-#define INVALID_IMPLICIT(SrcType,DstType) typename std::enable_if<!NON_NARROWING_IMPLICIT(SrcType,DstType)>::type
 
-// Helpers for SFINAE overload resolution to avoid implicit narrowing conversions
-#define VALID_IMPLICIT_ARG(SrcType,DstType) VALID_IMPLICIT(SrcType,DstType)* = nullptr
-#define INVALID_IMPLICIT_ARG(SrcType,DstType) INVALID_IMPLICIT(SrcType,DstType)* = nullptr
+//template <typename T> constexpr bool is_bool = std::is_same<T, bool>::value;
+//
+//template <typename SrcType, typename DstType>
+//constexpr bool non_narrowing = std::is_same<typename std::common_type<SrcType, DstType>::type, DstType>::value;
+
+// These are the outer-most routines for trying to clean up SFINAE conditions
+#define ENABLE_CHK_T(...) typename std::enable_if<__VA_ARGS__, std::nullptr_t>::type
+#define ENABLE_CHK(...) ENABLE_CHK_T(__VA_ARGS__) = nullptr

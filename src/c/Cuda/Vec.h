@@ -52,15 +52,15 @@ public:
 		: x(val), y(val), z(val)
 	{}
 
-	template<typename U>
-	MIXED_PREFIX Vec(const Vec<U>& other, VALID_IMPLICIT_ARG(U, T))
+	template<typename U, ENABLE_CHK(NON_NARROWING(U,T))>
+	MIXED_PREFIX Vec(const Vec<U>& other)
 		: x(static_cast<T>(other.x)),
 		y(static_cast<T>(other.y)),
 		z(static_cast<T>(other.z))
 	{}
 
-	template<typename U>
-	MIXED_PREFIX explicit Vec(const Vec<U>& other, INVALID_IMPLICIT_ARG(U, T))
+	template<typename U, ENABLE_CHK(!NON_NARROWING(U,T))>
+	MIXED_PREFIX explicit Vec(const Vec<U>& other)
 		: x(static_cast<T>(other.x)),
 		y(static_cast<T>(other.y)),
 		z(static_cast<T>(other.z))
@@ -238,9 +238,9 @@ public:
 	}
 
 	template <typename U>
-	MIXED_PREFIX Vec<typename std::common_type<T,U>::type> operator+ (const Vec<U>& other) const
+	MIXED_PREFIX Vec<BINOP_TYPE(T,U)> operator+ (const Vec<U>& other) const
 	{
-		Vec<typename std::common_type<T, U>::type> outVec;
+		Vec<BINOP_TYPE(T,U)> outVec;
 		for ( int i=0; i < 3; ++i )
 			outVec.e[i] = e[i] + other.e[i];
 
@@ -248,9 +248,9 @@ public:
 	}
 
 	template <typename U>
-	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator- (const Vec<U>& other) const
+	MIXED_PREFIX Vec<BINOP_TYPE(T,U)> operator- (const Vec<U>& other) const
 	{
-		Vec<typename std::common_type<T, U>::type> outVec;
+		Vec<BINOP_TYPE(T,U)> outVec;
 		for ( int i=0; i < 3; ++i )
 			outVec.e[i] = e[i] - other.e[i];
 
@@ -258,9 +258,9 @@ public:
 	}
 
 	template <typename U>
-	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator/ (const Vec<U>& other) const
+	MIXED_PREFIX Vec<BINOP_TYPE(T,U)> operator/ (const Vec<U>& other) const
 	{
-		Vec<typename std::common_type<T, U>::type> outVec;
+		Vec<BINOP_TYPE(T,U)> outVec;
 		for ( int i=0; i < 3; ++i )
 			outVec.e[i] = e[i] / other.e[i];
 
@@ -268,9 +268,9 @@ public:
 	}
 
 	template <typename U>
-	MIXED_PREFIX Vec<typename std::common_type<T, U>::type>  operator* (const Vec<U>& other) const
+	MIXED_PREFIX Vec<BINOP_TYPE(T,U)>  operator* (const Vec<U>& other) const
 	{
-		Vec<typename std::common_type<T, U>::type> outVec;
+		Vec<BINOP_TYPE(T,U)> outVec;
 		for ( int i=0; i < 3; ++i )
 			outVec.e[i] = e[i] * other.e[i];
 
@@ -376,9 +376,9 @@ public:
     }
 
 	template <typename U, typename V>
-	static MIXED_PREFIX Vec<typename std::common_type<U,V>::type> cross(const Vec<U>& a, const Vec<V>& b)
+	static MIXED_PREFIX Vec<BINOP_TYPE(U,V)> cross(const Vec<U>& a, const Vec<V>& b)
 	{
-		Vec<typename std::common_type<U, V>::type> o;
+		Vec<BINOP_TYPE(U,V)> o;
 
 		o.x = a.y*b.z - a.z*b.y;
 		o.y = -(a.x*b.z - a.z*b.x);
@@ -388,7 +388,7 @@ public:
 	}
 
 	template <typename U, typename V>
-	static MIXED_PREFIX typename std::common_type<U,V>::type dot(const Vec<U>& a, const Vec<V>& b)
+	static MIXED_PREFIX BINOP_TYPE(U,V) dot(const Vec<U>& a, const Vec<V>& b)
 	{
 		return a.x*b.x + a.y*b.y + a.z*b.z;
 	}
