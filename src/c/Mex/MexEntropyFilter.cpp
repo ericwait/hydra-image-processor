@@ -26,8 +26,8 @@ void MexEntropyFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	{
 		bool* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<bool> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -39,8 +39,8 @@ void MexEntropyFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	{
 		unsigned char* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -51,8 +51,8 @@ void MexEntropyFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	{
 		unsigned short* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -63,8 +63,8 @@ void MexEntropyFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	{
 		short* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<short> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -75,8 +75,8 @@ void MexEntropyFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	{
 		unsigned int* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -87,8 +87,8 @@ void MexEntropyFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	{
 		int* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<int> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -99,8 +99,8 @@ void MexEntropyFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	{
 		float* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<float> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -111,8 +111,8 @@ void MexEntropyFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	{
 		double* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<double> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);

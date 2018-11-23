@@ -17,7 +17,7 @@ void MexGetMinMax::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	if (mxIsLogical(prhs[0]))
 	{
 		bool* imageInPtr, minVal, maxVal;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 		plhs[0] = mxCreateDoubleScalar(minVal);
@@ -26,7 +26,7 @@ void MexGetMinMax::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	else if (mxIsUint8(prhs[0]))
 	{
 		unsigned char* imageInPtr, minVal, maxVal;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 		plhs[0] = mxCreateDoubleScalar(minVal);
@@ -35,7 +35,7 @@ void MexGetMinMax::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	else if (mxIsUint16(prhs[0]))
 	{
 		unsigned short* imageInPtr, minVal, maxVal;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 		plhs[0] = mxCreateDoubleScalar(minVal);
@@ -44,7 +44,7 @@ void MexGetMinMax::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	else if (mxIsInt16(prhs[0]))
 	{
 		short* imageInPtr, minVal, maxVal;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 		plhs[0] = mxCreateDoubleScalar(minVal);
@@ -53,7 +53,7 @@ void MexGetMinMax::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	else if (mxIsUint32(prhs[0]))
 	{
 		unsigned int* imageInPtr, minVal, maxVal;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 		plhs[0] = mxCreateDoubleScalar(minVal);
@@ -62,7 +62,7 @@ void MexGetMinMax::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	else if (mxIsInt32(prhs[0]))
 	{
 		int* imageInPtr, minVal, maxVal;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 		plhs[0] = mxCreateDoubleScalar(minVal);
@@ -71,7 +71,7 @@ void MexGetMinMax::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	else if (mxIsSingle(prhs[0]))
 	{
 		float* imageInPtr, minVal, maxVal;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 		plhs[0] = mxCreateDoubleScalar(minVal);
@@ -80,7 +80,7 @@ void MexGetMinMax::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	else if (mxIsDouble(prhs[0]))
 	{
 		double* imageInPtr, minVal, maxVal;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 		plhs[0] = mxCreateDoubleScalar(minVal);

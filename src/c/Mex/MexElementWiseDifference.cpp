@@ -17,11 +17,11 @@ void MexElementWiseDifference::execute(int nlhs, mxArray* plhs[], int nrhs, cons
 	{
 		bool* image1InPtr, *image2InPtr, *imageOutPtr;
 		ImageDimensions image1Dims;
-		setupInputPointers(prhs[0], image1Dims, &image1InPtr);
+		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
 		ImageDimensions image2Dims;
-		setupInputPointers(prhs[1], image2Dims, &image2InPtr);
+		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
 		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<bool> image1In(image1InPtr, image1Dims);
 		ImageContainer<bool> image2In(image2InPtr, image2Dims);
@@ -34,11 +34,11 @@ void MexElementWiseDifference::execute(int nlhs, mxArray* plhs[], int nrhs, cons
 	{
 		unsigned char* image1InPtr, *image2InPtr, *imageOutPtr;
 		ImageDimensions image1Dims;
-		setupInputPointers(prhs[0], image1Dims, &image1InPtr);
+		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
 		ImageDimensions image2Dims;
-		setupInputPointers(prhs[1], image2Dims, &image2InPtr);
+		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
 		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned char> image1In(image1InPtr, image1Dims);
 		ImageContainer<unsigned char> image2In(image2InPtr, image2Dims);
@@ -50,11 +50,11 @@ void MexElementWiseDifference::execute(int nlhs, mxArray* plhs[], int nrhs, cons
 	{
 		unsigned short* image1InPtr, *image2InPtr, *imageOutPtr;
 		ImageDimensions image1Dims;
-		setupInputPointers(prhs[0], image1Dims, &image1InPtr);
+		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
 		ImageDimensions image2Dims;
-		setupInputPointers(prhs[1], image2Dims, &image2InPtr);
+		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
 		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned short> image1In(image1InPtr, image1Dims);
 		ImageContainer<unsigned short> image2In(image2InPtr, image2Dims);
@@ -66,11 +66,11 @@ void MexElementWiseDifference::execute(int nlhs, mxArray* plhs[], int nrhs, cons
 	{
 		short* image1InPtr, *image2InPtr, *imageOutPtr;
 		ImageDimensions image1Dims;
-		setupInputPointers(prhs[0], image1Dims, &image1InPtr);
+		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
 		ImageDimensions image2Dims;
-		setupInputPointers(prhs[1], image2Dims, &image2InPtr);
+		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
 		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<short> image1In(image1InPtr, image1Dims);
 		ImageContainer<short> image2In(image2InPtr, image2Dims);
@@ -82,11 +82,11 @@ void MexElementWiseDifference::execute(int nlhs, mxArray* plhs[], int nrhs, cons
 	{
 		unsigned int* image1InPtr, *image2InPtr, *imageOutPtr;
 		ImageDimensions image1Dims;
-		setupInputPointers(prhs[0], image1Dims, &image1InPtr);
+		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
 		ImageDimensions image2Dims;
-		setupInputPointers(prhs[1], image2Dims, &image2InPtr);
+		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
 		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned int> image1In(image1InPtr, image1Dims);
 		ImageContainer<unsigned int> image2In(image2InPtr, image2Dims);
@@ -98,11 +98,11 @@ void MexElementWiseDifference::execute(int nlhs, mxArray* plhs[], int nrhs, cons
 	{
 		int* image1InPtr, *image2InPtr, *imageOutPtr;
 		ImageDimensions image1Dims;
-		setupInputPointers(prhs[0], image1Dims, &image1InPtr);
+		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
 		ImageDimensions image2Dims;
-		setupInputPointers(prhs[1], image2Dims, &image2InPtr);
+		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
 		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<int> image1In(image1InPtr, image1Dims);
 		ImageContainer<int> image2In(image2InPtr, image2Dims);
@@ -114,11 +114,11 @@ void MexElementWiseDifference::execute(int nlhs, mxArray* plhs[], int nrhs, cons
 	{
 		float* image1InPtr, *image2InPtr, *imageOutPtr;
 		ImageDimensions image1Dims;
-		setupInputPointers(prhs[0], image1Dims, &image1InPtr);
+		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
 		ImageDimensions image2Dims;
-		setupInputPointers(prhs[1], image2Dims, &image2InPtr);
+		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
 		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<float> image1In(image1InPtr, image1Dims);
 		ImageContainer<float> image2In(image2InPtr, image2Dims);
@@ -130,11 +130,11 @@ void MexElementWiseDifference::execute(int nlhs, mxArray* plhs[], int nrhs, cons
 	{
 		double* image1InPtr, *image2InPtr, *imageOutPtr;
 		ImageDimensions image1Dims;
-		setupInputPointers(prhs[0], image1Dims, &image1InPtr);
+		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
 		ImageDimensions image2Dims;
-		setupInputPointers(prhs[1], image2Dims, &image2InPtr);
+		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
 		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<double> image1In(image1InPtr, image1Dims);
 		ImageContainer<double> image2In(image2InPtr, image2Dims);

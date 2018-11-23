@@ -1,3 +1,4 @@
+#include "MexIncludes.h"
 #include "MexCommand.h"
 #include "../Cuda/Vec.h"
 #include "../Cuda/CWrappers.h"
@@ -28,7 +29,7 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	if (mxIsLogical(prhs[0]))
 	{
 		bool* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<bool> imageIn(imageInPtr, imageDims);
 		ImageContainer<bool> imageOut(imageOutPtr, imageDims);
@@ -39,7 +40,7 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	else if (mxIsUint8(prhs[0]))
 	{
 		unsigned char* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned char> imageOut(imageOutPtr, imageDims);
@@ -49,7 +50,7 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	else if (mxIsUint16(prhs[0]))
 	{
 		unsigned short* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned short> imageOut(imageOutPtr, imageDims);
@@ -59,7 +60,7 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	else if (mxIsInt16(prhs[0]))
 	{
 		short* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<short> imageIn(imageInPtr, imageDims);
 		ImageContainer<short> imageOut(imageOutPtr, imageDims);
@@ -69,7 +70,7 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	else if (mxIsUint32(prhs[0]))
 	{
 		unsigned int* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned int> imageOut(imageOutPtr, imageDims);
@@ -79,7 +80,7 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	else if (mxIsInt32(prhs[0]))
 	{
 		int* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<int> imageIn(imageInPtr, imageDims);
 		ImageContainer<int> imageOut(imageOutPtr, imageDims);
@@ -89,7 +90,7 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	else if (mxIsSingle(prhs[0]))
 	{
 		float* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<float> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -99,7 +100,7 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	else if (mxIsDouble(prhs[0]))
 	{
 		double* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<double> imageIn(imageInPtr, imageDims);
 		ImageContainer<double> imageOut(imageOutPtr, imageDims);

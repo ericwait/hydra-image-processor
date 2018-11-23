@@ -21,8 +21,8 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	{
 		bool* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<bool> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -34,8 +34,8 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	{
 		unsigned char* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -46,8 +46,8 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	{
 		unsigned short* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -58,8 +58,8 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	{
 		short* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<short> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -70,8 +70,8 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	{
 		unsigned int* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -82,8 +82,8 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	{
 		int* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<int> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -94,8 +94,8 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	{
 		float* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		ImageContainer<float> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -106,8 +106,8 @@ void MexLoG::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	{
 		double* imageInPtr;
 		float* imageOutPtr;
-		setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
+		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
+		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
 
 		// TODO: Do we really want to use float outputs here?
 		ImageContainer<double> imageIn(imageInPtr, imageDims);
