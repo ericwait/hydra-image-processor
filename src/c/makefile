@@ -14,7 +14,7 @@ PYTHON_LIB = /usr/lib/$(PYTHON_VER)/config-3.5m-x86_64-linux-gnu
 
 CU_FILES := $(wildcard Cuda/*.cu)
 CUPP_FILES := $(wildcard Cuda/*.cpp)
-MEX_CPP_FILES := $(wildcard Mex/*.cpp)
+MEX_CPP_FILES := $(filter-out Mex/_TemplateMex.cpp, $(wildcard Mex/*.cpp))
 PY_CPP_FILES := $(wildcard Python/*.cpp)
 
 CUDA_OBJ = $(notdir $(CU_FILES:.cu=.o))
@@ -26,7 +26,7 @@ CUDA_INC = -I./Cuda
 MEX_INC = -I./WrapCmds -I./Mex -I./external -I$(MATALAB_DIR)/extern/include
 PY_INC = -I./WrapCmds -I./Python -I./Python -I./external -I$(PYTHON3_INC) -I$(NUMPY3_INC)
 
-MEX_LIB = -L$(MATALAB_DIR)/bin/glnxa64/libmx.so -L$(MATALAB_DIR)/bin/glnxa64/libmex.so
+MEX_LIB = -L$(MATALAB_DIR)/bin/glnxa64 -lmx -lmex
 PY_LIB = -L$(PYTHON_LIB) -l$(PYTHON_VER)
 
 #########################################
@@ -80,7 +80,7 @@ HIP.so: $(CUDA_OBJ) $(PY_CPP_OBJ) $(CUDA_CPP_OBJ)
 	$(NVCC_PATH) $(GCC_LIBS) $(PY_LIB) -shared $^ -o HIP.so $(SMODEL) --linker-options '$(LD_FLAGS)'
 
 Mex.mexa64: $(CUDA_OBJ) $(MEX_CPP_OBJ) $(CUDA_CPP_OBJ)
-	$(NVCC_PATH) $(GCC_LIB) $(MEX_LIB) -shared $^ -o Mex.mexa64 $(SMODEL) --linker-options '$(LD_FLAGS)'
+	$(NVCC_PATH) $(GCC_LIBS) $(MEX_LIB) -shared $^ -o Mex.mexa64 $(SMODEL) --linker-options '$(LD_FLAGS)'
 
 #########################################
 # compile the cuda library files
