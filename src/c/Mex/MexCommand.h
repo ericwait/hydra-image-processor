@@ -4,7 +4,7 @@
 
 #include "MexIncludes.h"
 
-#include <cstring>
+#include <stdexcept>
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -163,7 +163,7 @@ protected:
 		return usageString;
 	}
 
-    static Vec<std::size_t> MexCommand::FillKernel(const mxArray* matKernelIn, float** kernel);
+    static Vec<std::size_t> FillKernel(const mxArray* matKernelIn, float** kernel);
 
 private:
 	static std::string mexName;
