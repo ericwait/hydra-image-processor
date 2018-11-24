@@ -1,7 +1,7 @@
 #########################################
 # Set these for MATLAB/Python versions
 #########################################
-MATALAB_DIR = /usr/local/MATLAB/R2017b
+MATALAB_DIR = /usr/local/MATLAB/R2018b
 # NOTE: Currently only builds against python3
 PYTHON_VER = python3.5
 PYTHON3_INC = /usr/include/$(PYTHON_VER)/
@@ -50,10 +50,11 @@ SMODEL = -arch=sm_30
 NVCC_INC = -I/usr/include
 
 #C_COMPILER = g++
-#OMP_LIB = -lgomp
-
 C_COMPILER = clang++
-OMP_LIB = -liomp5
+
+OMP_LIB = -lgomp
+# NOTE: Some versions of clang use libiomp5 instead of libgomp
+#OMP_LIB = -liomp5
 
 #########################################
 # gcc/g++/clang parameters
