@@ -16,7 +16,7 @@ cudaPath = fileparts(which('HIP.BuildMexObject'));
 cd(cudaPath)
 
 % create the m files that correspond to the commands in the mex interface
-HIP.BuildMexObject('..\..\c\Mex.mexw64','Cuda','HIP');
+HIP.BuildMexObject(fullfile('..','..','c',['Mex.' mexext]),'Cuda','HIP');
 
 packagePath = cudaPath;
 cudaPath = fullfile(cudaPath,'@Cuda');
