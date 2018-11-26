@@ -10,8 +10,6 @@
 #include <vector>
 #include <cuda_occupancy.h>
 
-#pragma optimize("",off)
-
 template <typename T, typename U>
 int getKernelMaxThreadsSharedMem(T func, U f, int threadLimit = 0)
 {
@@ -51,6 +49,4 @@ static void HandleError( cudaError_t err, const char *file, int line )
 #define DEBUG_KERNEL_CHECK() {}
 #endif // _DEBUG
 
-void calcBlockThread(const Vec<size_t>& dims, size_t maxThreads, dim3 &blocks, dim3 &threads);
-
-#pragma optimize("",on)
+void calcBlockThread(const Vec<std::size_t>& dims, std::size_t maxThreads, dim3 &blocks, dim3 &threads);

@@ -1,63 +1,15 @@
 #pragma once
 #include "../Cuda/Vec.h"
-#include "ScopedProcessMutex.h"
 #include "../Cuda/ImageDimensions.cuh"
 
-#include <mex.h>
-#include <windows.h>
-#undef min
-#undef max
+#include "MexIncludes.h"
 
+#include <stdexcept>
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <exception>
 
-// Static class for holding some module information
-class ModuleInfo
-{
-public:
-	static void setModuleHandle(HMODULE handle)
-	{
-		hModule = handle;
-	}
-
-	static void initModuleInfo()
-	{
-		if(name.length() == 0)
-			name = initName();
-	}
-
-	static const std::string& getName()
-	{
-		return name;
-	}
-
-private:
-	static std::string initName()
-	{
-		if(hModule == NULL)
-			return "";
-
-		char pathBuffer[1024];
-		DWORD result = GetModuleFileName((HMODULE)hModule,pathBuffer,1024);
-		if(FAILED(result))
-			return "";
-
-		std::string path(pathBuffer);
-
-		size_t startOffset = path.find_last_of('\\') + 1;
-		path = path.substr(startOffset);
-
-		size_t endOffset = path.find_last_of('.');
-
-		return path.substr(0,endOffset);
-	}
-
-private:
-	static std::string name;
-	static HMODULE hModule;
-};
 
 // Abstract base class for mex commands
 class MexCommand
@@ -77,8 +29,6 @@ public:
 	// Runs through any registered commands.
 	static void run(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[])
 	{
-		ModuleInfo::initModuleInfo();
-
 		// Require a string as command input.
 		if(nrhs < 1 || !mxIsChar(prhs[0]))
 			mexErrMsgTxt(MexCommand::printUsageList().c_str());
@@ -102,7 +52,6 @@ public:
 
 		try
 		{
-			ScopedProcessMutex("CudaMutex");
 			mexCmd->execute(nlhs,plhs,cmdNRHS,cmdPRHS);
 		} catch(const std::runtime_error& err)
 		{
@@ -118,9 +67,7 @@ public:
 		std::string offset("   ");
 		std::string usageStr;
 
-		ModuleInfo::initModuleInfo();
-
-		usageStr += offset + ModuleInfo::getName() + "(command, ...)\n\n";
+		usageStr += offset + mexName + "(command, ...)\n\n";
 		usageStr += offset + "Command List:\n";
 
 		for(int i=0; i < m_numCommands; ++i)
@@ -146,7 +93,7 @@ protected:
 		for(int i=0; i < m_numCommands; ++i)
 			usageStr += "  " + buildUsageString(m_commands[i]) + "\n";
 
-		usageStr += "\nUse " + ModuleInfo::getName() + "('help',command) for detailed command info.\n";
+		usageStr += "\nUse " + mexName + "('help',command) for detailed command info.\n";
 
 		return usageStr;
 	}
@@ -199,7 +146,7 @@ protected:
 			usageString += outputs[outputs.size()-1] + "] = ";
 		}
 
-		usageString += ModuleInfo::getName();
+		usageString += mexName;
 		usageString += "(";
 		usageString += "'" + mexCmd->m_cmdString + "'";
 
@@ -216,70 +163,12 @@ protected:
 		return usageString;
 	}
 
-	// Helper function for MexCommands class
-	static void setupDims(const mxArray* im, ImageDimensions& dims);
-
-	// Simple template-specialization map for C++ to mex types
-	template <typename T> struct TypeMap		{static const mxClassID mxType;};
-	template <> struct TypeMap<char>			{static const mxClassID mxType = mxINT8_CLASS;};
-	template <> struct TypeMap<short>			{static const mxClassID mxType = mxINT16_CLASS;};
-	template <> struct TypeMap<int>				{static const mxClassID mxType = mxINT32_CLASS;};
-	template <> struct TypeMap<unsigned char>	{static const mxClassID mxType = mxUINT8_CLASS;};
-	template <> struct TypeMap<unsigned short>	{static const mxClassID mxType = mxUINT16_CLASS;};
-	template <> struct TypeMap<unsigned int>	{static const mxClassID mxType = mxUINT32_CLASS;};
-	template <> struct TypeMap<float>			{static const mxClassID mxType = mxSINGLE_CLASS;};
-	template <> struct TypeMap<double>			{static const mxClassID mxType = mxDOUBLE_CLASS;};
-
-	// General array creation method
-	template <typename T>
-	static mxArray* createArray(mwSize ndim, const mwSize* dims)
-	{
-		return mxCreateNumericArray(ndim, dims, TypeMap<T>::mxType, mxREAL);
-	}
-
-	// Logical array creation specialization
-	template <>
-	static mxArray* createArray<bool>(mwSize ndim, const mwSize* dims)
-	{
-		return mxCreateLogicalArray(ndim, dims);
-	}
-
-	template <typename T>
-	static void setupImagePointers(const mxArray* imageIn, T** image, ImageDimensions& dims, mxArray** argOut = NULL, T** imageOut = NULL)
-	{
-		setupInputPointers(imageIn, dims, image);
-		if (argOut!=NULL && imageOut!=NULL)
-			setupOutputPointers(argOut, dims, imageOut);
-	}
-
-	template <typename T>
-	static void setupInputPointers(const mxArray* imageIn, ImageDimensions& pDims, T** image)
-	{
-		setupDims(imageIn, pDims);
-		*image = (T*)mxGetData(imageIn);
-	}
-
-	template <typename T>
-	static void setupOutputPointers(mxArray** imageOut, ImageDimensions& dims, T** image)
-	{
-		mwSize matDims[5];
-		for (int i = 0; i < 3; ++i)
-			matDims[i] = dims.dims.e[i];
-
-		matDims[3] = dims.chan;
-		matDims[4] = dims.frame;
-
-		*imageOut = createArray<T>(5, matDims);
-		*image = (T*)mxGetData(*imageOut);
-
-		memset(*image, 0, sizeof(T)*dims.getNumElements());
-	}
-
-
-    static Vec<size_t> MexCommand::FillKernel(const mxArray* matKernelIn, float** kernel);
+    static Vec<std::size_t> FillKernel(const mxArray* matKernelIn, float** kernel);
 
 private:
-	static const size_t m_numCommands;
+	static std::string mexName;
+
+	static const std::size_t m_numCommands;
 	static MexCommand* const m_commands[];
 
 	std::string m_cmdString;

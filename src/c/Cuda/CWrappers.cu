@@ -38,7 +38,7 @@ void clearDevice()
 	 return cDeviceStats(stats);
  }
 
- int memoryStats(size_t** stats)
+ int memoryStats(std::size_t** stats)
  {
 	 return cMemoryStats(stats);
  }
@@ -280,47 +280,47 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
  }
 
 
- void getMinMax(const bool* imageIn, size_t numElements, bool& minVal, bool& maxVal, int device /*= 0*/)
+ void getMinMax(const bool* imageIn, std::size_t numElements, bool& minVal, bool& maxVal, int device /*= 0*/)
  {
 	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
  }
 
- void getMinMax(const char* imageIn, size_t numElements, char& minVal, char& maxVal, int device /*= 0*/)
+ void getMinMax(const char* imageIn, std::size_t numElements, char& minVal, char& maxVal, int device /*= 0*/)
  {
 	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
  }
 
- void getMinMax(const unsigned char* imageIn, size_t numElements, unsigned char& minVal, unsigned char& maxVal, int device /*= 0*/)
+ void getMinMax(const unsigned char* imageIn, std::size_t numElements, unsigned char& minVal, unsigned char& maxVal, int device /*= 0*/)
  {
 	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
  }
 
- void getMinMax(const short* imageIn, size_t numElements, short& minVal, short& maxVal, int device /*= 0*/)
+ void getMinMax(const short* imageIn, std::size_t numElements, short& minVal, short& maxVal, int device /*= 0*/)
  {
 	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
  }
 
- void getMinMax(const unsigned short* imageIn, size_t numElements, unsigned short& minVal, unsigned short& maxVal, int device /*= 0*/)
+ void getMinMax(const unsigned short* imageIn, std::size_t numElements, unsigned short& minVal, unsigned short& maxVal, int device /*= 0*/)
  {
 	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
  }
 
- void getMinMax(const int* imageIn, size_t numElements, int& minVal, int& maxVal, int device /*= 0*/)
+ void getMinMax(const int* imageIn, std::size_t numElements, int& minVal, int& maxVal, int device /*= 0*/)
  {
 	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
  }
 
- void getMinMax(const unsigned int* imageIn, size_t numElements, unsigned int& minVal, unsigned int& maxVal, int device /*= 0*/)
+ void getMinMax(const unsigned int* imageIn, std::size_t numElements, unsigned int& minVal, unsigned int& maxVal, int device /*= 0*/)
  {
 	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
  }
 
- void getMinMax(const float* imageIn, size_t numElements, float& minVal, float& maxVal, int device /*= 0*/)
+ void getMinMax(const float* imageIn, std::size_t numElements, float& minVal, float& maxVal, int device /*= 0*/)
  {
 	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
  }
 
- void getMinMax(const double* imageIn, size_t numElements, double& minVal, double& maxVal, int device /*= 0*/)
+ void getMinMax(const double* imageIn, std::size_t numElements, double& minVal, double& maxVal, int device /*= 0*/)
  {
 	 cGetMinMax(imageIn, numElements, minVal, maxVal, device);
  }
@@ -786,7 +786,7 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
  }
 
 
- void sum(const ImageContainer<bool> imageIn, size_t& valOut, int device /*= -1*/)
+ void sum(const ImageContainer<bool> imageIn, std::size_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
@@ -796,7 +796,7 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageContainer<unsigned char> imageIn, size_t& valOut, int device /*= -1*/)
+ void sum(const ImageContainer<unsigned char> imageIn, std::size_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
@@ -806,7 +806,7 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageContainer<unsigned short> imageIn, size_t& valOut, int device /*= -1*/)
+ void sum(const ImageContainer<unsigned short> imageIn, std::size_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
@@ -816,7 +816,7 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageContainer<unsigned int> imageIn, size_t& valOut, int device /*= -1*/)
+ void sum(const ImageContainer<unsigned int> imageIn, std::size_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }

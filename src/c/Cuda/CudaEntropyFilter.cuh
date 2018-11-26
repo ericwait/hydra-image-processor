@@ -18,7 +18,7 @@
 template <class PixelTypeIn>
 __global__ void cudaEntropyFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<float> imageOut, Kernel constKernelMem, const float minValue, const float maxValue)
 {
-	Vec<size_t> threadCoordinate;
+	Vec<std::size_t> threadCoordinate;
 	GetThreadBlockCoordinate(threadCoordinate);
 
 	if (threadCoordinate < imageIn.getDims())
@@ -35,7 +35,7 @@ __global__ void cudaEntropyFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaI
 		{
 			Vec<float> imInPos = kIt.getImageCoordinate();
 			double inVal = (double)imageIn(imInPos);
-			Vec<size_t> coord = kIt.getKernelCoordinate();
+			Vec<std::size_t> coord = kIt.getKernelCoordinate();
 			float kernVal = constKernelMem(coord);
 
 			if (kernVal != 0.0f)
@@ -70,7 +70,7 @@ void cEntropyFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& 
 
 	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, sizeof(float), kernel.getSpatialDims());
 
-	Vec<size_t> maxDeviceDims;
+	Vec<std::size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
 	omp_set_num_threads(MIN(chunks.size(), cudaDevs.getNumDevices()));

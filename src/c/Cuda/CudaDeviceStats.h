@@ -7,9 +7,9 @@ struct DevStats
     int major;
     int minor;
 
-    size_t constMem;
-    size_t sharedMem;
-    size_t totalMem;
+    std::size_t constMem;
+    std::size_t sharedMem;
+    std::size_t totalMem;
 
     bool tccDriver;
     int mpCount;
@@ -20,6 +20,6 @@ struct DevStats
 };
 
 int cDeviceStats(DevStats** stats);
-size_t memoryAvailable(int device, size_t* totalOut = NULL);
-bool checkFreeMemory(size_t needed, int device, bool throws = false);
+std::size_t memoryAvailable(int device, std::size_t* totalOut = NULL);
+bool checkFreeMemory(std::size_t needed, int device, bool throws = false);
 

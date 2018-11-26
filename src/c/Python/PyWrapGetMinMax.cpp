@@ -23,7 +23,6 @@ const char PyWrapGetMinMax::docString[] = "minValue,maxValue = HIP.GetMinMax(ima
 PyObject* PyWrapGetMinMax::execute(PyObject* self, PyObject* args)
 {
 	PyObject* imIn;
-	PyObject* inKern;
 
 	int device = -1;
 
@@ -41,7 +40,7 @@ PyObject* PyWrapGetMinMax::execute(PyObject* self, PyObject* args)
 	{
 		bool* imageInPtr, minVal, maxVal;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 
@@ -52,7 +51,7 @@ PyObject* PyWrapGetMinMax::execute(PyObject* self, PyObject* args)
 	{
 		unsigned char* imageInPtr, minVal, maxVal;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 
@@ -63,7 +62,7 @@ PyObject* PyWrapGetMinMax::execute(PyObject* self, PyObject* args)
 	{
 		unsigned short* imageInPtr, minVal, maxVal;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 
@@ -74,7 +73,7 @@ PyObject* PyWrapGetMinMax::execute(PyObject* self, PyObject* args)
 	{
 		short* imageInPtr, minVal, maxVal;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 
@@ -85,7 +84,7 @@ PyObject* PyWrapGetMinMax::execute(PyObject* self, PyObject* args)
 	{
 		unsigned int* imageInPtr, minVal, maxVal;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 
@@ -96,7 +95,7 @@ PyObject* PyWrapGetMinMax::execute(PyObject* self, PyObject* args)
 	{
 		int* imageInPtr, minVal, maxVal;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 
@@ -107,7 +106,7 @@ PyObject* PyWrapGetMinMax::execute(PyObject* self, PyObject* args)
 	{
 		float* imageInPtr, minVal, maxVal;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 
@@ -118,7 +117,7 @@ PyObject* PyWrapGetMinMax::execute(PyObject* self, PyObject* args)
 	{
 		double* imageInPtr, minVal, maxVal;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
 
 		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
 

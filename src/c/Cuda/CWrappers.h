@@ -18,7 +18,7 @@ IMAGE_PROCESSOR_API void clearDevice();
 
 IMAGE_PROCESSOR_API int deviceCount();
 IMAGE_PROCESSOR_API int deviceStats(DevStats** stats);
-IMAGE_PROCESSOR_API int memoryStats(size_t** stats);
+IMAGE_PROCESSOR_API int memoryStats(std::size_t** stats);
 
 
 /// Example wrapper header calls 
@@ -73,15 +73,15 @@ IMAGE_PROCESSOR_API void gaussian(const ImageContainer<unsigned int> imageIn, Im
 IMAGE_PROCESSOR_API void gaussian(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int numIterations = 1, int device = -1);
 IMAGE_PROCESSOR_API void gaussian(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, Vec<double> sigmas, int numIterations = 1, int device = -1);
 
-IMAGE_PROCESSOR_API void getMinMax(const bool* imageIn, size_t numElements, bool& minVal, bool& maxVal, int device = 0);
-IMAGE_PROCESSOR_API void getMinMax(const char* imageIn, size_t numElements, char& minVal, char& maxVal, int device = 0);
-IMAGE_PROCESSOR_API void getMinMax(const unsigned char* imageIn, size_t numElements, unsigned char& minVal, unsigned char& maxVal, int device = 0);
-IMAGE_PROCESSOR_API void getMinMax(const short* imageIn, size_t numElements, short& minVal, short& maxVal, int device = 0);
-IMAGE_PROCESSOR_API void getMinMax(const unsigned short* imageIn, size_t numElements, unsigned short& minVal, unsigned short& maxVal, int device = 0);
-IMAGE_PROCESSOR_API void getMinMax(const int* imageIn, size_t numElements, int& minVal, int& maxVal, int device = 0);
-IMAGE_PROCESSOR_API void getMinMax(const unsigned int* imageIn, size_t numElements, unsigned int& minVal, unsigned int& maxVal, int device = 0);
-IMAGE_PROCESSOR_API void getMinMax(const float* imageIn, size_t numElements, float& minVal, float& maxVal, int device = 0);
-IMAGE_PROCESSOR_API void getMinMax(const double* imageIn, size_t numElements, double& minVal, double& maxVal, int device = 0);
+IMAGE_PROCESSOR_API void getMinMax(const bool* imageIn, std::size_t numElements, bool& minVal, bool& maxVal, int device = 0);
+IMAGE_PROCESSOR_API void getMinMax(const char* imageIn, std::size_t numElements, char& minVal, char& maxVal, int device = 0);
+IMAGE_PROCESSOR_API void getMinMax(const unsigned char* imageIn, std::size_t numElements, unsigned char& minVal, unsigned char& maxVal, int device = 0);
+IMAGE_PROCESSOR_API void getMinMax(const short* imageIn, std::size_t numElements, short& minVal, short& maxVal, int device = 0);
+IMAGE_PROCESSOR_API void getMinMax(const unsigned short* imageIn, std::size_t numElements, unsigned short& minVal, unsigned short& maxVal, int device = 0);
+IMAGE_PROCESSOR_API void getMinMax(const int* imageIn, std::size_t numElements, int& minVal, int& maxVal, int device = 0);
+IMAGE_PROCESSOR_API void getMinMax(const unsigned int* imageIn, std::size_t numElements, unsigned int& minVal, unsigned int& maxVal, int device = 0);
+IMAGE_PROCESSOR_API void getMinMax(const float* imageIn, std::size_t numElements, float& minVal, float& maxVal, int device = 0);
+IMAGE_PROCESSOR_API void getMinMax(const double* imageIn, std::size_t numElements, double& minVal, double& maxVal, int device = 0);
 
 IMAGE_PROCESSOR_API void highPassFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, Vec<double> sigmas, int device = -1);
 IMAGE_PROCESSOR_API void highPassFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, Vec<double> sigmas, int device = -1);
@@ -183,13 +183,13 @@ IMAGE_PROCESSOR_API void stdFilter(const ImageContainer<unsigned int> imageIn, I
 IMAGE_PROCESSOR_API void stdFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
 IMAGE_PROCESSOR_API void stdFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations = 1, int device = -1);
 
-IMAGE_PROCESSOR_API void sum(const ImageContainer<bool> imageIn, size_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageContainer<bool> imageIn, std::size_t& valOut, int device = -1);
 IMAGE_PROCESSOR_API void sum(const ImageContainer<char> imageIn, long long& valOut, int device = -1);
-IMAGE_PROCESSOR_API void sum(const ImageContainer<unsigned char> imageIn, size_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageContainer<unsigned char> imageIn, std::size_t& valOut, int device = -1);
 IMAGE_PROCESSOR_API void sum(const ImageContainer<short> imageIn, long long& valOut, int device = -1);
-IMAGE_PROCESSOR_API void sum(const ImageContainer<unsigned short> imageIn, size_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageContainer<unsigned short> imageIn, std::size_t& valOut, int device = -1);
 IMAGE_PROCESSOR_API void sum(const ImageContainer<int> imageIn, long long& valOut, int device = -1);
-IMAGE_PROCESSOR_API void sum(const ImageContainer<unsigned int> imageIn, size_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageContainer<unsigned int> imageIn, std::size_t& valOut, int device = -1);
 IMAGE_PROCESSOR_API void sum(const ImageContainer<float> imageIn, double& valOut, int device = -1);
 IMAGE_PROCESSOR_API void sum(const ImageContainer<double> imageIn, double& valOut, int device = -1);
 

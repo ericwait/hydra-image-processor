@@ -17,10 +17,10 @@
 template <class PixelType1In, class PixelType2In, class PixelTypeOut>
 __global__ void cudaElementWiseDifference(CudaImageContainer<PixelType1In> image1In, CudaImageContainer<PixelType2In> image2In, CudaImageContainer<PixelTypeOut> imageOut, PixelTypeOut minValue, PixelTypeOut maxValue)
 {
-	Vec<size_t> threadCoordinate;
+	Vec<std::size_t> threadCoordinate;
 	GetThreadBlockCoordinate(threadCoordinate);
 
-	Vec<size_t> minDims = Vec<size_t>::min(image1In.getDims(), image2In.getDims());
+	Vec<std::size_t> minDims = Vec<std::size_t>::min(image1In.getDims(), image2In.getDims());
 	if (threadCoordinate<minDims)
 	{
 		double outVal = ((double)(image1In(threadCoordinate)) - (double)(image2In(threadCoordinate)));
@@ -36,15 +36,15 @@ void cElementWiseDifference(ImageContainer<PixelType1In> image1In, ImageContaine
 	const PixelTypeOut MAX_VAL = std::numeric_limits<PixelTypeOut>::max();
 	const int NUM_BUFF_NEEDED = 3;
 
-	ImageDimensions maxDims(Vec<size_t>::max(image1In.getSpatialDims(), image2In.getSpatialDims()),MAX(image1In.getNumChannels(),image2In.getNumChannels()), MAX(image1In.getNumFrames(),image2In.getNumFrames()));
+	ImageDimensions maxDims(Vec<std::size_t>::max(image1In.getSpatialDims(), image2In.getSpatialDims()),MAX(image1In.getNumChannels(),image2In.getNumChannels()), MAX(image1In.getNumFrames(),image2In.getNumFrames()));
 	setUpOutIm<PixelTypeOut>(maxDims, imageOut);
 
 	CudaDevices cudaDevs(cudaElementWiseDifference<PixelType1In, PixelType2In, PixelTypeOut>, device);
 
-	size_t maxTypeSize = MAX(MAX(sizeof(PixelType1In),sizeof(PixelType2In)), sizeof(PixelTypeOut));
+	std::size_t maxTypeSize = MAX(MAX(sizeof(PixelType1In),sizeof(PixelType2In)), sizeof(PixelTypeOut));
 	std::vector<ImageChunk> chunks = calculateBuffers(maxDims, NUM_BUFF_NEEDED, cudaDevs, maxTypeSize);
 
-	Vec<size_t> maxDeviceDims;
+	Vec<std::size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
 	omp_set_num_threads(MIN(chunks.size(), cudaDevs.getNumDevices()));

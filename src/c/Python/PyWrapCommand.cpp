@@ -12,40 +12,20 @@
 #undef BUILD_COMMANDS
 
 
-void setupDims(PyArrayObject* im, ImageDimensions& dimsOut)
-{
-	dimsOut.dims = Vec<size_t>(1);
-	dimsOut.chan = 1;
-	dimsOut.frame = 1;
-
-	int numDims = PyArray_NDIM(im);
-	const npy_intp* DIMS = PyArray_DIMS(im);
-
-	for ( int i=0; i < std::min(numDims, 3); ++i )
-		dimsOut.dims.e[i] = (size_t)DIMS[i];
-
-	if ( numDims > 3 )
-		dimsOut.chan = (unsigned int)DIMS[3];
-
-	if ( numDims > 4 )
-		dimsOut.frame = (unsigned int)DIMS[4];
-}
-
-
 template <typename T, typename U>
-void converter(void* in, void* out, size_t len)
+void converter(void* in, void* out, std::size_t len)
 {
 	for ( int i=0; i < len; ++i )
 		((U*)out)[i] = static_cast<U>(((T*)in)[i]);
 }
 
-bool pyarrayToVec(PyObject* ar, Vec<double>& outVec)
+bool Script::pyarrayToVec(PyArrayObject* ar, Vec<double>& outVec)
 {
 	int ndim = PyArray_NDIM(ar);
 	if ( ndim > 1 )
 		return false;
 
-	int array_size = PyArray_DIM(ar, 0);
+	std::size_t array_size = PyArray_DIM(ar, 0);
 	if ( array_size != 3 )
 		return false;
 
@@ -68,7 +48,7 @@ bool pyarrayToVec(PyObject* ar, Vec<double>& outVec)
 }
 
 
-bool pylistToVec(PyObject* list, Vec<double>& outVec)
+bool Script::pylistToVec(PyObject* list, Vec<double>& outVec)
 {
 	Py_ssize_t list_size = PyList_Size(list);
 	if ( list_size != 3 )
@@ -89,13 +69,13 @@ bool pylistToVec(PyObject* list, Vec<double>& outVec)
 }
 
 
-bool pyobjToVec(PyObject* list_array, Vec<double>& outVec)
+bool Script::pyobjToVec(PyObject* list_array, Vec<double>& outVec)
 {
 	if ( PyList_Check(list_array) )
 		return pylistToVec(list_array, outVec);
 
 	else if ( PyArray_Check(list_array) )
-		return pyarrayToVec(list_array, outVec);
+		return pyarrayToVec((PyArrayObject*)list_array, outVec);
 
 	return false;
 }

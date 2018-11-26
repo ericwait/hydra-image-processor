@@ -14,21 +14,21 @@ class ImageDimensions
 public:
 	MIXED_PREFIX ImageDimensions()
 	{
-		dims = Vec<size_t>(0);
+		dims = Vec<std::size_t>(0);
 		chan = 0;
 		frame = 0;
 	}
 
-	MIXED_PREFIX ImageDimensions(Vec<size_t> spatialDimensionsIn, unsigned int numChannelsIn, unsigned int numFramesIn)
+	MIXED_PREFIX ImageDimensions(Vec<std::size_t> spatialDimensionsIn, unsigned int numChannelsIn, unsigned int numFramesIn)
 	{
 		dims = spatialDimensionsIn;
 		chan = numChannelsIn;
 		frame = numFramesIn;
 	}
 
-	MIXED_PREFIX ImageDimensions(size_t spatialDimensionsIn, unsigned int numChannelsIn, unsigned int numFramesIn)
+	MIXED_PREFIX ImageDimensions(std::size_t spatialDimensionsIn, unsigned int numChannelsIn, unsigned int numFramesIn)
 	{
-		dims = Vec<size_t>(spatialDimensionsIn);
+		dims = Vec<std::size_t>(spatialDimensionsIn);
 		chan = numChannelsIn;
 		frame = numFramesIn;
 	}
@@ -78,7 +78,7 @@ public:
 		return *this;
 	}
 
-	MIXED_PREFIX ImageDimensions& operator+=(Vec<size_t> adder)
+	MIXED_PREFIX ImageDimensions& operator+=(Vec<std::size_t> adder)
 	{
 		this->dims = this->dims + adder;
 
@@ -99,9 +99,9 @@ public:
 	{
 		return dims==other.dims && chan==other.chan && frame==other.frame;
 	}
-	MIXED_PREFIX size_t linearAddressAt(ImageDimensions coordinate) const
+	MIXED_PREFIX std::size_t linearAddressAt(ImageDimensions coordinate) const
 	{
-		size_t index =
+		std::size_t index =
 			coordinate.dims.x +
 			coordinate.dims.y * dims.x +
 			coordinate.dims.z * dims.x * dims.y +
@@ -111,10 +111,10 @@ public:
 		return index;
 	}
 
-	MIXED_PREFIX ImageDimensions coordAddressOf(size_t index) const
+	MIXED_PREFIX ImageDimensions coordAddressOf(std::size_t index) const
 	{
 		ImageDimensions coordOut;
-		size_t stride = dims.product()*(size_t)chan;
+		std::size_t stride = dims.product()*(std::size_t)chan;
 		coordOut.frame = (unsigned int)(index/stride);
 
 		index -= coordOut.frame * stride;
@@ -136,22 +136,22 @@ public:
 		return coordOut;
 	}
 
-	MIXED_PREFIX size_t getChanStride() const 
+	MIXED_PREFIX std::size_t getChanStride() const 
 	{
 		return dims.product(); 
 	}
 
-	MIXED_PREFIX size_t getFrameStride() const
+	MIXED_PREFIX std::size_t getFrameStride() const
 	{
 		return getChanStride() * chan;
 	}
 
-	MIXED_PREFIX size_t getNumElements() const
+	MIXED_PREFIX std::size_t getNumElements() const
 	{
 		return getFrameStride() * frame;
 	}
 
-	Vec<size_t> dims;
+	Vec<std::size_t> dims;
 	unsigned int chan;
 	unsigned int frame;
 };

@@ -11,20 +11,20 @@ ImageContainer<float> getKernel(PyArrayObject* kernel)
 	int numDims = PyArray_NDIM(kernel);
 	const npy_intp* DIMS = PyArray_DIMS(kernel);
 
-	Vec<size_t> kernDims(1);
+	Vec<std::size_t> kernDims(1);
 
 	if ( numDims > 2 )
-		kernDims.z = (size_t)DIMS[2];
+		kernDims.z = (std::size_t)DIMS[2];
 	else
 		kernDims.z = 1;
 
 	if ( numDims > 1 )
-		kernDims.y = (size_t)DIMS[1];
+		kernDims.y = (std::size_t)DIMS[1];
 	else
 		kernDims.y = 1;
 
 	if ( numDims > 0 )
-		kernDims.x = (size_t)DIMS[0];
+		kernDims.x = (std::size_t)DIMS[0];
 	else
 		return ImageContainer<float>();
 

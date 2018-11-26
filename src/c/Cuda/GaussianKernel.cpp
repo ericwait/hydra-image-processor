@@ -4,11 +4,11 @@
 #include <functional>
 
 
-float* createGaussianKernel(Vec<double> sigmas, Vec<size_t>& dimsOut)
+float* createGaussianKernel(Vec<double> sigmas, Vec<std::size_t>& dimsOut)
 {
-	dimsOut.x = (size_t)MAX(1.0f, (5 * sigmas.x));
-	dimsOut.y = (size_t)MAX(1.0f, (5 * sigmas.y));
-	dimsOut.z = (size_t)MAX(1.0f, (5 * sigmas.z));
+	dimsOut.x = (std::size_t)MAX(1.0f, (5 * sigmas.x));
+	dimsOut.y = (std::size_t)MAX(1.0f, (5 * sigmas.y));
+	dimsOut.z = (std::size_t)MAX(1.0f, (5 * sigmas.z));
 
 	dimsOut.x = (dimsOut.x % 2 == 0) ? (dimsOut.x + 1) : (dimsOut.x);
 	dimsOut.y = (dimsOut.y % 2 == 0) ? (dimsOut.y + 1) : (dimsOut.y);
@@ -19,7 +19,7 @@ float* createGaussianKernel(Vec<double> sigmas, Vec<size_t>& dimsOut)
 	float* kernelOut = new float[dimsOut.sum()];
 	for (int i = 0; i < 3; ++i)
 	{
-		size_t startOffset = 0;
+		std::size_t startOffset = 0;
 		if (i > 0)
 			startOffset += dimsOut.x;
 

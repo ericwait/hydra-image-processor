@@ -38,7 +38,7 @@ PyObject* PyWrapHighPassFilter::execute(PyObject* self, PyObject* args)
 
 
 	Vec<double> sigmas;
-	if ( !pyobjToVec(inSigmas, sigmas) )
+	if ( !Script::pyobjToVec(inSigmas, sigmas) )
 	{
 		PyErr_SetString(PyExc_TypeError, "Sigmas must be a 3-element numeric list");
 		return nullptr;
@@ -53,7 +53,7 @@ PyObject* PyWrapHighPassFilter::execute(PyObject* self, PyObject* args)
 	{
 		bool* imageInPtr, *imageOutPtr;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<bool> imageIn(imageInPtr, imageDims);
 		ImageContainer<bool> imageOut(imageOutPtr, imageDims);
@@ -65,7 +65,7 @@ PyObject* PyWrapHighPassFilter::execute(PyObject* self, PyObject* args)
 	{
 		unsigned char* imageInPtr, *imageOutPtr;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned char> imageOut(imageOutPtr, imageDims);
@@ -76,7 +76,7 @@ PyObject* PyWrapHighPassFilter::execute(PyObject* self, PyObject* args)
 	{
 		unsigned short* imageInPtr, *imageOutPtr;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned short> imageOut(imageOutPtr, imageDims);
@@ -87,7 +87,7 @@ PyObject* PyWrapHighPassFilter::execute(PyObject* self, PyObject* args)
 	{
 		short* imageInPtr, *imageOutPtr;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<short> imageIn(imageInPtr, imageDims);
 		ImageContainer<short> imageOut(imageOutPtr, imageDims);
@@ -98,7 +98,7 @@ PyObject* PyWrapHighPassFilter::execute(PyObject* self, PyObject* args)
 	{
 		unsigned int* imageInPtr, *imageOutPtr;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned int> imageOut(imageOutPtr, imageDims);
@@ -109,7 +109,7 @@ PyObject* PyWrapHighPassFilter::execute(PyObject* self, PyObject* args)
 	{
 		int* imageInPtr, *imageOutPtr;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<int> imageIn(imageInPtr, imageDims);
 		ImageContainer<int> imageOut(imageOutPtr, imageDims);
@@ -120,7 +120,7 @@ PyObject* PyWrapHighPassFilter::execute(PyObject* self, PyObject* args)
 	{
 		float* imageInPtr, *imageOutPtr;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<float> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -131,7 +131,7 @@ PyObject* PyWrapHighPassFilter::execute(PyObject* self, PyObject* args)
 	{
 		double* imageInPtr, *imageOutPtr;
 
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<double> imageIn(imageInPtr, imageDims);
 		ImageContainer<double> imageOut(imageOutPtr, imageDims);

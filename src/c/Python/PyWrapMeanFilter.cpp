@@ -63,7 +63,7 @@ PyObject* PyWrapMeanFilter::execute(PyObject* self, PyObject* args)
 	if ( PyArray_TYPE(imContig) == NPY_BOOL )
 	{
 		bool* imageInPtr, *imageOutPtr;
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<bool> imageIn(imageInPtr, imageDims);
 		ImageContainer<bool> imageOut(imageOutPtr, imageDims);
@@ -74,7 +74,7 @@ PyObject* PyWrapMeanFilter::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_UINT8 )
 	{
 		unsigned char* imageInPtr, *imageOutPtr;
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned char> imageOut(imageOutPtr, imageDims);
@@ -84,7 +84,7 @@ PyObject* PyWrapMeanFilter::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_UINT16 )
 	{
 		unsigned short* imageInPtr, *imageOutPtr;
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned short> imageOut(imageOutPtr, imageDims);
@@ -94,7 +94,7 @@ PyObject* PyWrapMeanFilter::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_INT16 )
 	{
 		short* imageInPtr, *imageOutPtr;
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<short> imageIn(imageInPtr, imageDims);
 		ImageContainer<short> imageOut(imageOutPtr, imageDims);
@@ -104,7 +104,7 @@ PyObject* PyWrapMeanFilter::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_UINT32 )
 	{
 		unsigned int* imageInPtr, *imageOutPtr;
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned int> imageOut(imageOutPtr, imageDims);
@@ -114,7 +114,7 @@ PyObject* PyWrapMeanFilter::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_INT32 )
 	{
 		int* imageInPtr, *imageOutPtr;
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<int> imageIn(imageInPtr, imageDims);
 		ImageContainer<int> imageOut(imageOutPtr, imageDims);
@@ -124,7 +124,7 @@ PyObject* PyWrapMeanFilter::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_FLOAT )
 	{
 		float* imageInPtr, *imageOutPtr;
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<float> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -134,7 +134,7 @@ PyObject* PyWrapMeanFilter::execute(PyObject* self, PyObject* args)
 	else if ( PyArray_TYPE(imContig) == NPY_DOUBLE )
 	{
 		double* imageInPtr, *imageOutPtr;
-		setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
+		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
 
 		ImageContainer<double> imageIn(imageInPtr, imageDims);
 		ImageContainer<double> imageOut(imageOutPtr, imageDims);

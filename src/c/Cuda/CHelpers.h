@@ -14,6 +14,6 @@
 #define IMAGE_PROCESSOR_API
 #endif // IMAGE_PROCESSOR_DLL
 
-IMAGE_PROCESSOR_API float* createEllipsoidKernel(Vec<size_t> radii, Vec<size_t>& kernelDims);
+IMAGE_PROCESSOR_API float* createEllipsoidKernel(Vec<std::size_t> radii, Vec<std::size_t>& kernelDims);
 
 IMAGE_PROCESSOR_API int calcOtsuThreshold(const double* normHistogram, int numBins);

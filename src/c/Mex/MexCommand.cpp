@@ -10,18 +10,6 @@
 #include "../WrapCmds/CommandList.h"
 #undef BUILD_COMMANDS
 
-// Module name info
-HMODULE ModuleInfo::hModule;
-std::string ModuleInfo::name;
-
-BOOL WINAPI DllMain(HINSTANCE hInstDLL,DWORD fdwReason,LPVOID lpReserved)
-{
-	if(fdwReason == DLL_PROCESS_ATTACH)
-		ModuleInfo::setModuleHandle(hInstDLL);
-
-	return TRUE;
-}
-
 
 // MexCommandInfo - This command can be used to provide an easy to parse matlab command info structure for all MEX commands.
 std::string MexInfo::check(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]) const
@@ -153,48 +141,29 @@ void MexHelp::help(std::vector<std::string>& helpLines) const
 	helpLines.push_back("Print detailed usage information for the specified command.");
 }
 
-void MexCommand::setupDims(const mxArray* im, ImageDimensions& dimsOut)
+Vec<std::size_t> MexCommand::FillKernel(const mxArray* matKernelIn, float** kernel )
 {
-	dimsOut.dims = Vec<size_t>(1);
-	dimsOut.chan = 1;
-	dimsOut.frame = 1;
-
-    size_t numDims = mxGetNumberOfDimensions(im);
-    const mwSize* DIMS = mxGetDimensions(im);
-
-	for ( int i=0; i < MIN(numDims,3); ++i )
-		dimsOut.dims.e[i] = (size_t)DIMS[i];
-
-	if (numDims > 3)
-		dimsOut.chan = (unsigned int)DIMS[3];
-
-	if (numDims > 4)
-		dimsOut.frame = (unsigned int)DIMS[4];
-}
-
-Vec<size_t> MexCommand::FillKernel(const mxArray* matKernelIn, float** kernel )
-{
-    size_t numDims = mxGetNumberOfDimensions(matKernelIn);
+    std::size_t numDims = mxGetNumberOfDimensions(matKernelIn);
     const mwSize* DIMS = mxGetDimensions(matKernelIn);
 
-    Vec<size_t> kernDims;
+    Vec<std::size_t> kernDims;
 
     if(numDims>2)
-        kernDims.z = (size_t)DIMS[2];
+        kernDims.z = (std::size_t)DIMS[2];
     else
         kernDims.z = 1;
 
     if(numDims>1)
-        kernDims.y = (size_t)DIMS[1];
+        kernDims.y = (std::size_t)DIMS[1];
     else
         kernDims.y = 1;
 
     if(numDims>0)
-        kernDims.x = (size_t)DIMS[0];
+        kernDims.x = (std::size_t)DIMS[0];
     else
     {
         mexErrMsgTxt("Kernel cannot be empty!");
-        return Vec<size_t>(0, 0, 0);
+        return Vec<std::size_t>(0, 0, 0);
     }
 
     *kernel = new float[kernDims.product()];

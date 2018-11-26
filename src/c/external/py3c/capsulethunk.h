@@ -80,7 +80,7 @@ PyCapsule_Import(const char *name, int no_block)
     PyObject *object = NULL;
     void *return_value = NULL;
     char *trace;
-    size_t name_length = (strlen(name) + 1) * sizeof(char);
+    std::size_t name_length = (strlen(name) + 1) * sizeof(char);
     char *name_dup = (char *)PyMem_MALLOC(name_length);
 
     if (!name_dup) {

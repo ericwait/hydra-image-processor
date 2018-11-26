@@ -55,6 +55,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MATLAB_DIR)\extern\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;_CRTDBG_MAP_ALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -76,6 +77,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MATLAB_DIR)\extern\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -93,10 +95,12 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
   <ItemGroup>
     <ClInclude Include="Cuda\Vec.h" />
     <ClInclude Include="Mex\MexCommand.h" />
+    <ClInclude Include="Mex\MexTypes.h" />
+    <ClInclude Include="Mex\MexIncludes.h" />
     <ClInclude Include="Mex\MexWrapDef.h" />
     <ClInclude Include="Mex\MexKernel.h" />
-    <ClInclude Include="Mex\ScopedProcessMutex.h" />
     <ClInclude Include="WrapCmds\CommandList.h" />
+    <ClInclude Include="WrapCmds\ScriptHelpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp" />
@@ -122,7 +126,6 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     <ClCompile Include="Mex\MexSum.cpp" />
     <ClCompile Include="Mex\MexVarFilter.cpp" />
     <ClCompile Include="Mex\MexWienerFilter.cpp" />
-    <ClCompile Include="Mex\ScopedProcessMutex.cpp" />
     <None Include="Mex\_TemplateMex.cpp" />
   </ItemGroup>
   <ItemGroup>

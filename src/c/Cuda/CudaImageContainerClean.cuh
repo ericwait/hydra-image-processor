@@ -6,62 +6,62 @@ template <class PixelType>
 class CudaImageContainerClean : public CudaImageContainer<PixelType>
 {
 public:
-	CudaImageContainerClean(const PixelType* imageIn, Vec<size_t> dims, int device = 0)
+	CudaImageContainerClean(const PixelType* imageIn, Vec<std::size_t> dims, int device = 0)
 	{
-		defaults();
-		image = NULL;
-		maxImageDims = dims;
-		roiSizes = dims;
+		this->defaults();
+		this->image = NULL;
+		this->maxImageDims = dims;
+		this->roiSizes = dims;
 		this->device = device;
-		loadImage(imageIn, dims);
+		this->loadImage(imageIn, dims);
 	};
 
-	CudaImageContainerClean(Vec<size_t> dims, int device = 0)
+	CudaImageContainerClean(Vec<std::size_t> dims, int device = 0)
 	{
-		defaults();
-		image = NULL;
-		maxImageDims = dims;
-		imageDims = dims;
-		roiSizes = dims;
+		this->defaults();
+		this->image = NULL;
+		this->maxImageDims = dims;
+		this->imageDims = dims;
+		this->roiSizes = dims;
 		this->device = device;
 		HANDLE_ERROR(cudaSetDevice(device));
-		HANDLE_ERROR(cudaMalloc((void**)&image, sizeof(PixelType)*dims.product()));
-		HANDLE_ERROR(cudaMemset(image, 0, sizeof(PixelType)*dims.product()));
+		HANDLE_ERROR(cudaMalloc((void**)&this->image, sizeof(PixelType)*dims.product()));
+		HANDLE_ERROR(cudaMemset(this->image, 0, sizeof(PixelType)*dims.product()));
 	};
 
 	~CudaImageContainerClean()
 	{
-		if (image != NULL)
+		if (this->image != NULL)
 		{
-			HANDLE_ERROR(cudaSetDevice(device));
+			HANDLE_ERROR(cudaSetDevice(this->device));
 			try
 			{
-				HANDLE_ERROR(cudaFree(image));
+				HANDLE_ERROR(cudaFree(this->image));
 			}
 			catch (char* err)
 			{
 				if (err != NULL)
 					err[0] = 'e';
 			}
-			image = NULL;
+			this->image = NULL;
 		}
 	}
 
 	CudaImageContainerClean(const CudaImageContainerClean& other)
 	{
-		device = other.getDeviceNumber();
-		imageDims = other.getDims();
-		image = NULL;
+		this->device = other.getDeviceNumber();
+		this->imageDims = other.getDims();
+		this->image = NULL;
 
-		HANDLE_ERROR(cudaSetDevice(device));
+		HANDLE_ERROR(cudaSetDevice(this->device));
 
-		if (imageDims > Vec<size_t>(0, 0, 0))
+		if (this->imageDims > Vec<std::size_t>(0, 0, 0))
 		{
-			HANDLE_ERROR(cudaMalloc((void**)&image, sizeof(PixelType)*imageDims.product()));
-			HANDLE_ERROR(cudaMemcpy(image, other.getConstImagePointer(), sizeof(PixelType)*imageDims.product(), cudaMemcpyDeviceToDevice));
+			HANDLE_ERROR(cudaMalloc((void**)&this->image, sizeof(PixelType)*this->imageDims.product()));
+			HANDLE_ERROR(cudaMemcpy(this->image, other.getConstImagePointer(), sizeof(PixelType)*this->imageDims.product(), cudaMemcpyDeviceToDevice));
 		}
 	}
 
 protected:
-	CudaImageContainerClean() : CudaImageContainer() {};
+	CudaImageContainerClean<PixelType>() : CudaImageContainer<PixelType>() {};
 };

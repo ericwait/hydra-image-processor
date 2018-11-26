@@ -13,7 +13,7 @@
 
 #define END_WRAP_COMMANDS																								\
 							};																							\
-							const size_t MexCommand::m_numCommands = sizeof(MexCommand::m_commands) / sizeof(MexCommand*);
+							const std::size_t MexCommand::m_numCommands = sizeof(MexCommand::m_commands) / sizeof(MexCommand*);
 
 #define DEF_WRAP_COMMAND(name) &_ginstMex##name,
 #else

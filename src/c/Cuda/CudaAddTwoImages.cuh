@@ -17,7 +17,7 @@
 template <class PixelTypeIn1, class PixelTypeIn2, class PixelTypeOut>
 __global__ void cudaAddTwoImages(CudaImageContainer<PixelTypeIn1> imageIn1, CudaImageContainer<PixelTypeIn2> imageIn2, CudaImageContainer<PixelTypeOut> imageOut, PixelTypeOut minValue, PixelTypeOut maxValue, double image2Factor=1.0)
 {
-	Vec<size_t> threadCoordinate;
+	Vec<std::size_t> threadCoordinate;
 	GetThreadBlockCoordinate(threadCoordinate);
 
 	if (threadCoordinate < imageIn1.getDims() && threadCoordinate<imageIn2.getDims())
@@ -41,10 +41,10 @@ void cAddTwoImages(ImageContainer<PixelTypeIn1> imageIn1, ImageContainer<PixelTy
 
 	CudaDevices cudaDevs(cudaAddTwoImages<PixelTypeIn1, PixelTypeIn2, PixelTypeOut>, device);
 
-	size_t maxTypeSize = MAX(sizeof(PixelTypeIn1), MAX(sizeof(PixelTypeIn1), sizeof(PixelTypeOut)));
+	std::size_t maxTypeSize = MAX(sizeof(PixelTypeIn1), MAX(sizeof(PixelTypeIn1), sizeof(PixelTypeOut)));
 	std::vector<ImageChunk> chunks = calculateBuffers(imageIn1.getDims(), NUM_BUFF_NEEDED, cudaDevs, maxTypeSize);
 
-	Vec<size_t> maxDeviceDims;
+	Vec<std::size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
 	omp_set_num_threads(MIN(chunks.size(), cudaDevs.getNumDevices()));

@@ -12,7 +12,7 @@ void MexWienerFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray
 
 	ImageContainer<float> kernel;
 	if (mxIsEmpty(prhs[1]))
-		kernel = ImageContainer<float>(1.0f,Vec<size_t>(3));
+		kernel = ImageContainer<float>(1.0f,Vec<std::size_t>(3));
 	else
 		kernel = getKernel(prhs[1]);
 
@@ -32,7 +32,7 @@ void MexWienerFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	if (mxIsLogical(prhs[0]))
 	{
 		bool* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<bool> imageIn(imageInPtr, imageDims);
 		ImageContainer<bool> imageOut(imageOutPtr, imageDims);
@@ -43,7 +43,7 @@ void MexWienerFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	else if (mxIsUint8(prhs[0]))
 	{
 		unsigned char* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned char> imageOut(imageOutPtr, imageDims);
@@ -53,7 +53,7 @@ void MexWienerFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	else if (mxIsUint16(prhs[0]))
 	{
 		unsigned short* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned short> imageOut(imageOutPtr, imageDims);
@@ -63,7 +63,7 @@ void MexWienerFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	else if (mxIsInt16(prhs[0]))
 	{
 		short* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<short> imageIn(imageInPtr, imageDims);
 		ImageContainer<short> imageOut(imageOutPtr, imageDims);
@@ -73,7 +73,7 @@ void MexWienerFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	else if (mxIsUint32(prhs[0]))
 	{
 		unsigned int* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
 		ImageContainer<unsigned int> imageOut(imageOutPtr, imageDims);
@@ -83,7 +83,7 @@ void MexWienerFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	else if (mxIsInt32(prhs[0]))
 	{
 		int* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<int> imageIn(imageInPtr, imageDims);
 		ImageContainer<int> imageOut(imageOutPtr, imageDims);
@@ -93,7 +93,7 @@ void MexWienerFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	else if (mxIsSingle(prhs[0]))
 	{
 		float* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<float> imageIn(imageInPtr, imageDims);
 		ImageContainer<float> imageOut(imageOutPtr, imageDims);
@@ -103,7 +103,7 @@ void MexWienerFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	else if (mxIsDouble(prhs[0]))
 	{
 		double* imageInPtr, *imageOutPtr;
-		setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
+		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
 		ImageContainer<double> imageIn(imageInPtr, imageDims);
 		ImageContainer<double> imageOut(imageOutPtr, imageDims);
@@ -126,13 +126,13 @@ std::string MexWienerFilter::check(int nlhs, mxArray* plhs[], int nrhs, const mx
 	if (nlhs != 1)
 		return "Requires one output!";
 
-	size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
+	std::size_t imgNumDims = mxGetNumberOfDimensions(prhs[0]);
 	if (imgNumDims > 5)
 		return "Image can have a maximum of five dimensions!";
 
 	if (!mxIsEmpty(prhs[1]))
 	{
-		size_t kernDims = mxGetNumberOfDimensions(prhs[1]);
+		std::size_t kernDims = mxGetNumberOfDimensions(prhs[1]);
 		if (kernDims < 1 || kernDims>3)
 			return "Kernel can only be either 1-D, 2-D, or 3-D!";
 	}

@@ -16,7 +16,7 @@ extern "C" void HandleAborts(int signal_number)
 void CudaDevices::getCudaInfo(int device/*=-1*/)
 {
 	// Get device count
-	int numDevices;
+	int numDevices = 0;
 	cudaGetDeviceCount(&numDevices);
 
 	if (numDevices==0)
@@ -46,15 +46,15 @@ void CudaDevices::getCudaInfo(int device/*=-1*/)
 	{
 		cudaDeviceProp props;
 		cudaGetDeviceProperties(&props, deviceIdxList[i]);
-		size_t mTPB = props.maxThreadsPerBlock;
+		std::size_t mTPB = props.maxThreadsPerBlock;
 		if (maxThreadsPerBlock > mTPB)
 			maxThreadsPerBlock = mTPB;
 
-		size_t curAvailMem = memoryAvailable(deviceIdxList[i]);
+		std::size_t curAvailMem = memoryAvailable(deviceIdxList[i]);
 		if (availMem > curAvailMem)
 			availMem = curAvailMem;
 
-		size_t curSharedMem = props.sharedMemPerBlock;
+		std::size_t curSharedMem = props.sharedMemPerBlock;
 		if (sharedMemPerBlock > curSharedMem)
 			sharedMemPerBlock = curSharedMem;
 	}

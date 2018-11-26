@@ -17,7 +17,7 @@
 template <class PixelTypeIn, class PixelTypeOut>
 __global__ void cudaMultiplySumBias(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> imageOut, Kernel constKernelMem, PixelTypeOut minValue, PixelTypeOut maxValue, Kernel constOtherKernel, bool normalize = true)
 {
-	Vec<size_t> threadCoordinate;
+	Vec<std::size_t> threadCoordinate;
 	GetThreadBlockCoordinate(threadCoordinate);
 
 	if (threadCoordinate < imageIn.getDims())
@@ -28,9 +28,9 @@ __global__ void cudaMultiplySumBias(CudaImageContainer<PixelTypeIn> imageIn, Cud
 		double normVal = 0;
 		double inVals = 0;
 		bool bias = true;
-		size_t numNeighborHood = 0;
+		std::size_t numNeighborHood = 0;
 		Kernel* otherKern = &constOtherKernel;
-		if (constOtherKernel.dims == Vec<size_t>(0))
+		if (constOtherKernel.dims == Vec<std::size_t>(0))
 		{
 			bias = false;
 			otherKern = &constKernelMem;
@@ -40,7 +40,7 @@ __global__ void cudaMultiplySumBias(CudaImageContainer<PixelTypeIn> imageIn, Cud
 		{
 			Vec<float> imInPos = kIt.getImageCoordinate();
 			double curVal = (double)imageIn(imInPos);
-			Vec<size_t> coord = kIt.getKernelCoordinate();
+			Vec<std::size_t> coord = kIt.getKernelCoordinate();
 			float kernVal = constKernelMem(coord);
 			float otherKernVal = (*otherKern)(coord);
 
@@ -67,7 +67,7 @@ __global__ void cudaMultiplySumBias(CudaImageContainer<PixelTypeIn> imageIn, Cud
 template <class PixelTypeIn, class PixelTypeOut>
 __global__ void cudaMultiplySum(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> imageOut, Kernel constKernelMem, PixelTypeOut minValue, PixelTypeOut maxValue, bool normalize=true)
 {
-	Vec<size_t> threadCoordinate;
+	Vec<std::size_t> threadCoordinate;
 	GetThreadBlockCoordinate(threadCoordinate);
 
 	if (threadCoordinate < imageIn.getDims())
@@ -80,7 +80,7 @@ __global__ void cudaMultiplySum(CudaImageContainer<PixelTypeIn> imageIn, CudaIma
 		{
 			Vec<float> imInPos = kIt.getImageCoordinate();
 			double curVal = (double)imageIn(imInPos);
-			Vec<size_t> coord = kIt.getKernelCoordinate();
+			Vec<std::size_t> coord = kIt.getKernelCoordinate();
 			float kernVal = constKernelMem(coord);
 
 			if (kernVal != 0.0f)
@@ -109,10 +109,10 @@ void cMultiplySum(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeO
 
 	CudaDevices cudaDevs(cudaMultiplySum<PixelTypeIn, PixelTypeOut>, device);
 
-	size_t maxTypeSize = MAX(sizeof(PixelTypeIn), sizeof(PixelTypeOut));
+	std::size_t maxTypeSize = MAX(sizeof(PixelTypeIn), sizeof(PixelTypeOut));
 	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, maxTypeSize, kernel.getSpatialDims());
 
-	Vec<size_t> maxDeviceDims;
+	Vec<std::size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
 	omp_set_num_threads(MIN(chunks.size(), cudaDevs.getNumDevices()));

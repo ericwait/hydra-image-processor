@@ -27,12 +27,12 @@ void cGaussian(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>
 
 	CudaDevices cudaDevs(cudaMultiplySum<float, float>, device);
 
-	Vec<size_t> kernDims(0);
+	Vec<std::size_t> kernDims(0);
 	float* hostKernels = createGaussianKernel(sigmas,kernDims);
 
 	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, sizeof(float), kernDims);
 
-	Vec<size_t> maxDeviceDims;
+	Vec<std::size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
 	omp_set_num_threads(MIN(chunks.size(),cudaDevs.getNumDevices()));
@@ -45,9 +45,9 @@ void cGaussian(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>
 		CudaDeviceImages<float> deviceImages(NUM_BUFF_NEEDED, maxDeviceDims, CUR_DEVICE);
 		
 		Kernel constFullKern(kernDims.sum(), hostKernels,CUR_DEVICE);
-		Kernel constKernelMem_x = constFullKern.getOffsetCopy(Vec<size_t>(kernDims.x,1,1), 0);
-		Kernel constKernelMem_y = constFullKern.getOffsetCopy(Vec<size_t>(1,kernDims.y,1), kernDims.x);
-		Kernel constKernelMem_z = constFullKern.getOffsetCopy(Vec<size_t>(1,1, kernDims.z), kernDims.x + kernDims.y);
+		Kernel constKernelMem_x = constFullKern.getOffsetCopy(Vec<std::size_t>(kernDims.x,1,1), 0);
+		Kernel constKernelMem_y = constFullKern.getOffsetCopy(Vec<std::size_t>(1,kernDims.y,1), kernDims.x);
+		Kernel constKernelMem_z = constFullKern.getOffsetCopy(Vec<std::size_t>(1,1, kernDims.z), kernDims.x + kernDims.y);
 
 		for (int i = CUDA_IDX; i < chunks.size(); i += N_THREADS)
 		{

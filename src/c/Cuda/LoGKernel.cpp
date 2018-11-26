@@ -2,13 +2,11 @@
 
 #include <functional>
 
-float* createLoG_GausKernels(Vec<double> sigmas, Vec<size_t>& dimsOut)
+float* createLoG_GausKernels(Vec<double> sigmas, Vec<std::size_t>& dimsOut)
 {
-	const double PI = std::atan(1.0) * 4;
-
-	dimsOut.x = (size_t)MAX(1.0f, (10 * sigmas.x));
-	dimsOut.y = (size_t)MAX(1.0f, (10 * sigmas.y));
-	dimsOut.z = (size_t)MAX(1.0f, (10 * sigmas.z));
+	dimsOut.x = (std::size_t)MAX(1.0f, (10 * sigmas.x));
+	dimsOut.y = (std::size_t)MAX(1.0f, (10 * sigmas.y));
+	dimsOut.z = (std::size_t)MAX(1.0f, (10 * sigmas.z));
 
 	dimsOut.x = (dimsOut.x % 2 == 0) ? (dimsOut.x + 1) : (dimsOut.x);
 	dimsOut.y = (dimsOut.y % 2 == 0) ? (dimsOut.y + 1) : (dimsOut.y);

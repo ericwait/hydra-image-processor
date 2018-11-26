@@ -8,8 +8,8 @@ void MexDeviceCount::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray*
 		plhs[0] = mxCreateDoubleScalar(deviceCount());
 	}else if (nlhs>1)
 	{
-		size_t* memStats;
-		int numDevices = memoryStats(&memStats);
+		std::size_t* memStats;
+		mwSize numDevices = (mwSize)memoryStats(&memStats);
 		plhs[0] = mxCreateDoubleScalar(numDevices);
 		const char* fieldNames[] = {"total","available"};
 		mwSize dims[2] ={1,numDevices};

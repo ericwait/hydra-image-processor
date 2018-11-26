@@ -15,16 +15,16 @@
 #include <omp.h>
 
 template <class PixelTypeIn>
-__device__ void deviceMean(Vec<size_t> threadCoordinate, CudaImageContainer<PixelTypeIn> &imageIn, Kernel &constKernelMem, double& mu)
+__device__ void deviceMean(Vec<std::size_t> threadCoordinate, CudaImageContainer<PixelTypeIn> &imageIn, Kernel &constKernelMem, double& mu)
 {
 	KernelIterator kIt(threadCoordinate, imageIn.getDims(), constKernelMem.getDims());
 	mu = 0;
-	size_t count = 0;
+	std::size_t count = 0;
 	for (; !kIt.end(); ++kIt)
 	{
 		Vec<float> imInPos = kIt.getImageCoordinate();
 		double inVal = (double)imageIn(imInPos);
-		Vec<size_t> coord = kIt.getKernelCoordinate();
+		Vec<std::size_t> coord = kIt.getKernelCoordinate();
 		float kernVal = constKernelMem(coord);
 
 		if (kernVal != 0.0f)
@@ -37,16 +37,16 @@ __device__ void deviceMean(Vec<size_t> threadCoordinate, CudaImageContainer<Pixe
 }
 
 template <class PixelTypeIn>
-__device__ void deviceVariance(Vec<size_t> threadCoordinate, CudaImageContainer<PixelTypeIn> &imageIn, Kernel &constKernelMem, double& varOut, double mu)
+__device__ void deviceVariance(Vec<std::size_t> threadCoordinate, CudaImageContainer<PixelTypeIn> &imageIn, Kernel &constKernelMem, double& varOut, double mu)
 {
 	KernelIterator kIt(threadCoordinate, imageIn.getDims(), constKernelMem.getDims());
 	varOut = 0;
-	size_t count = 0;
+	std::size_t count = 0;
 	for (; !kIt.end(); ++kIt)
 	{
 		Vec<float> imInPos = kIt.getImageCoordinate();
 		double inVal = (double)imageIn(imInPos);
-		Vec<size_t> coord = kIt.getKernelCoordinate();
+		Vec<std::size_t> coord = kIt.getKernelCoordinate();
 		float kernVal = constKernelMem(coord);
 
 		if (kernVal != 0.0f)
@@ -60,7 +60,7 @@ __device__ void deviceVariance(Vec<size_t> threadCoordinate, CudaImageContainer<
 }
 
 template <class PixelTypeIn>
-__device__ void deviceMeanAndVariance(Vec<size_t> threadCoordinate, CudaImageContainer<PixelTypeIn> &imageIn, Kernel &constKernelMem, double& mu, double& var)
+__device__ void deviceMeanAndVariance(Vec<std::size_t> threadCoordinate, CudaImageContainer<PixelTypeIn> &imageIn, Kernel &constKernelMem, double& mu, double& var)
 {
 	mu = 0.0;
 	deviceMean(threadCoordinate, imageIn, constKernelMem, mu);
@@ -72,7 +72,7 @@ __device__ void deviceMeanAndVariance(Vec<size_t> threadCoordinate, CudaImageCon
 template <class PixelTypeIn, class PixelTypeOut>
 __global__ void cudaMeanAndVariance(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> muOut, CudaImageContainer<PixelTypeOut> varOut, Kernel constKernelMem, PixelTypeOut minValue, PixelTypeOut maxValue)
 {
-	Vec<size_t> threadCoordinate;
+	Vec<std::size_t> threadCoordinate;
 	GetThreadBlockCoordinate(threadCoordinate);
 
 	if (threadCoordinate < imageIn.getDims())
@@ -88,7 +88,7 @@ __global__ void cudaMeanAndVariance(CudaImageContainer<PixelTypeIn> imageIn, Cud
 template <class PixelTypeIn, class PixelTypeOut>
 __global__ void cudaMeanAndStd(CudaImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut> muOut, CudaImageContainer<PixelTypeOut> varOut, Kernel constKernelMem, PixelTypeOut minValue, PixelTypeOut maxValue)
 {
-	Vec<size_t> threadCoordinate;
+	Vec<std::size_t> threadCoordinate;
 	GetThreadBlockCoordinate(threadCoordinate);
 
 	if (threadCoordinate < imageIn.getDims())
@@ -113,10 +113,10 @@ void cMeanAndVariance(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelT
 
 	CudaDevices cudaDevs(cudaMeanAndVariance<PixelTypeIn, PixelTypeOut>, device);
 
-	size_t maxTypeSize = MAX(sizeof(PixelTypeIn), sizeof(PixelTypeOut));
+	std::size_t maxTypeSize = MAX(sizeof(PixelTypeIn), sizeof(PixelTypeOut));
 	std::vector<ImageChunk> chunks = calculateBuffers(imageIn.getDims(), NUM_BUFF_NEEDED, cudaDevs, maxTypeSize, kernel.getSpatialDims());
 
-	Vec<size_t> maxDeviceDims;
+	Vec<std::size_t> maxDeviceDims;
 	setMaxDeviceDims(chunks, maxDeviceDims);
 
 	omp_set_num_threads(MIN(chunks.size(), cudaDevs.getNumDevices()));
