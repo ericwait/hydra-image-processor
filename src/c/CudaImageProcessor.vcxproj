@@ -127,6 +127,7 @@
     <ClInclude Include="Cuda\CudaClosure.cuh" />
     <ClInclude Include="Cuda\CudaEntropyFilter.cuh" />
     <ClInclude Include="Cuda\CudaGetMinMax.cuh" />
+    <ClInclude Include="Cuda\CudaIdentityFilter.cuh" />
     <ClInclude Include="Cuda\CudaLoG.cuh" />
     <ClInclude Include="Cuda\CudaMeanAndVariance.cuh" />
     <ClInclude Include="Cuda\CudaMeanFilter.cuh" />

@@ -9,6 +9,7 @@
 #include "CudaGaussian.cuh"
 #include "CudaGetMinMax.cuh"
 #include "CudaHighPassFilter.cuh"
+#include "CudaIdentityFilter.cuh"
 #include "CudaLoG.cuh"
 #include "CudaMaxFilter.cuh"
 #include "CudaMedianFilter.cuh"
@@ -369,6 +370,52 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
  void highPassFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cHighPassFilter(imageIn, imageOut, sigmas, device);
+ }
+
+
+ void identityFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, int device /*= -1*/)
+ {
+	 cIdentityFilter(imageIn, imageOut, device);
+ }
+
+ void identityFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, int device /*= -1*/)
+ {
+	 cIdentityFilter(imageIn, imageOut, device);
+ }
+
+ void identityFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, int device /*= -1*/)
+ {
+	 cIdentityFilter(imageIn, imageOut, device);
+ }
+
+ void identityFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, int device /*= -1*/)
+ {
+	 cIdentityFilter(imageIn, imageOut, device);
+ }
+
+ void identityFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, int device /*= -1*/)
+ {
+	 cIdentityFilter(imageIn, imageOut, device);
+ }
+
+ void identityFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, int device /*= -1*/)
+ {
+	 cIdentityFilter(imageIn, imageOut, device);
+ }
+
+ void identityFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, int device /*= -1*/)
+ {
+	 cIdentityFilter(imageIn, imageOut, device);
+ }
+
+ void identityFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, int device /*= -1*/)
+ {
+	 cIdentityFilter(imageIn, imageOut, device);
+ }
+
+ void identityFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, int device /*= -1*/)
+ {
+	 cIdentityFilter(imageIn, imageOut, device);
  }
 
 

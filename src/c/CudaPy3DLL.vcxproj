@@ -30,6 +30,7 @@
     <ClCompile Include="Python\PyWrapGaussian.cpp" />
     <ClCompile Include="Python\PyWrapGetMinMax.cpp" />
     <ClCompile Include="Python\PyWrapHighPassFilter.cpp" />
+    <ClCompile Include="Python\PyWrapIdentityFilter.cpp" />
     <ClCompile Include="Python\PyWrapLoG.cpp" />
     <ClCompile Include="Python\PyWrapMaxFilter.cpp" />
     <ClCompile Include="Python\PyWrapMeanFilter.cpp" />

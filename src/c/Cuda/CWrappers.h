@@ -93,6 +93,16 @@ IMAGE_PROCESSOR_API void highPassFilter(const ImageContainer<unsigned int> image
 IMAGE_PROCESSOR_API void highPassFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device = -1);
 IMAGE_PROCESSOR_API void highPassFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, Vec<double> sigmas, int device = -1);
 
+IMAGE_PROCESSOR_API void identityFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void identityFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void identityFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void identityFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void identityFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void identityFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void identityFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void identityFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, int device = -1);
+IMAGE_PROCESSOR_API void identityFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, int device = -1);
+
 IMAGE_PROCESSOR_API void LoG(const ImageContainer<bool> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device = -1);
 IMAGE_PROCESSOR_API void LoG(const ImageContainer<char> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device = -1);
 IMAGE_PROCESSOR_API void LoG(const ImageContainer<unsigned char> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device = -1);

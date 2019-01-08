@@ -84,6 +84,9 @@
     <ClCompile Include="Python\PyWrapMultiplySum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Python\PyWrapIdentityFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WrapCmds\CommandList.h">
