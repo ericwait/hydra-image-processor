@@ -5,6 +5,21 @@
 #include "../Cuda/ImageContainer.h"
 #include "MexKernel.h"
 
+template <typename T>
+void MexMeanFilter_run(const mxArray* inIm, mxArray** outIm, ImageContainer<float> kernel, int numIterations, int device)
+{
+	T* imageInPtr;
+	T* imageOutPtr;
+
+	ImageDimensions imageDims;
+	Script::setupImagePointers(inIm, &imageInPtr, imageDims, outIm, &imageOutPtr);
+
+	ImageContainer<T> imageIn(imageInPtr, imageDims);
+	ImageContainer<T> imageOut(imageOutPtr, imageDims);
+
+	meanFilter(imageIn, imageOut, kernel, numIterations, device);
+}
+
 void MexMeanFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	int device = -1;
@@ -24,87 +39,37 @@ void MexMeanFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* 
 		return;
 	}
 
-	ImageDimensions imageDims;
 	if (mxIsLogical(prhs[0]))
 	{
-		bool* imageInPtr, *imageOutPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
-
-		ImageContainer<bool> imageIn(imageInPtr, imageDims);
-		ImageContainer<bool> imageOut(imageOutPtr, imageDims);
-
-		meanFilter(imageIn, imageOut, kernel, numIterations, device);
-
+		MexMeanFilter_run<bool>(prhs[0], &plhs[0], kernel, numIterations, device);
 	}
 	else if (mxIsUint8(prhs[0]))
 	{
-		unsigned char* imageInPtr, *imageOutPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
-
-		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
-		ImageContainer<unsigned char> imageOut(imageOutPtr, imageDims);
-
-		meanFilter(imageIn, imageOut, kernel, numIterations, device);
+		MexMeanFilter_run<uint8_t>(prhs[0], &plhs[0], kernel, numIterations, device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
-		unsigned short* imageInPtr, *imageOutPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
-
-		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
-		ImageContainer<unsigned short> imageOut(imageOutPtr, imageDims);
-
-		meanFilter(imageIn, imageOut, kernel, numIterations, device);
+		MexMeanFilter_run<uint16_t>(prhs[0], &plhs[0], kernel, numIterations, device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
-		short* imageInPtr, *imageOutPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
-
-		ImageContainer<short> imageIn(imageInPtr, imageDims);
-		ImageContainer<short> imageOut(imageOutPtr, imageDims);
-
-		meanFilter(imageIn, imageOut, kernel, numIterations, device);
+		MexMeanFilter_run<int16_t>(prhs[0], &plhs[0], kernel, numIterations, device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
-		unsigned int* imageInPtr, *imageOutPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
-
-		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
-		ImageContainer<unsigned int> imageOut(imageOutPtr, imageDims);
-
-		meanFilter(imageIn, imageOut, kernel, numIterations, device);
+		MexMeanFilter_run<uint32_t>(prhs[0], &plhs[0], kernel, numIterations, device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
-		int* imageInPtr, *imageOutPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
-
-		ImageContainer<int> imageIn(imageInPtr, imageDims);
-		ImageContainer<int> imageOut(imageOutPtr, imageDims);
-
-		meanFilter(imageIn, imageOut, kernel, numIterations, device);
+		MexMeanFilter_run<int32_t>(prhs[0], &plhs[0], kernel, numIterations, device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
-		float* imageInPtr, *imageOutPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
-
-		ImageContainer<float> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		meanFilter(imageIn, imageOut, kernel, numIterations, device);
+		MexMeanFilter_run<float>(prhs[0], &plhs[0], kernel, numIterations, device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
-		double* imageInPtr, *imageOutPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
-
-		ImageContainer<double> imageIn(imageInPtr, imageDims);
-		ImageContainer<double> imageOut(imageOutPtr, imageDims);
-
-		meanFilter(imageIn, imageOut, kernel, numIterations, device);
+		MexMeanFilter_run<double>(prhs[0], &plhs[0], kernel, numIterations, device);
 	}
 	else
 	{

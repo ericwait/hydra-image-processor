@@ -5,6 +5,22 @@
 #include "../Cuda/ImageContainer.h"
 #include "MexKernel.h"
 
+template <typename T>
+void MexMinMax_run(const mxArray* inIm, mxArray** outMin, mxArray** outMax, int device)
+{
+	T* imageInPtr;
+	T minVal;
+	T maxVal;
+
+	ImageDimensions imageDims;
+	Script::setupInputPointers(inIm, imageDims, &imageInPtr);
+
+	getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
+
+	*outMin = mxCreateDoubleScalar(minVal);
+	*outMax = mxCreateDoubleScalar(maxVal);
+}
+
 void MexGetMinMax::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	// TODO: Why is this the only device with a 0 default?
@@ -16,75 +32,35 @@ void MexGetMinMax::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	ImageDimensions imageDims;
 	if (mxIsLogical(prhs[0]))
 	{
-		bool* imageInPtr, minVal, maxVal;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-		plhs[0] = mxCreateDoubleScalar(minVal);
-		plhs[1] = mxCreateDoubleScalar(maxVal);
+		MexMinMax_run<bool>(prhs[0], &plhs[0], &plhs[1], device);
 	}
 	else if (mxIsUint8(prhs[0]))
 	{
-		unsigned char* imageInPtr, minVal, maxVal;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-		plhs[0] = mxCreateDoubleScalar(minVal);
-		plhs[1] = mxCreateDoubleScalar(maxVal);
+		MexMinMax_run<uint8_t>(prhs[0], &plhs[0], &plhs[1], device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
-		unsigned short* imageInPtr, minVal, maxVal;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-		plhs[0] = mxCreateDoubleScalar(minVal);
-		plhs[1] = mxCreateDoubleScalar(maxVal);
+		MexMinMax_run<uint16_t>(prhs[0], &plhs[0], &plhs[1], device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
-		short* imageInPtr, minVal, maxVal;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-		plhs[0] = mxCreateDoubleScalar(minVal);
-		plhs[1] = mxCreateDoubleScalar(maxVal);
+		MexMinMax_run<int16_t>(prhs[0], &plhs[0], &plhs[1], device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
-		unsigned int* imageInPtr, minVal, maxVal;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-		plhs[0] = mxCreateDoubleScalar(minVal);
-		plhs[1] = mxCreateDoubleScalar(maxVal);
+		MexMinMax_run<uint32_t>(prhs[0], &plhs[0], &plhs[1], device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
-		int* imageInPtr, minVal, maxVal;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-		plhs[0] = mxCreateDoubleScalar(minVal);
-		plhs[1] = mxCreateDoubleScalar(maxVal);
+		MexMinMax_run<int32_t>(prhs[0], &plhs[0], &plhs[1], device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
-		float* imageInPtr, minVal, maxVal;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-		plhs[0] = mxCreateDoubleScalar(minVal);
-		plhs[1] = mxCreateDoubleScalar(maxVal);
+		MexMinMax_run<float>(prhs[0], &plhs[0], &plhs[1], device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
-		double* imageInPtr, minVal, maxVal;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-		plhs[0] = mxCreateDoubleScalar(minVal);
-		plhs[1] = mxCreateDoubleScalar(maxVal);
+		MexMinMax_run<double>(prhs[0], &plhs[0], &plhs[1], device);
 	}
 	else
 	{

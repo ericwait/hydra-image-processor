@@ -5,6 +5,30 @@
 #include "../Cuda/ImageContainer.h"
 #include "MexKernel.h"
 
+template <typename T>
+void MexDiff_run(const mxArray* inIm1, const mxArray* inIm2, mxArray** outIm, int device)
+{
+	T* image1InPtr;
+	T* image2InPtr;
+	T* imageOutPtr;
+
+	ImageDimensions image1Dims;
+	ImageDimensions image2Dims;
+	ImageDimensions imageOutDims;
+	
+	Script::setupInputPointers(inIm1, image1Dims, &image1InPtr);
+	Script::setupInputPointers(inIm2, image2Dims, &image2InPtr);
+	imageOutDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
+
+	Script::setupOutputPointers(outIm, imageOutDims, &imageOutPtr);
+
+	ImageContainer<T> image1In(image1InPtr, image1Dims);
+	ImageContainer<T> image2In(image2InPtr, image2Dims);
+	ImageContainer<T> imageOut(imageOutPtr, imageOutDims);
+
+	elementWiseDifference(image1In, image2In, imageOut, device);
+}
+
 void MexElementWiseDifference::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	int device = -1;
@@ -15,132 +39,35 @@ void MexElementWiseDifference::execute(int nlhs, mxArray* plhs[], int nrhs, cons
 	ImageDimensions imageDims;
 	if (mxIsLogical(prhs[0]))
 	{
-		bool* image1InPtr, *image2InPtr, *imageOutPtr;
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<bool> image1In(image1InPtr, image1Dims);
-		ImageContainer<bool> image2In(image2InPtr, image2Dims);
-		ImageContainer<bool> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
-
+		MexDiff_run<bool>(prhs[0], prhs[1], &plhs[0], device);
 	}
 	else if (mxIsUint8(prhs[0]))
 	{
-		unsigned char* image1InPtr, *image2InPtr, *imageOutPtr;
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<unsigned char> image1In(image1InPtr, image1Dims);
-		ImageContainer<unsigned char> image2In(image2InPtr, image2Dims);
-		ImageContainer<unsigned char> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
+		MexDiff_run<uint8_t>(prhs[0], prhs[1], &plhs[0], device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
-		unsigned short* image1InPtr, *image2InPtr, *imageOutPtr;
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<unsigned short> image1In(image1InPtr, image1Dims);
-		ImageContainer<unsigned short> image2In(image2InPtr, image2Dims);
-		ImageContainer<unsigned short> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
+		MexDiff_run<uint16_t>(prhs[0], prhs[1], &plhs[0], device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
-		short* image1InPtr, *image2InPtr, *imageOutPtr;
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<short> image1In(image1InPtr, image1Dims);
-		ImageContainer<short> image2In(image2InPtr, image2Dims);
-		ImageContainer<short> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
+		MexDiff_run<int16_t>(prhs[0], prhs[1], &plhs[0], device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
-		unsigned int* image1InPtr, *image2InPtr, *imageOutPtr;
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<unsigned int> image1In(image1InPtr, image1Dims);
-		ImageContainer<unsigned int> image2In(image2InPtr, image2Dims);
-		ImageContainer<unsigned int> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
+		MexDiff_run<uint32_t>(prhs[0], prhs[1], &plhs[0], device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
-		int* image1InPtr, *image2InPtr, *imageOutPtr;
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<int> image1In(image1InPtr, image1Dims);
-		ImageContainer<int> image2In(image2InPtr, image2Dims);
-		ImageContainer<int> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
+		MexDiff_run<int32_t>(prhs[0], prhs[1], &plhs[0], device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
-		float* image1InPtr, *image2InPtr, *imageOutPtr;
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<float> image1In(image1InPtr, image1Dims);
-		ImageContainer<float> image2In(image2InPtr, image2Dims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
+		MexDiff_run<float>(prhs[0], prhs[1], &plhs[0], device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
-		double* image1InPtr, *image2InPtr, *imageOutPtr;
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(prhs[0], image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(prhs[1], image2Dims, &image2InPtr);
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<double> image1In(image1InPtr, image1Dims);
-		ImageContainer<double> image2In(image2InPtr, image2Dims);
-		ImageContainer<double> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
+		MexDiff_run<double>(prhs[0], prhs[1], &plhs[0], device);
 	}
 	else
 	{

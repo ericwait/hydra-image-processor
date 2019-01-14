@@ -5,6 +5,22 @@
 #include "../Cuda/ImageContainer.h"
 #include "MexKernel.h"
 
+template <typename InType, typename OutType>
+void MexEntropy_run(const mxArray* inIm, mxArray** outIm, ImageContainer<float> kernel, int device)
+{
+	InType* imageInPtr;
+	OutType* imageOutPtr;
+
+	ImageDimensions imageDims;
+	Script::setupInputPointers(inIm, imageDims, &imageInPtr);
+	Script::setupOutputPointers(outIm, imageDims, &imageOutPtr);
+
+	ImageContainer<InType> imageIn(imageInPtr, imageDims);
+	ImageContainer<OutType> imageOut(imageOutPtr, imageDims);
+
+	entropyFilter(imageIn, imageOut, kernel, device);
+}
+
 void MexEntropyFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	int device = -1;
@@ -21,103 +37,37 @@ void MexEntropyFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArra
 		return;
 	}
 
-	ImageDimensions imageDims;
 	if (mxIsLogical(prhs[0]))
 	{
-		bool* imageInPtr;
-		float* imageOutPtr;
-		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<bool> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		entropyFilter(imageIn, imageOut, kernel, device);
-
+		MexEntropy_run<bool,float>(prhs[0], &plhs[0], kernel, device);
 	}
 	else if (mxIsUint8(prhs[0]))
 	{
-		unsigned char* imageInPtr;
-		float* imageOutPtr;
-		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		entropyFilter(imageIn, imageOut, kernel, device);
+		MexEntropy_run<uint8_t, float>(prhs[0], &plhs[0], kernel, device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
-		unsigned short* imageInPtr;
-		float* imageOutPtr;
-		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		entropyFilter(imageIn, imageOut, kernel, device);
+		MexEntropy_run<uint16_t, float>(prhs[0], &plhs[0], kernel, device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
-		short* imageInPtr;
-		float* imageOutPtr;
-		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<short> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		entropyFilter(imageIn, imageOut, kernel, device);
+		MexEntropy_run<int16_t, float>(prhs[0], &plhs[0], kernel, device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
-		unsigned int* imageInPtr;
-		float* imageOutPtr;
-		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		entropyFilter(imageIn, imageOut, kernel, device);
+		MexEntropy_run<uint32_t, float>(prhs[0], &plhs[0], kernel, device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
-		int* imageInPtr;
-		float* imageOutPtr;
-		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<int> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		entropyFilter(imageIn, imageOut, kernel, device);
+		MexEntropy_run<int32_t, float>(prhs[0], &plhs[0], kernel, device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
-		float* imageInPtr;
-		float* imageOutPtr;
-		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<float> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		entropyFilter(imageIn, imageOut, kernel, device);
+		MexEntropy_run<float, float>(prhs[0], &plhs[0], kernel, device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
-		double* imageInPtr;
-		float* imageOutPtr;
-		Script::setupInputPointers(prhs[0], imageDims, &imageInPtr);
-		Script::setupOutputPointers(&plhs[0], imageDims, &imageOutPtr);
-
-		ImageContainer<double> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		entropyFilter(imageIn, imageOut, kernel, device); 
+		MexEntropy_run<double, float>(prhs[0], &plhs[0], kernel, device);
 	}
 	else
 	{

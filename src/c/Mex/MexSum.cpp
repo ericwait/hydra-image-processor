@@ -5,6 +5,23 @@
 #include "../Cuda/ImageContainer.h"
 #include "MexKernel.h"
 
+template <typename InType, typename SumType>
+void MexSum_run(const mxArray* inIm, mxArray** outSum, int device)
+{
+	InType* imageInPtr;
+
+	ImageDimensions imageDims;
+	Script::setupInputPointers(inIm, imageDims, &imageInPtr);
+
+	ImageContainer<InType> imageIn(imageInPtr, imageDims);
+
+	SumType sumVal = 0;
+	sum(imageIn, sumVal, device);
+
+	*outSum = mxCreateDoubleScalar(double(sumVal));
+}
+
+
 void MexSum::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
 {
 	int device = -1;
@@ -12,102 +29,42 @@ void MexSum::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 	if (!mxIsEmpty(prhs[1]))
 		device = mat_to_c((int)mxGetScalar(prhs[1]));
 
-	ImageDimensions imageDims;
-	double outVal = 0.0;
 	if (mxIsLogical(prhs[0]))
 	{
-		bool* imageInPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		ImageContainer<bool> imageIn(imageInPtr, imageDims);
-
-		std::size_t out = 0;
-		sum(imageIn, out, device);
-		outVal = double(out);
+		MexSum_run<bool,std::size_t>(prhs[0], &plhs[0], device);
 	}
 	else if (mxIsUint8(prhs[0]))
 	{
-		unsigned char* imageInPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
-
-		std::size_t out = 0;
-		sum(imageIn, out, device);
-		outVal = double(out);
+		MexSum_run<uint8_t,std::size_t>(prhs[0], &plhs[0], device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
-		unsigned short* imageInPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
-
-		std::size_t out = 0;
-		sum(imageIn, out, device);
-		outVal = double(out);
+		MexSum_run<uint16_t,std::size_t>(prhs[0], &plhs[0], device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
-		short* imageInPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		ImageContainer<short> imageIn(imageInPtr, imageDims);
-
-		long long out = 0;
-		sum(imageIn, out, device);
-		outVal = double(out);
+		MexSum_run<int16_t,std::ptrdiff_t>(prhs[0], &plhs[0], device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
-		unsigned int* imageInPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
-
-		std::size_t out = 0;
-		sum(imageIn, out, device);
-		outVal = double(out);
+		MexSum_run<uint32_t,std::size_t>(prhs[0], &plhs[0], device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
-		int* imageInPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		ImageContainer<int> imageIn(imageInPtr, imageDims);
-
-		long long out = 0;
-		sum(imageIn, out, device);
-		outVal = double(out);
+		MexSum_run<int32_t,std::ptrdiff_t>(prhs[0], &plhs[0], device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
-		float* imageInPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		ImageContainer<float> imageIn(imageInPtr, imageDims);
-
-		double out = 0;
-		sum(imageIn, out, device);
-		outVal = double(out);
+		MexSum_run<float,double>(prhs[0], &plhs[0], device);
 	}
 	else if (mxIsDouble(prhs[0]))
 	{
-		double* imageInPtr;
-		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims);
-
-		ImageContainer<double> imageIn(imageInPtr, imageDims);
-
-		double out = 0;
-		sum(imageIn, out, device);
-		outVal = double(out);
+		MexSum_run<double,double>(prhs[0], &plhs[0], device);
 	}
 	else
 	{
 		mexErrMsgTxt("Image type not supported!");
 	}
-
-	plhs[0] = mxCreateDoubleScalar(outVal);
 }
 
 std::string MexSum::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const
