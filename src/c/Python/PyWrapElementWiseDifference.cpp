@@ -24,6 +24,27 @@ const char PyWrapElementWiseDifference::docString[] = "imageOut = HIP.ElementWis
 "\n"\
 "\timageOut = This will be an array of the same type and shape as the input array.";
 
+template <typename T>
+void PyWrapDiff_run(const PyArrayObject* inIm1, const PyArrayObject* inIm2, PyArrayObject** outIm, int device)
+{
+	T* image1InPtr;
+	T* image2InPtr, *imageOutPtr;
+
+	ImageDimensions image1Dims;
+	ImageDimensions image2Dims;
+	Script::setupInputPointers(inIm1, image1Dims, &image1InPtr);
+	Script::setupInputPointers(inIm2, image2Dims, &image2InPtr);
+
+	ImageDimensions imageOutDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
+	Script::setupOutputPointers(outIm, imageOutDims, &imageOutPtr);
+
+	ImageContainer<T> image1In(image1InPtr, image1Dims);
+	ImageContainer<T> image2In(image2InPtr, image2Dims);
+	ImageContainer<T> imageOut(imageOutPtr, imageOutDims);
+
+	elementWiseDifference(image1In, image2In, imageOut, device);
+}
+
 
 PyObject* PyWrapElementWiseDifference::execute(PyObject*self, PyObject* args)
 {
@@ -44,151 +65,37 @@ PyObject* PyWrapElementWiseDifference::execute(PyObject*self, PyObject* args)
 
 	PyArrayObject* imOut = nullptr;
 
-	ImageDimensions imageDims;
 	if ( PyArray_TYPE(im1Contig) == NPY_BOOL )
 	{
-		bool* image1InPtr, *image2InPtr, *imageOutPtr;
-
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(im1Contig, image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(im2Contig, image2Dims, &image2InPtr);
-
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<bool> image1In(image1InPtr, image1Dims);
-		ImageContainer<bool> image2In(image2InPtr, image2Dims);
-		ImageContainer<bool> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
-
+		PyWrapDiff_run<bool>(im1Contig, im2Contig, &imOut, device);
 	}
 	else if ( PyArray_TYPE(im1Contig) == NPY_UINT8 )
 	{
-		unsigned char* image1InPtr, *image2InPtr, *imageOutPtr;
-
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(im1Contig, image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(im2Contig, image2Dims, &image2InPtr);
-
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<unsigned char> image1In(image1InPtr, image1Dims);
-		ImageContainer<unsigned char> image2In(image2InPtr, image2Dims);
-		ImageContainer<unsigned char> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
+		PyWrapDiff_run<uint8_t>(im1Contig, im2Contig, &imOut, device);
 	}
 	else if ( PyArray_TYPE(im1Contig) == NPY_UINT16 )
 	{
-		unsigned short* image1InPtr, *image2InPtr, *imageOutPtr;
-
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(im1Contig, image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(im2Contig, image2Dims, &image2InPtr);
-
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<unsigned short> image1In(image1InPtr, image1Dims);
-		ImageContainer<unsigned short> image2In(image2InPtr, image2Dims);
-		ImageContainer<unsigned short> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
+		PyWrapDiff_run<uint16_t>(im1Contig, im2Contig, &imOut, device);
 	}
 	else if ( PyArray_TYPE(im1Contig) == NPY_INT16 )
 	{
-		short* image1InPtr, *image2InPtr, *imageOutPtr;
-
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(im1Contig, image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(im2Contig, image2Dims, &image2InPtr);
-
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<short> image1In(image1InPtr, image1Dims);
-		ImageContainer<short> image2In(image2InPtr, image2Dims);
-		ImageContainer<short> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
+		PyWrapDiff_run<int16_t>(im1Contig, im2Contig, &imOut, device);
 	}
 	else if ( PyArray_TYPE(im1Contig) == NPY_UINT32 )
 	{
-		unsigned int* image1InPtr, *image2InPtr, *imageOutPtr;
-
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(im1Contig, image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(im2Contig, image2Dims, &image2InPtr);
-
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<unsigned int> image1In(image1InPtr, image1Dims);
-		ImageContainer<unsigned int> image2In(image2InPtr, image2Dims);
-		ImageContainer<unsigned int> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
+		PyWrapDiff_run<uint32_t>(im1Contig, im2Contig, &imOut, device);
 	}
 	else if ( PyArray_TYPE(im1Contig) == NPY_INT32 )
 	{
-		int* image1InPtr, *image2InPtr, *imageOutPtr;
-
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(im1Contig, image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(im2Contig, image2Dims, &image2InPtr);
-
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<int> image1In(image1InPtr, image1Dims);
-		ImageContainer<int> image2In(image2InPtr, image2Dims);
-		ImageContainer<int> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
+		PyWrapDiff_run<int32_t>(im1Contig, im2Contig, &imOut, device);
 	}
 	else if ( PyArray_TYPE(im1Contig) == NPY_FLOAT )
 	{
-		float* image1InPtr, *image2InPtr, *imageOutPtr;
-
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(im1Contig, image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(im2Contig, image2Dims, &image2InPtr);
-
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<float> image1In(image1InPtr, image1Dims);
-		ImageContainer<float> image2In(image2InPtr, image2Dims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
+		PyWrapDiff_run<float>(im1Contig, im2Contig, &imOut, device);
 	}
 	else if ( PyArray_TYPE(im1Contig) == NPY_DOUBLE )
 	{
-		double* image1InPtr, *image2InPtr, *imageOutPtr;
-
-		ImageDimensions image1Dims;
-		Script::setupInputPointers(im1Contig, image1Dims, &image1InPtr);
-		ImageDimensions image2Dims;
-		Script::setupInputPointers(im2Contig, image2Dims, &image2InPtr);
-
-		imageDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<double> image1In(image1InPtr, image1Dims);
-		ImageContainer<double> image2In(image2InPtr, image2Dims);
-		ImageContainer<double> imageOut(imageOutPtr, imageDims);
-
-		elementWiseDifference(image1In, image2In, imageOut, device);
+		PyWrapDiff_run<double>(im1Contig, im2Contig, &imOut, device);
 	}
 	else
 	{
@@ -196,7 +103,6 @@ PyObject* PyWrapElementWiseDifference::execute(PyObject*self, PyObject* args)
 
 		Py_XDECREF(im1Contig);
 		Py_XDECREF(im2Contig);
-		Py_XDECREF(imOut);
 
 		return nullptr;
 	}

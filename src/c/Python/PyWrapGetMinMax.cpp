@@ -19,6 +19,22 @@ const char PyWrapGetMinMax::docString[] = "minValue,maxValue = HIP.GetMinMax(ima
 "\tminValue = This is the lowest value found in the array.\n"\
 "\tmaxValue = This is the highest value found in the array.\n";
 
+template <typename T>
+void PyWrapMinMax_run(const PyArrayObject* inIm, PyObject* outTuple, int device)
+{
+	T* imageInPtr;
+	T minVal;
+	T maxVal;
+
+	ImageDimensions imageDims;
+	Script::setupImagePointers(inIm, &imageInPtr, imageDims);
+
+	getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
+
+	PyTuple_SetItem(outTuple, 0, Script::fromNumeric<T>(minVal));
+	PyTuple_SetItem(outTuple, 1, Script::fromNumeric<T>(maxVal));
+}
+
 
 PyObject* PyWrapGetMinMax::execute(PyObject* self, PyObject* args)
 {
@@ -38,91 +54,35 @@ PyObject* PyWrapGetMinMax::execute(PyObject* self, PyObject* args)
 
 	if ( PyArray_TYPE(imContig) == NPY_BOOL )
 	{
-		bool* imageInPtr, minVal, maxVal;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-
-		PyTuple_SetItem(outMinMax, 0, PyBool_FromLong(minVal));
-		PyTuple_SetItem(outMinMax, 1, PyBool_FromLong(maxVal));
+		PyWrapMinMax_run<bool>(imContig, outMinMax, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT8 )
 	{
-		unsigned char* imageInPtr, minVal, maxVal;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-
-		PyTuple_SetItem(outMinMax, 0, PyLong_FromLong(minVal));
-		PyTuple_SetItem(outMinMax, 1, PyLong_FromLong(maxVal));
+		PyWrapMinMax_run<uint8_t>(imContig, outMinMax, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT16 )
 	{
-		unsigned short* imageInPtr, minVal, maxVal;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-
-		PyTuple_SetItem(outMinMax, 0, PyLong_FromLong(minVal));
-		PyTuple_SetItem(outMinMax, 1, PyLong_FromLong(maxVal));
+		PyWrapMinMax_run<uint16_t>(imContig, outMinMax, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_INT16 )
 	{
-		short* imageInPtr, minVal, maxVal;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-
-		PyTuple_SetItem(outMinMax, 0, PyLong_FromLong(minVal));
-		PyTuple_SetItem(outMinMax, 1, PyLong_FromLong(maxVal));
+		PyWrapMinMax_run<int16_t>(imContig, outMinMax, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT32 )
 	{
-		unsigned int* imageInPtr, minVal, maxVal;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-
-		PyTuple_SetItem(outMinMax, 0, PyLong_FromLong(minVal));
-		PyTuple_SetItem(outMinMax, 1, PyLong_FromLong(maxVal));
+		PyWrapMinMax_run<uint32_t>(imContig, outMinMax, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_INT32 )
 	{
-		int* imageInPtr, minVal, maxVal;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-
-		PyTuple_SetItem(outMinMax, 0, PyLong_FromLong(minVal));
-		PyTuple_SetItem(outMinMax, 1, PyLong_FromLong(maxVal));
+		PyWrapMinMax_run<int32_t>(imContig, outMinMax, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_FLOAT )
 	{
-		float* imageInPtr, minVal, maxVal;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-
-		PyTuple_SetItem(outMinMax, 0, PyFloat_FromDouble(minVal));
-		PyTuple_SetItem(outMinMax, 1, PyFloat_FromDouble(maxVal));
+		PyWrapMinMax_run<float>(imContig, outMinMax, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_DOUBLE )
 	{
-		double* imageInPtr, minVal, maxVal;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
-
-		PyTuple_SetItem(outMinMax, 0, PyFloat_FromDouble(minVal));
-		PyTuple_SetItem(outMinMax, 1, PyFloat_FromDouble(maxVal));
+		PyWrapMinMax_run<double>(imContig, outMinMax, device);
 	}
 	else
 	{

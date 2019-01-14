@@ -28,6 +28,21 @@ const char PyWrapGaussian::docString[] = "imageOut = HIP.Gaussian(imageIn,Sigmas
 "\n"\
 "\timageOut = This will be an array of the same type and shape as the input array.\n";
 
+template <typename T>
+void PyWrapGaussian_run(const PyArrayObject* inIm, PyArrayObject** outIm, Vec<double> sigmas, int numIterations, int device)
+{
+	T* imageInPtr;
+	T* imageOutPtr;
+
+	ImageDimensions imageDims;
+	Script::setupImagePointers(inIm, &imageInPtr, imageDims, outIm, &imageOutPtr);
+
+	ImageContainer<T> imageIn(imageInPtr, imageDims);
+	ImageContainer<T> imageOut(imageOutPtr, imageDims);
+
+	gaussian(imageIn, imageOut, sigmas, numIterations, device);
+}
+
 
 PyObject* PyWrapGaussian::execute(PyObject* self, PyObject* args)
 {
@@ -51,105 +66,45 @@ PyObject* PyWrapGaussian::execute(PyObject* self, PyObject* args)
 	}
 
 	PyArrayObject* imContig = (PyArrayObject*)PyArray_FROM_OTF(imIn, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
-
-	ImageDimensions imageDims;
 	PyArrayObject* imOut = nullptr;
 
 	if ( PyArray_TYPE(imContig) == NPY_BOOL )
 	{
-		bool* imageInPtr, *imageOutPtr;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
-
-		ImageContainer<bool> imageIn(imageInPtr, imageDims);
-		ImageContainer<bool> imageOut(imageOutPtr, imageDims);
-
-		gaussian(imageIn, imageOut, sigmas, numIterations, device);
-
+		PyWrapGaussian_run<bool>(imContig, &imOut, sigmas, numIterations, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT8 )
 	{
-		unsigned char* imageInPtr, *imageOutPtr;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
-
-		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
-		ImageContainer<unsigned char> imageOut(imageOutPtr, imageDims);
-
-		gaussian(imageIn, imageOut, sigmas, numIterations, device);
+		PyWrapGaussian_run<uint8_t>(imContig, &imOut, sigmas, numIterations, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT16 )
 	{
-		unsigned short* imageInPtr, *imageOutPtr;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
-
-		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
-		ImageContainer<unsigned short> imageOut(imageOutPtr, imageDims);
-
-		gaussian(imageIn, imageOut, sigmas, numIterations, device);
+		PyWrapGaussian_run<uint16_t>(imContig, &imOut, sigmas, numIterations, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_INT16 )
 	{
-		short* imageInPtr, *imageOutPtr;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
-
-		ImageContainer<short> imageIn(imageInPtr, imageDims);
-		ImageContainer<short> imageOut(imageOutPtr, imageDims);
-
-		gaussian(imageIn, imageOut, sigmas, numIterations, device);
+		PyWrapGaussian_run<int16_t>(imContig, &imOut, sigmas, numIterations, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT32 )
 	{
-		unsigned int* imageInPtr, *imageOutPtr;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
-
-		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
-		ImageContainer<unsigned int> imageOut(imageOutPtr, imageDims);
-
-		gaussian(imageIn, imageOut, sigmas, numIterations, device);
+		PyWrapGaussian_run<uint32_t>(imContig, &imOut, sigmas, numIterations, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_INT32 )
 	{
-		int* imageInPtr, *imageOutPtr;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
-
-		ImageContainer<int> imageIn(imageInPtr, imageDims);
-		ImageContainer<int> imageOut(imageOutPtr, imageDims);
-
-		gaussian(imageIn, imageOut, sigmas, numIterations, device);
+		PyWrapGaussian_run<int32_t>(imContig, &imOut, sigmas, numIterations, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_FLOAT )
 	{
-		float* imageInPtr, *imageOutPtr;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
-
-		ImageContainer<float> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		gaussian(imageIn, imageOut, sigmas, numIterations, device);
+		PyWrapGaussian_run<float>(imContig, &imOut, sigmas, numIterations, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_DOUBLE )
 	{
-		double* imageInPtr, *imageOutPtr;
-
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims, &imOut, &imageOutPtr);
-
-		ImageContainer<double> imageIn(imageInPtr, imageDims);
-		ImageContainer<double> imageOut(imageOutPtr, imageDims);
-
-		gaussian(imageIn, imageOut, sigmas, numIterations, device);
+		PyWrapGaussian_run<double>(imContig, &imOut, sigmas, numIterations, device);
 	}
 	else
 	{
 		PyErr_SetString(PyExc_RuntimeError, "Image type not supported.");
 
 		Py_XDECREF(imContig);
-		Py_XDECREF(imOut);
 
 		return nullptr;
 	}

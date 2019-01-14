@@ -23,6 +23,22 @@ const char PyWrapLoG::docString[] = "imageOut = HIP.LoG(imageIn,Sigmas,[device])
 "\n"\
 "\timageOut = This will be an array of the same type and shape as the input array.\n";
 
+template <typename InType, typename OutType>
+void PyWrapLoG_run(const PyArrayObject* inIm, PyArrayObject** outIm, Vec<double> sigmas, int device)
+{
+	InType* imageInPtr;
+	OutType* imageOutPtr;
+
+	ImageDimensions imageDims;
+	Script::setupInputPointers(inIm, imageDims, &imageInPtr);
+	Script::setupOutputPointers(outIm, imageDims, &imageOutPtr);
+
+	ImageContainer<InType> imageIn(imageInPtr, imageDims);
+	ImageContainer<OutType> imageOut(imageOutPtr, imageDims);
+
+	LoG(imageIn, imageOut, sigmas, device);
+}
+
 
 PyObject* PyWrapLoG::execute(PyObject* self, PyObject* args)
 {
@@ -45,122 +61,45 @@ PyObject* PyWrapLoG::execute(PyObject* self, PyObject* args)
 	}
 
 	PyArrayObject* imContig = (PyArrayObject*)PyArray_FROM_OTF(imIn, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
-
-	ImageDimensions imageDims;
 	PyArrayObject* imOut = nullptr;
 
 	if ( PyArray_TYPE(imContig) == NPY_BOOL )
 	{
-		bool* imageInPtr;
-		float* imageOutPtr;
-
-		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<bool> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		LoG(imageIn, imageOut, sigmas, device);
-
+		PyWrapLoG_run<bool,float>(imContig, &imOut, sigmas, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT8 )
 	{
-		unsigned char* imageInPtr;
-		float* imageOutPtr;
-
-		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		LoG(imageIn, imageOut, sigmas, device);
+		PyWrapLoG_run<uint8_t,float>(imContig, &imOut, sigmas, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT16 )
 	{
-		unsigned short* imageInPtr;
-		float* imageOutPtr;
-
-		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		LoG(imageIn, imageOut, sigmas, device);
+		PyWrapLoG_run<uint16_t,float>(imContig, &imOut, sigmas, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_INT16 )
 	{
-		short* imageInPtr;
-		float* imageOutPtr;
-
-		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<short> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		LoG(imageIn, imageOut, sigmas, device);
+		PyWrapLoG_run<int16_t,float>(imContig, &imOut, sigmas, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT32 )
 	{
-		unsigned int* imageInPtr;
-		float* imageOutPtr;
-
-		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		LoG(imageIn, imageOut, sigmas, device);
+		PyWrapLoG_run<uint32_t,float>(imContig, &imOut, sigmas, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_INT32 )
 	{
-		int* imageInPtr;
-		float* imageOutPtr;
-
-		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<int> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		LoG(imageIn, imageOut, sigmas, device);
+		PyWrapLoG_run<int32_t,float>(imContig, &imOut, sigmas, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_FLOAT )
 	{
-		float* imageInPtr;
-		float* imageOutPtr;
-
-		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		ImageContainer<float> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		LoG(imageIn, imageOut, sigmas, device);
+		PyWrapLoG_run<float,float>(imContig, &imOut, sigmas, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_DOUBLE )
 	{
-		double* imageInPtr;
-		float* imageOutPtr;
-
-		Script::setupInputPointers(imContig, imageDims, &imageInPtr);
-		Script::setupOutputPointers(&imOut, imageDims, &imageOutPtr);
-
-		// TODO: Do we really want to use float outputs here?
-		ImageContainer<double> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
-
-		LoG(imageIn, imageOut, sigmas, device);
+		PyWrapLoG_run<double,float>(imContig, &imOut, sigmas, device);
 	}
 	else
 	{
 		PyErr_SetString(PyExc_RuntimeError, "Image type not supported.");
 
 		Py_XDECREF(imContig);
-		Py_XDECREF(imOut);
 
 		return nullptr;
 	}

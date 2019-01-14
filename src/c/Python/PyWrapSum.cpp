@@ -20,6 +20,22 @@ const char PyWrapSum::docString[] = "valueOut = HIP.Sum(imageIn, [device])\n\n"\
 "\n"\
 "\tvalueOut = This is the summation of the entire array.\n";
 
+template <typename InType, typename SumType>
+void PyWrapSum_run(const PyArrayObject* inIm, PyObject** outSum, int device)
+{
+	InType* imageInPtr;
+
+	ImageDimensions imageDims;
+	Script::setupImagePointers(inIm, &imageInPtr, imageDims);
+
+	ImageContainer<InType> imageIn(imageInPtr, imageDims);
+
+	SumType outVal = 0;
+	sum(imageIn, outVal, device);
+
+	*outSum = Script::fromNumeric<SumType>(outVal);
+}
+
 
 PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 {
@@ -33,105 +49,39 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	if ( imIn == nullptr ) return nullptr;
 
 	PyArrayObject* imContig = (PyArrayObject*)PyArray_FROM_OTF(imIn, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
-
-	ImageDimensions imageDims;
 	PyObject* outSum = nullptr;
 
 	if ( PyArray_TYPE(imContig) == NPY_BOOL )
 	{
-		bool* imageInPtr;
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		ImageContainer<bool> imageIn(imageInPtr, imageDims);
-
-		std::size_t outVal = 0;
-		sum(imageIn, outVal, device);
-
-		outSum = PyLong_FromLongLong(outVal);
+		PyWrapSum_run<bool,std::size_t>(imContig, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT8 )
 	{
-		unsigned char* imageInPtr;
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
-
-		std::size_t outVal = 0;
-		sum(imageIn, outVal, device);
-
-		outSum = PyLong_FromLongLong(outVal);
+		PyWrapSum_run<uint8_t,std::size_t>(imContig, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT16 )
 	{
-		unsigned short* imageInPtr;
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
-
-		std::size_t outVal = 0;
-		sum(imageIn, outVal, device);
-
-		outSum = PyLong_FromLongLong(outVal);
+		PyWrapSum_run<uint16_t,std::size_t>(imContig, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_INT16 )
 	{
-		short* imageInPtr;
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		ImageContainer<short> imageIn(imageInPtr, imageDims);
-
-		long long outVal = 0;
-		sum(imageIn, outVal, device);
-
-		outSum = PyLong_FromLongLong(outVal);
+		PyWrapSum_run<int16_t,std::ptrdiff_t>(imContig, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT32 )
 	{
-		unsigned int* imageInPtr;
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
-
-		std::size_t outVal = 0;
-		sum(imageIn, outVal, device);
-
-		outSum = PyLong_FromLongLong(outVal);
+		PyWrapSum_run<uint32_t,std::size_t>(imContig, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_INT32 )
 	{
-		int* imageInPtr;
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		ImageContainer<int> imageIn(imageInPtr, imageDims);
-
-		long long outVal = 0;
-		sum(imageIn, outVal, device);
-
-		outSum = PyLong_FromLongLong(outVal);
+		PyWrapSum_run<int32_t,std::ptrdiff_t>(imContig, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_FLOAT )
 	{
-		float* imageInPtr;
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		ImageContainer<float> imageIn(imageInPtr, imageDims);
-
-		double outVal = 0;
-		sum(imageIn, outVal, device);
-
-		outSum = PyFloat_FromDouble(outVal);
+		PyWrapSum_run<float,double>(imContig, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_DOUBLE )
 	{
-		double* imageInPtr;
-		Script::setupImagePointers(imContig, &imageInPtr, imageDims);
-
-		ImageContainer<double> imageIn(imageInPtr, imageDims);
-
-		double outVal = 0;
-		sum(imageIn, outVal, device);
-
-		outSum = PyFloat_FromDouble(outVal);
+		PyWrapSum_run<double,double>(imContig, &outSum, device);
 	}
 	else
 	{

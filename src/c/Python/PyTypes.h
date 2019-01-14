@@ -54,4 +54,14 @@ namespace Script
 
 	bool pylistToVec(ObjectType* list, Vec<double>& outVec);
 	bool pyarrayToVec(ArrayType* ar, Vec<double>& outVec);
+
+	template <typename T> PyObject* fromNumeric(T val){ return nullptr; }
+	template <> inline PyObject* fromNumeric(bool val) { return PyBool_FromLong(val); }
+	template <> inline PyObject* fromNumeric(uint8_t val) { return PyLong_FromLong(val); }
+	template <> inline PyObject* fromNumeric(uint16_t val) { return PyLong_FromLong(val); }
+	template <> inline PyObject* fromNumeric(int16_t val) { return PyLong_FromLong(val); }
+	template <> inline PyObject* fromNumeric(uint32_t val) { return PyLong_FromLong(val); }
+	template <> inline PyObject* fromNumeric(int32_t val) { return PyLong_FromLong(val); }
+	template <> inline PyObject* fromNumeric(float val) { return PyFloat_FromDouble(val); }
+	template <> inline PyObject* fromNumeric(double val) { return PyFloat_FromDouble(val); }
 };
