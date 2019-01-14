@@ -13,6 +13,7 @@
 
 #include <py3c.h>
 #include <cstddef>
+#include <cstdint>
 
 namespace Script
 {
@@ -20,21 +21,22 @@ namespace Script
 	typedef PyObject		ObjectType;
 	typedef PyArrayObject	ArrayType;
 
-	// Simple template-specialization map for C++ to mex types
-	template <typename T> struct TypeMap { static const NPY_TYPES npyType; };
-	template <> struct TypeMap<bool> { static const NPY_TYPES npyType = NPY_BOOL; };
-	template <> struct TypeMap<char> { static const NPY_TYPES npyType = NPY_INT8; };
-	template <> struct TypeMap<short> { static const NPY_TYPES npyType = NPY_INT16; };
-	template <> struct TypeMap<int> { static const NPY_TYPES npyType = NPY_INT32; };
-	template <> struct TypeMap<unsigned char> { static const NPY_TYPES npyType = NPY_UINT8; };
-	template <> struct TypeMap<unsigned short> { static const NPY_TYPES npyType = NPY_UINT16; };
-	template <> struct TypeMap<unsigned int> { static const NPY_TYPES npyType = NPY_UINT32; };
-	template <> struct TypeMap<float> { static const NPY_TYPES npyType = NPY_FLOAT; };
-	template <> struct TypeMap<double> { static const NPY_TYPES npyType = NPY_DOUBLE; };
+	// Simple template-specialization map for C++ to Python types
+	BEGIN_TYPE_MAP(NPY_TYPES)
+		TYPE_MAPPING(bool, NPY_BOOL)
+		TYPE_MAPPING(int8_t, NPY_INT8)
+		TYPE_MAPPING(int16_t, NPY_INT16)
+		TYPE_MAPPING(int32_t, NPY_INT32)
+		TYPE_MAPPING(uint8_t, NPY_UINT8)
+		TYPE_MAPPING(uint16_t, NPY_UINT16)
+		TYPE_MAPPING(uint32_t, NPY_UINT32)
+		TYPE_MAPPING(float, NPY_FLOAT)
+		TYPE_MAPPING(double, NPY_DOUBLE)
+	END_TYPE_MAP(NPY_TYPES)
 
 	template <typename T> ArrayType* createArray(int ndim, DimType* dims)
 	{
-		return ((ArrayType*) PyArray_SimpleNew(ndim, dims, TypeMap<T>::npyType));
+		return ((ArrayType*) PyArray_SimpleNew(ndim, dims, ID_FROM_TYPE(T)));
 	}
 
 	// TODO: Figure out if we can do this without the const-casting?

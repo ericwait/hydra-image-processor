@@ -3,6 +3,7 @@
 #include <mex.h>
 
 #include <cstddef>
+#include <cstdint>
 
 namespace Script
 {
@@ -11,22 +12,23 @@ namespace Script
 	typedef mxArray ObjectType;
 
 	// Simple template-specialization map for C++ to mex types
-	template <typename T> struct TypeMap {};
-	template <> struct TypeMap<bool> { static const mxClassID typeId = mxLOGICAL_CLASS; };
-	template <> struct TypeMap<char> { static const mxClassID typeId = mxINT8_CLASS; };
-	template <> struct TypeMap<short> { static const mxClassID typeId = mxINT16_CLASS; };
-	template <> struct TypeMap<int> { static const mxClassID typeId = mxINT32_CLASS; };
-	template <> struct TypeMap<unsigned char> { static const mxClassID typeId = mxUINT8_CLASS; };
-	template <> struct TypeMap<unsigned short> { static const mxClassID typeId = mxUINT16_CLASS; };
-	template <> struct TypeMap<unsigned int> { static const mxClassID typeId = mxUINT32_CLASS; };
-	template <> struct TypeMap<float> { static const mxClassID typeId = mxSINGLE_CLASS; };
-	template <> struct TypeMap<double> { static const mxClassID typeId = mxDOUBLE_CLASS; };
+	BEGIN_TYPE_MAP(mxClassID)
+		TYPE_MAPPING(bool, mxLOGICAL_CLASS)
+		TYPE_MAPPING(int8_t, mxINT8_CLASS)
+		TYPE_MAPPING(int16_t, mxINT16_CLASS)
+		TYPE_MAPPING(int32_t, mxINT32_CLASS)
+		TYPE_MAPPING(uint8_t, mxUINT8_CLASS)
+		TYPE_MAPPING(uint16_t, mxUINT16_CLASS)
+		TYPE_MAPPING(uint32_t, mxUINT32_CLASS)
+		TYPE_MAPPING(float, mxSINGLE_CLASS)
+		TYPE_MAPPING(double, mxDOUBLE_CLASS)
+	END_TYPE_MAP(mxClassID)
 
 	// Helper functions for array allocation
 	template <typename T>
 	ArrayType* createArray(int ndim, DimType* dims)
 	{
-		return mxCreateNumericArray(ndim, dims, TypeMap<T>::typeId, mxREAL);
+		return mxCreateNumericArray(ndim, dims, ID_FROM_TYPE(T), mxREAL);
 	}
 
 	template <>

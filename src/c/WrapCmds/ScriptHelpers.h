@@ -3,6 +3,20 @@
 #include "../Cuda/Vec.h"
 #include "../Cuda/ImageDimensions.cuh"
 
+#define BEGIN_TYPE_MAP(EnumType)					\
+	typedef EnumType IdType;						\
+	template <typename T> struct TypeToIdMap {};	\
+	template <IdType E> struct IdToTypeMap {};
+
+#define TYPE_MAPPING(Type,TypeID)													\
+	template <> struct TypeToIdMap<Type> {static const IdType typeId = TypeID;};	\
+	template <> struct IdToTypeMap<TypeID> {typedef Type type;};
+
+#define END_TYPE_MAP(EnumType)
+
+#define TYPE_FROM_ID(TypeID) IdToTypeMap<TypeID>::type
+#define ID_FROM_TYPE(Type) TypeToIdMap<Type>::typeId
+
 #if defined(PY_BUILD)
  #include "PyTypes.h"
 #elif defined(MEX_BUILD)
