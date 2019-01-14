@@ -80,7 +80,7 @@ __host__ void Kernel::load(Vec<std::size_t> dimensions, float* values, std::size
 	else
 	{
 		HANDLE_ERROR(cudaMalloc(&cudaKernel, sizeof(float)*dims.product()));
-		HANDLE_ERROR(cudaMemcpy(cudaKernel, values, sizeof(float)*dims.product(),cudaMemcpyHostToDevice));
+		HANDLE_ERROR(cudaMemcpy(cudaKernel, kernel, sizeof(float)*dims.product(),cudaMemcpyHostToDevice));
 		cleanUpDevice = true;
 	}
 
