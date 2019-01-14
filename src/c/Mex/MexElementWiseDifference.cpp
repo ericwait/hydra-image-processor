@@ -8,23 +8,13 @@
 template <typename T>
 void MexDiff_run(const mxArray* inIm1, const mxArray* inIm2, mxArray** outIm, int device)
 {
-	T* image1InPtr;
-	T* image2InPtr;
-	T* imageOutPtr;
+	Script::DimInfo inInfo1 = Script::getDimInfo(inIm1);
+	Script::DimInfo inInfo2 = Script::getDimInfo(inIm1);
+	Script::DimInfo outInfo = Script::maxDims(inInfo1, inInfo2);
 
-	ImageDimensions image1Dims;
-	ImageDimensions image2Dims;
-	ImageDimensions imageOutDims;
-	
-	Script::setupInputPointers(inIm1, image1Dims, &image1InPtr);
-	Script::setupInputPointers(inIm2, image2Dims, &image2InPtr);
-	imageOutDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-
-	Script::setupOutputPointers(outIm, imageOutDims, &imageOutPtr);
-
-	ImageView<T> image1In(image1InPtr, image1Dims);
-	ImageView<T> image2In(image2InPtr, image2Dims);
-	ImageView<T> imageOut(imageOutPtr, imageOutDims);
+	ImageView<T> image1In = Script::wrapInputImage<T>(inIm1, inInfo1);
+	ImageView<T> image2In = Script::wrapInputImage<T>(inIm2, inInfo2);
+	ImageView<T> imageOut = Script::createOutputImage<T>(outIm, outInfo);
 
 	elementWiseDifference(image1In, image2In, imageOut, device);
 }

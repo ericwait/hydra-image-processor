@@ -27,15 +27,9 @@ const char PyWrapEntropyFilter::docString[] = "imageOut = HIP.EntropyFilter(imag
 template <typename InType, typename OutType>
 void PyWrapEntropy_run(const PyArrayObject* inIm, PyArrayObject** outIm, ImageView<float> kernel, int device)
 {
-	InType* imageInPtr;
-	OutType* imageOutPtr;
-
-	ImageDimensions imageDims;
-	Script::setupInputPointers(inIm, imageDims, &imageInPtr);
-	Script::setupOutputPointers(outIm, imageDims, &imageOutPtr);
-
-	ImageView<InType> imageIn(imageInPtr, imageDims);
-	ImageView<OutType> imageOut(imageOutPtr, imageDims);
+	Script::DimInfo inInfo = Script::getDimInfo(inIm);
+	ImageView<InType> imageIn = Script::wrapInputImage<InType>(inIm, inInfo);
+	ImageView<OutType> imageOut = Script::createOutputImage<OutType>(outIm, inInfo);
 
 	entropyFilter(imageIn, imageOut, kernel, device);
 }
@@ -45,77 +39,75 @@ PyObject* PyWrapEntropyFilter::execute(PyObject* self, PyObject* args)
 {
 	int device = -1;
 
-	PyObject* imIn;
-	PyObject* inKern;
+	PyArrayObject* imIn;
+	PyArrayObject* inKern;
 
 	if ( !PyArg_ParseTuple(args, "O!O!|ii", &PyArray_Type, &imIn, &PyArray_Type, &inKern,
 							&device) )
 		return nullptr;
 
+	// TODO: These checks should be superfluous
 	if ( imIn == nullptr ) return nullptr;
 	if ( inKern == nullptr ) return nullptr;
 
-	PyArrayObject* kernContig = (PyArrayObject*)PyArray_FROM_OTF(inKern, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
-	PyArrayObject* imContig = (PyArrayObject*)PyArray_FROM_OTF(imIn, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
+	if ( !Script::ArrayInfo::isContiguous(imIn) )
+	{
+		PyErr_SetString(PyExc_RuntimeError, "Input image must be a contiguous numpy array!");
+		return nullptr;
+	}
 
-	ImageOwner<float> kernel = getKernel(kernContig);
+	if ( !Script::ArrayInfo::isContiguous(inKern) )
+	{
+		PyErr_SetString(PyExc_RuntimeError, "Input kernel must be a contiguous numpy array!");
+		return nullptr;
+	}
 
+	ImageOwner<float> kernel = getKernel(inKern);
 	if ( kernel.getDims().getNumElements() == 0 )
 	{
-		Py_XDECREF(imContig);
-		Py_XDECREF(kernContig);
-
 		PyErr_SetString(PyExc_RuntimeError, "Unable to create kernel");
 		return nullptr;
 	}
 
 
 	PyArrayObject* imOut = nullptr;
-
-	if ( PyArray_TYPE(imContig) == NPY_BOOL )
+	if ( PyArray_TYPE(imIn) == NPY_BOOL )
 	{
-		PyWrapEntropy_run<bool,float>(imContig, &imOut, kernel, device);
+		PyWrapEntropy_run<bool,float>(imIn, &imOut, kernel, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_UINT8 )
+	else if ( PyArray_TYPE(imIn) == NPY_UINT8 )
 	{
-		PyWrapEntropy_run<uint8_t,float>(imContig, &imOut, kernel, device);
+		PyWrapEntropy_run<uint8_t,float>(imIn, &imOut, kernel, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_UINT16 )
+	else if ( PyArray_TYPE(imIn) == NPY_UINT16 )
 	{
-		PyWrapEntropy_run<uint16_t,float>(imContig, &imOut, kernel, device);
+		PyWrapEntropy_run<uint16_t,float>(imIn, &imOut, kernel, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_INT16 )
+	else if ( PyArray_TYPE(imIn) == NPY_INT16 )
 	{
-		PyWrapEntropy_run<int16_t,float>(imContig, &imOut, kernel, device);
+		PyWrapEntropy_run<int16_t,float>(imIn, &imOut, kernel, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_UINT32 )
+	else if ( PyArray_TYPE(imIn) == NPY_UINT32 )
 	{
-		PyWrapEntropy_run<uint32_t,float>(imContig, &imOut, kernel, device);
+		PyWrapEntropy_run<uint32_t,float>(imIn, &imOut, kernel, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_INT32 )
+	else if ( PyArray_TYPE(imIn) == NPY_INT32 )
 	{
-		PyWrapEntropy_run<int32_t,float>(imContig, &imOut, kernel, device);
+		PyWrapEntropy_run<int32_t,float>(imIn, &imOut, kernel, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_FLOAT )
+	else if ( PyArray_TYPE(imIn) == NPY_FLOAT )
 	{
-		PyWrapEntropy_run<float,float>(imContig, &imOut, kernel, device);
+		PyWrapEntropy_run<float,float>(imIn, &imOut, kernel, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_DOUBLE )
+	else if ( PyArray_TYPE(imIn) == NPY_DOUBLE )
 	{
-		PyWrapEntropy_run<double,float>(imContig, &imOut, kernel, device);
+		PyWrapEntropy_run<double,float>(imIn, &imOut, kernel, device);
 	}
 	else
 	{
 		PyErr_SetString(PyExc_RuntimeError, "Image type not supported.");
-
-		Py_XDECREF(imContig);
-		Py_XDECREF(kernContig);
-
 		return nullptr;
 	}
-
-	Py_XDECREF(imContig);
-	Py_XDECREF(kernContig);
 
 	return ((PyObject*)imOut);
 }

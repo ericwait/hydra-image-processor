@@ -15,6 +15,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#define CHECK_ARRAY_FLAGS(IM,FLAG) ((PyArray_FLAGS(IM) & (FLAG)) == (FLAG))
+
 namespace Script
 {
 	typedef npy_intp		DimType;
@@ -34,19 +36,33 @@ namespace Script
 		TYPE_MAPPING(double, NPY_DOUBLE)
 	END_TYPE_MAP(NPY_TYPES)
 
-	template <typename T> ArrayType* createArray(int ndim, DimType* dims)
+
+	inline std::vector<DimType> arrayDims(const DimInfo& info)
 	{
-		return ((ArrayType*) PyArray_SimpleNew(ndim, dims, ID_FROM_TYPE(T)));
+		if ( info.columnMajor )
+			return std::vector<DimType>(info.dims.begin(), info.dims.end());
+		else
+			return std::vector<DimType>(info.dims.rbegin(), info.dims.rend());
+	}
+
+	template <typename T> ArrayType* createArray(const Script::DimInfo& info)
+	{
+		// Returns reverse-ordered dimensions in case of row-major array
+		std::vector<DimType> dims = Script::arrayDims(info);
+		return ((ArrayType*) PyArray_EMPTY(((int)dims.size()), dims.data(), ID_FROM_TYPE(T), ((int)info.columnMajor)));
 	}
 
 	// TODO: Figure out if we can do this without the const-casting?
 	namespace ArrayInfo
 	{
-		inline std::size_t	getNDims(const ArrayType* im) { return PyArray_NDIM(im); }
-		inline DimType* getDims(const ArrayType* im) { return PyArray_DIMS(const_cast<ArrayType*>(im)); }
+		inline bool isColumnMajor(const ArrayType* im) { return CHECK_ARRAY_FLAGS(im,NPY_ARRAY_FARRAY_RO); }
+		inline bool isContiguous(const ArrayType* im) { return (CHECK_ARRAY_FLAGS(im, NPY_ARRAY_CARRAY_RO) || CHECK_ARRAY_FLAGS(im, NPY_ARRAY_FARRAY_RO)) ; }
+
+		inline std::size_t getNDims(const ArrayType* im) { return PyArray_NDIM(im); }
+		inline DimType getDim(const ArrayType* im, int idim) { return PyArray_DIM(im, idim); }
 
 		template <typename T>
-		T* getData(const ArrayType* im) { return (T*) PyArray_DATA(const_cast<ArrayType*>(im)); }
+		T* getData(const ArrayType* im) { return (T*)PyArray_DATA(const_cast<ArrayType*>(im)); }
 	};
 
 	// Some Python-specific converters

@@ -8,15 +8,9 @@
 template <typename InType, typename OutType>
 void MexLog_run(const mxArray* inIm, mxArray** outIm, Vec<double> sigmas, int device)
 {
-	InType* imageInPtr;
-	OutType* imageOutPtr;
-	ImageDimensions imageDims;
-
-	Script::setupInputPointers(inIm, imageDims, &imageInPtr);
-	Script::setupOutputPointers(outIm, imageDims, &imageOutPtr);
-
-	ImageView<InType> imageIn(imageInPtr, imageDims);
-	ImageView<OutType> imageOut(imageOutPtr, imageDims);
+	Script::DimInfo inInfo = Script::getDimInfo(inIm);
+	ImageView<InType> imageIn = Script::wrapInputImage<InType>(inIm, inInfo);
+	ImageView<OutType> imageOut = Script::createOutputImage<OutType>(outIm, inInfo);
 
 	LoG(imageIn, imageOut, sigmas, device);
 }

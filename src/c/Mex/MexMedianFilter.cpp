@@ -8,15 +8,9 @@
 template <typename T>
 void MexMedianFilter_run(const mxArray* inIm, mxArray** outIm, ImageView<float> kernel, int numIterations, int device)
 {
-	T* imageInPtr;
-	T* imageOutPtr;
-
-	ImageDimensions imageDims;
-
-	Script::setupImagePointers(inIm, &imageInPtr, imageDims, outIm, &imageOutPtr);
-
-	ImageView<T> imageIn(imageInPtr, imageDims);
-	ImageView<T> imageOut(imageOutPtr, imageDims);
+	Script::DimInfo inInfo = Script::getDimInfo(inIm);
+	ImageView<T> imageIn = Script::wrapInputImage<T>(inIm, inInfo);
+	ImageView<T> imageOut = Script::createOutputImage<T>(outIm, inInfo);
 
 	medianFilter(imageIn, imageOut, kernel, numIterations, device);
 }

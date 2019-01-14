@@ -22,14 +22,13 @@ const char PyWrapGetMinMax::docString[] = "minValue,maxValue = HIP.GetMinMax(ima
 template <typename T>
 void PyWrapMinMax_run(const PyArrayObject* inIm, PyObject* outTuple, int device)
 {
-	T* imageInPtr;
 	T minVal;
 	T maxVal;
 
-	ImageDimensions imageDims;
-	Script::setupImagePointers(inIm, &imageInPtr, imageDims);
+	Script::DimInfo inInfo = Script::getDimInfo(inIm);
+	ImageView<T> imageIn = Script::wrapInputImage<T>(inIm, inInfo);
 
-	getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
+	getMinMax(imageIn.getConstPtr(), imageIn.getNumElements(), minVal, maxVal, device);
 
 	PyTuple_SetItem(outTuple, 0, Script::fromNumeric<T>(minVal));
 	PyTuple_SetItem(outTuple, 1, Script::fromNumeric<T>(maxVal));
@@ -38,63 +37,63 @@ void PyWrapMinMax_run(const PyArrayObject* inIm, PyObject* outTuple, int device)
 
 PyObject* PyWrapGetMinMax::execute(PyObject* self, PyObject* args)
 {
-	PyObject* imIn;
+	PyArrayObject* imIn;
 
 	int device = -1;
 
 	if ( !PyArg_ParseTuple(args, "O!|i", &PyArray_Type, &imIn, &device) )
 		return nullptr;
 
+	// TODO: These checks should be superfluous
 	if ( imIn == nullptr ) return nullptr;
 
-	PyArrayObject* imContig = (PyArrayObject*)PyArray_FROM_OTF(imIn, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
+	if ( !Script::ArrayInfo::isContiguous(imIn) )
+	{
+		PyErr_SetString(PyExc_RuntimeError, "Input image must be a contiguous numpy array!");
+		return nullptr;
+	}
 
-	ImageDimensions imageDims;
 	PyObject* outMinMax = PyTuple_New(2);
-
-	if ( PyArray_TYPE(imContig) == NPY_BOOL )
+	if ( PyArray_TYPE(imIn) == NPY_BOOL )
 	{
-		PyWrapMinMax_run<bool>(imContig, outMinMax, device);
+		PyWrapMinMax_run<bool>(imIn, outMinMax, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_UINT8 )
+	else if ( PyArray_TYPE(imIn) == NPY_UINT8 )
 	{
-		PyWrapMinMax_run<uint8_t>(imContig, outMinMax, device);
+		PyWrapMinMax_run<uint8_t>(imIn, outMinMax, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_UINT16 )
+	else if ( PyArray_TYPE(imIn) == NPY_UINT16 )
 	{
-		PyWrapMinMax_run<uint16_t>(imContig, outMinMax, device);
+		PyWrapMinMax_run<uint16_t>(imIn, outMinMax, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_INT16 )
+	else if ( PyArray_TYPE(imIn) == NPY_INT16 )
 	{
-		PyWrapMinMax_run<int16_t>(imContig, outMinMax, device);
+		PyWrapMinMax_run<int16_t>(imIn, outMinMax, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_UINT32 )
+	else if ( PyArray_TYPE(imIn) == NPY_UINT32 )
 	{
-		PyWrapMinMax_run<uint32_t>(imContig, outMinMax, device);
+		PyWrapMinMax_run<uint32_t>(imIn, outMinMax, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_INT32 )
+	else if ( PyArray_TYPE(imIn) == NPY_INT32 )
 	{
-		PyWrapMinMax_run<int32_t>(imContig, outMinMax, device);
+		PyWrapMinMax_run<int32_t>(imIn, outMinMax, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_FLOAT )
+	else if ( PyArray_TYPE(imIn) == NPY_FLOAT )
 	{
-		PyWrapMinMax_run<float>(imContig, outMinMax, device);
+		PyWrapMinMax_run<float>(imIn, outMinMax, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_DOUBLE )
+	else if ( PyArray_TYPE(imIn) == NPY_DOUBLE )
 	{
-		PyWrapMinMax_run<double>(imContig, outMinMax, device);
+		PyWrapMinMax_run<double>(imIn, outMinMax, device);
 	}
 	else
 	{
 		PyErr_SetString(PyExc_RuntimeError, "Image type not supported.");
 
-		Py_XDECREF(imContig);
 		Py_XDECREF(outMinMax);
 
 		return nullptr;
 	}
-
-	Py_XDECREF(imContig);
 
 	return outMinMax;
 }

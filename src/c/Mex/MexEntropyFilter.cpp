@@ -8,15 +8,9 @@
 template <typename InType, typename OutType>
 void MexEntropy_run(const mxArray* inIm, mxArray** outIm, ImageView<float> kernel, int device)
 {
-	InType* imageInPtr;
-	OutType* imageOutPtr;
-
-	ImageDimensions imageDims;
-	Script::setupInputPointers(inIm, imageDims, &imageInPtr);
-	Script::setupOutputPointers(outIm, imageDims, &imageOutPtr);
-
-	ImageView<InType> imageIn(imageInPtr, imageDims);
-	ImageView<OutType> imageOut(imageOutPtr, imageDims);
+	Script::DimInfo info = Script::getDimInfo(inIm);
+	ImageView<InType> imageIn = Script::wrapInputImage<InType>(inIm, info);
+	ImageView<OutType> imageOut = Script::createOutputImage<OutType>(outIm, info);
 
 	entropyFilter(imageIn, imageOut, kernel, device);
 }

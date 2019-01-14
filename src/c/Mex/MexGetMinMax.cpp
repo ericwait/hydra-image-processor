@@ -8,14 +8,13 @@
 template <typename T>
 void MexMinMax_run(const mxArray* inIm, mxArray** outMin, mxArray** outMax, int device)
 {
-	T* imageInPtr;
 	T minVal;
 	T maxVal;
 
-	ImageDimensions imageDims;
-	Script::setupInputPointers(inIm, imageDims, &imageInPtr);
+	Script::DimInfo inInfo = Script::getDimInfo(inIm);
+	ImageView<T> imageIn = Script::wrapInputImage<T>(inIm, inInfo);
 
-	getMinMax(imageInPtr, imageDims.getNumElements(), minVal, maxVal, device);
+	getMinMax(imageIn.getConstPtr(), imageIn.getNumElements(), minVal, maxVal, device);
 
 	*outMin = mxCreateDoubleScalar(minVal);
 	*outMax = mxCreateDoubleScalar(maxVal);

@@ -5,116 +5,80 @@
 
 #include <string.h>
 
+template <typename T>
+void convertKernelImage(ImageView<float> kernel, PyArrayObject* inKernel)
+{
+	float* outPtr = kernel.getPtr();
+	T* kernData = (T*) PyArray_DATA(inKernel);
+
+	for ( int i=0; i < kernel.getNumElements(); ++i )
+		outPtr[i] = static_cast<float>(kernData[i]);
+}
+
+template <>
+void convertKernelImage<float>(ImageView<float> kernel, PyArrayObject* inKernel)
+{
+	float* outPtr = kernel.getPtr();
+	float* kernData = (float*)PyArray_DATA(inKernel);
+
+	memcpy(outPtr, kernData, kernel.getNumElements()*sizeof(float));
+}
+
+template <>
+void convertKernelImage<bool>(ImageView<float> kernel, PyArrayObject* inKernel)
+{
+	float* outPtr = kernel.getPtr();
+	bool* kernData = (bool*)PyArray_DATA(inKernel);
+
+	for ( int i=0; i < kernel.getNumElements(); ++i )
+		outPtr[i] = (kernData[i]) ? (1.0f) : (0.0f);
+}
+
 
 ImageOwner<float> getKernel(PyArrayObject* kernel)
 {
-	int numDims = PyArray_NDIM(kernel);
-	const npy_intp* DIMS = PyArray_DIMS(kernel);
+	Script::DimInfo info = Script::getDimInfo(kernel);
 
-	Vec<std::size_t> kernDims(1);
-
-	if ( numDims > 2 )
-		kernDims.z = (std::size_t)DIMS[2];
-	else
-		kernDims.z = 1;
-
-	if ( numDims > 1 )
-		kernDims.y = (std::size_t)DIMS[1];
-	else
-		kernDims.y = 1;
-
-	if ( numDims > 0 )
-		kernDims.x = (std::size_t)DIMS[0];
-	else
+	if ( info.dims.size() < 1 )
 		return ImageOwner<float>();
 
-	ImageOwner<float> kernelOut(kernDims, 1, 1);
+	Vec<std::size_t> kernDims(1);
+	std::size_t chkDims = std::min<int>((int)info.dims.size(),3);
+	for ( int i=0; i < chkDims; ++i )
+		kernDims.e[i] = info.dims[i];
 
-	float* kernPtr = kernelOut.getPtr();
-	
+	ImageOwner<float> kernelOut(kernDims, 1, 1);
 	if ( PyArray_TYPE(kernel) == NPY_BOOL )
 	{
-		bool* mexKernelData;
-		mexKernelData = (bool*)PyArray_DATA(kernel);
-
-		for ( int i = 0; i < kernDims.product(); ++i )
-		{
-			if ( mexKernelData[i] )
-				kernPtr[i] = 1.0f;
-			else
-				kernPtr[i] = 0.0f;
-		}
+		convertKernelImage<bool>(kernelOut, kernel);
 	}
 	else if ( PyArray_TYPE(kernel) == NPY_UINT8 )
 	{
-		unsigned char* mexKernelData;
-		mexKernelData = (unsigned char*)PyArray_DATA(kernel);
-
-		for ( int i = 0; i < kernDims.product(); ++i )
-		{
-			double val = mexKernelData[i];
-			kernPtr[i] = (float)val;
-		}
-	}
-	else if ( PyArray_TYPE(kernel) == NPY_INT16 )
-	{
-		short* mexKernelData;
-		mexKernelData = (short*)PyArray_DATA(kernel);
-
-		for ( int i = 0; i < kernDims.product(); ++i )
-		{
-			short val = mexKernelData[i];
-			kernPtr[i] = (float)val;
-		}
+		convertKernelImage<uint8_t>(kernelOut, kernel);
 	}
 	else if ( PyArray_TYPE(kernel) == NPY_UINT16 )
 	{
-		unsigned short* mexKernelData;
-		mexKernelData = (unsigned short*)PyArray_DATA(kernel);
-
-		for ( int i = 0; i < kernDims.product(); ++i )
-		{
-			unsigned short val = mexKernelData[i];
-			kernPtr[i] = (float)val;
-		}
+		convertKernelImage<uint16_t>(kernelOut, kernel);
 	}
-	else if ( PyArray_TYPE(kernel) == NPY_INT32 )
+	else if ( PyArray_TYPE(kernel) == NPY_INT16 )
 	{
-		int* mexKernelData;
-		mexKernelData = (int*)PyArray_DATA(kernel);
-
-		for ( int i = 0; i < kernDims.product(); ++i )
-		{
-			int val = mexKernelData[i];
-			kernPtr[i] = (float)val;
-		}
+		convertKernelImage<int16_t>(kernelOut, kernel);
 	}
 	else if ( PyArray_TYPE(kernel) == NPY_UINT32 )
 	{
-		unsigned int* mexKernelData;
-		mexKernelData = (unsigned int*)PyArray_DATA(kernel);
-
-		for ( int i = 0; i < kernDims.product(); ++i )
-		{
-			unsigned int val = mexKernelData[i];
-			kernPtr[i] = (float)val;
-		}
+		convertKernelImage<uint32_t>(kernelOut, kernel);
+	}
+	else if ( PyArray_TYPE(kernel) == NPY_INT32 )
+	{
+		convertKernelImage<int32_t>(kernelOut, kernel);
 	}
 	else if ( PyArray_TYPE(kernel) == NPY_FLOAT )
 	{
-		float* mexKernelData = (float*)PyArray_DATA(kernel);
-		memcpy(kernPtr, mexKernelData, sizeof(float)*kernDims.product());
+		convertKernelImage<float>(kernelOut, kernel);
 	}
 	else if ( PyArray_TYPE(kernel) == NPY_DOUBLE )
 	{
-		double* mexKernelData;
-		mexKernelData = (double*)PyArray_DATA(kernel);
-
-		for ( int i = 0; i < kernDims.product(); ++i )
-		{
-			double val = mexKernelData[i];
-			kernPtr[i] = (float)val;
-		}
+		convertKernelImage<double>(kernelOut, kernel);
 	}
 
 	return kernelOut;

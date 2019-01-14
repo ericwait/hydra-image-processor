@@ -27,20 +27,13 @@ const char PyWrapElementWiseDifference::docString[] = "imageOut = HIP.ElementWis
 template <typename T>
 void PyWrapDiff_run(const PyArrayObject* inIm1, const PyArrayObject* inIm2, PyArrayObject** outIm, int device)
 {
-	T* image1InPtr;
-	T* image2InPtr, *imageOutPtr;
+	Script::DimInfo inInfo1 = Script::getDimInfo(inIm1);
+	Script::DimInfo inInfo2 = Script::getDimInfo(inIm1);
+	Script::DimInfo outInfo = Script::maxDims(inInfo1, inInfo2);
 
-	ImageDimensions image1Dims;
-	ImageDimensions image2Dims;
-	Script::setupInputPointers(inIm1, image1Dims, &image1InPtr);
-	Script::setupInputPointers(inIm2, image2Dims, &image2InPtr);
-
-	ImageDimensions imageOutDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
-	Script::setupOutputPointers(outIm, imageOutDims, &imageOutPtr);
-
-	ImageView<T> image1In(image1InPtr, image1Dims);
-	ImageView<T> image2In(image2InPtr, image2Dims);
-	ImageView<T> imageOut(imageOutPtr, imageOutDims);
+	ImageView<T> image1In = Script::wrapInputImage<T>(inIm1, inInfo1);
+	ImageView<T> image2In = Script::wrapInputImage<T>(inIm2, inInfo2);
+	ImageView<T> imageOut = Script::createOutputImage<T>(outIm, outInfo);
 
 	elementWiseDifference(image1In, image2In, imageOut, device);
 }
@@ -50,65 +43,67 @@ PyObject* PyWrapElementWiseDifference::execute(PyObject*self, PyObject* args)
 {
 	int device = -1;
 
-	PyObject* imIn1;
-	PyObject* imIn2;
+	PyArrayObject* imIn1;
+	PyArrayObject* imIn2;
 
 	if ( !PyArg_ParseTuple(args, "O!O!|i", &PyArray_Type, &imIn1, &PyArray_Type, &imIn2,
 							&device) )
 		return nullptr;
 
+	// TODO: These checks should be superfluous
 	if ( imIn1 == nullptr ) return nullptr;
 	if ( imIn2 == nullptr ) return nullptr;
 
-	PyArrayObject* im1Contig = (PyArrayObject*)PyArray_FROM_OTF(imIn1, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
-	PyArrayObject* im2Contig = (PyArrayObject*)PyArray_FROM_OTF(imIn2, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
+	if ( !Script::ArrayInfo::isContiguous(imIn1) )
+	{
+		PyErr_SetString(PyExc_RuntimeError, "Input image 1 must be a contiguous numpy array!");
+		return nullptr;
+	}
+
+	if ( !Script::ArrayInfo::isContiguous(imIn2) )
+	{
+		PyErr_SetString(PyExc_RuntimeError, "Input kernel 2 must be a contiguous numpy array!");
+		return nullptr;
+	}
 
 	PyArrayObject* imOut = nullptr;
-
-	if ( PyArray_TYPE(im1Contig) == NPY_BOOL )
+	if ( PyArray_TYPE(imIn1) == NPY_BOOL )
 	{
-		PyWrapDiff_run<bool>(im1Contig, im2Contig, &imOut, device);
+		PyWrapDiff_run<bool>(imIn1, imIn2, &imOut, device);
 	}
-	else if ( PyArray_TYPE(im1Contig) == NPY_UINT8 )
+	else if ( PyArray_TYPE(imIn1) == NPY_UINT8 )
 	{
-		PyWrapDiff_run<uint8_t>(im1Contig, im2Contig, &imOut, device);
+		PyWrapDiff_run<uint8_t>(imIn1, imIn2, &imOut, device);
 	}
-	else if ( PyArray_TYPE(im1Contig) == NPY_UINT16 )
+	else if ( PyArray_TYPE(imIn1) == NPY_UINT16 )
 	{
-		PyWrapDiff_run<uint16_t>(im1Contig, im2Contig, &imOut, device);
+		PyWrapDiff_run<uint16_t>(imIn1, imIn2, &imOut, device);
 	}
-	else if ( PyArray_TYPE(im1Contig) == NPY_INT16 )
+	else if ( PyArray_TYPE(imIn1) == NPY_INT16 )
 	{
-		PyWrapDiff_run<int16_t>(im1Contig, im2Contig, &imOut, device);
+		PyWrapDiff_run<int16_t>(imIn1, imIn2, &imOut, device);
 	}
-	else if ( PyArray_TYPE(im1Contig) == NPY_UINT32 )
+	else if ( PyArray_TYPE(imIn1) == NPY_UINT32 )
 	{
-		PyWrapDiff_run<uint32_t>(im1Contig, im2Contig, &imOut, device);
+		PyWrapDiff_run<uint32_t>(imIn1, imIn2, &imOut, device);
 	}
-	else if ( PyArray_TYPE(im1Contig) == NPY_INT32 )
+	else if ( PyArray_TYPE(imIn1) == NPY_INT32 )
 	{
-		PyWrapDiff_run<int32_t>(im1Contig, im2Contig, &imOut, device);
+		PyWrapDiff_run<int32_t>(imIn1, imIn2, &imOut, device);
 	}
-	else if ( PyArray_TYPE(im1Contig) == NPY_FLOAT )
+	else if ( PyArray_TYPE(imIn1) == NPY_FLOAT )
 	{
-		PyWrapDiff_run<float>(im1Contig, im2Contig, &imOut, device);
+		PyWrapDiff_run<float>(imIn1, imIn2, &imOut, device);
 	}
-	else if ( PyArray_TYPE(im1Contig) == NPY_DOUBLE )
+	else if ( PyArray_TYPE(imIn1) == NPY_DOUBLE )
 	{
-		PyWrapDiff_run<double>(im1Contig, im2Contig, &imOut, device);
+		PyWrapDiff_run<double>(imIn1, imIn2, &imOut, device);
 	}
 	else
 	{
 		PyErr_SetString(PyExc_RuntimeError, "Image type not supported.");
-
-		Py_XDECREF(im1Contig);
-		Py_XDECREF(im2Contig);
-
 		return nullptr;
 	}
-
-	Py_XDECREF(im1Contig);
-	Py_XDECREF(im2Contig);
 
 	return ((PyObject*)imOut);
 }

@@ -31,14 +31,9 @@ const char PyWrapMinFilter::docString[] = "imageOut = HIP.MinFilter(imageIn,kern
 template <typename T>
 void PyWrapMinFilter_run(const PyArrayObject* inIm, PyArrayObject** outIm, ImageView<float> kernel, int numIterations, int device)
 {
-	T* imageInPtr;
-	T* imageOutPtr;
-
-	ImageDimensions imageDims;
-	Script::setupImagePointers(inIm, &imageInPtr, imageDims, outIm, &imageOutPtr);
-
-	ImageView<T> imageIn(imageInPtr, imageDims);
-	ImageView<T> imageOut(imageOutPtr, imageDims);
+	Script::DimInfo inInfo = Script::getDimInfo(inIm);
+	ImageView<T> imageIn = Script::wrapInputImage<T>(inIm, inInfo);
+	ImageView<T> imageOut = Script::createOutputImage<T>(outIm, inInfo);
 
 	minFilter(imageIn, imageOut, kernel, numIterations, device);
 }
@@ -46,8 +41,8 @@ void PyWrapMinFilter_run(const PyArrayObject* inIm, PyArrayObject** outIm, Image
 
 PyObject* PyWrapMinFilter::execute(PyObject* self, PyObject* args)
 {
-	PyObject* imIn;
-	PyObject* inKern;
+	PyArrayObject* imIn;
+	PyArrayObject* inKern;
 
 	int numIterations = 1;
 	int device = -1;
@@ -56,68 +51,67 @@ PyObject* PyWrapMinFilter::execute(PyObject* self, PyObject* args)
 		&numIterations, &device) )
 		return nullptr;
 
+	// TODO: These checks should be superfluous
 	if ( imIn == nullptr ) return nullptr;
 	if ( inKern == nullptr ) return nullptr;
 
-	PyArrayObject* kernContig = (PyArrayObject*)PyArray_FROM_OTF(inKern, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
-	PyArrayObject* imContig = (PyArrayObject*)PyArray_FROM_OTF(imIn, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
+	if ( !Script::ArrayInfo::isContiguous(imIn) )
+	{
+		PyErr_SetString(PyExc_RuntimeError, "Input image must be a contiguous numpy array!");
+		return nullptr;
+	}
 
-	ImageOwner<float> kernel = getKernel(kernContig);
+	if ( !Script::ArrayInfo::isContiguous(inKern) )
+	{
+		PyErr_SetString(PyExc_RuntimeError, "Input kernel must be a contiguous numpy array!");
+		return nullptr;
+	}
+
+	ImageOwner<float> kernel = getKernel(inKern);
 	if ( kernel.getDims().getNumElements() == 0 )
 	{
-		Py_XDECREF(imContig);
-		Py_XDECREF(kernContig);
-
 		PyErr_SetString(PyExc_RuntimeError, "Unable to create kernel");
 		return nullptr;
 	}
 
 	PyArrayObject* imOut = nullptr;
-
-	if ( PyArray_TYPE(imContig) == NPY_BOOL )
+	if ( PyArray_TYPE(imIn) == NPY_BOOL )
 	{
-		PyWrapMinFilter_run<bool>(imContig, &imOut, kernel, numIterations, device);
+		PyWrapMinFilter_run<bool>(imIn, &imOut, kernel, numIterations, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_UINT8 )
+	else if ( PyArray_TYPE(imIn) == NPY_UINT8 )
 	{
-		PyWrapMinFilter_run<uint8_t>(imContig, &imOut, kernel, numIterations, device);
+		PyWrapMinFilter_run<uint8_t>(imIn, &imOut, kernel, numIterations, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_UINT16 )
+	else if ( PyArray_TYPE(imIn) == NPY_UINT16 )
 	{
-		PyWrapMinFilter_run<uint16_t>(imContig, &imOut, kernel, numIterations, device);
+		PyWrapMinFilter_run<uint16_t>(imIn, &imOut, kernel, numIterations, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_INT16 )
+	else if ( PyArray_TYPE(imIn) == NPY_INT16 )
 	{
-		PyWrapMinFilter_run<int16_t>(imContig, &imOut, kernel, numIterations, device);
+		PyWrapMinFilter_run<int16_t>(imIn, &imOut, kernel, numIterations, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_UINT32 )
+	else if ( PyArray_TYPE(imIn) == NPY_UINT32 )
 	{
-		PyWrapMinFilter_run<uint32_t>(imContig, &imOut, kernel, numIterations, device);
+		PyWrapMinFilter_run<uint32_t>(imIn, &imOut, kernel, numIterations, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_INT32 )
+	else if ( PyArray_TYPE(imIn) == NPY_INT32 )
 	{
-		PyWrapMinFilter_run<int32_t>(imContig, &imOut, kernel, numIterations, device);
+		PyWrapMinFilter_run<int32_t>(imIn, &imOut, kernel, numIterations, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_FLOAT )
+	else if ( PyArray_TYPE(imIn) == NPY_FLOAT )
 	{
-		PyWrapMinFilter_run<float>(imContig, &imOut, kernel, numIterations, device);
+		PyWrapMinFilter_run<float>(imIn, &imOut, kernel, numIterations, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_DOUBLE )
+	else if ( PyArray_TYPE(imIn) == NPY_DOUBLE )
 	{
-		PyWrapMinFilter_run<double>(imContig, &imOut, kernel, numIterations, device);
+		PyWrapMinFilter_run<double>(imIn, &imOut, kernel, numIterations, device);
 	}
 	else
 	{
 		PyErr_SetString(PyExc_RuntimeError, "Image type not supported.");
-
-		Py_XDECREF(imContig);
-		Py_XDECREF(kernContig);
-
 		return nullptr;
 	}
-
-	Py_XDECREF(imContig);
-	Py_XDECREF(kernContig);
 
 	return ((PyObject*)imOut);
 }

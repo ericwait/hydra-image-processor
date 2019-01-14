@@ -8,12 +8,8 @@
 template <typename InType, typename SumType>
 void MexSum_run(const mxArray* inIm, mxArray** outSum, int device)
 {
-	InType* imageInPtr;
-
-	ImageDimensions imageDims;
-	Script::setupInputPointers(inIm, imageDims, &imageInPtr);
-
-	ImageView<InType> imageIn(imageInPtr, imageDims);
+	Script::DimInfo inInfo = Script::getDimInfo(inIm);
+	ImageView<InType> imageIn = Script::wrapInputImage<InType>(inIm, inInfo);
 
 	SumType sumVal = 0;
 	sum(imageIn, sumVal, device);

@@ -24,14 +24,9 @@ const char PyWrapIdentityFilter::docString[] = "imageOut = HIP.IdentityFilter(im
 template <typename T>
 void PyWrapIdentity_run(const PyArrayObject* inIm, PyArrayObject** outIm, int device)
 {
-	T* imageInPtr;
-	T* imageOutPtr;
-
-	ImageDimensions imageDims;
-	Script::setupImagePointers(inIm, &imageInPtr, imageDims, outIm, &imageOutPtr);
-
-	ImageView<T> imageIn(imageInPtr, imageDims);
-	ImageView<T> imageOut(imageOutPtr, imageDims);
+	Script::DimInfo inInfo = Script::getDimInfo(inIm);
+	ImageView<T> imageIn = Script::wrapInputImage<T>(inIm, inInfo);
+	ImageView<T> imageOut = Script::createOutputImage<T>(outIm, inInfo);
 
 	identityFilter(imageIn, imageOut, device);
 }
@@ -41,58 +36,58 @@ PyObject* PyWrapIdentityFilter::execute(PyObject* self, PyObject* args)
 {
 	int device = -1;
 
-	PyObject* imIn;
+	PyArrayObject* imIn;
 
 	if ( !PyArg_ParseTuple(args, "O!|i", &PyArray_Type, &imIn, &device) )
 		return nullptr;
 
+	// TODO: These checks should be superfluous
 	if ( imIn == nullptr ) return nullptr;
 
-	PyArrayObject* imContig = (PyArrayObject*)PyArray_FROM_OTF(imIn, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
-	PyArrayObject* imOut = nullptr;
+	if ( !Script::ArrayInfo::isContiguous(imIn) )
+	{
+		PyErr_SetString(PyExc_RuntimeError, "Input image must be a contiguous numpy array!");
+		return nullptr;
+	}
 
-	if ( PyArray_TYPE(imContig) == NPY_BOOL )
+	PyArrayObject* imOut = nullptr;
+	if ( PyArray_TYPE(imIn) == NPY_BOOL )
 	{
-		PyWrapIdentity_run<bool>(imContig, &imOut, device);
+		PyWrapIdentity_run<bool>(imIn, &imOut, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_UINT8 )
+	else if ( PyArray_TYPE(imIn) == NPY_UINT8 )
 	{
-		PyWrapIdentity_run<uint8_t>(imContig, &imOut, device);
+		PyWrapIdentity_run<uint8_t>(imIn, &imOut, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_UINT16 )
+	else if ( PyArray_TYPE(imIn) == NPY_UINT16 )
 	{
-		PyWrapIdentity_run<uint16_t>(imContig, &imOut, device);
+		PyWrapIdentity_run<uint16_t>(imIn, &imOut, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_INT16 )
+	else if ( PyArray_TYPE(imIn) == NPY_INT16 )
 	{
-		PyWrapIdentity_run<int16_t>(imContig, &imOut, device);
+		PyWrapIdentity_run<int16_t>(imIn, &imOut, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_UINT32 )
+	else if ( PyArray_TYPE(imIn) == NPY_UINT32 )
 	{
-		PyWrapIdentity_run<uint32_t>(imContig, &imOut, device);
+		PyWrapIdentity_run<uint32_t>(imIn, &imOut, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_INT32 )
+	else if ( PyArray_TYPE(imIn) == NPY_INT32 )
 	{
-		PyWrapIdentity_run<int32_t>(imContig, &imOut, device);
+		PyWrapIdentity_run<int32_t>(imIn, &imOut, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_FLOAT )
+	else if ( PyArray_TYPE(imIn) == NPY_FLOAT )
 	{
-		PyWrapIdentity_run<float>(imContig, &imOut, device);
+		PyWrapIdentity_run<float>(imIn, &imOut, device);
 	}
-	else if ( PyArray_TYPE(imContig) == NPY_DOUBLE )
+	else if ( PyArray_TYPE(imIn) == NPY_DOUBLE )
 	{
-		PyWrapIdentity_run<double>(imContig, &imOut, device);
+		PyWrapIdentity_run<double>(imIn, &imOut, device);
 	}
 	else
 	{
 		PyErr_SetString(PyExc_RuntimeError, "Image type not supported.");
-
-		Py_XDECREF(imContig);
-
 		return nullptr;
 	}
-
-	Py_XDECREF(imContig);
 
 	return ((PyObject*)imOut);
 }

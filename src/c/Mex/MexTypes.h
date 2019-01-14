@@ -26,21 +26,24 @@ namespace Script
 
 	// Helper functions for array allocation
 	template <typename T>
-	ArrayType* createArray(int ndim, DimType* dims)
+	ArrayType* createArray(const DimInfo& info)
 	{
-		return mxCreateNumericArray(ndim, dims, ID_FROM_TYPE(T), mxREAL);
+		return mxCreateNumericArray(info.dims.size(), info.dims.data(), ID_FROM_TYPE(T), mxREAL);
 	}
 
 	template <>
-	inline ArrayType* createArray<bool>(int ndim, DimType* dims)
+	inline ArrayType* createArray<bool>(const DimInfo& info)
 	{
-		return mxCreateLogicalArray(ndim, dims);
+		return mxCreateLogicalArray(info.dims.size(), info.dims.data());
 	}
 
 	namespace ArrayInfo
 	{
+		inline bool isColumnMajor(const ArrayType* im){return true;}
+		inline bool isContiguous(const ArrayType* im){return true;}
+
 		inline std::size_t getNDims(const ArrayType* im){ return mxGetNumberOfDimensions(im); }
-		inline const DimType* getDims(const ArrayType* im){ return mxGetDimensions(im); }
+		inline DimType getDim(const ArrayType* im, int idim){ return mxGetDimensions(im)[idim]; }
 
 		template <typename T>
 		T* getData(const ArrayType* im) { return (T*)mxGetData(im); }
