@@ -36,7 +36,6 @@
     <ClCompile Include="Python\PyWrapMeanFilter.cpp" />
     <ClCompile Include="Python\PyWrapMedianFilter.cpp" />
     <ClCompile Include="Python\PyWrapMinFilter.cpp" />
-    <ClCompile Include="Python\PyWrapMinMax.cpp" />
     <ClCompile Include="Python\PyWrapMultiplySum.cpp" />
     <ClCompile Include="Python\PyWrapOpener.cpp" />
     <ClCompile Include="Python\PyWrapStdFilter.cpp" />

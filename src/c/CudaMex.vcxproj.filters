@@ -104,9 +104,6 @@
     <ClCompile Include="Mex\MexSum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mex\MexMinMax.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Mex\MexVarFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

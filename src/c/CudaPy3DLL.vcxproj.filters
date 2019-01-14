@@ -63,9 +63,6 @@
     <ClCompile Include="Python\PyWrapMinFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Python\PyWrapMinMax.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Python\PyWrapOpener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
