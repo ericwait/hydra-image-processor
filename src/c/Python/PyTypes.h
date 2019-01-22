@@ -1,5 +1,6 @@
 #pragma once
 
+#define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
 // Make sure that Numpy symbols don't get re-imported in multiple compilation units
@@ -58,6 +59,7 @@ namespace Script
 		inline bool isColumnMajor(const ArrayType* im) { return (CHECK_ARRAY_FLAGS(im,NPY_ARRAY_FARRAY_RO) && !CHECK_ARRAY_FLAGS(im, NPY_ARRAY_C_CONTIGUOUS)); }
 		inline bool isContiguous(const ArrayType* im) { return (CHECK_ARRAY_FLAGS(im, NPY_ARRAY_CARRAY_RO) || CHECK_ARRAY_FLAGS(im, NPY_ARRAY_FARRAY_RO)) ; }
 
+		inline IdType getType(const ArrayType* im) { return (IdType)PyArray_TYPE(im); }
 		inline std::size_t getNDims(const ArrayType* im) { return PyArray_NDIM(im); }
 		inline DimType getDim(const ArrayType* im, int idim) { return PyArray_DIM(im, idim); }
 
