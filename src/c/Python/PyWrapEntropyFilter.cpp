@@ -42,7 +42,7 @@ PyObject* PyWrapEntropyFilter::execute(PyObject* self, PyObject* args)
 	PyArrayObject* imIn;
 	PyArrayObject* inKern;
 
-	if ( !PyArg_ParseTuple(args, "O!O!|ii", &PyArray_Type, &imIn, &PyArray_Type, &inKern,
+	if ( !PyArg_ParseTuple(args, "O!O!|i", &PyArray_Type, &imIn, &PyArray_Type, &inKern,
 							&device) )
 		return nullptr;
 

@@ -3,6 +3,8 @@
 #include <cuda_runtime.h>
 #include <limits>
 
+#pragma optimize("",off)
+
 // Integral implementation of base-2 logarithm function
 // NOTE: Returns bit index of highest on bit in mask
 int ilog2(std::size_t mask)

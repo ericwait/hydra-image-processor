@@ -1,5 +1,6 @@
 #include "KernelIterator.cuh"
 
+#include <cstdint>
 #include <limits.h>
 #include <float.h>
 
@@ -16,7 +17,7 @@ __device__ KernelIterator::KernelIterator(Vec<std::size_t> inputPos, Vec<std::si
 
 	// The negative here will make the kernel start w/in if it went out of bounds
 	// e.g. a -1 will start at the kernel's second position 
-	kernelStartIdx = Vec<std::ptrdiff_t>::max(Vec<std::ptrdiff_t>(0), Vec<std::ptrdiff_t>(-inputStartCoordinate));
+	kernelStartIdx = Vec<std::intmax_t>::max(Vec<std::intmax_t>(0), Vec<std::intmax_t>(-inputStartCoordinate));
 
 	// This should be the last place in the image that will be considered
 	Vec<float> imageEndCoordinate = inputStartCoordinate + Vec<float>(kernelSize - 1);
