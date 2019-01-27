@@ -18,15 +18,17 @@ CU_FILES := $(wildcard Cuda/*.cu)
 CUPP_FILES := $(wildcard Cuda/*.cpp)
 MEX_CPP_FILES := $(filter-out Mex/_TemplateMex.cpp, $(wildcard Mex/*.cpp))
 PY_CPP_FILES := $(wildcard Python/*.cpp)
+TST_CPP_FILES := $(wildcard WrapCmds/*.cpp)
 
 CUDA_OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(CU_FILES:.cu=.o)))
 CUDA_CPP_OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(CUPP_FILES:.cpp=.o)))
 MEX_CPP_OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(MEX_CPP_FILES:.cpp=.o)))
 PY_CPP_OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(PY_CPP_FILES:.cpp=.o)))
+TST_CPP_OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(TST_CPP_FILES:.cpp=.o)))
 
 CUDA_INC = -I./Cuda
 MEX_INC = -I./WrapCmds -I./Mex -I./external -I$(MATALAB_DIR)/extern/include
-PY_INC = -I./WrapCmds -I./Python -I./Python -I./external -I$(PYTHON3_INC) -I$(NUMPY3_INC)
+PY_INC = -I. -I./WrapCmds -I./Python -I./Python -I./external -I$(PYTHON3_INC) -I$(NUMPY3_INC)
 
 MEX_LIB = -L$(MATALAB_DIR)/bin/glnxa64 -lmx -lmex
 PY_LIB = -L$(PYTHON_LIB) -l$(PYTHON_VER)
@@ -51,8 +53,15 @@ NVCC_FLAGS = $(CPP_FLAGS)
 SMODEL = -arch=sm_30
 NVCC_INC = -I/usr/include
 
-#C_COMPILER = g++
-C_COMPILER = clang++
+ifndef COMP
+	COMP=clang
+endif
+
+ifeq ($(COMP),gcc)
+	C_COMPILER = g++
+else ifeq ($(COMP),clang)
+	C_COMPILER = clang++
+endif
 
 OMP_LIB = -lgomp
 # NOTE: Some versions of clang use libiomp5 instead of libgomp
@@ -79,7 +88,7 @@ matlab: Mex.mexa64
 #########################################
 # link it all together
 #########################################
-HIP.so: $(CUDA_OBJ) $(PY_CPP_OBJ) $(CUDA_CPP_OBJ)
+HIP.so: $(CUDA_OBJ) $(PY_CPP_OBJ) $(TST_CPP_OBJ) $(CUDA_CPP_OBJ)
 	$(NVCC_PATH) $(GCC_LIBS) $(PY_LIB) -shared $^ -o HIP.so $(SMODEL) --linker-options '$(LD_FLAGS)'
 
 Mex.mexa64: $(CUDA_OBJ) $(MEX_CPP_OBJ) $(CUDA_CPP_OBJ)
@@ -104,6 +113,10 @@ $(OBJ_DIR)/%.o: Mex/%.cpp
 	$(C_COMPILER) $(GCC_FLAGS) $(MEX_INC) -c $< -o $@
 
 $(OBJ_DIR)/%.o: Python/%.cpp
+	@mkdir -p $(@D)
+	$(C_COMPILER) $(GCC_FLAGS) $(PY_INC) -c $< -o $@
+
+$(OBJ_DIR)/%.o: WrapCmds/%.cpp
 	@mkdir -p $(@D)
 	$(C_COMPILER) $(GCC_FLAGS) $(PY_INC) -c $< -o $@
 

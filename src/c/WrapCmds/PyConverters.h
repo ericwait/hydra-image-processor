@@ -3,10 +3,15 @@
 #include "mph/tuple_helpers.h"
 #include "mph/qualifier_helpers.h"
 
+#include "ScriptTraits.h"
+
 #include <tuple>
+#include <string>
+#include <cstdio>
+#include <memory>
 #include <type_traits>
 
-#define SCR_PARAMS(...) Script::ArgParser<__VA_ARGS__>
+#define SCR_PARAMS(...) __VA_ARGS__
 
 #define SCR_OUTPUT(TypeMacro) Script::OutParam<TypeMacro>
 #define SCR_INPUT(TypeMacro) Script::InParam<TypeMacro>
@@ -22,25 +27,14 @@
 #define SCR_VECTOR(VarName, VarType) Script::Vector<VarType>
 #define SCR_VECTOR_DYNAMIC(VarName) Script::Vector<Script::DeferredType>
 
+#ifdef _WIN32
+ #define SNPRINTF snprintf
+#else
+ #define SNPRINTF std::snprintf
+#endif
+
 namespace Script
-{
-	/////////////////////////
-	// force_const_t -
-	//   Tear away all pointers on type and set const on the underlying data type
-	//   then add all the pointers back (e.g. int** -> const int**)
-	/////////////////////////
-	template <typename T>
-	using force_const_t = mph::data_type_tfm<std::add_const, T>;
-
-
-	/////////////////////////
-	// remove_all_qualifiers_t -
-	//   Recursively remove type qualifiers (e.g. const int * const * const -> int**)
-	/////////////////////////
-	template <typename T>
-	using remove_all_qualifiers_t = mph::full_type_tfm_t<std::remove_cv, T>;
-	
-	
+{	
 	// strip_outer - Remove one layer of nested types (used to remove In/Out/OptParam qualifier types)
 	template <typename T>
 	struct strip_outer {};
@@ -49,55 +43,6 @@ namespace Script
 	struct strip_outer<T<U>>
 	{
 		using type = U;
-	};
-
-
-	// Type definitions
-	using ScriptObjPtr = Script::ObjectType*;
-	using ScriptArrayPtr = Script::ArrayType*;
-
-	struct DeferredType {};
-
-	template <typename T>
-	struct Scalar
-	{
-		using Type = T;
-		using ConcreteType = T;
-	};
-
-	template <>
-	struct Scalar<DeferredType>
-	{
-		using Type = DeferredType;
-		using ConcreteType = ScriptObjPtr;
-	};
-
-	template <typename T>
-	struct Vector
-	{
-		using Type = T;
-		using ConcreteType = Vec<T>;
-	};
-
-	template <>
-	struct Vector<DeferredType>
-	{
-		using Type = DeferredType;
-		using ConcreteType = ScriptObjPtr;
-	};
-
-	template <typename T>
-	struct Image
-	{
-		using Type = T;
-		using ConcreteType = ImageContainer<T>;
-	};
-
-	template <>
-	struct Image<DeferredType>
-	{
-		using Type = DeferredType;
-		using ConcreteType = ScriptArrayPtr;
 	};
 
 
@@ -128,7 +73,7 @@ namespace Script
 	};
 
 	// Convenience type for script inputs (e.g. const PyObject*)
-	using const_script_in_t = force_const_t<ScriptObjPtr>;
+	using const_script_in_t = force_const_t<Script::ObjectType*>;
 
 	template <typename T>
 	struct PyParseType
@@ -145,18 +90,193 @@ namespace Script
 	};
 
 
+	// TODO: Check for valid io-wrapping
+	template <typename T> using is_outparam = std::is_same<T, OutParam<typename T::Type>>;
+	template <typename T> using is_inparam = std::is_same<T, InParam<typename T::Type>>;
+	template <typename T> using is_optparam = std::is_same<T, OptParam<typename T::Type>>;
+
+
+	// Derivation of types for script/concrete variable tuples
+	template <typename T>
+	struct script_type
+	{
+		using type = typename T::template qualifier_t<typename T::Type::ScriptType>;
+	};
+
+	template <typename T>
+	struct concrete_type
+	{
+		using type = typename T::template qualifier_t<typename T::Type::ConcreteType>;
+	};
+
+	template <typename Tuple>
+	using script_transform = mph::tuple_type_tfm<iotrait_to_script, Tuple>;
+
+	template <typename Tuple>
+	using concrete_transform = mph::tuple_type_tfm<iotrait_to_concrete, Tuple>;
+
+	template <typename Tuple>
+	using add_ref_transform = mph::tuple_type_tfm<std::add_lvalue_reference, Tuple>;
+
+
+
+
+	template <typename Derived, typename ScriptConverter, typename... Layout>
+	struct ArgParser
+	{
+	protected:
+		using ArgConvertError = typename ScriptConverter::ArgConvertError;
+
+
+	public:
+		// Argument type layout alias (e.g. std::tuple<OutParam<Image<Deferred>>,...>)
+		using ArgLayout = std::tuple<Layout...>;
+
+		// Script argument type layout (e.g. std::tuple<const PyArrayObject*,...>
+		using ScriptTypes = typename script_transform<std::tuple<Layout...>>::type;
+		using ScriptRefs = typename add_ref_transform<ScriptTypes>::type;
+
+		// Concrete type layouts (e.g. std::tuple<PyObject*,...>)
+		using ArgTypes = typename concrete_transform<std::tuple<Layout...>>::type;
+		using ArgRefs = typename add_ref_transform<ArgTypes>::type;
+
+		// Filter sequences for accessing different argument types
+		using out_idx_seq = typename mph::filter_tuple_seq<is_outparam, ArgLayout>::type;
+		using in_idx_seq = typename mph::filter_tuple_seq<is_inparam, ArgLayout>::type;
+		using opt_idx_seq = typename mph::filter_tuple_seq<is_optparam, ArgLayout>::type;
+
+		// Index sequence of input/optional args (in order of required followed by optional)
+		using inopt_idx_seq = typename mph::cat_index_sequence<in_idx_seq, opt_idx_seq>::type;
+
+		// IO-type stripped layout subsets (e.g. OutParam<Image<Deferred>> -> Image<Deferred>)
+		using OutTypeLayout = mph::tuple_subset_t<out_idx_seq, typename mph::tuple_type_tfm<strip_outer, ArgLayout>::type>;
+		using InTypeLayout = mph::tuple_subset_t<in_idx_seq, typename mph::tuple_type_tfm<strip_outer, ArgLayout>::type>;
+		using OptTypeLayout = mph::tuple_subset_t<opt_idx_seq, typename mph::tuple_type_tfm<strip_outer, ArgLayout>::type>;
+
+		// Convenience typedefs for concrete output and input argument tuples
+		using OutArgs = mph::tuple_subset_t<out_idx_seq, ArgTypes>;
+		using InArgs = mph::tuple_subset_t<in_idx_seq, ArgTypes>;
+		using OptArgs = mph::tuple_subset_t<opt_idx_seq, ArgTypes>;
+
+
+		// Sub-sequences of arguments for dealing with type-deferred inputs/outputs
+		using in_im_idx_seq = typename mph::filter_tuple_subseq<is_image, ArgLayout, in_idx_seq>::type;
+
+		using in_im_defer_idx_seq = typename mph::filter_tuple_subseq<is_deferred, ArgLayout, in_im_idx_seq>::type;
+		using out_defer_idx_seq = typename mph::filter_tuple_subseq<is_deferred, ArgLayout, out_idx_seq>::type;
+
+
+	public:
+		static constexpr bool has_deferred_image_inputs() noexcept
+		{
+			return (in_im_defer_idx_seq::size() > 0);
+		}
+
+		static constexpr bool has_deferred_outputs() noexcept
+		{
+			return (out_defer_idx_seq::size() > 0);
+		}
+
+		template<typename... Types>
+		static constexpr auto selectOptional(std::tuple<Types...>& args)
+			-> mph::tuple_subset_t<opt_idx_seq, std::tuple<typename std::add_lvalue_reference<Types>::type...>>
+		{
+			return mph::tuple_subset_ref(opt_idx_seq(), args);
+		}
+
+		template<typename... Types>
+		static constexpr auto selectInputs(std::tuple<Types...>& argsRefs)
+			-> mph::tuple_subset_t<in_idx_seq, std::tuple<typename std::add_lvalue_reference<Types>::type...>>
+		{
+			return mph::tuple_subset_ref(in_idx_seq(), argsRefs);
+		}
+
+		template<typename... Types>
+		static constexpr auto selectOutputs(std::tuple<Types...>& argsRefs)
+			-> mph::tuple_subset_t<out_idx_seq, std::tuple<typename std::add_lvalue_reference<Types>::type...>>
+		{
+			return mph::tuple_subset_ref(out_idx_seq(), argsRefs);
+		}
+
+		template <typename... T>
+		static IdType getInputType(T... ioargs)
+		{
+			auto in_defer_tuple = mph::tuple_subset(in_im_defer_idx_seq(), std::tuple<T...>(ioargs...));
+			return Script::ArrayInfo::getType(std::get<0>(in_defer_tuple));
+		}
+
+
+		static void convertInputs(ArgRefs ioArgs, ScriptRefs scriptRefs)
+		{
+			// TODO: Potentially pre-check for conversion compatibility
+			//  Converters to pass script args to actual non-deferred input types
+			convert_arg_subset(ioArgs, scriptRefs, inopt_idx_seq());
+		}
+
+		template <typename InT>
+		static void convertDeferredInputs(ArgRefs concreteArgs, ArgRefs ioArgs);
+
+
+
+	public:
+		// General argument error exception
+		class ArgError: public std::runtime_error
+		{
+			static std::string make_convert_msg(const ArgConvertError& ace)
+			{
+				return std::string(Derived::argName(ace.getArgIndex())) + ": " + ace.what();
+			}
+
+		public:
+			ArgError(const char* msg): std::runtime_error(msg)
+			{}
+
+			ArgError(const ArgConvertError& ace): std::runtime_error(make_convert_msg(ace))
+			{}
+
+		private:
+			ArgError() = delete;
+		};
+
+	protected:
+		template <typename... Targets, typename... Args, size_t... Is>
+		static void convert_arg_subset(std::tuple<Targets...>& targets, const std::tuple<Args...>& args, mph::index_sequence<Is...>)
+		{
+			try
+			{
+				(void)std::initializer_list<int>
+				{
+					(ScriptConverter::convert(std::get<Is>(targets), std::get<Is>(args), Is), void(), 0)...
+				};
+			}
+			catch (ArgConvertError& ate)
+			{
+				throw ArgError(ate);
+			}
+		}
+
+		//template <typename... Targets, typename... Args>
+		//static void convert_args(std::tuple<Targets...>& targets, const std::tuple<Args...>& args)
+		//{
+		//	convert_args_subset(targets, args, mph::make_index_sequence<sizeof... (Args)>());
+		//}
+	};
+
+
+
+
+
 	// Helper for python arg expanders
 	template <typename T>
-	struct ParserArg{};
+	struct ParserArg {};
 
 	template <template<typename> class T, typename C>
 	struct ParserArg<T<C>>
 	{
-		using ArgTuple = std::tuple<typename std::add_pointer<const_script_in_t>::type>;
-
-		static ArgTuple argTuple(const_script_in_t& arg)
+		using ArgTuple = std::tuple<Script::ObjectType const**>;
+		static ArgTuple argTuple(Script::ObjectType const** argPtr)
 		{
-			return std::make_tuple(&arg);
+			return std::make_tuple(argPtr);
 		}
 
 		// TODO: Move to compile-time strings (maybe library)
@@ -170,12 +290,10 @@ namespace Script
 	template <typename C>
 	struct ParserArg<Image<C>>
 	{
-		using ArgTuple = std::tuple<PyTypeObject*,
-			typename std::add_pointer<const_script_in_t>::type>;
-
-		static ArgTuple argTuple(const_script_in_t& arg)
+		using ArgTuple = std::tuple<PyTypeObject*, Script::ArrayType const**>;
+		static ArgTuple argTuple(Script::ArrayType const** argPtr)
 		{
-			return std::make_tuple(&PyArray_Type, &arg);
+			return std::make_tuple(&PyArray_Type, argPtr);
 		}
 
 		static const char* argString()
@@ -186,37 +304,139 @@ namespace Script
 	};
 
 
-	// Helper defines for python base-type conversion checks
-	#define CHECK_PY_INT_CVT(OutType, OutPtr, InPtr) \
-			if (PyLong_Check((InPtr))) {(*(OutPtr)) = PyLong_As##OutType((InPtr));} \
-			else {return false;} \
-			return true;
 
-	#define CHECK_PY_FLOAT_CVT(OutPtr, InPtr) \
-			if (PyLong_Check((InPtr))) {(*(OutPtr)) = PyLong_AsDouble((InPtr));} \
-			else if (PyFloat_Check((InPtr))) {(*(OutPtr)) = PyFloat_AsDouble((InPtr));} \
-			else {return false;} \
-			return true;
 
 	// Script-to-concrete input converter
-	struct ScriptInConvert
+	struct PyTypeConverter
 	{
+		class ArgConvertError: public std::runtime_error
+		{
+			template <typename... Args>
+			static std::unique_ptr<char[]> make_msg(const char* fmt, Args... args)
+			{
+				size_t size = SNPRINTF(nullptr, 0, fmt, args...);
+
+				std::unique_ptr<char[]> msgPtr(new char[size+1]);
+				SNPRINTF(msgPtr.get(), size, fmt, args...);
+				return msgPtr;
+			}
+
+			static std::unique_ptr<char[]> make_msg(const char* fmt)
+			{
+				size_t size = std::strlen(fmt);
+
+				std::unique_ptr<char[]> msgPtr(new char[size+1]);
+				std::strncpy(msgPtr.get(), fmt, size);
+				return msgPtr;
+			}
+
+		public:
+			template <typename... Args>
+			ArgConvertError(int argIdx, const char* fmt, Args... args)
+				: argIdx(argIdx), std::runtime_error(make_msg(fmt,args...).get())
+			{}
+
+			int getArgIndex() const { return argIdx; }
+			int setArgIndex(int idx) { argIdx = idx; }
+
+		private:
+			ArgConvertError() = delete;
+
+		private:
+			int argIdx;
+		};
+
+	protected:
+		class ScalarConvertError: public ArgConvertError
+		{
+		public:
+			template <typename... Args>
+			ScalarConvertError(const char* fmt, Args... args)
+				: ArgConvertError(-1, fmt, args...){}
+		};
+
+		class VectorConvertError: public ArgConvertError
+		{
+		public:
+			template <typename... Args>
+			VectorConvertError(const char* fmt, Args... args)
+				: ArgConvertError(-1, fmt, args...) {}
+		};
+
+		class ImageConvertError: public ArgConvertError
+		{
+		public:
+			template <typename... Args>
+			ImageConvertError(const char* fmt, Args... args)
+				: ArgConvertError(-1, fmt, args...) {}
+		};
+
+		class ArrayTypeError: public ArgConvertError
+		{
+		public:
+			template <typename... Args>
+			ArrayTypeError(const char* fmt, Args... args)
+				: ArgConvertError(-1, fmt, args...) {}
+		};
+
 	public:
 		template <typename T>
-		static void convert(T& out, const PyObject* inPtr)
+		static void convert(T& out, const PyObject* inPtr, std::size_t argIdx)
 		{
 			// NOTE: if inPtr is nullptr then this is presumed to be optional
 			if ( inPtr == nullptr )
 				return;
 
-			convert_impl(out, inPtr);
+			try
+			{
+				convert_impl(out, inPtr);
+			}
+			catch ( ArgConvertError& ace )
+			{
+				ace.setArgIndex(argIdx);
+				throw;
+			}
+		}
+
+		template <typename T>
+		static void convert(T& out, const PyArrayObject* inPtr, std::size_t argIdx)
+		{
+			convert(out, (const PyObject*)inPtr, argIdx);
 		}
 
 	private:
 		// Have to check python object types when converting individual numbers
-		static bool pyNumericConvert(long* out, PyObject* in) { CHECK_PY_INT_CVT(Long, out, in); }
-		static bool pyNumericConvert(unsigned long* out, PyObject* in) { CHECK_PY_INT_CVT(UnsignedLong, out, in); }
-		static bool pyNumericConvert(double* out, PyObject* in) { CHECK_PY_FLOAT_CVT(out, in); }
+		static bool pyNumericConvert(long* out, PyObject* in)
+		{
+			if ( PyLong_Check(in) )
+				(*out) = PyLong_AsLong(in);
+			else
+				return false;
+
+			return true;
+		}
+
+		static bool pyNumericConvert(unsigned long* out, PyObject* in)
+		{
+			if ( PyLong_Check(in) )
+				(*out) = PyLong_AsUnsignedLong(in);
+			else
+				return false;
+
+			return true;
+		}
+
+		static bool pyNumericConvert(double* out, PyObject* in)
+		{
+			if ( PyLong_Check(in) )
+				(*out) = PyLong_AsDouble(in);
+			else if ( PyFloat_Check(in) )
+				(*out) = PyFloat_AsDouble(in);
+			else
+				return false;
+
+			return true;
+		}
 
 		// Copy-converter for python arrays
 		// NOTE: This doesn't account for stride differences and should only be used for
@@ -244,7 +464,9 @@ namespace Script
 
 			void* data = PyArray_DATA(arrPtr);
 			Script::IdType type = Script::ArrayInfo::getType(arrPtr);
-			if ( type == NPY_UINT8 )
+			if ( type == NPY_BOOL )
+				convertArray(outPtr, reinterpret_cast<bool*>(data), array_size);
+			else if ( type == NPY_UINT8 )
 				convertArray(outPtr, reinterpret_cast<uint8_t*>(data), array_size);
 			else if ( type == NPY_UINT16 )
 				convertArray(outPtr, reinterpret_cast<uint16_t*>(data), array_size);
@@ -259,9 +481,7 @@ namespace Script
 			else if ( type == NPY_DOUBLE )
 				convertArray(outPtr, reinterpret_cast<double*>(data), array_size);
 			else
-			{
-				// TODO: Throw type error
-			}
+				throw ArrayTypeError("Unsupported numpy array type: %x", type);
 		}
 
 
@@ -272,7 +492,7 @@ namespace Script
 			PyObject* list = const_cast<PyObject*>(inPtr);
 			Py_ssize_t list_size = PyList_Size(list);
 			if ( list_size != 3 )
-				return; // TODO: Throw type error
+				throw VectorConvertError("List must have 3 numeric values");
 
 			for ( int i=0; i < list_size; ++i )
 			{
@@ -287,7 +507,7 @@ namespace Script
 			PyObject* tuple = const_cast<PyObject*>(inPtr);
 			Py_ssize_t tuple_size = PyTuple_Size(tuple);
 			if ( tuple_size != 3 )
-				return; // TODO: Throw type error
+				throw VectorConvertError("Tuple must have 3 numeric values");
 
 			for ( int i=0; i < tuple_size; ++i )
 			{
@@ -302,11 +522,11 @@ namespace Script
 			PyArrayObject* arrPtr = const_cast<PyArrayObject*>(reinterpret_cast<const PyArrayObject*>(inPtr));
 			size_t ndim = Script::ArrayInfo::getNDims(arrPtr);
 			if ( ndim > 1 )
-				return; // TODO: Throw type error!
+				throw VectorConvertError("Array must be 1-D with 3 numeric values");
 
 			Script::DimType* DIMS = Script::ArrayInfo::getDims(arrPtr);
 			if ( DIMS[0] != 3 )
-				return; // TODO: Throw type error!
+				throw VectorConvertError("Array must be 1-D with 3 numeric values");
 
 			pyArrayCopyConvert(out.e, arrPtr);
 		}
@@ -348,9 +568,7 @@ namespace Script
 		{
 			unsigned long tmp;
 			if ( !pyNumericConvert(&tmp, const_cast<PyObject*>(inPtr)) )
-			{
-				// TODO: Throw type-conversion error
-			}
+				throw ScalarConvertError("Must be unsigned integer value");
 
 			out = static_cast<uint8_t>(tmp);
 		}
@@ -359,9 +577,7 @@ namespace Script
 		{
 			unsigned long tmp;
 			if ( !pyNumericConvert(&tmp, const_cast<PyObject*>(inPtr)) )
-			{
-				// TODO: Throw type-conversion error
-			}
+				throw ScalarConvertError("Must be unsigned integer value");
 
 			out = static_cast<uint16_t>(tmp);
 		}
@@ -370,9 +586,7 @@ namespace Script
 		{
 			long tmp;
 			if ( !pyNumericConvert(&tmp, const_cast<PyObject*>(inPtr)) )
-			{
-				// TODO: Throw type-conversion error
-			}
+				throw ScalarConvertError("Expected integer value");
 
 			out = static_cast<int16_t>(tmp);
 		}
@@ -381,9 +595,7 @@ namespace Script
 		{
 			unsigned long tmp;
 			if ( !pyNumericConvert(&tmp, const_cast<PyObject*>(inPtr)) )
-			{
-				// TODO: Throw type-conversion error
-			}
+				throw ScalarConvertError("Must be unsigned integer value");
 
 			out = static_cast<uint32_t>(tmp);
 		}
@@ -392,9 +604,7 @@ namespace Script
 		{
 			long tmp;
 			if ( !pyNumericConvert(&tmp, const_cast<PyObject*>(inPtr)) )
-			{
-				// TODO: Throw type-conversion error
-			}
+				throw ScalarConvertError("Must be integer value");
 
 			out = static_cast<int32_t>(tmp);
 		}
@@ -403,9 +613,7 @@ namespace Script
 		{
 			double tmp;
 			if ( !pyNumericConvert(&tmp, const_cast<PyObject*>(inPtr)) )
-			{
-				// TODO: Throw type-conversion error
-			}
+				throw ScalarConvertError("Must be floating-point value");
 
 			out = static_cast<float>(tmp);
 		}
@@ -413,24 +621,27 @@ namespace Script
 		static void convert_impl(double& out, const PyObject* inPtr)
 		{
 			if ( !pyNumericConvert(&out, const_cast<PyObject*>(inPtr)) )
-			{
-				// TODO: Throw type-conversion error
-			}
+				throw ScalarConvertError("Must be floating-point value");
 		}
 
 		// Vector conversions
 		template <typename T>
 		static void convert_impl(Vec<T>& out, const PyObject* inPtr)
 		{
-			if ( PyList_Check(inPtr) )
-				pyListToVec(out, inPtr);
-			else if ( PyTuple_Check(inPtr) )
-				pyTupleToVec(out, inPtr);
-			else if ( PyArray_Check(inPtr) )
-				pyArrayToVec(out, inPtr);
-			else
+			try
 			{
-				// TODO: Throw type error
+				if ( PyList_Check(inPtr) )
+					pyListToVec(out, inPtr);
+				else if ( PyTuple_Check(inPtr) )
+					pyTupleToVec(out, inPtr);
+				else if ( PyArray_Check(inPtr) )
+					pyArrayToVec(out, inPtr);
+				else
+					throw VectorConvertError("Must be numeric list, tuple, or numpy array");
+			}
+			catch ( ScalarConvertError& sce )
+			{
+				throw VectorConvertError("Invalid value in vector, expected 3 numeric values");
 			}
 		}
 
@@ -445,157 +656,84 @@ namespace Script
 			}
 			else
 			{
-				// TODO: Throw type error
+				throw ImageConvertError("Must be a numpy array");
 			}
 		}
 	};
 
 
-	// IO Traits
-	template <typename T>
-	struct OutParam
+
+
+
+
+	template <typename Derived, typename... Layout>
+	struct PyArgParser : public ArgParser<Derived, PyTypeConverter, Layout...>
 	{
-		using Type = T;
+		using BaseParser = ArgParser<Derived, PyTypeConverter, Layout...>;
 
-		template <typename U> using QualT = U;
-	};
-
-	template <typename T>
-	struct InParam
-	{
-		using Type = T;
-
-		// TODO: Should really determine this based on whether the data gets copied/converted
-		template <typename U>
-		using QualT = typename std::conditional<is_deferred<T>::value, force_const_t<U>, U>::type;
-	};
-
-	template <typename T>
-	struct OptParam
-	{
-		using Type = T;
-
-		// TODO: Static assert on optional-deferred input (default values can't be type-deferred)
-		template <typename U> using QualT = U;
-	};
-
-
-
-
-
-	// TODO: Check for valid io-wrapping
-	template <typename T> using is_outparam = std::is_same<T, OutParam<typename T::Type>>;
-	template <typename T> using is_inparam = std::is_same<T, InParam<typename T::Type>>;
-	template <typename T> using is_optparam = std::is_same<T, OptParam<typename T::Type>>;
-
-	// Generate concrete type from io type
-	template <typename T>
-	struct concrete_type
-	{
-		using type = typename T::template QualT<typename T::Type::ConcreteType>;
-	};
-
-	template <typename Tuple>
-	using concrete_transform = mph::tuple_type_tfm<concrete_type, Tuple>;
-
-	template <typename Tuple>
-	using add_ref_transform = mph::tuple_type_tfm<std::add_lvalue_reference, Tuple>;
-
-
-	template <typename... ArgTypes>
-	struct ArgParser
-	{
-		// TODO: Most of this should go in a base argparser and we can use static
-		//   inheritance for Matlab/Python specifics
+		using typename BaseParser::ArgError;
 
 		// Argument type layout alias (e.g. std::tuple<OutParam<Image<Deferred>>,...>)
-		using Layout = std::tuple<ArgTypes...>;
+		using typename BaseParser::ArgLayout;
+
+		// Script argument type layout (e.g. std::tuple<const PyArrayObject*,...>
+		using typename BaseParser::ScriptTypes;
+		using typename BaseParser::ScriptRefs;
+
 		// Concrete type layouts (e.g. std::tuple<PyObject*,...>)
-		using Args = typename concrete_transform<std::tuple<ArgTypes...>>::type;
-		using ArgRefs = typename add_ref_transform<Args>::type;
-
-		// Filter sequences for accessing different argument types
-		using out_idx_seq = typename mph::filter_tuple_seq<is_outparam, Layout>::type;
-		using in_idx_seq = typename mph::filter_tuple_seq<is_inparam, Layout>::type;
-		using opt_idx_seq = typename mph::filter_tuple_seq<is_optparam, Layout>::type;
-
-		// Index sequence of input/optional args (in order of required followed by optional)
-		using inopt_idx_seq = typename mph::cat_index_sequence<in_idx_seq,opt_idx_seq>::type;
+		using typename BaseParser::ArgTypes;
+		using typename BaseParser::ArgRefs;
 
 		// IO-type stripped layout subsets (e.g. OutParam<Image<Deferred>> -> Image<Deferred>)
-		using OutTypeLayout = mph::tuple_subset_t<out_idx_seq, typename mph::tuple_type_tfm<strip_outer, Layout>::type>;
-		using InTypeLayout = mph::tuple_subset_t<in_idx_seq, typename mph::tuple_type_tfm<strip_outer, Layout>::type>;
-		using OptTypeLayout = mph::tuple_subset_t<opt_idx_seq, typename mph::tuple_type_tfm<strip_outer, Layout>::type>;
-
-		// Convenience typedefs for concrete output and input argument tuples
-		using OutArgs = mph::tuple_subset_t<out_idx_seq, Args>;
-		using InArgs = mph::tuple_subset_t<in_idx_seq, Args>;
-		using OptArgs = mph::tuple_subset_t<opt_idx_seq, Args>;
+		using typename BaseParser::OutTypeLayout;
+		using typename BaseParser::InTypeLayout;
+		using typename BaseParser::OptTypeLayout;
 
 
-		// Sub-sequences of arguments for dealing with type-deferred inputs/outputs
-		using inopt_im_idx_seq = typename mph::filter_tuple_subseq<is_image, Layout, inopt_idx_seq>::type;
+		// Argument sequence selectors
+		using typename BaseParser::out_idx_seq;
+		using typename BaseParser::in_idx_seq;
+		using typename BaseParser::opt_idx_seq;
 
-		using inopt_im_defer_idx_seq = typename mph::filter_tuple_subseq<is_deferred, Layout, inopt_im_idx_seq>::type;
-		using out_defer_idx_seq = typename mph::filter_tuple_subseq<is_deferred, Layout, out_idx_seq>::type;
 
-		static constexpr bool has_deferred_image_inputs() noexcept
+		static ScriptRefs load(ScriptRefs localRefs, Script::ObjectType*& scriptOut, Script::ObjectType* scriptIn)
 		{
-			return (inopt_im_defer_idx_seq::size() > 0);
-		}
+			set_null(localRefs);
+			mph::tuple_ptr_t<ScriptRefs> scriptPtrs = mph::tuple_addr_of(localRefs);
 
-		static constexpr bool has_deferred_outputs() noexcept
-		{
-			return (out_defer_idx_seq::size() > 0);
-		}
-
-	public:
-		template <typename... T>
-		static IdType getInputType(T... ioargs)
-		{
-			// TODO: Test here for same deferred type? Or in parser?
-			auto in_defer_tuple = mph::tuple_subset(inopt_im_defer_idx_seq(), std::tuple<T...>(ioargs...));
-			return Script::ArrayInfo::getType(std::get<0>(in_defer_tuple));
-		}
-
-		static void parse(ArgRefs ioArgs, PyObject** scriptOut, PyObject* scriptIn)
-		{
-			// NOTE: Optional argument defaults (in ioArgs) should already be initialized on call to parser
-			using ParseInArgs = typename mph::tuple_type_tfm<force_use_type<const_script_in_t>::template tfm, InTypeLayout>::type;
-			using ParseOptArgs = typename mph::tuple_type_tfm<force_use_type<const_script_in_t>::template tfm, OptTypeLayout>::type;
-
-			// Local storage for parser output
-			ParseInArgs parseInVars;
-			ParseOptArgs parseOptVars;
-
-			// Link local vars into reference tuples for parsing and passing around
-			auto inParseRefs = mph::tie_tuple(parseInVars);
-			auto optParseRefs = mph::tie_tuple(parseOptVars);
+			auto inPtrs = mph::tuple_subset(in_idx_seq(), scriptPtrs);
+			auto optPtrs = mph::tuple_subset(opt_idx_seq(), scriptPtrs);
 
 			//  Make parse_string and expanded arg tuple for PyParse_Tuple
 			const std::string parseStr = make_parse_str<InTypeLayout>() + "|" + make_parse_str<OptTypeLayout>();
-			auto parseArgs = std::tuple_cat(expand_parse_args<InTypeLayout>(inParseRefs), expand_parse_args<OptTypeLayout>(optParseRefs));
+			auto parseArgs = std::tuple_cat(expand_parse_args<InTypeLayout>(inPtrs), expand_parse_args<OptTypeLayout>(optPtrs));
 
 			//  Call PyParse_Tuple return on error
 			if ( !parse_script(scriptIn, parseStr, parseArgs) )
-				return;
-				// TODO: Throw something instead and handle within main dispatch function
+				throw ArgError("PyArg_ParseTuple failed");
 
-			//  Converters to pass args to actual inputs
 			// TODO: Check in-params non-null
 			// TODO: Check input image dimension info
 
-			auto inRefs = mph::tuple_subset_ref(in_idx_seq(), ioArgs);
-			convert_args(inRefs, inParseRefs);
-
-			auto optRefs = mph::tuple_subset_ref(opt_idx_seq(), ioArgs);
-			convert_args(optRefs, optParseRefs);
-
-			// TODO: Support non-deferred outputs (most of this may be deferred)
-			// Check for outputs in matlab (e.g. main output)
+			return mph::tuple_deref(scriptPtrs);
 		}
 
 	private:
+		template <typename... Types, size_t... Is>
+		static void set_null_impl(std::tuple<Types&...> args, mph::index_sequence<Is...>)
+		{
+			(void)std::initializer_list<int>
+			{
+				((std::get<Is>(args) = nullptr), void(), 0)...
+			};
+		}
+
+		template <typename... Types>
+		static void set_null(std::tuple<Types&...> args)
+		{
+			set_null_impl(args, mph::make_index_sequence<sizeof... (Types)>());
+		}
+
 		template <typename... TypeLayout, typename... Args, size_t... Is>
 		static constexpr auto expand_parse_args_impl(std::tuple<TypeLayout...>, const std::tuple<Args...>& args, mph::index_sequence<Is...>) noexcept
 			-> decltype(std::tuple_cat(ParserArg<TypeLayout>::argTuple(std::declval<Args>())...))
@@ -610,23 +748,6 @@ namespace Script
 			-> decltype(expand_parse_args_impl(std::declval<TypeLayout>(), std::declval<std::tuple<Args...>>(), std::declval<mph::make_index_sequence<sizeof... (Args)>>()))
 		{
 			return expand_parse_args_impl(TypeLayout(), args, mph::make_index_sequence<sizeof... (Args)>());
-		}
-
-
-
-		template <typename... Targets, typename... Args, size_t... Is>
-		static void convert_args_impl(std::tuple<Targets...>& targets, const std::tuple<Args...>& args, mph::index_sequence<Is...>)
-		{
-			(void)std::initializer_list<int>
-			{
-				(ScriptInConvert::convert(std::get<Is>(targets),std::get<Is>(args)), void(), 0)...
-			};
-		}
-
-		template <typename... Targets, typename... Args>
-		static void convert_args(std::tuple<Targets...>& targets, const std::tuple<Args...>& args)
-		{
-			convert_args_impl(targets, args, mph::make_index_sequence<sizeof... (Args)>());
 		}
 
 
@@ -647,19 +768,23 @@ namespace Script
 			return strcat_initializer({ ParserArg<TypeLayout>::argString()... });
 		}
 
+		//////
+		// make_parse_str - Create a PyArgs_ParseTuple format string from layout args
 		template <typename TypeLayout>
 		static std::string make_parse_str()
 		{
 			return make_parse_str_impl(TypeLayout());
 		}
 
-		
+
 		template <typename... Args, size_t... Is>
 		static bool parse_script_impl(PyObject* scriptIn, const std::string& format, const std::tuple<Args...>& args, mph::index_sequence<Is...>)
 		{
 			return (PyArg_ParseTuple(scriptIn, format.c_str(), std::get<Is>(args)...) != 0);
 		}
 
+		//////
+		// parse_script - Unpack inopt argument reference tuple and pass along to PyArg_ParseTuple
 		template <typename... Args>
 		static bool parse_script(PyObject* scriptIn, const std::string& format, const std::tuple<Args...>& argpack)
 		{

@@ -88,7 +88,7 @@ namespace mph
 	namespace internal
 	{
 		// TODO: Play with std::forward for this?
-		template <typename ...Args, std::size_t... Is>
+		template <typename... Args, std::size_t... Is>
 		constexpr std::tuple<Args&...> tie_tuple_impl(index_sequence<Is...>, std::tuple<Args...>& vars)
 		{
 			return std::tie(std::get<Is>(vars)...);
@@ -157,10 +157,69 @@ namespace mph
 	};
 
 
+	template <template<typename> class TfmA, template<typename> class TfmB>
+	struct compose_type_tfm
+	{
+		template <typename Tuple>
+		struct tfm
+		{
+			using type = typename TfmA<typename TfmB<Tuple>::type>::type;
+		};
+	};
+
+
+	namespace internal
+	{
+		template <typename Tuple>
+		using composed_deref = compose_type_tfm<std::add_lvalue_reference, std::remove_pointer>::template tfm<Tuple>;
+	};
+
+
+	template <typename Tuple>
+	using tuple_ptr_t = typename tuple_type_tfm<std::add_pointer, Tuple>::type;
+
+	template <typename Tuple>
+	using tuple_deref_t = typename tuple_type_tfm<internal::composed_deref, Tuple>::type;
+
+	namespace internal
+	{
+		template <typename... Args, std::size_t... Is>
+		constexpr tuple_ptr_t<std::tuple<Args...>> tuple_addr_of_impl(index_sequence<Is...>, std::tuple<Args...>& vars)
+		{
+			return std::make_tuple((&std::get<Is>(vars))...);
+		}
+
+		template <typename... Args, std::size_t...Is>
+		constexpr tuple_deref_t<std::tuple<Args...>> tuple_deref_impl(index_sequence<Is...>, std::tuple<Args...>& vars)
+		{
+			return std::tie((*std::get<Is>(vars))...);
+		}
+	};
+
+	/////////////////////////
+	// tuple_addr_of -
+	//   Return a tuple of pointers to input tuple elements (e.g. &var for each element)
+	/////////////////////////
+	template <typename... Args>
+	constexpr tuple_ptr_t<std::tuple<Args...>> tuple_addr_of(std::tuple<Args...>& tuple)
+	{
+		return internal::tuple_addr_of_impl(make_index_sequence<sizeof... (Args)>(), tuple);
+	}
+
+
+	template <typename... Args>
+	constexpr tuple_deref_t<std::tuple<Args...>> tuple_deref(std::tuple<Args...> tuple)
+	{
+		return internal::tuple_deref_impl(make_index_sequence<sizeof... (Args)>(), tuple);
+	}
+
+
 	// TODO: Move these to a different mph header
 	template <bool B>
 	using bool_constant = std::integral_constant<bool, B>;
 
 	template<class B>
 	struct negation: bool_constant<!bool(B::value)> { };
+
+	template <class T> typename std::add_rvalue_reference<T>::type declval();
 };

@@ -84,6 +84,9 @@
     <ClCompile Include="Python\PyWrapIdentityFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WrapCmds\TestCommands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WrapCmds\CommandList.h">
@@ -107,5 +110,29 @@
     <ClInclude Include="Python\PyTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptCommands.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\PyConverters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\integer_sequence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\tuple_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\qualifier_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptTraits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
