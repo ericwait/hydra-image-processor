@@ -112,5 +112,5 @@ $(OBJ_DIR)/%.o: Python/%.cpp
 #########################################
 clean:
 	@echo Cleaning
-	rm -Rf $(OBJ_DIR)
+	rm -f $(OBJ_DIR)/*.o
 	rm -f Mex.mexa64 HIP.so
