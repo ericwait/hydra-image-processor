@@ -85,16 +85,6 @@ namespace Script
 		for ( int i=0; i < ndims; ++i )
 			info.dims[i] = ArrayInfo::getDim(im, m*i + offset);
 
-		// Remove trailing unitary dimensions
-		int kc;
-		for ( kc=(int)ndims; kc > 0; --kc )
-		{
-			if ( info.dims[kc-1] > 1 )
-				break;
-		}
-
-		info.dims.resize(std::max(kc, 1));
-
 		return std::move(info);
 	}
 
