@@ -10,7 +10,7 @@ class Kernel
 public:
 	__host__ Kernel(Vec<std::size_t> dimensions, float* values, int curDevice, std::size_t startOffset = 0);
 	__host__ Kernel(std::size_t dimensions, float* values, int curDevice, std::size_t startOffset = 0);
-	__host__ Kernel(ImageContainer<float> kernelIn, int curDevice);
+	__host__ Kernel(ImageView<float> kernelIn, int curDevice);
 	__host__ __device__ Kernel(Kernel& other);
 	__host__ __device__ ~Kernel() { init(); }
 

@@ -6,7 +6,7 @@
 #include "MexKernel.h"
 
 template <typename T>
-void MexClosure_run(const mxArray* inIm, mxArray** outIm, ImageContainer<float> kernel, int numIterations, int device)
+void MexClosure_run(const mxArray* inIm, mxArray** outIm, ImageView<float> kernel, int numIterations, int device)
 {
 	T* imageInPtr;
 	T* imageOutPtr;
@@ -14,8 +14,8 @@ void MexClosure_run(const mxArray* inIm, mxArray** outIm, ImageContainer<float> 
 
 	Script::setupImagePointers(inIm, &imageInPtr, imageDims, outIm, &imageOutPtr);
 
-	ImageContainer<T> imageIn(imageInPtr, imageDims);
-	ImageContainer<T> imageOut(imageOutPtr, imageDims);
+	ImageView<T> imageIn(imageInPtr, imageDims);
+	ImageView<T> imageOut(imageOutPtr, imageDims);
 
 	closure(imageIn, imageOut, kernel, numIterations, device);
 }
@@ -33,13 +33,10 @@ void MexClosure::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prh
 	if (!mxIsEmpty(prhs[3]))
 		device = mat_to_c((int)mxGetScalar(prhs[3]));
 
-	ImageContainer<float> kernel = getKernel(prhs[1]);
+	ImageOwner<float> kernel = getKernel(prhs[1]);
 
 	if (kernel.getDims().getNumElements() == 0)
-	{
-		kernel.clear();
 		return;
-	}
 
 	ImageDimensions imageDims;
 	if (mxIsLogical(prhs[0]))
@@ -78,8 +75,6 @@ void MexClosure::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prh
 	{
 		mexErrMsgTxt("Image type not supported!");
 	}
-
-	kernel.clear();
 }
 
 std::string MexClosure::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const

@@ -30,8 +30,8 @@ void PyWrapIdentity_run(const PyArrayObject* inIm, PyArrayObject** outIm, int de
 	ImageDimensions imageDims;
 	Script::setupImagePointers(inIm, &imageInPtr, imageDims, outIm, &imageOutPtr);
 
-	ImageContainer<T> imageIn(imageInPtr, imageDims);
-	ImageContainer<T> imageOut(imageOutPtr, imageDims);
+	ImageView<T> imageIn(imageInPtr, imageDims);
+	ImageView<T> imageOut(imageOutPtr, imageDims);
 
 	identityFilter(imageIn, imageOut, device);
 }

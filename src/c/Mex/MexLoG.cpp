@@ -15,8 +15,8 @@ void MexLog_run(const mxArray* inIm, mxArray** outIm, Vec<double> sigmas, int de
 	Script::setupInputPointers(inIm, imageDims, &imageInPtr);
 	Script::setupOutputPointers(outIm, imageDims, &imageOutPtr);
 
-	ImageContainer<InType> imageIn(imageInPtr, imageDims);
-	ImageContainer<OutType> imageOut(imageOutPtr, imageDims);
+	ImageView<InType> imageIn(imageInPtr, imageDims);
+	ImageView<OutType> imageOut(imageOutPtr, imageDims);
 
 	LoG(imageIn, imageOut, sigmas, device);
 }

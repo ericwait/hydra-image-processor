@@ -38,9 +38,9 @@ void PyWrapDiff_run(const PyArrayObject* inIm1, const PyArrayObject* inIm2, PyAr
 	ImageDimensions imageOutDims = ImageDimensions(Vec<std::size_t>::max(image1Dims.dims, image2Dims.dims), MAX(image1Dims.chan, image2Dims.chan), MAX(image1Dims.frame, image2Dims.frame));
 	Script::setupOutputPointers(outIm, imageOutDims, &imageOutPtr);
 
-	ImageContainer<T> image1In(image1InPtr, image1Dims);
-	ImageContainer<T> image2In(image2InPtr, image2Dims);
-	ImageContainer<T> imageOut(imageOutPtr, imageOutDims);
+	ImageView<T> image1In(image1InPtr, image1Dims);
+	ImageView<T> image2In(image2InPtr, image2Dims);
+	ImageView<T> imageOut(imageOutPtr, imageOutDims);
 
 	elementWiseDifference(image1In, image2In, imageOut, device);
 }

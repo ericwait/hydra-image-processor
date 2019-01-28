@@ -38,7 +38,7 @@ public:
 	}
 
 	template <typename PixelTypeIn, typename PixelTypeOut>
-	bool sendROI(ImageContainer<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut>* deviceImage)
+	bool sendROI(ImageView<PixelTypeIn> imageIn, CudaImageContainer<PixelTypeOut>* deviceImage)
 	{
 		Vec<std::size_t> chunkVolSize = getFullChunkSize();
 		Vec<std::size_t> imVolSize = imageIn.getSpatialDims();
@@ -81,7 +81,7 @@ public:
 	}
 
 	template <typename PixelTypeOut, typename PixelTypeIn>
-	void retriveROI(ImageContainer<PixelTypeOut> outImage, CudaImageContainer<PixelTypeIn>* deviceImage)
+	void retriveROI(ImageView<PixelTypeOut> outImage, CudaImageContainer<PixelTypeIn>* deviceImage)
 	{
 		cudaThreadSynchronize();
 		HANDLE_ERROR(cudaPeekAtLastError());

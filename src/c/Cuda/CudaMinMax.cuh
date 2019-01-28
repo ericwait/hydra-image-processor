@@ -144,7 +144,7 @@ void minMaxBuffer(ImageChunk &chunk, CudaImageContainer<PixelType>* buffer, Pixe
 }
 
 template <class PixelType>
-void cMinMax(ImageContainer<PixelType> imageIn, PixelType& outMin, PixelType& outMax, int device = -1)
+void cMinMax(ImageView<PixelType> imageIn, PixelType& outMin, PixelType& outMax, int device = -1)
 {
 	const int NUM_BUFF_NEEDED = 1;
 	const PixelType MIN_VAL = std::numeric_limits<PixelType>::lowest();

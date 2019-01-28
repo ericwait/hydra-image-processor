@@ -6,7 +6,7 @@
 #include "MexKernel.h"
 
 template <typename T>
-void MexWienerFilter_run(const mxArray* inIm, mxArray** outIm, ImageContainer<float> kernel, double noiseVar, int device)
+void MexWienerFilter_run(const mxArray* inIm, mxArray** outIm, ImageView<float> kernel, double noiseVar, int device)
 {
 	T* imageInPtr;
 	T* imageOutPtr;
@@ -14,8 +14,8 @@ void MexWienerFilter_run(const mxArray* inIm, mxArray** outIm, ImageContainer<fl
 	ImageDimensions imageDims;
 	Script::setupImagePointers(inIm, &imageInPtr, imageDims, outIm, &imageOutPtr);
 
-	ImageContainer<T> imageIn(imageInPtr, imageDims);
-	ImageContainer<T> imageOut(imageOutPtr, imageDims);
+	ImageView<T> imageIn(imageInPtr, imageDims);
+	ImageView<T> imageOut(imageOutPtr, imageDims);
 
 	wienerFilter(imageIn, imageOut, kernel, noiseVar, device);
 }
@@ -26,23 +26,20 @@ void MexWienerFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	int device = -1;
 	double noiseVar = -1.0;
 
-	ImageContainer<float> kernel;
+	ImageOwner<float> kernel;
 	if (mxIsEmpty(prhs[1]))
-		kernel = ImageContainer<float>(1.0f,Vec<std::size_t>(3));
+		kernel = ImageOwner<float>(1.0f,Vec<std::size_t>(3));
 	else
 		kernel = getKernel(prhs[1]);
+
+	if ( kernel.getDims().getNumElements() == 0 )
+		return;
 
 	if (!mxIsEmpty(prhs[2]))
 		noiseVar = mxGetScalar(prhs[2]);
 
 	if (!mxIsEmpty(prhs[3]))
 		device = mat_to_c((int)mxGetScalar(prhs[3]));
-
-	if (kernel.getDims().getNumElements() == 0)
-	{
-		kernel.clear();
-		return;
-	}
 
 	if (mxIsLogical(prhs[0]))
 	{
@@ -80,8 +77,6 @@ void MexWienerFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray
 	{
 		mexErrMsgTxt("Image type not supported!");
 	}
-
-	kernel.clear();
 }
 
 std::string MexWienerFilter::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const

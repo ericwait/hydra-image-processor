@@ -29,7 +29,7 @@ const char PyWrapClosure::docString[] = "imageOut = HIP.Closure(imageIn,kernel,[
 "\timageOut = This will be an array of the same type and shape as the input array.\n";
 
 template <typename T>
-void PyWrapClosure_run(const PyArrayObject* inIm, PyArrayObject** outIm, ImageContainer<float> kernel, int numIterations, int device)
+void PyWrapClosure_run(const PyArrayObject* inIm, PyArrayObject** outIm, ImageView<float> kernel, int numIterations, int device)
 {
 	T* imageInPtr;
 	T* imageOutPtr;
@@ -37,8 +37,8 @@ void PyWrapClosure_run(const PyArrayObject* inIm, PyArrayObject** outIm, ImageCo
 	ImageDimensions imageDims;
 	Script::setupImagePointers(inIm, &imageInPtr, imageDims, outIm, &imageOutPtr);
 
-	ImageContainer<T> imageIn(imageInPtr, imageDims);
-	ImageContainer<T> imageOut(imageOutPtr, imageDims);
+	ImageView<T> imageIn(imageInPtr, imageDims);
+	ImageView<T> imageOut(imageOutPtr, imageDims);
 
 	closure(imageIn, imageOut, kernel, numIterations, device);
 }
@@ -62,11 +62,11 @@ PyObject* PyWrapClosure::execute(PyObject* self, PyObject* args)
 	PyArrayObject* kernContig = (PyArrayObject*) PyArray_FROM_OTF(inKern, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
 	PyArrayObject* imContig = (PyArrayObject*) PyArray_FROM_OTF(imIn, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
 
-	ImageContainer<float> kernel = getKernel(kernContig);
+	ImageOwner<float> kernel = getKernel(kernContig);
 
 	if ( kernel.getDims().getNumElements() == 0 )
 	{
-		kernel.clear();
+		Py_XDECREF(imContig);
 		Py_XDECREF(kernContig);
 
 		PyErr_SetString(PyExc_RuntimeError, "Unable to create kernel");
@@ -120,8 +120,6 @@ PyObject* PyWrapClosure::execute(PyObject* self, PyObject* args)
 
 	Py_XDECREF(imContig);
 	Py_XDECREF(kernContig);
-
-	kernel.clear();
 
 	return ((PyObject*)imOut);
 }

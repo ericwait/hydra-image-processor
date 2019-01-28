@@ -17,13 +17,9 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	if (!mxIsEmpty(prhs[3]))
 		device = mat_to_c((int)mxGetScalar(prhs[3]));
 
-	ImageContainer<float> kernel = getKernel(prhs[1]);
-
+	ImageOwner<float> kernel = getKernel(prhs[1]);
 	if (kernel.getDims().getNumElements() == 0)
-	{
-		kernel.clear();
 		return;
-	}
 
 	ImageDimensions imageDims;
 	if (mxIsLogical(prhs[0]))
@@ -31,8 +27,8 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		bool* imageInPtr, *imageOutPtr;
 		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
-		ImageContainer<bool> imageIn(imageInPtr, imageDims);
-		ImageContainer<bool> imageOut(imageOutPtr, imageDims);
+		ImageView<bool> imageIn(imageInPtr, imageDims);
+		ImageView<bool> imageOut(imageOutPtr, imageDims);
 
 		fooFilter(imageIn, imageOut, kernel, numIterations, device);
 
@@ -42,8 +38,8 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		unsigned char* imageInPtr, *imageOutPtr;
 		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
-		ImageContainer<unsigned char> imageIn(imageInPtr, imageDims);
-		ImageContainer<unsigned char> imageOut(imageOutPtr, imageDims);
+		ImageView<unsigned char> imageIn(imageInPtr, imageDims);
+		ImageView<unsigned char> imageOut(imageOutPtr, imageDims);
 
 		fooFilter(imageIn, imageOut, kernel, numIterations, device);
 	}
@@ -52,8 +48,8 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		unsigned short* imageInPtr, *imageOutPtr;
 		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
-		ImageContainer<unsigned short> imageIn(imageInPtr, imageDims);
-		ImageContainer<unsigned short> imageOut(imageOutPtr, imageDims);
+		ImageView<unsigned short> imageIn(imageInPtr, imageDims);
+		ImageView<unsigned short> imageOut(imageOutPtr, imageDims);
 
 		fooFilter(imageIn, imageOut, kernel, numIterations, device);
 	}
@@ -62,8 +58,8 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		short* imageInPtr, *imageOutPtr;
 		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
-		ImageContainer<short> imageIn(imageInPtr, imageDims);
-		ImageContainer<short> imageOut(imageOutPtr, imageDims);
+		ImageView<short> imageIn(imageInPtr, imageDims);
+		ImageView<short> imageOut(imageOutPtr, imageDims);
 
 		fooFilter(imageIn, imageOut, kernel, numIterations, device);
 	}
@@ -72,8 +68,8 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		unsigned int* imageInPtr, *imageOutPtr;
 		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
-		ImageContainer<unsigned int> imageIn(imageInPtr, imageDims);
-		ImageContainer<unsigned int> imageOut(imageOutPtr, imageDims);
+		ImageView<unsigned int> imageIn(imageInPtr, imageDims);
+		ImageView<unsigned int> imageOut(imageOutPtr, imageDims);
 
 		fooFilter(imageIn, imageOut, kernel, numIterations, device);
 	}
@@ -82,8 +78,8 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		int* imageInPtr, *imageOutPtr;
 		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
-		ImageContainer<int> imageIn(imageInPtr, imageDims);
-		ImageContainer<int> imageOut(imageOutPtr, imageDims);
+		ImageView<int> imageIn(imageInPtr, imageDims);
+		ImageView<int> imageOut(imageOutPtr, imageDims);
 
 		fooFilter(imageIn, imageOut, kernel, numIterations, device);
 	}
@@ -92,8 +88,8 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		float* imageInPtr, *imageOutPtr;
 		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
-		ImageContainer<float> imageIn(imageInPtr, imageDims);
-		ImageContainer<float> imageOut(imageOutPtr, imageDims);
+		ImageView<float> imageIn(imageInPtr, imageDims);
+		ImageView<float> imageOut(imageOutPtr, imageDims);
 
 		fooFilter(imageIn, imageOut, kernel, numIterations, device);
 	}
@@ -102,8 +98,8 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 		double* imageInPtr, *imageOutPtr;
 		Script::setupImagePointers(prhs[0], &imageInPtr, imageDims, &plhs[0], &imageOutPtr);
 
-		ImageContainer<double> imageIn(imageInPtr, imageDims);
-		ImageContainer<double> imageOut(imageOutPtr, imageDims);
+		ImageView<double> imageIn(imageInPtr, imageDims);
+		ImageView<double> imageOut(imageOutPtr, imageDims);
 
 		fooFilter(imageIn, imageOut, kernel, numIterations, device);
 	}
@@ -111,8 +107,6 @@ void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* p
 	{
 		mexErrMsgTxt("Image type not supported!");
 	}
-
-	kernel.clear();
 }
 
 std::string MexFooFilter::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const

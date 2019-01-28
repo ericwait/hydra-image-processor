@@ -25,7 +25,7 @@ const char PyWrapEntropyFilter::docString[] = "imageOut = HIP.EntropyFilter(imag
 "\timageOut = This will be an array of the same type and shape as the input array.\n";
 
 template <typename InType, typename OutType>
-void PyWrapEntropy_run(const PyArrayObject* inIm, PyArrayObject** outIm, ImageContainer<float> kernel, int device)
+void PyWrapEntropy_run(const PyArrayObject* inIm, PyArrayObject** outIm, ImageView<float> kernel, int device)
 {
 	InType* imageInPtr;
 	OutType* imageOutPtr;
@@ -34,8 +34,8 @@ void PyWrapEntropy_run(const PyArrayObject* inIm, PyArrayObject** outIm, ImageCo
 	Script::setupInputPointers(inIm, imageDims, &imageInPtr);
 	Script::setupOutputPointers(outIm, imageDims, &imageOutPtr);
 
-	ImageContainer<InType> imageIn(imageInPtr, imageDims);
-	ImageContainer<OutType> imageOut(imageOutPtr, imageDims);
+	ImageView<InType> imageIn(imageInPtr, imageDims);
+	ImageView<OutType> imageOut(imageOutPtr, imageDims);
 
 	entropyFilter(imageIn, imageOut, kernel, device);
 }
@@ -58,11 +58,11 @@ PyObject* PyWrapEntropyFilter::execute(PyObject* self, PyObject* args)
 	PyArrayObject* kernContig = (PyArrayObject*)PyArray_FROM_OTF(inKern, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
 	PyArrayObject* imContig = (PyArrayObject*)PyArray_FROM_OTF(imIn, NPY_NOTYPE, NPY_ARRAY_IN_ARRAY);
 
-	ImageContainer<float> kernel = getKernel(kernContig);
+	ImageOwner<float> kernel = getKernel(kernContig);
 
 	if ( kernel.getDims().getNumElements() == 0 )
 	{
-		kernel.clear();
+		Py_XDECREF(imContig);
 		Py_XDECREF(kernContig);
 
 		PyErr_SetString(PyExc_RuntimeError, "Unable to create kernel");
@@ -116,8 +116,6 @@ PyObject* PyWrapEntropyFilter::execute(PyObject* self, PyObject* args)
 
 	Py_XDECREF(imContig);
 	Py_XDECREF(kernContig);
-
-	kernel.clear();
 
 	return ((PyObject*)imOut);
 }

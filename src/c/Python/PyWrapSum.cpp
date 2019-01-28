@@ -28,7 +28,7 @@ void PyWrapSum_run(const PyArrayObject* inIm, PyObject** outSum, int device)
 	ImageDimensions imageDims;
 	Script::setupImagePointers(inIm, &imageInPtr, imageDims);
 
-	ImageContainer<InType> imageIn(imageInPtr, imageDims);
+	ImageView<InType> imageIn(imageInPtr, imageDims);
 
 	SumType outVal = 0;
 	sum(imageIn, outVal, device);
@@ -65,7 +65,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_INT16 )
 	{
-		PyWrapSum_run<int16_t,std::ptrdiff_t>(imContig, &outSum, device);
+		PyWrapSum_run<int16_t,long long>(imContig, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_UINT32 )
 	{
@@ -73,7 +73,7 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_INT32 )
 	{
-		PyWrapSum_run<int32_t,std::ptrdiff_t>(imContig, &outSum, device);
+		PyWrapSum_run<int32_t,long long>(imContig, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imContig) == NPY_FLOAT )
 	{

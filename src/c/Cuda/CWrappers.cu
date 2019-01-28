@@ -45,237 +45,237 @@ void clearDevice()
  }
 
  /// Example wrapper code
- //void fooFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //void fooFilter(const ImageView<bool> imageIn, ImageView<bool> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  //{
 	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
  //}
 
 
- //void fooFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //void fooFilter(const ImageView<char> imageIn, ImageView<char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  //{
 	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
  //}
 
 
- //void fooFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //void fooFilter(const ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  //{
 	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
  //}
 
 
- //void fooFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //void fooFilter(const ImageView<short> imageIn, ImageView<short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  //{
 	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
  //}
 
 
- //void fooFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //void fooFilter(const ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  //{
 	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
  //}
 
 
- //void fooFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //void fooFilter(const ImageView<int> imageIn, ImageView<int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  //{
 	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
  //}
 
 
- //void fooFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //void fooFilter(const ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  //{
 	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
  //}
 
 
- //void fooFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //void fooFilter(const ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  //{
 	// cFooFilter(imageIn, imageOut, kernel, numIterations, device);
  //}
 
- //void fooFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ //void fooFilter(const ImageView<double> imageIn, ImageView<double> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  //{
  // cFooFilter(imageIn, imageOut, kernel, numIterations, device);
  //}
 
- void closure(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void closure(const ImageView<bool> imageIn, ImageView<bool> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void closure(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void closure(const ImageView<char> imageIn, ImageView<char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void closure(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void closure(const ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void closure(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void closure(const ImageView<short> imageIn, ImageView<short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void closure(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void closure(const ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void closure(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void closure(const ImageView<int> imageIn, ImageView<int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void closure(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void closure(const ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void closure(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void closure(const ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void closure(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void closure(const ImageView<double> imageIn, ImageView<double> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cClosure(imageIn, imageOut, kernel, numIterations, device);
  }
 
  
- void elementWiseDifference(const ImageContainer<bool> image1In, ImageContainer<bool> image2In, ImageContainer<bool>& imageOut, int device /*= -1*/)
+ void elementWiseDifference(const ImageView<bool> image1In, ImageView<bool> image2In, ImageView<bool> imageOut, int device /*= -1*/)
  {
 	 cElementWiseDifference(image1In, image2In, imageOut, device);
  }
 
- void elementWiseDifference(const ImageContainer<char> image1In, ImageContainer<char> image2In, ImageContainer<char>& imageOut, int device /*= -1*/)
+ void elementWiseDifference(const ImageView<char> image1In, ImageView<char> image2In, ImageView<char> imageOut, int device /*= -1*/)
  {
 	 cElementWiseDifference(image1In, image2In, imageOut, device);
  }
 
- void elementWiseDifference(const ImageContainer<unsigned char> image1In, ImageContainer<unsigned char> image2In, ImageContainer<unsigned char>& imageOut, int device /*= -1*/)
+ void elementWiseDifference(const ImageView<unsigned char> image1In, ImageView<unsigned char> image2In, ImageView<unsigned char> imageOut, int device /*= -1*/)
  {
 	 cElementWiseDifference(image1In, image2In, imageOut, device);
  }
 
- void elementWiseDifference(const ImageContainer<short> image1In, ImageContainer<short> image2In, ImageContainer<short>& imageOut, int device /*= -1*/)
+ void elementWiseDifference(const ImageView<short> image1In, ImageView<short> image2In, ImageView<short> imageOut, int device /*= -1*/)
  {
 	 cElementWiseDifference(image1In, image2In, imageOut, device);
  }
 
- void elementWiseDifference(const ImageContainer<unsigned short> image1In, ImageContainer<unsigned short> image2In, ImageContainer<unsigned short>& imageOut, int device /*= -1*/)
+ void elementWiseDifference(const ImageView<unsigned short> image1In, ImageView<unsigned short> image2In, ImageView<unsigned short> imageOut, int device /*= -1*/)
  {
 	 cElementWiseDifference(image1In, image2In, imageOut, device);
  }
 
- void elementWiseDifference(const ImageContainer<int> image1In, ImageContainer<int> image2In, ImageContainer<int>& imageOut, int device /*= -1*/)
+ void elementWiseDifference(const ImageView<int> image1In, ImageView<int> image2In, ImageView<int> imageOut, int device /*= -1*/)
  {
 	 cElementWiseDifference(image1In, image2In, imageOut, device);
  }
 
- void elementWiseDifference(const ImageContainer<unsigned int> image1In, ImageContainer<unsigned int> image2In, ImageContainer<unsigned int>& imageOut, int device /*= -1*/)
+ void elementWiseDifference(const ImageView<unsigned int> image1In, ImageView<unsigned int> image2In, ImageView<unsigned int> imageOut, int device /*= -1*/)
  {
 	 cElementWiseDifference(image1In, image2In, imageOut, device);
  }
 
- void elementWiseDifference(const ImageContainer<float> image1In, ImageContainer<float> image2In, ImageContainer<float>& imageOut, int device /*= -1*/)
+ void elementWiseDifference(const ImageView<float> image1In, ImageView<float> image2In, ImageView<float> imageOut, int device /*= -1*/)
  {
 	 cElementWiseDifference(image1In, image2In, imageOut, device);
  }
 
- void elementWiseDifference(const ImageContainer<double> image1In, ImageContainer<double> image2In, ImageContainer<double>& imageOut, int device /*= -1*/)
+ void elementWiseDifference(const ImageView<double> image1In, ImageView<double> image2In, ImageView<double> imageOut, int device /*= -1*/)
  {
 	 cElementWiseDifference(image1In, image2In, imageOut, device);
  }
 
  
- void entropyFilter(const ImageContainer<bool> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ void entropyFilter(const ImageView<bool> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int device /*= -1*/)
  {
 	 cEntropyFilter(imageIn, imageOut, kernel, device);
  }
  
- void entropyFilter(const ImageContainer<char> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ void entropyFilter(const ImageView<char> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int device /*= -1*/)
  {
 	 cEntropyFilter(imageIn, imageOut, kernel, device);
  }
  
- void entropyFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ void entropyFilter(const ImageView<unsigned char> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int device /*= -1*/)
  {
 	 cEntropyFilter(imageIn, imageOut, kernel, device);
  }
 
- void entropyFilter(const ImageContainer<short> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ void entropyFilter(const ImageView<short> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int device /*= -1*/)
  {
 	 cEntropyFilter(imageIn, imageOut, kernel, device);
  }
   
- void entropyFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ void entropyFilter(const ImageView<unsigned short> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int device /*= -1*/)
  {
 	 cEntropyFilter(imageIn, imageOut, kernel, device);
  }
  
- void entropyFilter(const ImageContainer<int> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ void entropyFilter(const ImageView<int> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int device /*= -1*/)
  {
 	 cEntropyFilter(imageIn, imageOut, kernel, device);
  }
  
- void entropyFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ void entropyFilter(const ImageView<unsigned int> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int device /*= -1*/)
  {
 	 cEntropyFilter(imageIn, imageOut, kernel, device);
  }
  
- void entropyFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ void entropyFilter(const ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int device /*= -1*/)
  {
 	 cEntropyFilter(imageIn, imageOut, kernel, device);
  }
  
- void entropyFilter(const ImageContainer<double> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device /*= -1*/)
+ void entropyFilter(const ImageView<double> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int device /*= -1*/)
  {
 	 cEntropyFilter(imageIn, imageOut, kernel, device);
  }
 
 
-void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+void gaussian(const ImageView<bool> imageIn, ImageView<bool> imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
  }
  
- void gaussian(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void gaussian(const ImageView<char> imageIn, ImageView<char> imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
  }
  
- void gaussian(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void gaussian(const ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
  }
  
- void gaussian(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void gaussian(const ImageView<short> imageIn, ImageView<short> imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
  }
  
- void gaussian(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void gaussian(const ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
  }
  
- void gaussian(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void gaussian(const ImageView<int> imageIn, ImageView<int> imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
  }
  
- void gaussian(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void gaussian(const ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
  }
 
- void gaussian(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void gaussian(const ImageView<float> imageIn, ImageView<float> imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
  }
 
- void gaussian(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
+ void gaussian(const ImageView<double> imageIn, ImageView<double> imageOut, Vec<double> sigmas, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cGaussian(imageIn, imageOut, sigmas, numIterations, device);
  }
@@ -327,645 +327,645 @@ void gaussian(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut
  }
 
 
- void highPassFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void highPassFilter(const ImageView<bool> imageIn, ImageView<bool> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cHighPassFilter(imageIn, imageOut, sigmas, device);
  }
  
- void highPassFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void highPassFilter(const ImageView<char> imageIn, ImageView<char> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cHighPassFilter(imageIn, imageOut, sigmas, device);
  }
  
- void highPassFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void highPassFilter(const ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cHighPassFilter(imageIn, imageOut, sigmas, device);
  }
  
- void highPassFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void highPassFilter(const ImageView<short> imageIn, ImageView<short> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cHighPassFilter(imageIn, imageOut, sigmas, device);
  }
  
- void highPassFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void highPassFilter(const ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cHighPassFilter(imageIn, imageOut, sigmas, device);
  }
  
- void highPassFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void highPassFilter(const ImageView<int> imageIn, ImageView<int> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cHighPassFilter(imageIn, imageOut, sigmas, device);
  }
  
- void highPassFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void highPassFilter(const ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cHighPassFilter(imageIn, imageOut, sigmas, device);
  }
  
- void highPassFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void highPassFilter(const ImageView<float> imageIn, ImageView<float> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cHighPassFilter(imageIn, imageOut, sigmas, device);
  }
  
- void highPassFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void highPassFilter(const ImageView<double> imageIn, ImageView<double> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cHighPassFilter(imageIn, imageOut, sigmas, device);
  }
 
 
- void identityFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, int device /*= -1*/)
+ void identityFilter(const ImageView<bool> imageIn, ImageView<bool> imageOut, int device /*= -1*/)
  {
 	 cIdentityFilter(imageIn, imageOut, device);
  }
 
- void identityFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, int device /*= -1*/)
+ void identityFilter(const ImageView<char> imageIn, ImageView<char> imageOut, int device /*= -1*/)
  {
 	 cIdentityFilter(imageIn, imageOut, device);
  }
 
- void identityFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, int device /*= -1*/)
+ void identityFilter(const ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, int device /*= -1*/)
  {
 	 cIdentityFilter(imageIn, imageOut, device);
  }
 
- void identityFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, int device /*= -1*/)
+ void identityFilter(const ImageView<short> imageIn, ImageView<short> imageOut, int device /*= -1*/)
  {
 	 cIdentityFilter(imageIn, imageOut, device);
  }
 
- void identityFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, int device /*= -1*/)
+ void identityFilter(const ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, int device /*= -1*/)
  {
 	 cIdentityFilter(imageIn, imageOut, device);
  }
 
- void identityFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, int device /*= -1*/)
+ void identityFilter(const ImageView<int> imageIn, ImageView<int> imageOut, int device /*= -1*/)
  {
 	 cIdentityFilter(imageIn, imageOut, device);
  }
 
- void identityFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, int device /*= -1*/)
+ void identityFilter(const ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, int device /*= -1*/)
  {
 	 cIdentityFilter(imageIn, imageOut, device);
  }
 
- void identityFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, int device /*= -1*/)
+ void identityFilter(const ImageView<float> imageIn, ImageView<float> imageOut, int device /*= -1*/)
  {
 	 cIdentityFilter(imageIn, imageOut, device);
  }
 
- void identityFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, int device /*= -1*/)
+ void identityFilter(const ImageView<double> imageIn, ImageView<double> imageOut, int device /*= -1*/)
  {
 	 cIdentityFilter(imageIn, imageOut, device);
  }
 
 
- void LoG(const ImageContainer<bool> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void LoG(const ImageView<bool> imageIn, ImageView<float> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<char> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void LoG(const ImageView<char> imageIn, ImageView<float> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<unsigned char> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void LoG(const ImageView<unsigned char> imageIn, ImageView<float> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<short> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void LoG(const ImageView<short> imageIn, ImageView<float> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<unsigned short> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void LoG(const ImageView<unsigned short> imageIn, ImageView<float> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<int> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void LoG(const ImageView<int> imageIn, ImageView<float> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<unsigned int> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void LoG(const ImageView<unsigned int> imageIn, ImageView<float> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void LoG(const ImageView<float> imageIn, ImageView<float> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
- void LoG(const ImageContainer<double> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device /*= -1*/)
+ void LoG(const ImageView<double> imageIn, ImageView<float> imageOut, Vec<double> sigmas, int device /*= -1*/)
  {
 	 cLoG(imageIn, imageOut, sigmas, device);
  }
 
 
- void maxFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void maxFilter(const ImageView<bool> imageIn, ImageView<bool> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void maxFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void maxFilter(const ImageView<char> imageIn, ImageView<char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void maxFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void maxFilter(const ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void maxFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void maxFilter(const ImageView<short> imageIn, ImageView<short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void maxFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void maxFilter(const ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void maxFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void maxFilter(const ImageView<int> imageIn, ImageView<int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void maxFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void maxFilter(const ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void maxFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void maxFilter(const ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void maxFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void maxFilter(const ImageView<double> imageIn, ImageView<double> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMaxFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
 
- void meanFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void meanFilter(const ImageView<bool> imageIn, ImageView<bool> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void meanFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void meanFilter(const ImageView<char> imageIn, ImageView<char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void meanFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void meanFilter(const ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void meanFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void meanFilter(const ImageView<short> imageIn, ImageView<short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void meanFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void meanFilter(const ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void meanFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void meanFilter(const ImageView<int> imageIn, ImageView<int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void meanFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void meanFilter(const ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void meanFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void meanFilter(const ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void meanFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void meanFilter(const ImageView<double> imageIn, ImageView<double> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMeanFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
 
- void medianFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void medianFilter(const ImageView<bool> imageIn, ImageView<bool> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMedianFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void medianFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void medianFilter(const ImageView<char> imageIn, ImageView<char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMedianFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void medianFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void medianFilter(const ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMedianFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void medianFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void medianFilter(const ImageView<short> imageIn, ImageView<short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMedianFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void medianFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void medianFilter(const ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMedianFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void medianFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void medianFilter(const ImageView<int> imageIn, ImageView<int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMedianFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void medianFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void medianFilter(const ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMedianFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void medianFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void medianFilter(const ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMedianFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void medianFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void medianFilter(const ImageView<double> imageIn, ImageView<double> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMedianFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
 
- void minFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void minFilter(const ImageView<bool> imageIn, ImageView<bool> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void minFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void minFilter(const ImageView<char> imageIn, ImageView<char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void minFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void minFilter(const ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void minFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void minFilter(const ImageView<short> imageIn, ImageView<short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void minFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void minFilter(const ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void minFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void minFilter(const ImageView<int> imageIn, ImageView<int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void minFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void minFilter(const ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void minFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void minFilter(const ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void minFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void minFilter(const ImageView<double> imageIn, ImageView<double> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMinFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
 
- void minMax(const ImageContainer<bool> imageIn, bool& minVal, bool& maxVal, int device /*= -1*/)
+ void minMax(const ImageView<bool> imageIn, bool& minVal, bool& maxVal, int device /*= -1*/)
  {
 	 cMinMax(imageIn, minVal, maxVal, device);
  }
 
- void minMax(const ImageContainer<char> imageIn, char& minVal, char& maxVal, int device /*= -1*/)
+ void minMax(const ImageView<char> imageIn, char& minVal, char& maxVal, int device /*= -1*/)
  {
 	 cMinMax(imageIn, minVal, maxVal, device);
  }
 
- void minMax(const ImageContainer<unsigned char> imageIn, unsigned char& minVal, unsigned char& maxVal, int device /*= -1*/)
+ void minMax(const ImageView<unsigned char> imageIn, unsigned char& minVal, unsigned char& maxVal, int device /*= -1*/)
  {
 	 cMinMax(imageIn, minVal, maxVal, device);
  }
 
- void minMax(const ImageContainer<short> imageIn, short& minVal, short& maxVal, int device /*= -1*/)
+ void minMax(const ImageView<short> imageIn, short& minVal, short& maxVal, int device /*= -1*/)
  {
 	 cMinMax(imageIn, minVal, maxVal, device);
  }
 
- void minMax(const ImageContainer<unsigned short> imageIn, unsigned short& minVal, unsigned short& maxVal, int device /*= -1*/)
+ void minMax(const ImageView<unsigned short> imageIn, unsigned short& minVal, unsigned short& maxVal, int device /*= -1*/)
  {
 	 cMinMax(imageIn, minVal, maxVal, device);
  }
 
- void minMax(const ImageContainer<int> imageIn, int& minVal, int& maxVal, int device /*= -1*/)
+ void minMax(const ImageView<int> imageIn, int& minVal, int& maxVal, int device /*= -1*/)
  {
 	 cMinMax(imageIn, minVal, maxVal, device);
  }
 
- void minMax(const ImageContainer<unsigned int> imageIn, unsigned int& minVal, unsigned int& maxVal, int device /*= -1*/)
+ void minMax(const ImageView<unsigned int> imageIn, unsigned int& minVal, unsigned int& maxVal, int device /*= -1*/)
  {
 	 cMinMax(imageIn, minVal, maxVal, device);
  }
 
- void minMax(const ImageContainer<float> imageIn, float& minVal, float& maxVal, int device /*= -1*/)
+ void minMax(const ImageView<float> imageIn, float& minVal, float& maxVal, int device /*= -1*/)
  {
 	 cMinMax(imageIn, minVal, maxVal, device);
  }
 
- void minMax(const ImageContainer<double> imageIn, double& minVal, double& maxVal, int device /*= -1*/)
+ void minMax(const ImageView<double> imageIn, double& minVal, double& maxVal, int device /*= -1*/)
  {
 	 cMinMax(imageIn, minVal, maxVal, device);
  }
 
 
- void multiplySum(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void multiplySum(const ImageView<bool> imageIn, ImageView<bool> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void multiplySum(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void multiplySum(const ImageView<char> imageIn, ImageView<char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void multiplySum(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void multiplySum(const ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void multiplySum(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void multiplySum(const ImageView<short> imageIn, ImageView<short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void multiplySum(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void multiplySum(const ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void multiplySum(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void multiplySum(const ImageView<int> imageIn, ImageView<int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void multiplySum(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void multiplySum(const ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void multiplySum(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void multiplySum(const ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void multiplySum(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void multiplySum(const ImageView<double> imageIn, ImageView<double> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cMultiplySum(imageIn, imageOut, kernel, numIterations, device);
  }
  
 
- void opener(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void opener(const ImageView<bool> imageIn, ImageView<bool> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cOpener(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void opener(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void opener(const ImageView<char> imageIn, ImageView<char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cOpener(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void opener(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void opener(const ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cOpener(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void opener(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void opener(const ImageView<short> imageIn, ImageView<short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cOpener(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void opener(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void opener(const ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cOpener(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void opener(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void opener(const ImageView<int> imageIn, ImageView<int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cOpener(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void opener(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void opener(const ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cOpener(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void opener(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void opener(const ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cOpener(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void opener(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void opener(const ImageView<double> imageIn, ImageView<double> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cOpener(imageIn, imageOut, kernel, numIterations, device);
  }
 
 
- void stdFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void stdFilter(const ImageView<bool> imageIn, ImageView<bool> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void stdFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void stdFilter(const ImageView<char> imageIn, ImageView<char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void stdFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void stdFilter(const ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void stdFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void stdFilter(const ImageView<short> imageIn, ImageView<short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void stdFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void stdFilter(const ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void stdFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void stdFilter(const ImageView<int> imageIn, ImageView<int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void stdFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void stdFilter(const ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void stdFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void stdFilter(const ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void stdFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void stdFilter(const ImageView<double> imageIn, ImageView<double> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cStdFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
 
- void sum(const ImageContainer<bool> imageIn, std::size_t& valOut, int device /*= -1*/)
+ void sum(const ImageView<bool> imageIn, std::size_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageContainer<char> imageIn, long long& valOut, int device /*= -1*/)
+ void sum(const ImageView<char> imageIn, long long& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageContainer<unsigned char> imageIn, std::size_t& valOut, int device /*= -1*/)
+ void sum(const ImageView<unsigned char> imageIn, std::size_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageContainer<short> imageIn, long long& valOut, int device /*= -1*/)
+ void sum(const ImageView<short> imageIn, long long& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageContainer<unsigned short> imageIn, std::size_t& valOut, int device /*= -1*/)
+ void sum(const ImageView<unsigned short> imageIn, std::size_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageContainer<int> imageIn, long long& valOut, int device /*= -1*/)
+ void sum(const ImageView<int> imageIn, long long& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageContainer<unsigned int> imageIn, std::size_t& valOut, int device /*= -1*/)
+ void sum(const ImageView<unsigned int> imageIn, std::size_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageContainer<float> imageIn, double& valOut, int device /*= -1*/)
+ void sum(const ImageView<float> imageIn, double& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageContainer<double> imageIn, double& valOut, int device /*= -1*/)
+ void sum(const ImageView<double> imageIn, double& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
 
- void varFilter(const ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void varFilter(const ImageView<bool> imageIn, ImageView<bool> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void varFilter(const ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void varFilter(const ImageView<char> imageIn, ImageView<char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void varFilter(const ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void varFilter(const ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void varFilter(const ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void varFilter(const ImageView<short> imageIn, ImageView<short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void varFilter(const ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void varFilter(const ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void varFilter(const ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void varFilter(const ImageView<int> imageIn, ImageView<int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void varFilter(const ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void varFilter(const ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
- void varFilter(const ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void varFilter(const ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
  }
  
- void varFilter(const ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
+ void varFilter(const ImageView<double> imageIn, ImageView<double> imageOut, ImageView<float> kernel, int numIterations /*= 1*/, int device /*= -1*/)
  {
 	 cVarFilter(imageIn, imageOut, kernel, numIterations, device);
  }
 
 
- void wienerFilter(ImageContainer<bool> imageIn, ImageContainer<bool>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ void wienerFilter(ImageView<bool> imageIn, ImageView<bool> imageOut, ImageView<float> kernel, double noiseVariance, int device /*= -1*/)
  {						  
 	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
  }		  
 	  
- void wienerFilter(ImageContainer<char> imageIn, ImageContainer<char>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ void wienerFilter(ImageView<char> imageIn, ImageView<char> imageOut, ImageView<float> kernel, double noiseVariance, int device /*= -1*/)
  {						  
 	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
  }
 
- void wienerFilter(ImageContainer<unsigned char> imageIn, ImageContainer<unsigned char>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ void wienerFilter(ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, ImageView<float> kernel, double noiseVariance, int device /*= -1*/)
  {
 	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
  }
 
- void wienerFilter(ImageContainer<short> imageIn, ImageContainer<short>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ void wienerFilter(ImageView<short> imageIn, ImageView<short> imageOut, ImageView<float> kernel, double noiseVariance, int device /*= -1*/)
  {
 	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
  }
 
- void wienerFilter(ImageContainer<unsigned short> imageIn, ImageContainer<unsigned short>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ void wienerFilter(ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, ImageView<float> kernel, double noiseVariance, int device /*= -1*/)
  {
 	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
  }
 
- void wienerFilter(ImageContainer<int> imageIn, ImageContainer<int>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ void wienerFilter(ImageView<int> imageIn, ImageView<int> imageOut, ImageView<float> kernel, double noiseVariance, int device /*= -1*/)
  {
 	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
  }
 
- void wienerFilter(ImageContainer<unsigned int> imageIn, ImageContainer<unsigned int>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ void wienerFilter(ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, ImageView<float> kernel, double noiseVariance, int device /*= -1*/)
  {
 	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
  }
 
- void wienerFilter(ImageContainer<float> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ void wienerFilter(ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, double noiseVariance, int device /*= -1*/)
  {
 	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
  }
 
- void wienerFilter(ImageContainer<double> imageIn, ImageContainer<double>& imageOut, ImageContainer<float> kernel, double noiseVariance, int device /*= -1*/)
+ void wienerFilter(ImageView<double> imageIn, ImageView<double> imageOut, ImageView<float> kernel, double noiseVariance, int device /*= -1*/)
  {
 	 cWienerFilter(imageIn, imageOut, kernel, noiseVariance, device);
  }

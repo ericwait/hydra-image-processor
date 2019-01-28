@@ -14,8 +14,8 @@ void MexHighPass_run(const mxArray* inIm, mxArray** outIm, Vec<double> sigmas, i
 	ImageDimensions imageDims;
 	Script::setupImagePointers(inIm, &imageInPtr, imageDims, outIm, &imageOutPtr);
 
-	ImageContainer<T> imageIn(imageInPtr, imageDims);
-	ImageContainer<T> imageOut(imageOutPtr, imageDims);
+	ImageView<T> imageIn(imageInPtr, imageDims);
+	ImageView<T> imageOut(imageOutPtr, imageDims);
 
 	highPassFilter(imageIn, imageOut, sigmas, device);
 }

@@ -6,7 +6,7 @@
 #include "MexKernel.h"
 
 template <typename T>
-void MexMaxFilter_run(const mxArray* inIm, mxArray** outIm, ImageContainer<float> kernel, int numIterations, int device)
+void MexMaxFilter_run(const mxArray* inIm, mxArray** outIm, ImageView<float> kernel, int numIterations, int device)
 {
 	T* imageInPtr;
 	T* imageOutPtr;
@@ -15,8 +15,8 @@ void MexMaxFilter_run(const mxArray* inIm, mxArray** outIm, ImageContainer<float
 
 	Script::setupImagePointers(inIm, &imageInPtr, imageDims, outIm, &imageOutPtr);
 
-	ImageContainer<T> imageIn(imageInPtr, imageDims);
-	ImageContainer<T> imageOut(imageOutPtr, imageDims);
+	ImageView<T> imageIn(imageInPtr, imageDims);
+	ImageView<T> imageOut(imageOutPtr, imageDims);
 
 	maxFilter(imageIn, imageOut, kernel, numIterations, device);
 }
@@ -33,13 +33,10 @@ void MexMaxFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* 
 	if (!mxIsEmpty(prhs[3]))
 		device = mat_to_c((int)mxGetScalar(prhs[3]));
 
-	ImageContainer<float> kernel = getKernel(prhs[1]);
+	ImageOwner<float> kernel = getKernel(prhs[1]);
 
 	if (kernel.getDims().getNumElements() == 0)
-	{
-		kernel.clear();
 		return;
-	}
 
 	if (mxIsLogical(prhs[0]))
 	{
@@ -77,8 +74,6 @@ void MexMaxFilter::execute( int nlhs, mxArray* plhs[], int nrhs, const mxArray* 
 	{
 		mexErrMsgTxt("Image type not supported!");
 	}
-
-	kernel.clear();
 }
 
 std::string MexMaxFilter::check( int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[] ) const

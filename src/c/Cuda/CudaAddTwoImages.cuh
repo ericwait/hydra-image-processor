@@ -31,13 +31,11 @@ __global__ void cudaAddTwoImages(CudaImageContainer<PixelTypeIn1> imageIn1, Cuda
 
 
 template <class PixelTypeIn1, class PixelTypeIn2, class PixelTypeOut>
-void cAddTwoImages(ImageContainer<PixelTypeIn1> imageIn1, ImageContainer<PixelTypeIn2> imageIn2, ImageContainer<PixelTypeOut>& imageOut, double image2Factor=1.0, int device=-1)
+void cAddTwoImages(ImageView<PixelTypeIn1> imageIn1, ImageView<PixelTypeIn2> imageIn2, ImageView<PixelTypeOut> imageOut, double image2Factor=1.0, int device=-1)
 {
 	const PixelTypeOut MIN_VAL = std::numeric_limits<PixelTypeOut>::lowest();
 	const PixelTypeOut MAX_VAL = std::numeric_limits<PixelTypeOut>::max();
 	const int NUM_BUFF_NEEDED = 3;
-
-	setUpOutIm<PixelTypeOut>(imageIn1.getDims(), imageOut);
 
 	CudaDevices cudaDevs(cudaAddTwoImages<PixelTypeIn1, PixelTypeIn2, PixelTypeOut>, device);
 

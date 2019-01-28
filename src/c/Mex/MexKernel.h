@@ -5,4 +5,4 @@
 
 #include <mex.h>
 
-ImageContainer<float> getKernel(const mxArray* mexKernel);
+ImageOwner<float> getKernel(const mxArray* mexKernel);

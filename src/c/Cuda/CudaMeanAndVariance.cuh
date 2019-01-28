@@ -102,14 +102,11 @@ __global__ void cudaMeanAndStd(CudaImageContainer<PixelTypeIn> imageIn, CudaImag
 }
 
 template <class PixelTypeIn, class PixelTypeOut>
-void cMeanAndVariance(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>& muOut, ImageContainer<PixelTypeOut>& varOut, ImageContainer<float> kernel, int device = -1)
+void cMeanAndVariance(ImageView<PixelTypeIn> imageIn, ImageView<PixelTypeOut> muOut, ImageView<PixelTypeOut> varOut, ImageView<float> kernel, int device = -1)
 {
 	const PixelTypeOut MIN_VAL = std::numeric_limits<PixelTypeOut>::lowest();
 	const PixelTypeOut MAX_VAL = std::numeric_limits<PixelTypeOut>::max();
 	const int NUM_BUFF_NEEDED = 3;
-
-	setUpOutIm<PixelTypeOut>(imageIn.getDims(), muOut);
-	setUpOutIm<PixelTypeOut>(imageIn.getDims(), varOut);
 
 	CudaDevices cudaDevs(cudaMeanAndVariance<PixelTypeIn, PixelTypeOut>, device);
 

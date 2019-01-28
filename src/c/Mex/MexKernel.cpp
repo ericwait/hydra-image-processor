@@ -4,7 +4,7 @@
 
 #include <string.h>
 
-ImageContainer<float> getKernel(const mxArray* mexKernel)
+ImageOwner<float> getKernel(const mxArray* mexKernel)
 {
 	std::size_t numDims = mxGetNumberOfDimensions(mexKernel);
 	const mwSize* DIMS = mxGetDimensions(mexKernel);
@@ -24,11 +24,9 @@ ImageContainer<float> getKernel(const mxArray* mexKernel)
 	if (numDims > 0)
 		kernDims.x = (std::size_t)DIMS[0];
 	else
-		return ImageContainer<float>();
+		return ImageOwner<float>();
 
-	ImageContainer<float> kernelOut;
-	kernelOut.resize(ImageDimensions(kernDims, 1, 1));
-
+	ImageOwner<float> kernelOut(kernDims, 1, 1);
 	float* kernPtr = kernelOut.getPtr();
 
 	if (mxIsLogical(mexKernel))

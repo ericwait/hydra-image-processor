@@ -230,12 +230,3 @@ protected:
 	Vec<std::size_t> roiSizes;
 	PixelType*	image;
 };
-
-template <class PixelType>
-void setUpOutIm(ImageDimensions dims, ImageContainer<PixelType> imageOut)
-{
-	if (imageOut.getPtr() == NULL)
-	{
-		imageOut.resize(dims);
-	}
-}

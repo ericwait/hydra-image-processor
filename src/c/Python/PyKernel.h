@@ -5,4 +5,4 @@
 
 #include "PyIncludes.h"
 
-ImageContainer<float> getKernel(PyArrayObject* kernel);
+ImageOwner<float> getKernel(PyArrayObject* kernel);

@@ -17,13 +17,11 @@
 #include <omp.h>
 
 template <class PixelTypeIn>
-void cLoG(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& imageOut, Vec<double> sigmas, int device = -1)
+void cLoG(ImageView<PixelTypeIn> imageIn, ImageView<float> imageOut, Vec<double> sigmas, int device = -1)
 {
 	const float MIN_VAL = std::numeric_limits<float>::lowest();
 	const float MAX_VAL = std::numeric_limits<float>::max();
 	const int NUM_BUFF_NEEDED = 3;
-
-	setUpOutIm<float>(imageIn.getDims(), imageOut);
 
 	CudaDevices cudaDevs(cudaAddTwoImages<float,float,float>, device);
 	CudaDevices cudaDevs2(cudaMultiplySum<float, float>, device);

@@ -33,8 +33,8 @@ void PyWrapLoG_run(const PyArrayObject* inIm, PyArrayObject** outIm, Vec<double>
 	Script::setupInputPointers(inIm, imageDims, &imageInPtr);
 	Script::setupOutputPointers(outIm, imageDims, &imageOutPtr);
 
-	ImageContainer<InType> imageIn(imageInPtr, imageDims);
-	ImageContainer<OutType> imageOut(imageOutPtr, imageDims);
+	ImageView<InType> imageIn(imageInPtr, imageDims);
+	ImageView<OutType> imageOut(imageOutPtr, imageDims);
 
 	LoG(imageIn, imageOut, sigmas, device);
 }

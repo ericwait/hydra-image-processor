@@ -18,13 +18,11 @@
 #include <omp.h>
 
 template <class PixelTypeIn, class PixelTypeOut>
-void cHighPassFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>& imageOut, Vec<double> sigmas, int device = -1)
+void cHighPassFilter(ImageView<PixelTypeIn> imageIn, ImageView<PixelTypeOut> imageOut, Vec<double> sigmas, int device = -1)
 {
 	const float MIN_VAL = std::numeric_limits<float>::lowest();
 	const float MAX_VAL = std::numeric_limits<float>::max();
 	const int NUM_BUFF_NEEDED = 3;
-
-	setUpOutIm<PixelTypeOut>(imageIn.getDims(), imageOut);
 
 	CudaDevices cudaDevs(cudaMultiplySum<float, float>, device);
 

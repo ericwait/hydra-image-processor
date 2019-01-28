@@ -29,11 +29,9 @@ __global__ void cudaIdentity(CudaImageContainer<PixelTypeIn> imageIn, CudaImageC
 
 
 template <class PixelTypeIn, class PixelTypeOut>
-void cIdentityFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>& imageOut, int device = -1)
+void cIdentityFilter(ImageView<PixelTypeIn> imageIn, ImageView<PixelTypeOut> imageOut, int device = -1)
 {
 	const int NUM_BUFF_NEEDED = 2;
-
-	setUpOutIm<PixelTypeOut>(imageIn.getDims(), imageOut);
 
 	CudaDevices cudaDevs(cudaIdentity<PixelTypeIn, PixelTypeOut>, device);
 

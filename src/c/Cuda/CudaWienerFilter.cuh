@@ -36,13 +36,11 @@ __global__ void cudaWienerFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaIm
 }
 
 template <class PixelTypeIn, class PixelTypeOut>
-void cWienerFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>& imageOut, ImageContainer<float> kernel, double noiseVariance= -1.0, int device = -1)
+void cWienerFilter(ImageView<PixelTypeIn> imageIn, ImageView<PixelTypeOut> imageOut, ImageView<float> kernel, double noiseVariance= -1.0, int device = -1)
 {
 	const PixelTypeOut MIN_VAL = std::numeric_limits<PixelTypeOut>::lowest();
 	const PixelTypeOut MAX_VAL = std::numeric_limits<PixelTypeOut>::max();
 	const int NUM_BUFF_NEEDED = 2;
-
-	setUpOutIm<PixelTypeOut>(imageIn.getDims(), imageOut);
 
 	CudaDevices cudaDevs(cudaWienerFilter<PixelTypeIn, PixelTypeOut>, device);
 

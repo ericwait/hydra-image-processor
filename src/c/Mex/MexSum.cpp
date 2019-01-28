@@ -13,7 +13,7 @@ void MexSum_run(const mxArray* inIm, mxArray** outSum, int device)
 	ImageDimensions imageDims;
 	Script::setupInputPointers(inIm, imageDims, &imageInPtr);
 
-	ImageContainer<InType> imageIn(imageInPtr, imageDims);
+	ImageView<InType> imageIn(imageInPtr, imageDims);
 
 	SumType sumVal = 0;
 	sum(imageIn, sumVal, device);

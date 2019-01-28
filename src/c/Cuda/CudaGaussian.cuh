@@ -17,13 +17,11 @@
 #include <omp.h>
 
 template <class PixelTypeIn, class PixelTypeOut>
-void cGaussian(ImageContainer<PixelTypeIn> imageIn, ImageContainer<PixelTypeOut>& imageOut,	Vec<double> sigmas, int numIterations = 1, int device = -1)
+void cGaussian(ImageView<PixelTypeIn> imageIn, ImageView<PixelTypeOut> imageOut, Vec<double> sigmas, int numIterations = 1, int device = -1)
 {
 	const float MIN_VAL = std::numeric_limits<float>::lowest();
 	const float MAX_VAL = std::numeric_limits<float>::max();
 	const int NUM_BUFF_NEEDED = 2;
-
-	setUpOutIm<PixelTypeOut>(imageIn.getDims(), imageOut);
 
 	CudaDevices cudaDevs(cudaMultiplySum<float, float>, device);
 

@@ -6,7 +6,7 @@
 #include <string.h>
 
 
-ImageContainer<float> getKernel(PyArrayObject* kernel)
+ImageOwner<float> getKernel(PyArrayObject* kernel)
 {
 	int numDims = PyArray_NDIM(kernel);
 	const npy_intp* DIMS = PyArray_DIMS(kernel);
@@ -26,13 +26,11 @@ ImageContainer<float> getKernel(PyArrayObject* kernel)
 	if ( numDims > 0 )
 		kernDims.x = (std::size_t)DIMS[0];
 	else
-		return ImageContainer<float>();
+		return ImageOwner<float>();
 
-	ImageContainer<float> kernelOut;
-	kernelOut.resize(ImageDimensions(kernDims, 1, 1));
+	ImageOwner<float> kernelOut(kernDims, 1, 1);
 
 	float* kernPtr = kernelOut.getPtr();
-
 	
 	if ( PyArray_TYPE(kernel) == NPY_BOOL )
 	{

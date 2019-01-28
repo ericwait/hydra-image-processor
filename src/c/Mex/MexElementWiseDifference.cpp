@@ -22,9 +22,9 @@ void MexDiff_run(const mxArray* inIm1, const mxArray* inIm2, mxArray** outIm, in
 
 	Script::setupOutputPointers(outIm, imageOutDims, &imageOutPtr);
 
-	ImageContainer<T> image1In(image1InPtr, image1Dims);
-	ImageContainer<T> image2In(image2InPtr, image2Dims);
-	ImageContainer<T> imageOut(imageOutPtr, imageOutDims);
+	ImageView<T> image1In(image1InPtr, image1Dims);
+	ImageView<T> image2In(image2InPtr, image2Dims);
+	ImageView<T> imageOut(imageOutPtr, imageOutDims);
 
 	elementWiseDifference(image1In, image2In, imageOut, device);
 }

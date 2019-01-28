@@ -20,7 +20,7 @@ __host__ __device__ Kernel::Kernel(Kernel& other)
 	cleanUpDevice = false;
 }
 
-__host__ Kernel::Kernel(ImageContainer<float> kernelIn, int curDevice)
+__host__ Kernel::Kernel(ImageView<float> kernelIn, int curDevice)
 {
 	HANDLE_ERROR(cudaSetDevice(curDevice));
 	load(kernelIn.getSpatialDims(), kernelIn.getPtr());

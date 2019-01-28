@@ -30,14 +30,13 @@ __global__ void cudaElementWiseDifference(CudaImageContainer<PixelType1In> image
 
 
 template <class PixelType1In, class PixelType2In, class PixelTypeOut>
-void cElementWiseDifference(ImageContainer<PixelType1In> image1In, ImageContainer<PixelType2In> image2In, ImageContainer<PixelTypeOut>& imageOut, int device = -1)
+void cElementWiseDifference(ImageView<PixelType1In> image1In, ImageView<PixelType2In> image2In, ImageView<PixelTypeOut> imageOut, int device = -1)
 {
 	const PixelTypeOut MIN_VAL = std::numeric_limits<PixelTypeOut>::lowest();
 	const PixelTypeOut MAX_VAL = std::numeric_limits<PixelTypeOut>::max();
 	const int NUM_BUFF_NEEDED = 3;
 
 	ImageDimensions maxDims(Vec<std::size_t>::max(image1In.getSpatialDims(), image2In.getSpatialDims()),MAX(image1In.getNumChannels(),image2In.getNumChannels()), MAX(image1In.getNumFrames(),image2In.getNumFrames()));
-	setUpOutIm<PixelTypeOut>(maxDims, imageOut);
 
 	CudaDevices cudaDevs(cudaElementWiseDifference<PixelType1In, PixelType2In, PixelTypeOut>, device);
 

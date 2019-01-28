@@ -59,12 +59,10 @@ __global__ void cudaEntropyFilter(CudaImageContainer<PixelTypeIn> imageIn, CudaI
 
 
 template <class PixelTypeIn>
-void cEntropyFilter(ImageContainer<PixelTypeIn> imageIn, ImageContainer<float>& imageOut, ImageContainer<float> kernel, int device = -1)
+void cEntropyFilter(ImageView<PixelTypeIn> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int device = -1)
 {
 	float minVal, maxVal;
 	const int NUM_BUFF_NEEDED = 2;
-
-	setUpOutIm<float>(imageIn.getDims(), imageOut);
 
 	CudaDevices cudaDevs(cudaEntropyFilter<PixelTypeIn>, device);
 

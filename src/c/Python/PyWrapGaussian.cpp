@@ -37,8 +37,8 @@ void PyWrapGaussian_run(const PyArrayObject* inIm, PyArrayObject** outIm, Vec<do
 	ImageDimensions imageDims;
 	Script::setupImagePointers(inIm, &imageInPtr, imageDims, outIm, &imageOutPtr);
 
-	ImageContainer<T> imageIn(imageInPtr, imageDims);
-	ImageContainer<T> imageOut(imageOutPtr, imageDims);
+	ImageView<T> imageIn(imageInPtr, imageDims);
+	ImageView<T> imageOut(imageOutPtr, imageDims);
 
 	gaussian(imageIn, imageOut, sigmas, numIterations, device);
 }

@@ -6,7 +6,7 @@
 #include "MexKernel.h"
 
 template <typename InType, typename OutType>
-void MexEntropy_run(const mxArray* inIm, mxArray** outIm, ImageContainer<float> kernel, int device)
+void MexEntropy_run(const mxArray* inIm, mxArray** outIm, ImageView<float> kernel, int device)
 {
 	InType* imageInPtr;
 	OutType* imageOutPtr;
@@ -15,8 +15,8 @@ void MexEntropy_run(const mxArray* inIm, mxArray** outIm, ImageContainer<float> 
 	Script::setupInputPointers(inIm, imageDims, &imageInPtr);
 	Script::setupOutputPointers(outIm, imageDims, &imageOutPtr);
 
-	ImageContainer<InType> imageIn(imageInPtr, imageDims);
-	ImageContainer<OutType> imageOut(imageOutPtr, imageDims);
+	ImageView<InType> imageIn(imageInPtr, imageDims);
+	ImageView<OutType> imageOut(imageOutPtr, imageDims);
 
 	entropyFilter(imageIn, imageOut, kernel, device);
 }
@@ -29,13 +29,10 @@ void MexEntropyFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	if (!mxIsEmpty(prhs[2]))
 		device = mat_to_c((int)mxGetScalar(prhs[2]));
 
-	ImageContainer<float> kernel = getKernel(prhs[1]);
+	ImageOwner<float> kernel = getKernel(prhs[1]);
 
 	if (kernel.getDims().getNumElements() == 0)
-	{
-		kernel.clear();
 		return;
-	}
 
 	if (mxIsLogical(prhs[0]))
 	{
@@ -73,8 +70,6 @@ void MexEntropyFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArra
 	{
 		mexErrMsgTxt("Image type not supported!");
 	}
-
-	kernel.clear();
 }
 
 std::string MexEntropyFilter::check(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const

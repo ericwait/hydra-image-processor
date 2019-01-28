@@ -104,7 +104,7 @@ void sumBuffer(ImageChunk &chunk, CudaImageContainer<PixelTypeIn>* buffer, OutTy
 }
 
 template <class OutType, class PixelTypeIn>
-void cSum(ImageContainer<PixelTypeIn> imageIn, OutType& outVal, int device=-1)
+void cSum(ImageView<PixelTypeIn> imageIn, OutType& outVal, int device=-1)
 {
 	const int NUM_BUFF_NEEDED = 1;
 	outVal = 0;
