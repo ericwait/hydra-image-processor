@@ -1,7 +1,7 @@
 #pragma once
 #include "Vec.h"
 #include "CudaDeviceStats.h"
-#include "ImageContainer.h"
+#include "ImageView.h"
 
 
 #ifdef IMAGE_PROCESSOR_DLL

@@ -1,6 +1,6 @@
 #pragma once
 #include "Vec.h"
-#include "ImageContainer.h"
+#include "ImageView.h"
 
 #include <cuda_runtime.h>
 #include <vector>

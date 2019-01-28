@@ -2,7 +2,7 @@
 
 #include "Vec.h"
 #include "Defines.h"
-#include "ImageContainer.h"
+#include "ImageView.h"
 
 #include <cuda_runtime.h>
 #include <stdio.h>

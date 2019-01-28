@@ -156,7 +156,7 @@
     <ClInclude Include="Cuda\CWrappers.h" />
     <ClInclude Include="Cuda\Defines.h" />
     <ClInclude Include="Cuda\ImageChunk.h" />
-    <ClInclude Include="Cuda\ImageContainer.h" />
+    <ClInclude Include="Cuda\ImageView.h" />
     <ClInclude Include="Cuda\KernelGenerators.h" />
     <ClInclude Include="Cuda\Vec.h" />
   </ItemGroup>

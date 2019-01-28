@@ -3,7 +3,7 @@
 #include "../Cuda/Vec.h"
 #include "../Cuda/CWrappers.h"
 #include "../Cuda/ImageDimensions.cuh"
-#include "../Cuda/ImageContainer.h"
+#include "../Cuda/ImageView.h"
 #include "MexKernel.h"
 
 void MexFooFilter::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[]) const

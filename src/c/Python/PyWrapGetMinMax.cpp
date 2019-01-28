@@ -3,7 +3,7 @@
 #include "../Cuda/Vec.h"
 #include "../Cuda/CWrappers.h"
 #include "../Cuda/ImageDimensions.cuh"
-#include "../Cuda/ImageContainer.h"
+#include "../Cuda/ImageView.h"
 
 #include "PyKernel.h"
 
