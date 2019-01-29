@@ -249,9 +249,9 @@ namespace Script
 					(ScriptConverter::convert(std::get<Is>(targets), std::get<Is>(args), Is), void(), 0)...
 				};
 			}
-			catch (ArgConvertError& ate)
+			catch (ArgConvertError& ace)
 			{
-				throw ArgError(ate);
+				throw ArgError(ace);
 			}
 		}
 
@@ -353,7 +353,7 @@ namespace Script
 			{}
 
 			int getArgIndex() const { return argIdx; }
-			int setArgIndex(int idx) { argIdx = idx; }
+			void setArgIndex(int idx) { argIdx = idx; }
 
 		private:
 			ArgConvertError() = delete;
