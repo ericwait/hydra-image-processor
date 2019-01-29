@@ -167,7 +167,7 @@ private:
 	//   process<OutT,InT>(Args...) function
 	/////////////////////////
 	template <typename... Args>
-	static void execute(Args... args)
+	static void execute(Args&... args)
 	{
 		static_assert(ArgParser::has_deferred_image_inputs(), "ArgParser has no deferred inputs. Please overload default execute() function!");
 
@@ -218,7 +218,7 @@ private:
 	//   to the class-specified cuda processing function
 	/////////////////////////
 	template <typename OutType, typename InType, typename... Args>
-	static void process(Args... args)
+	static void process(Args&... args)
 	{
 
 
