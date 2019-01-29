@@ -9,6 +9,7 @@ namespace Script
 	template <typename T> struct Scalar {};
 	template <typename T> struct Vector {};
 	template <typename T> struct Image {};
+	template <typename T> struct ImageRef {};
 
 
 	// IO Traits (Parameter type, output, input, optional input)
@@ -71,6 +72,12 @@ namespace Script
 		using type = Script::ArrayType*;
 	};
 
+	template <typename BaseType>
+	struct dtype_to_script<Script::ImageRef<BaseType>>
+	{
+		using type = Script::ArrayType*;
+	};
+
 	/////////////////////////
 	// iotrait_to_script -
 	//   Transforms from full io-trait type to base script type.
@@ -106,6 +113,12 @@ namespace Script
 		using type = BaseType;
 	};
 
+	template <>
+	struct dtype_to_concrete<Scalar<DeferredType>>
+	{
+		using type = Script::ObjectType*;
+	};
+
 	template <typename BaseType>
 	struct dtype_to_concrete<Vector<BaseType>>
 	{
@@ -126,6 +139,18 @@ namespace Script
 
 	template <>
 	struct dtype_to_concrete<Image<DeferredType>>
+	{
+		using type = Script::ArrayType*;
+	};
+
+	template <typename BaseType>
+	struct dtype_to_concrete<ImageRef<BaseType>>
+	{
+		using type = ImageView<BaseType>;
+	};
+
+	template <>
+	struct dtype_to_concrete<ImageRef<DeferredType>>
 	{
 		using type = Script::ArrayType*;
 	};

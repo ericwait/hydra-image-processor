@@ -18,8 +18,8 @@
 #define SCR_OPTIONAL(TypeMacro, DefVal) Script::OptParam<TypeMacro>
 
 #define SCR_IMAGE_CONVERT(VarName, VarType) Script::Image<VarType>
-//#define SCR_IMAGE_REQUIRE(VarName, VarType)
-#define SCR_IMAGE_DYNAMIC(VarName) Script::Image<Script::DeferredType>
+//#define SCR_IMAGE_REQUIRE(VarName, VarType) Script::ImageRef<VarType>
+#define SCR_IMAGE_DYNAMIC(VarName) Script::ImageRef<Script::DeferredType>
 
 #define SCR_SCALAR(VarName, VarType) Script::Scalar<VarType>
 #define SCR_SCALAR_DYNAMIC(VarName) Script::Scalar<Script::DeferredType>
@@ -69,7 +69,7 @@ namespace Script
 	template <template<typename> class T, typename U>
 	struct is_image<T<U>>
 	{
-		static constexpr bool value = (std::is_same<Image<U>, T<U>>::value || is_image<U>::value);
+		static constexpr bool value = (std::is_same<ImageRef<U>, T<U>>::value || is_image<U>::value);
 	};
 
 	// Convenience type for script inputs (e.g. const PyObject*)
@@ -289,6 +289,22 @@ namespace Script
 
 	template <typename C>
 	struct ParserArg<Image<C>>
+	{
+		using ArgTuple = std::tuple<PyTypeObject*, Script::ArrayType const**>;
+		static ArgTuple argTuple(Script::ArrayType const** argPtr)
+		{
+			return std::make_tuple(&PyArray_Type, argPtr);
+		}
+
+		static const char* argString()
+		{
+			static const char parse_type[] = "O!";
+			return parse_type;
+		};
+	};
+
+	template <typename C>
+	struct ParserArg<ImageRef<C>>
 	{
 		using ArgTuple = std::tuple<PyTypeObject*, Script::ArrayType const**>;
 		static ArgTuple argTuple(Script::ArrayType const** argPtr)
