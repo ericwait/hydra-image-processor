@@ -199,9 +199,9 @@ namespace Script
 		}
 
 		template <typename... T>
-		static IdType getInputType(T... ioargs)
+		static IdType getInputType(const T&... ioargs)
 		{
-			auto in_defer_tuple = mph::tuple_subset(in_im_defer_idx_seq(), std::tuple<T...>(ioargs...));
+			auto in_defer_tuple = mph::tuple_subset(in_im_defer_idx_seq(), std::tuple<const T&...>(ioargs...));
 			return Script::ArrayInfo::getType(std::get<0>(in_defer_tuple));
 		}
 
