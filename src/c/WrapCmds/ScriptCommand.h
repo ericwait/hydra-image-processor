@@ -132,7 +132,7 @@ public:
 		catch (ArgError& ae)
 		{
 			//TODO: Print error and usage (use Script::ErrorMsg to ignore if PyErr set)
-
+			Derived::commandName();
 		}
 		catch (std::exception& e)
 		{

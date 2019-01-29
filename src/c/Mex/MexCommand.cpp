@@ -18,7 +18,7 @@ std::string MexInfo::check(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs
 		return "No input arguments are supported.";
 
 	if(nlhs != 1)
-		return "Expected a single ouput arugment.";
+		return "Expected a single ouput argument.";
 
 	return "";
 }

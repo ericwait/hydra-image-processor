@@ -19,7 +19,23 @@ struct TestFunc
 
 DEF_CMD(Test, SCR_PARAMS(SCR_OUTPUT(SCR_IMAGE_DYNAMIC(imOut)), SCR_OPTIONAL(SCR_VECTOR(sigmas, double), Vec<double>(1.0)), SCR_INPUT(SCR_IMAGE_DYNAMIC(im)), SCR_INPUT(SCR_IMAGE_CONVERT(kernel, float))))
 
-class ScriptCommandTest: public ScriptCommandImpl<ScriptCommandTest, ScriptCommand_TestParser>
+template <typename T, typename = void>
+struct valid_type:
+	std::false_type {};
+
+template <typename T>
+struct valid_type<T, typename T::ArgParser>
+	: std::true_type {};
+
+
+class ScriptCommandTest;
+class ScriptCommandTest_Route: public ScriptCommandImpl<ScriptCommandTest, ScriptCommand_TestParser>
+{
+public:
+	static const char* commandName() { return "Test"; }
+};
+
+class ScriptCommandTest: public ScriptCommandTest_Route
 {
 public:
 	SCR_DEFINE_IO_TYPE_MAP(int,float);
