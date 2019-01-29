@@ -67,6 +67,10 @@ template<class PixelType>
 class ImageOwner
 {
 public:
+	// Disable copy operations
+	ImageOwner(const ImageOwner&) = delete;
+	ImageOwner& operator=(const ImageOwner&) = delete;
+
 	// Enable default move semantics (works with trivial types and unique_ptr)
 	ImageOwner(ImageOwner&&) = default;
 	ImageOwner& operator=(ImageOwner&&) = default;
@@ -112,11 +116,6 @@ public:
 	unsigned int getNumFrames() const { return dimensions.frame; }
 
 	std::size_t getNumElements() const { return dimensions.getNumElements(); }
-
-private:
-	// Disable copy operations
-	ImageOwner(const ImageOwner&) = delete;
-	ImageOwner& operator=(const ImageOwner&) = delete;
 
 private:
 	ImageDimensions dimensions;
