@@ -1,4 +1,4 @@
-#include "../Cuda/ImageContainer.h"
+#include "../Cuda/ImageView.h"
 
 #include "mph/tuple_helpers.h"
 #include "mph/qualifier_helpers.h"
@@ -524,8 +524,8 @@ namespace Script
 			if ( ndim > 1 )
 				throw VectorConvertError("Array must be 1-D with 3 numeric values");
 
-			Script::DimType* DIMS = Script::ArrayInfo::getDims(arrPtr);
-			if ( DIMS[0] != 3 )
+			Script::DimType size = Script::ArrayInfo::getDim(arrPtr, 0);
+			if ( size != 3 )
 				throw VectorConvertError("Array must be 1-D with 3 numeric values");
 
 			pyArrayCopyConvert(out.e, arrPtr);
@@ -533,25 +533,24 @@ namespace Script
 
 
 		template <typename T>
-		static void pyArrayToImageCopy(ImageContainer<T>& out, const PyObject* inPtr)
+		static void pyArrayToImageCopy(ImageOwner<T>& out, const PyObject* inPtr)
 		{
-			// TODO: IMPORTANT! Make ownership semantics for ImageContainer/ImageView
 			PyArrayObject* arrPtr = const_cast<PyArrayObject*>(reinterpret_cast<const PyArrayObject*>(inPtr));
-			std::size_t ndim = Script::ArrayInfo::getNDims(arrPtr);
-			// TODO: Check number of dims?
+			Script::DimInfo info = Script::getDimInfo(arrPtr);
+
 			// TODO: Do we need to allow overloads for array checks?
-			// TODO: Check for contiguous
+			if ( !info.contiguous )
+				throw ImageConvertError("Only contiguous numpy arrays are supported");
 
-			ImageDimensions inDims;
-			Script::DimType* DIMS = Script::ArrayInfo::getDims(arrPtr);
+			ImageDimensions inDims(Vec<std::size_t>(1),1,1);
+			std::size_t nspatial = std::max<std::size_t>(3, info.dims.size());
+			for ( std::size_t i=0; i < nspatial; ++i )
+				inDims.dims.e[i] = info.dims[i];
 
-			for ( int i=0; i < ndim; ++i )
-				inDims.dims.e[i] = DIMS[i];
+			inDims.chan = (info.dims.size() >= 4) ? info.dims[3] : (1);
+			inDims.frame = (info.dims.size() >= 5) ? info.dims[4] : (1);
 
-			inDims.chan = (ndim >= 4) ? (DIMS[3]): (1);
-			inDims.frame = (ndim >= 5) ? (DIMS[4]): (1);
-
-			out.resize(inDims);
+			out = ImageOwner<T>(inDims);
 			pyArrayCopyConvert(out.getPtr(), arrPtr);
 		}
 
@@ -646,9 +645,9 @@ namespace Script
 		}
 
 
-		// Concrete ImageContainer<T> conversions
+		// Concrete ImageOwner<T> conversions
 		template <typename T>
-		static void convert_impl(ImageContainer<T>& out, const PyObject* inPtr)
+		static void convert_impl(ImageOwner<T>& out, const PyObject* inPtr)
 		{
 			if ( PyArray_Check(inPtr) )
 			{

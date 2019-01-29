@@ -121,7 +121,7 @@ namespace Script
 	template <typename BaseType>
 	struct dtype_to_concrete<Image<BaseType>>
 	{
-		using type = ImageContainer<BaseType>;
+		using type = ImageOwner<BaseType>;
 	};
 
 	template <>
