@@ -54,8 +54,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.;$(MATLAB_DIR)\extern\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>MEX_BUILD;_WINDLL;_CRT_SECURE_NO_WARNINGS;_CRTDBG_MAP_ALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;$(MATLAB_DIR)\extern\include;external</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MEX_BUILD;_WINDLL;USE_PROCESS_MUTEX;_CRT_SECURE_NO_WARNINGS;_CRTDBG_MAP_ALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
@@ -77,8 +77,8 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.;$(MATLAB_DIR)\extern\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>MEX_BUILD;_WINDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;$(MATLAB_DIR)\extern\include;external</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MEX_BUILD;_WINDLL;USE_PROCESS_MUTEX;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
@@ -128,6 +128,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     <ClInclude Include="ScriptCmds\Commands\ScrCmdVarFilter.h" />
     <ClInclude Include="ScriptCmds\Commands\ScrCmdWienerFilter.h" />
     <ClInclude Include="ScriptCmds\GenCommands.h" />
+    <ClInclude Include="ScriptCmds\ScopedProcessMutex.h" />
     <ClInclude Include="ScriptCmds\ScriptCommand.h" />
     <ClInclude Include="ScriptCmds\ScriptCommandDefines.h" />
     <ClInclude Include="ScriptCmds\ScriptCommandImpl.h" />
@@ -142,6 +143,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp" />
     <ClCompile Include="Mex\MexCommandModule.cpp" />
+    <ClCompile Include="ScriptCmds\ScopedProcessMutex.cpp" />
     <None Include="Mex\_TemplateMex.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
