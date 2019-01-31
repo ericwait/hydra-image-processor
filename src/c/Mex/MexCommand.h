@@ -2,6 +2,8 @@
 #include "../Cuda/Vec.h"
 #include "../Cuda/ImageDimensions.cuh"
 
+#include "../WrapCmds/HIPProcMutex.h"
+
 #include "MexIncludes.h"
 
 #include <stdexcept>
@@ -10,10 +12,10 @@
 #include <algorithm>
 #include <exception>
 
-
 // Abstract base class for mex commands
 class MexCommand
 {
+
 public:
 	virtual std::string check(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]) const = 0;
 	virtual void execute(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]) const = 0;
@@ -52,6 +54,9 @@ public:
 
 		try
 		{
+			// TODO: This should be much lower down in the process pipeline if possible
+			SCOPED_MUTEX(hip_cmd_gpu);
+
 			mexCmd->execute(nlhs,plhs,cmdNRHS,cmdPRHS);
 		} catch(const std::runtime_error& err)
 		{
