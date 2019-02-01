@@ -3,6 +3,11 @@
 #include <stdexcept>
 
 #ifdef USE_WINDOWS_IPC_MUTEX
+#include <windows.h>
+
+#undef min
+#undef max
+
 HANDLE ScopedProcessMutex::mutexHandle = NULL;
 
 ScopedProcessMutex::ScopedProcessMutex(const char* name)

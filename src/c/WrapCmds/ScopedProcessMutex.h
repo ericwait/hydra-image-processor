@@ -10,9 +10,7 @@
  #define USE_WINDOWS_IPC_MUTEX (1)
 #endif
 
-#ifdef USE_WINDOWS_IPC_MUTEX
-	#include <windows.h>
-#else
+#ifndef USE_WINDOWS_IPC_MUTEX
 	#define BOOST_DATE_TIME_NO_LIB (1)
 	#include "boost/interprocess/sync/named_mutex.hpp"
 #endif
@@ -36,7 +34,7 @@ public:
 private:
 
 #ifdef USE_WINDOWS_IPC_MUTEX
-	static HANDLE mutexHandle;
+	static void* mutexHandle;
 #else
 	boost::interprocess::named_mutex ipc_mutex;
 #endif
