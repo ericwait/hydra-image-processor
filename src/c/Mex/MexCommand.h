@@ -2,7 +2,7 @@
 #include "../Cuda/Vec.h"
 #include "../Cuda/ImageDimensions.cuh"
 
-#include "../WrapCmds/HIPProcMutex.h"
+#include "../WrapCmds/ScopedProcessMutex.h"
 
 #include "MexIncludes.h"
 
@@ -55,7 +55,7 @@ public:
 		try
 		{
 			// TODO: This should be much lower down in the process pipeline if possible
-			SCOPED_MUTEX(hip_cmd_gpu);
+			SCOPED_PROCESS_MUTEX(hip_cmd_gpu);
 
 			mexCmd->execute(nlhs,plhs,cmdNRHS,cmdPRHS);
 		} catch(const std::runtime_error& err)

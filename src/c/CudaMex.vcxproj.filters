@@ -39,7 +39,7 @@
     <ClInclude Include="WrapCmds\ScriptHelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\HIPProcMutex.h">
+    <ClInclude Include="WrapCmds\ScopedProcessMutex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -111,6 +111,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Mex\MexVarFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WrapCmds\ScopedProcessMutex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
