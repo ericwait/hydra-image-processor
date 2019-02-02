@@ -1,5 +1,6 @@
 #pragma once
 
+#define USE_PROCESS_MUTEX
 #ifdef USE_PROCESS_MUTEX
  #define SCOPED_PROCESS_MUTEX(Name) ScopedProcessMutex Name##_mutex(#Name)
 #else

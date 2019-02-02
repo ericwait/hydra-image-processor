@@ -14,6 +14,7 @@
 // MexCommandInfo - This command can be used to provide an easy to parse matlab command info structure for all MEX commands.
 std::string MexInfo::check(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[]) const
 {
+	printf("HIP_LJS\n");
 	if(nrhs > 0)
 		return "No input arguments are supported.";
 
