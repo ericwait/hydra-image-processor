@@ -47,7 +47,7 @@ int ilog2(std::size_t mask)
 //	return -1;
 //}
 
-void calcBlockThread(const Vec<std::size_t>& dims, std::size_t maxThreads, dim3 &blocks, dim3 &threads)
+void calcBlockThread(const Vec<std::size_t>& dims, std::size_t maxThreads, Vec<unsigned int>& blocks, Vec<unsigned int>& threads)
 {
 	if (dims.z <= 1)
 	{

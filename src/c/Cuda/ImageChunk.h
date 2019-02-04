@@ -144,7 +144,9 @@ public:
 	// This is the frame that this chunk will operate on.
 	std::size_t frame;
 
-	dim3 blocks, threads;
+	// Block/thread counts for cuda kernel
+	Vec<unsigned int> blocks;
+	Vec<unsigned int> threads;
 };
 
 void setMaxDeviceDims(std::vector<ImageChunk> &chunks, Vec<std::size_t> &maxDeviceDims);

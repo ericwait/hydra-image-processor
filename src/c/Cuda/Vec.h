@@ -26,6 +26,9 @@
 
 #ifdef __CUDACC__
 #define MIXED_PREFIX __host__ __device__
+
+#include "vector_types.h"
+#define DIM3_ELEM_TYPE decltype(std::declval<dim3>().x) 
 #else
 #define MIXED_PREFIX
 #endif
@@ -66,6 +69,14 @@ public:
 		z(static_cast<T>(other.z))
 	{}
 
+#ifdef __CUDACC__
+	template<ENABLE_CHK(NON_NARROWING(T,DIM3_ELEM_TYPE))>
+	MIXED_PREFIX operator dim3() const
+	{
+		using V = DIM3_ELEM_TYPE;
+		return dim3{static_cast<V>(x),static_cast<V>(y),static_cast<V>(z)};
+	}
+#endif
 
 	MIXED_PREFIX Vec(T x, T y, T z)
 		: x(x), y(y), z(z)
@@ -393,7 +404,5 @@ public:
 		return a.x*b.x + a.y*b.y + a.z*b.z;
 	}
 };
-
-
 
 #endif
