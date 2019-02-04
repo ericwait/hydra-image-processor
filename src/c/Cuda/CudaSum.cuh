@@ -142,7 +142,7 @@ void cSum(ImageView<PixelTypeIn> imageIn, OutType& outVal, int device=-1)
 		sums[CUDA_IDX] = 0;
 		OutType* deviceSum;
 
-		int maxBlocks = (int)ceil((double)chunks[0].getFullChunkSize().product() / (chunks[0].threads.x*chunks[0].threads.y*chunks[0].threads.z * 2));
+		int maxBlocks = (int)ceil((double)chunks[0].blocks.product() / 2.0);
 
 		HANDLE_ERROR(cudaMalloc((void**)&deviceSum, sizeof(OutType)*maxBlocks));
 		OutType* hostSum = new OutType[maxBlocks];
