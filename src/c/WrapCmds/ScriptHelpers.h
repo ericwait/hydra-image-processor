@@ -58,7 +58,7 @@ namespace Script
 		if ( info.dims.size() >= 5 )
 			dimsOut.frame = (unsigned int)info.dims[4];
 
-		return std::move(dimsOut);
+		return dimsOut;
 	}
 };
 
@@ -87,7 +87,7 @@ namespace Script
 		for ( int i=0; i < ndims; ++i )
 			info.dims[i] = ArrayInfo::getDim(im, m*i + offset);
 
-		return std::move(info);
+		return info;
 	}
 
 	template <typename T>
