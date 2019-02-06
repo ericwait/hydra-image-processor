@@ -349,7 +349,7 @@ namespace Script
 		public:
 			template <typename... Args>
 			ArgConvertError(int argIdx, const char* fmt, Args... args)
-				: argIdx(argIdx), std::runtime_error(make_msg(fmt,args...).get())
+				: std::runtime_error(make_msg(fmt,args...).get()), argIdx(argIdx)
 			{}
 
 			int getArgIndex() const { return argIdx; }
@@ -563,8 +563,8 @@ namespace Script
 			for ( std::size_t i=0; i < nspatial; ++i )
 				inDims.dims.e[i] = info.dims[i];
 
-			inDims.chan = (info.dims.size() >= 4) ? info.dims[3] : (1);
-			inDims.frame = (info.dims.size() >= 5) ? info.dims[4] : (1);
+			inDims.chan = static_cast<unsigned int>((info.dims.size() >= 4) ? info.dims[3] : (1));
+			inDims.frame = static_cast<unsigned int>((info.dims.size() >= 5) ? info.dims[4] : (1));
 
 			out = ImageOwner<T>(inDims);
 			pyArrayCopyConvert(out.getPtr(), arrPtr);
@@ -654,7 +654,7 @@ namespace Script
 				else
 					throw VectorConvertError("Must be numeric list, tuple, or numpy array");
 			}
-			catch ( ScalarConvertError& sce )
+			catch ( ScalarConvertError& )
 			{
 				throw VectorConvertError("Invalid value in vector, expected 3 numeric values");
 			}

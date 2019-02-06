@@ -16,25 +16,16 @@ class ImageView
 {
 public:
 	// Empty image view
-	ImageView(): imageView(nullptr), dimensions() {}
+	ImageView(): dimensions(), imageView(nullptr) {}
 
-	// Implicitly ImageView from an owning container object
+	// Implicitly convert ImageView from an owning container object
 	ImageView(const ImageOwner<PixelType>& owner)
-		: imageView(owner.getPtr()), dimensions(owner.getDims())
+		: dimensions(owner.getDims()), imageView(owner.getPtr())
 	{}
-
-	// Ability to assign to assign an owning container to an ImageView
-	ImageView& operator=(const ImageOwner<PixelType>& owner)
-	{
-		imageView = owner.getPtr();
-		dimensions = owner.getDims();
-
-		return (*this);
-	}
 
 
 	ImageView(PixelType* imagePtr, Vec<std::size_t> dimsIn, unsigned char nChannels = 1, unsigned int nFrames = 1)
-		: imageView(imagePtr), dimensions(dimsIn, nChannels, nFrames)
+		: dimensions(dimsIn, nChannels, nFrames), imageView(imagePtr)
 	{}
 
 	ImageView(PixelType* imagePtr, ImageDimensions dimsIn)
@@ -76,7 +67,7 @@ public:
 	ImageOwner& operator=(ImageOwner&&) = default;
 
 	// Constructor for an empty image
-	ImageOwner(): image(nullptr), dimensions() {}
+	ImageOwner(): dimensions(), image(nullptr) {}
 
 	// Construct an image with given dimensions
 	ImageOwner(const Vec<std::size_t>& dimsIn, unsigned char nChannels = 1, unsigned int nFrames = 1)
