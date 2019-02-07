@@ -11,29 +11,12 @@
 	static PyObject* dispatch(PyObject* self, PyObject* args)	\
 	{															\
 		PyObject* output = nullptr;								\
-		dispatch_parsed(output, args);							\
+		convert_dispatch(output, args);							\
 		return output;											\
 	}
 
 
-//#define BEGIN_IO_TYPE_MAP(ClassName)						\
-//	namespace ClassName##_TypeMap							\
-//	{														\
-//		template <typename InType> using OutputType = InType;
-//
-//#define END_IO_TYPE_MAP(ClassName)		\
-//	};
-//
-//#define DEFAULT_IO_TYPE_MAP(ClassName)	\
-//	BEGIN_IO_TYPE_MAP(ClassName)		\
-//	END_IO_TYPE_MAP(ClassName)
-//
-//#define SET_IO_TYPE_MAP(OutType, InType)				\
-//		template <> using OutputType<InType> = OutType;	\
-//
-//#define GET_OUT_TYPE(ClassName, InType) ClassName##_TypeMap::OutputType<InType>
-
-#define SCR_DEFAULT_IO_TYPE_MAP() template <typename InT> static InT get_out(InT)
+#define SCR_DEFAULT_IO_TYPE_MAP template <typename InT> static InT get_out(InT)
 #define SCR_DEFINE_IO_TYPE_MAP(OutT,InT) static OutT get_out(InT)
 
 
@@ -61,7 +44,7 @@ class ScriptCommandImpl : public ScriptCommand
 	using ProcessFunc = Assert<Derived>;
 public:
 	// Helper types for input/output argument type mapping
-	SCR_DEFAULT_IO_TYPE_MAP();
+	SCR_DEFAULT_IO_TYPE_MAP;
 
 	// This to be an instanced struct type for compiler compatibility
 	template <typename InT>
@@ -74,16 +57,18 @@ public:
 	template <typename InT>
 	using OutMap = typename OutMap_Impl<InT>::type;
 
+	// Argument load/conversion access types
 	using ArgParser = Parser;
 	using ArgError = typename ArgParser::ArgError;
 
+	// Script engine-dependent function to dispatch parameters
 	DISPATCH_FUNC;
 
-	// Non-overloadable - Parses arguments and dispatches to execute command
+	// Non-overloadable - Handles argument conversion and dispatches to execute command
 	// NOTE: default execute command checks for deferred types and passes to
 	//   the templated process function.
 	template <typename... ScriptInterface>
-	static void dispatch_parsed(ScriptInterface&&... scriptioArgs)
+	static void convert_dispatch(ScriptInterface&&... scriptioArgs)
 	{
 		try
 		{
@@ -152,7 +137,7 @@ private:
 	template <typename... Args, size_t... Is>
 	static void exec_dispatch_impl(std::tuple<Args...> ioArgs, mph::index_sequence<Is...>)
 	{
-		Derived::execute(std::get<Is>(ioArgs)...);
+		Derived::execute(std::forward<Args>(std::get<Is>(ioArgs))...);
 	}
 
 	static std::string usageString()
@@ -167,43 +152,43 @@ private:
 	//   process<OutT,InT>(Args...) function
 	/////////////////////////
 	template <typename... Args>
-	static void execute(Args&... args)
+	static void execute(Args&&... args)
 	{
 		static_assert(ArgParser::has_deferred_image_inputs(), "ArgParser has no deferred inputs. Please overload default execute() function!");
 
-		Script::IdType type = ArgParser::getInputType(args...);
+		Script::IdType type = ArgParser::getInputType(std::forward<Args>(args)...);
 
 		if ( type == Script::TypeToIdMap<bool>::typeId )
 		{
-			Derived::template process<OutMap<bool>,bool>(args...);
+			Derived::template process<OutMap<bool>,bool>(std::forward<Args>(args)...);
 		}
 		else if ( type == Script::TypeToIdMap<uint8_t>::typeId )
 		{
-			Derived::template process<OutMap<uint8_t>,uint8_t>(args...);
+			Derived::template process<OutMap<uint8_t>,uint8_t>(std::forward<Args>(args)...);
 		}
 		else if ( type == Script::TypeToIdMap<uint16_t>::typeId )
 		{
-			Derived::template process<OutMap<uint16_t>,uint16_t>(args...);
+			Derived::template process<OutMap<uint16_t>,uint16_t>(std::forward<Args>(args)...);
 		}
 		else if ( type == Script::TypeToIdMap<int16_t>::typeId )
 		{
-			Derived::template process<OutMap<int16_t>,int16_t>(args...);
+			Derived::template process<OutMap<int16_t>,int16_t>(std::forward<Args>(args)...);
 		}
 		else if ( type == Script::TypeToIdMap<uint32_t>::typeId )
 		{
-			Derived::template process<OutMap<uint32_t>,uint32_t>(args...);
+			Derived::template process<OutMap<uint32_t>,uint32_t>(std::forward<Args>(args)...);
 		}
 		else if ( type == Script::TypeToIdMap<int32_t>::typeId )
 		{
-			Derived::template process<OutMap<int32_t>,int32_t>(args...);
+			Derived::template process<OutMap<int32_t>,int32_t>(std::forward<Args>(args)...);
 		}
 		else if ( type == Script::TypeToIdMap<float>::typeId )
 		{
-			Derived::template process<OutMap<float>,float>(args...);
+			Derived::template process<OutMap<float>,float>(std::forward<Args>(args)...);
 		}
 		else if ( type == Script::TypeToIdMap<double>::typeId )
 		{
-			Derived::template process<OutMap<double>,double>(args...);
+			Derived::template process<OutMap<double>,double>(std::forward<Args>(args)...);
 		}
 		else
 		{
@@ -218,7 +203,7 @@ private:
 	//   to the class-specified cuda processing function
 	/////////////////////////
 	template <typename OutType, typename InType, typename... Args>
-	static void process(Args&... args)
+	static void process(Args&&... args)
 	{
 
 
