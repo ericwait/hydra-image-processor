@@ -1,5 +1,8 @@
 #pragma once
 
+#include "mph/tuple_helpers.h"
+#include "mph/qualifier_helpers.h"
+
 namespace Script
 {
 	// Deferred-type is used to indicate types identified dynamically
@@ -15,211 +18,126 @@ namespace Script
 	// IO Traits (Parameter type, output, input, optional input)
 	template <typename T>
 	struct OutParam
-	{
-		using Type = T;
-	};
+	{};
 
 	template <typename T>
 	struct InParam
-	{
-		using Type = T;
-	};
+	{};
 
 	template <typename T>
 	struct OptParam
 	{
-		using Type = T;
-
 		// TODO: Static assert on invalid- io type combinations (e.g. default values can't be type-deferred)
 	};
 
+	// NOTE: These are general predicates for interrogating nested types
 	/////////////////////////
-	// force_const_t -
-	//   Tear away all pointers on type and set const on the underlying data type
-	//   then add all the pointers back (e.g. int** -> const int**)
+	// has_underlying_type -
+	//   Predicate: true if underlying type is U (e.g. OutParam<ImageRef<V>>)
 	/////////////////////////
-	template <typename T>
-	using force_const_t = mph::data_type_tfm<std::add_const, T>;
-
-	/////////////////////////
-	// remove_all_qualifiers_t -
-	//   Recursively remove type qualifiers (e.g. const int * const * const -> int**)
-	/////////////////////////
-	template <typename T>
-	using remove_all_qualifiers_t = mph::full_type_tfm_t<std::remove_cv, T>;
-
-
-	//////////////
-	// Data type conversions (compile-time) for use with script trait types
-
-	/////////////////////////
-	// dtype_to_script -
-	//   Transforms from data-trait type to script base-type
-	//   (e.g. Image<int> -> Script::ArrayType*)
-	/////////////////////////
-	template <typename Traits>
-	struct dtype_to_script {};
-
-	template <template <typename> class DataTrait, typename BaseType>
-	struct dtype_to_script<DataTrait<BaseType>>
+	template <typename T, typename U>
+	struct has_underlying_type
 	{
-		using type = Script::ObjectType*;
+		static constexpr bool value = std::is_same<T,U>::value;
 	};
 
-	template <typename BaseType>
-	struct dtype_to_script<Script::Image<BaseType>>
+	template <template<typename> class T, typename V, typename U>
+	struct has_underlying_type<T<V>, U>
 	{
-		using type = Script::ArrayType*;
+		static constexpr bool value = has_underlying_type<V,U>::value;
 	};
 
-	template <typename BaseType>
-	struct dtype_to_script<Script::ImageRef<BaseType>>
-	{
-		using type = Script::ArrayType*;
-	};
 
 	/////////////////////////
-	// iotrait_to_script -
-	//   Transforms from full io-trait type to base script type.
-	//   (e.g. InParam<Image<Deferred>> -> const Script::ArrayType*)
+	// has_trait -
+	//   Predicate: true if contains a type-trait (Trait) in nested type set (e.g. A<Trait<B<...>>>)
 	/////////////////////////
-	template <typename Traits>
-	struct iotrait_to_script {};
+	template <typename T, template<typename> class Trait>
+	struct has_trait : std::false_type
+	{};
 
-	template <template <typename> class IOTrait, typename DataTraits>
-	struct iotrait_to_script<IOTrait<DataTraits>>
+	template <template<typename> class T, typename V, template<typename> class  Trait>
+	struct has_trait<T<V>, Trait>
 	{
-		using type = force_const_t<typename dtype_to_script<DataTraits>::type>;
+		static constexpr bool value = (std::is_same<T<V>,Trait<V>>::value || has_trait<V,Trait>::value);
 	};
 
-	template <typename DataTraits>
-	struct iotrait_to_script<Script::OutParam<DataTraits>>
-	{
-		// TODO: Wrap pointer in simple unique object to avoid leaking on errors
-		using type = typename dtype_to_script<DataTraits>::type;
-	};
 
 	/////////////////////////
-	// dtype_to_concrete -
-	//   Transforms from data-trait type to concrete base-type
-	//   (e.g. Image<int> -> ImageContainer<int>)
-	/////////////////////////
-	template <typename Traits>
-	struct dtype_to_concrete {};
-
-	template <typename BaseType>
-	struct dtype_to_concrete<Scalar<BaseType>>
-	{
-		using type = BaseType;
-	};
-
-	template <>
-	struct dtype_to_concrete<Scalar<DeferredType>>
-	{
-		using type = Script::ObjectType*;
-	};
-
-	template <typename BaseType>
-	struct dtype_to_concrete<Vector<BaseType>>
-	{
-		using type = Vec<BaseType>;
-	};
-
-	template <>
-	struct dtype_to_concrete<Vector<DeferredType>>
-	{
-		using type = Script::ObjectType*;
-	};
-
-	template <typename BaseType>
-	struct dtype_to_concrete<Image<BaseType>>
-	{
-		using type = ImageOwner<BaseType>;
-	};
-
-	template <>
-	struct dtype_to_concrete<Image<DeferredType>>
-	{
-		using type = Script::ArrayType*;
-	};
-
-	template <typename BaseType>
-	struct dtype_to_concrete<ImageRef<BaseType>>
-	{
-		using type = ImageView<BaseType>;
-	};
-
-	template <>
-	struct dtype_to_concrete<ImageRef<DeferredType>>
-	{
-		using type = Script::ArrayType*;
-	};
-
-	/////////////////////////
-	// iotrait_to_concrete -
-	//   Transforms from full io-trait types to concrete base types
-	//   (e.g. InParam<Image<int>> -> ImageContainer<int>)
-	//   NOTE: This leaves deferred types the same as iotrait_to_script
-	/////////////////////////
-	template <typename Traits>
-	struct iotrait_to_concrete {};
-
-	template <template <typename> class IOTrait, template <typename> class DataTrait, typename BaseType>
-	struct iotrait_to_concrete<IOTrait<DataTrait<BaseType>>>
-	{
-		// Use script types for deferred io traits
-		using type = typename dtype_to_concrete<DataTrait<BaseType>>::type;
-	};
-
-	template <template <typename> class IOTrait, template <typename> class DataTrait>
-	struct iotrait_to_concrete<IOTrait<DataTrait<DeferredType>>>
-	{
-		using type = typename iotrait_to_script<IOTrait<DataTrait<DeferredType>>>::type;
-	};
-
-	/////////////////////////
-	// deferred_dtype_to_concrete -
-	//   Transforms all data-trait types to concrete types
-	//   NOTE: The deferred types are all converted using the extra T parameter
-	/////////////////////////
-	template <typename Traits, typename T>
-	struct deferred_dtype_to_concrete {};
-
-	template <template <typename> class DataTrait, typename BaseType, typename T>
-	struct deferred_dtype_to_concrete<DataTrait<BaseType>, T>
-	{
-		using type = typename dtype_to_concrete<DataTrait<BaseType>>::type;
-	};
-
-	template <template <typename> class DataTrait, typename T>
-	struct deferred_dtype_to_concrete<DataTrait<DeferredType>, T>
-	{
-		using type = typename dtype_to_concrete<DataTrait<T>>::type;
-	};
-
-
-	template <typename Traits, typename T>
-	struct deferred_iotrait_to_concrete_impl {};
-
-	template <template <typename> class IOTrait, typename DataTraits, typename T>
-	struct deferred_iotrait_to_concrete_impl<IOTrait<DataTraits>, T>
-	{
-		using type = typename deferred_dtype_to_concrete<DataTraits, T>::type;
-	};
-
-	/////////////////////////
-	// deferred_to_concrete -
-	//   Transforms all io-trait types to concrete types
-	//   NOTE: The deferred types are all converted using the extra T parameter
+	// is_deferred -
+	//   Predicate: true if underlying type is deferred (e.g. OutParam<ImageRef<DeferredType>>)
 	/////////////////////////
 	template <typename T>
-	struct deferred_to_concrete
+	struct is_deferred
 	{
-		template <typename Traits>
-		struct tfm
-		{
-			using type = typename deferred_iotrait_to_concrete_impl<Traits, T>::type;
-		};
+		static constexpr bool value = has_underlying_type<T, DeferredType>::value;
 	};
 
+
+	/////////////////////////
+	// is_image -
+	//   Predicate: true if contains an image/imageref (e.g. InParam<ImageRef<DeferredType>>)
+	/////////////////////////
+	template <typename T>
+	struct is_image
+	{
+		static constexpr bool value = (has_trait<T, ImageRef>::value || has_trait<T, Image>::value);
+	};
+
+
+	/////////////////////////
+	// is_outparam -
+	//   Predicate: true if is output parameter (e.g. OutParam<...>)
+	/////////////////////////
+	template <typename T>
+	struct is_outparam
+	{
+		static constexpr bool value = has_trait<T, OutParam>::value;
+	};
+
+	/////////////////////////
+	// is_inparam -
+	//   Predicate: true if is input parameter (e.g. InParam<...>)
+	/////////////////////////
+	template <typename T>
+	struct is_inparam
+	{
+		static constexpr bool value = has_trait<T, InParam>::value;
+	};
+
+	/////////////////////////
+	// is_optparam -
+	//   Predicate: true if is optional input parameter (e.g. OptParam<...>)
+	/////////////////////////
+	template <typename T>
+	struct is_optparam
+	{
+		static constexpr bool value = has_trait<T, OptParam>::value;
+	};
+
+
+	/////////////////////////
+	// not_deferred -
+	//   Predicate: true if underlying type is NOT deferred (e.g. OutParam<ImageRef<float>>)
+	/////////////////////////
+	template <typename T>
+	struct not_deferred
+	{
+		static constexpr bool value = !is_deferred<T>::value;
+	};
+
+
+	/////////////////////////
+	// true_pred -
+	//   Predicate: always true
+	/////////////////////////
+	template <typename T>
+	struct true_pred : std::true_type {};
+
+	/////////////////////////
+	// false_pred -
+	//   Predicate: always false
+	/////////////////////////
+	template <typename T>
+	struct false_pred: std::false_type {};
 };

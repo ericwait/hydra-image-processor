@@ -60,6 +60,7 @@
     <ClInclude Include="WrapCmds\ScriptHelpers.h" />
     <ClInclude Include="WrapCmds\CommandList.h" />
     <ClInclude Include="WrapCmds\ScriptTraits.h" />
+    <ClInclude Include="WrapCmds\ScriptTraitTfms.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
