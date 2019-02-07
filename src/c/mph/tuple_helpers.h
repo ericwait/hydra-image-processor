@@ -157,13 +157,25 @@ namespace mph
 	};
 
 
-	template <template<typename> class TfmA, template<typename> class TfmB>
+	template <template<typename> class TfmH, template<typename> class... TfmTail>
 	struct compose_type_tfm
 	{
 		template <typename Tuple>
 		struct tfm
 		{
-			using type = typename TfmA<typename TfmB<Tuple>::type>::type;
+			using type = typename TfmH<
+				typename compose_type_tfm<TfmTail...>::template tfm<Tuple>::type
+				>::type;
+		};
+	};
+
+	template <template<typename> class TfmH>
+	struct compose_type_tfm<TfmH>
+	{
+		template <typename Tuple>
+		struct tfm
+		{
+			using type = typename TfmH<Tuple>::type;
 		};
 	};
 
@@ -171,7 +183,7 @@ namespace mph
 	namespace internal
 	{
 		template <typename Tuple>
-		using composed_deref = compose_type_tfm<std::add_lvalue_reference, std::remove_pointer>::template tfm<Tuple>;
+		using composed_deref = compose_type_tfm<std::add_lvalue_reference, std::remove_pointer, std::remove_reference>::template tfm<Tuple>;
 	};
 
 
