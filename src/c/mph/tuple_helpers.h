@@ -42,7 +42,7 @@ namespace mph
 
 		// Get types of a tuple filtered on a index_sequence
 		template <typename Seq, typename Tuple>
-		struct select_tuple_types {};
+		struct select_tuple_types{};
 
 		template <std::size_t... Is, typename... Types>
 		struct select_tuple_types<index_sequence<Is...>, std::tuple<Types...>>
@@ -88,10 +88,10 @@ namespace mph
 	namespace internal
 	{
 		// TODO: Play with std::forward for this?
-		template <typename... Args, std::size_t... Is>
-		constexpr std::tuple<Args&...> tie_tuple_impl(index_sequence<Is...>, std::tuple<Args...>& vars)
+		template <std::size_t... Is, typename... Types>
+		constexpr std::tuple<Types&...> tie_tuple_impl(index_sequence<Is...>, std::tuple<Types...>& tuple)
 		{
-			return std::tie(std::get<Is>(vars)...);
+			return std::tuple<Types&...>(std::get<Is>(tuple)...);
 		}
 	};
 
@@ -101,10 +101,10 @@ namespace mph
 	//   NOTE: the use of std::tie means this is really only useful if you have primary
 	//   data stored in a tuple
 	/////////////////////////
-	template <typename ...Args>
-	constexpr std::tuple<Args&...> tie_tuple(std::tuple<Args...>& vars)
+	template <typename... Types>
+	constexpr std::tuple<Types&...> tie_tuple(std::tuple<Types...>& tuple)
 	{
-		return internal::tie_tuple_impl(make_index_sequence<sizeof...(Args)>(), vars);
+		return internal::tie_tuple_impl(make_index_sequence<sizeof...(Types)>(), tuple);
 	}
 
 
