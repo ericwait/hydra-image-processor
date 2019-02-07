@@ -54,6 +54,7 @@
     <ClInclude Include="Python\PyTypes.h" />
     <ClInclude Include="Python\PyWrapCommand.h" />
     <ClInclude Include="Python\PyWrapDef.h" />
+    <ClInclude Include="WrapCmds\ArgParser.h" />
     <ClInclude Include="WrapCmds\PyConverters.h" />
     <ClInclude Include="WrapCmds\ScriptCommand.h" />
     <ClInclude Include="WrapCmds\ScriptCommands.h" />

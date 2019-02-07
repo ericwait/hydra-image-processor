@@ -131,6 +131,9 @@
     <ClInclude Include="WrapCmds\ScriptTraits.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WrapCmds\ArgParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="WrapCmds\ScriptTraitTfms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
