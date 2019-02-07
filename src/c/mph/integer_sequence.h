@@ -43,16 +43,17 @@ namespace mph
 	template <typename T, T... Ia, T... Ib, typename... Tail>
 	struct cat_integer_sequence<T, integer_sequence<T, Ia...>, integer_sequence<T, Ib...>, Tail...>
 	{
-		using type = cat_integer_sequence<T, integer_sequence<T, Ia..., Ib...>, Tail...>;
+		using type = typename cat_integer_sequence<T, integer_sequence<T, Ia..., Ib...>, Tail...>::type;
 	};
 
-	// Special case for concatenating two sequences
-	template <typename T, T... Ia, T... Ib>
-	struct cat_integer_sequence<T, integer_sequence<T, Ia...>, integer_sequence<T, Ib...>>
+	// End case for cat with a single sequence
+	template <typename T, T... Is>
+	struct cat_integer_sequence<T, integer_sequence<T, Is...>>
 	{
-		using type = integer_sequence<T, Ia..., Ib...>;
+		using type = integer_sequence<T, Is...>;
 	};
 
+	// Return empty sequence if called with no args
 	template <typename T>
 	struct cat_integer_sequence<T>
 	{
