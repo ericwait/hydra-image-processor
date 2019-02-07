@@ -115,19 +115,6 @@ namespace mph
 	template <typename Seq, typename Tuple>
 	using tuple_subset_t = typename internal::select_tuple_types<Seq, Tuple>::type;
 
-
-	/////////////////////////
-	// tuple_subset -
-	//   Returns a new tuple that is the subset of elements (value-copied) listed in the
-	//   index sequence
-	/////////////////////////
-	template <std::size_t... Is, typename... Types>
-	constexpr auto tuple_subset(index_sequence<Is...>, const std::tuple<Types...>& vars)
-		-> tuple_subset_t<index_sequence<Is...>, std::tuple<Types...>>
-	{
-		return tuple_subset_t<index_sequence<Is...>, std::tuple<Types...>>(std::get<Is>(vars)...);
-	}
-
 	/////////////////////////
 	// tuple_subset_ref -
 	//   Returns a new tuple that is the subset of elements (references) listed in the
