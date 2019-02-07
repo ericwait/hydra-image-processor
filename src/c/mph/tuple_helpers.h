@@ -182,16 +182,16 @@ namespace mph
 
 	namespace internal
 	{
-		template <typename... Args, std::size_t... Is>
-		constexpr tuple_ptr_t<std::tuple<Args...>> tuple_addr_of_impl(index_sequence<Is...>, std::tuple<Args...>& vars)
+		template <typename... Types, std::size_t... Is>
+		constexpr tuple_ptr_t<std::tuple<Types...>> tuple_addr_of_impl(index_sequence<Is...>, std::tuple<Types&...> vars)
 		{
-			return std::make_tuple((&std::get<Is>(vars))...);
+			return tuple_ptr_t<std::tuple<Types...>>((&std::get<Is>(vars))...);
 		}
 
-		template <typename... Args, std::size_t...Is>
-		constexpr tuple_deref_t<std::tuple<Args...>> tuple_deref_impl(index_sequence<Is...>, std::tuple<Args...>& vars)
+		template <typename... Types, std::size_t...Is>
+		constexpr tuple_deref_t<std::tuple<Types...>> tuple_deref_impl(index_sequence<Is...>, std::tuple<Types...> vars)
 		{
-			return std::tie((*std::get<Is>(vars))...);
+			return tuple_deref_t<std::tuple<Types...>>((*std::get<Is>(vars))...);
 		}
 	};
 
@@ -199,17 +199,26 @@ namespace mph
 	// tuple_addr_of -
 	//   Return a tuple of pointers to input tuple elements (e.g. &var for each element)
 	/////////////////////////
-	template <typename... Args>
-	constexpr tuple_ptr_t<std::tuple<Args...>> tuple_addr_of(std::tuple<Args...>& tuple)
+	template <typename... Types>
+	constexpr tuple_ptr_t<std::tuple<Types...>> tuple_addr_of(std::tuple<Types&...> tuple)
 	{
-		return internal::tuple_addr_of_impl(make_index_sequence<sizeof... (Args)>(), tuple);
+		return internal::tuple_addr_of_impl(make_index_sequence<sizeof... (Types)>(), tuple);
 	}
 
-
-	template <typename... Args>
-	constexpr tuple_deref_t<std::tuple<Args...>> tuple_deref(std::tuple<Args...> tuple)
+	template <typename... Types>
+	constexpr tuple_ptr_t<std::tuple<Types...>> tuple_addr_of(std::tuple<Types...>& tuple)
 	{
-		return internal::tuple_deref_impl(make_index_sequence<sizeof... (Args)>(), tuple);
+		return internal::tuple_addr_of_impl(make_index_sequence<sizeof... (Types)>(), tie_tuple(tuple));
+	}
+
+	/////////////////////////
+	// tuple_deref -
+	//   Return a tuple of references to values from a tuple of pointers
+	/////////////////////////
+	template <typename... Types>
+	constexpr tuple_deref_t<std::tuple<Types...>> tuple_deref(std::tuple<Types...> tuple)
+	{
+		return internal::tuple_deref_impl(make_index_sequence<sizeof... (Types)>(), tuple);
 	}
 
 
