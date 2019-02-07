@@ -4,6 +4,10 @@
 
 namespace mph
 {
+	// C++14 compatibility (make enable_if_t)
+	template <bool Test, typename Type = void>
+	using enable_if_t = typename std::enable_if<Test,Type>::type;
+
 	// Internals for tuple-predicate filtering
 	namespace internal
 	{
@@ -93,6 +97,12 @@ namespace mph
 		{
 			return std::tuple<Types&...>(std::get<Is>(tuple)...);
 		}
+
+		template <std::size_t... Is, typename... Types>
+		constexpr std::tuple<Types&&...> tie_tuple_impl(index_sequence<Is...>, std::tuple<Types...>&& tuple)
+		{
+			return std::tuple<Types&&...>(std::get<Is>(tuple)...);
+		}
 	};
 
 	/////////////////////////
@@ -107,6 +117,12 @@ namespace mph
 		return internal::tie_tuple_impl(make_index_sequence<sizeof...(Types)>(), tuple);
 	}
 
+	template <typename... Types>
+	constexpr std::tuple<Types&&...> tie_tuple(std::tuple<Types...>&& tuple)
+	{
+		return internal::tie_tuple_impl(make_index_sequence<sizeof...(Types)>(), tuple);
+	}
+
 
 	/////////////////////////
 	// tuple_subset_t -
@@ -115,17 +131,48 @@ namespace mph
 	template <typename Seq, typename Tuple>
 	using tuple_subset_t = typename internal::select_tuple_types<Seq, Tuple>::type;
 
+
+	namespace internal
+	{
+		template <std::size_t... Is, typename... Types, typename = enable_if_t<!std::is_same<std::tuple<Types...>, std::tuple<>>::value>>
+		constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types&...>> tuple_subset_impl(index_sequence<Is...>, std::tuple<Types&...> tuple)
+		{
+			return tuple_subset_t<index_sequence<Is...>, std::tuple<Types&...>>(std::get<Is>(tuple)...);
+		}
+
+		template <std::size_t... Is, typename... Types>
+		constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types...>> tuple_subset_impl(index_sequence<Is...>, const std::tuple<Types...>& tuple)
+		{
+			return tuple_subset_t<index_sequence<Is...>, std::tuple<Types...>>(std::get<Is>(tuple)...);
+		}
+	}
+
 	/////////////////////////
-	// tuple_subset_ref -
-	//   Returns a new tuple that is the subset of elements (references) listed in the
+	// tuple_subset -
+	//   Returns a new tuple that is the subset of elements (references if lvalue) listed in the
 	//   index sequence
 	//   NOTE: This SHOULD fail at compile-time if passed a make_tuple (doesn't on msvc)
+	//   NOTE: MSVC chooses std::tuple<Types&...> for non-reference arrays and matches std::tuple<>.
+	//     The gross enable_if_t forces it to use the correct overload definition
 	/////////////////////////
-	template <std::size_t... Is, typename... Types>
-	constexpr auto tuple_subset_ref(index_sequence<Is...>, std::tuple<Types...>& vars)
-		-> tuple_subset_t<index_sequence<Is...>, std::tuple<Types&...>>
+	// TODO: Make const versions of the reference subset functions
+	template <std::size_t... Is, typename... Types, typename = enable_if_t<!std::is_same<std::tuple<Types...>,std::tuple<>>::value>>
+	constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types&...>> tuple_subset(index_sequence<Is...>, std::tuple<Types&...> tuple)
 	{
-		return tuple_subset_t<index_sequence<Is...>, std::tuple<Types&...>>(std::get<Is>(vars)...);
+		return internal::tuple_subset_impl(index_sequence<Is...>{}, tuple);
+	}
+
+	// Support 
+	template <std::size_t... Is, typename... Types>
+	constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types&...>> tuple_subset(index_sequence<Is...>, std::tuple<Types...>& tuple)
+	{
+		return internal::tuple_subset_impl(index_sequence<Is...>{}, tie_tuple(tuple));
+	}
+
+	template <std::size_t... Is, typename... Types>
+	constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types...>> tuple_subset(index_sequence<Is...>, std::tuple<Types...>&& tuple)
+	{
+		return internal::tuple_subset_impl(index_sequence<Is...>{}, tie_tuple(tuple));
 	}
 
 
