@@ -41,7 +41,7 @@ CPP_FLAGS = -std=c++11 -g
 
 # Passed to gcc/clang and passthrough (--compiler-options) in nvcc
 # NOTE: Any warning flags such as '-Wall' should go here
-C_FLAGS = -fopenmp -fPIC -g
+C_FLAGS = -Wall -Wno-sign-compare -fopenmp -fPIC -g
 
 # Pass-through linker arguments (--linker-options) in nvcc linking step
 LD_FLAGS = --no-undefined
