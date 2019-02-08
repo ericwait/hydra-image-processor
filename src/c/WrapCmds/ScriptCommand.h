@@ -61,6 +61,13 @@ public:
 	using ArgParser = Parser;
 	using ArgError = typename ArgParser::ArgError;
 
+	// Selectors
+	using OptionalSel = typename ArgParser::OptionalSel;
+	using DeferredSel = typename ArgParser::DeferredSel;
+	using NondeferredSel = typename ArgParser::NondeferredSel;
+	using NondeferOutSel = typename ArgParser::NondeferOutSel;
+	using NondeferInOptSel = typename ArgParser::NondeferInOptSel;
+
 	// Script engine-dependent function to dispatch parameters
 	DISPATCH_FUNC;
 
@@ -72,47 +79,55 @@ public:
 	{
 		try
 		{
+			// Script/converted argument types from arg parser
 			using ScriptTypes = typename ArgParser::ScriptTypes;
-			using ScriptRefs = typename ArgParser::ScriptRefs;
-
 			using ArgTypes = typename ArgParser::ArgTypes;
-			using ArgRefs = typename ArgParser::ArgRefs;
 
-			// Memory for script objects corresponding to ioArgs
+			// Pointers to arguments
+			using ScriptPtrs = typename ArgParser::ScriptPtrs;
+			using ArgPtrs = typename ArgParser::ArgPtrs;
+
+			// Subset of arguments that have concrete type (non-deferred)
+			using ConcreteArgs = typename NondeferredSel::template type<ArgTypes>;
+
+			ArgPtrs argPtrs;
+
+			// Memory for script objects corresponding to arguments
 			// NOTE: These local objects are necessary for temporary ownership of non-deferred Python outputs
-			ScriptTypes localObjects;
-			ScriptRefs localRefs = mph::tie_tuple(localObjects);
+			ScriptTypes scriptObjects;
+			ScriptPtrs scriptPtrs = mph::tuple_addr_of(scriptObjects);
 
-			// NOTE: Requires all args are default-constructible types
-			ArgTypes ioArgs;
-			ArgRefs argRefs = mph::tie_tuple(ioArgs);
+			// Load script pointers from script engine inputs
+			ArgParser::load(scriptPtrs, std::forward<ScriptInterface>(scriptioArgs)...);
 
-			// TODO: try-catch for returning errors
-			ScriptRefs scriptRefs = ArgParser::load(localRefs, std::forward<ScriptInterface>(scriptioArgs)...);
+			// NOTE: Requires that args are default-constructible types
+			ConcreteArgs concreteArgs;
 
-			// Load default values for optional arguments
-			auto optRefs = ArgParser::selectOptional(argRefs);
+			// Hook up argPtrs (non-deferred point to concreteArgs, deferred same as scriptPtrs)
+			DeferredSel::select(argPtrs) = DeferredSel::select(scriptPtrs);
+			NondeferredSel::select(argPtrs) = mph::tuple_addr_of(concreteArgs);
+
+			// Load default values for optional arguments (can't be deferred)
+			auto optRefs = mph::tuple_deref(OptionalSel::select(argPtrs));
 			optRefs = Derived::defaults();
 
 			// Convert non-deferred inputs to appropriate arg types
-			ArgParser::convertInputs(argRefs, scriptRefs);
+			ArgParser::convertIn(argPtrs, scriptPtrs, NondeferInOptSel{});
 
 			// TODO: Figure out how to solve the dims inference problem
 			// TODO: Currently no support for creating non-deferred output images
 			// Create non-deferred outputs
-			//auto outRefs = ArgParser::selectOutputs(argRefs);
-			//auto ScriptOutRefs = ArgParser::selectOutputs(scriptRefs);
-			//ArgParser::createOutputs(outRefs, ScriptOutRefs);
+			//ArgParser::createOutIm(argPtrs, scriptPtrs, dims, NondeferOutImSel{});
 
 			// Run backend cuda filter using default execute() -> process<OutT,InT>()
 			// or run overloaded ::execute or ::process<OutT,InT> functions
-			exec_dispatch(argRefs);
+			exec_dispatch(mph::tuple_deref(argPtrs));
 
 			// Convert outputs to script types
-			ArgParser::convertOutputs(scriptRefs, argRefs);
+			ArgParser::convertOut(scriptPtrs, argPtrs, NondeferOutSel{});
 
 			// Load all outputs into script output structure (Necessary for Python)
-			ArgParser::store(scriptRefs, std::forward<ScriptInterface>(scriptioArgs)...);
+			//ArgParser::store(scriptPtrs, std::forward<ScriptInterface>(scriptioArgs)...);
 		}
 		catch (ArgError& ae)
 		{
@@ -205,7 +220,7 @@ private:
 	template <typename OutType, typename InType, typename... Args>
 	static void process(Args&&... args)
 	{
-
+		
 
 		// TODO: Need to infer output dimensions
 		//ProcessFunc t;

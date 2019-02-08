@@ -22,94 +22,91 @@ namespace Script
 	protected:
 		using ArgConvertError = typename ScriptConverter::ArgConvertError;
 
-
 	public:
 		// Argument type layout alias (e.g. std::tuple<OutParam<Image<Deferred>>,...>)
 		using ArgLayout = std::tuple<Layout...>;
 
 		// Script argument type layout (e.g. std::tuple<const PyArrayObject*,...>
 		using ScriptTypes = typename script_transform<std::tuple<Layout...>>::type;
-		using ScriptRefs = typename add_ref_transform<ScriptTypes>::type;
+		using ScriptPtrs = typename mph::tuple_ptr_t<ScriptTypes>;
 
 		// Concrete type layouts (e.g. std::tuple<PyObject*,...>)
 		using ArgTypes = typename concrete_transform<std::tuple<Layout...>>::type;
-		using ArgRefs = typename add_ref_transform<ArgTypes>::type;
+		using ArgPtrs = typename mph::tuple_ptr_t<ArgTypes>;
 
-		// Filter sequences for accessing different argument types
-		using out_idx_seq = typename mph::filter_tuple_seq<is_outparam, ArgLayout>::type;
-		using in_idx_seq = typename mph::filter_tuple_seq<is_inparam, ArgLayout>::type;
-		using opt_idx_seq = typename mph::filter_tuple_seq<is_optparam, ArgLayout>::type;
+		// Compositeable type selectors
+		template <typename... Chain> using S_Arg = compose_selector<ArgLayout, true_pred, Chain...>;
+		template <typename... Chain> using S_Out = compose_selector<ArgLayout, is_outparam, Chain...>;
+		template <typename... Chain> using S_In = compose_selector<ArgLayout, is_inparam, Chain...>;
+		template <typename... Chain> using S_Opt = compose_selector<ArgLayout, is_optparam, Chain...>;
+		template <typename... Chain> using S_InOpt = S_Arg<S_In<Chain...>, S_Opt<Chain...>>;
 
-		// Index sequence of input/optional args (in order of required followed by optional)
-		using inopt_idx_seq = typename mph::cat_index_sequence<in_idx_seq, opt_idx_seq>::type;
+		template <typename... Chain> using S_Image = compose_selector<ArgLayout, is_image, Chain...>;
+
+		template <typename... Chain> using S_Defer = compose_selector<ArgLayout, is_deferred, Chain...>;
+		template <typename... Chain> using S_Nondef = compose_selector<ArgLayout, not_deferred, Chain...>;
+
+		// Specific composites selector types
+		using OutputSel = typename S_Out<>::selector;
+		using InputSel = typename S_In<>::selector;
+		using OptionalSel = typename S_Opt<>::selector;
+		using DeferredSel = typename S_Defer<>::selector;
+		using NondeferredSel = typename S_Nondef<>::selector;
+		using NondeferOutSel = typename S_Nondef<S_Out<>>::selector;
+		using NondeferInOptSel = typename S_Nondef<S_InOpt<>>::selector;
+		using DeferredInImSel = typename S_Defer<S_In<S_Image<>>>::selector;
+		using DeferredOutSel = typename S_Defer<S_Out<>>::selector;
+
+		// Argument layout subsets
+		using OutLayout = typename OutputSel::template type<ArgLayout>;
+		using InLayout = typename InputSel::template type<ArgLayout>;
+		using OptLayout = typename OptionalSel::template type<ArgLayout>;
 
 		// IO-type stripped layout subsets (e.g. OutParam<Image<Deferred>> -> Image<Deferred>)
-		using OutTypeLayout = mph::tuple_subset_t<out_idx_seq, typename mph::tuple_type_tfm<strip_outer, ArgLayout>::type>;
-		using InTypeLayout = mph::tuple_subset_t<in_idx_seq, typename mph::tuple_type_tfm<strip_outer, ArgLayout>::type>;
-		using OptTypeLayout = mph::tuple_subset_t<opt_idx_seq, typename mph::tuple_type_tfm<strip_outer, ArgLayout>::type>;
+		using OutTypeLayout = typename mph::tuple_type_tfm<strip_outer, OutLayout>::type;
+		using InTypeLayout = typename mph::tuple_type_tfm<strip_outer, InLayout>::type;
+		using OptTypeLayout = typename mph::tuple_type_tfm<strip_outer, OptLayout>::type;
 
 		// Convenience typedefs for concrete output and input argument tuples
-		using OutArgs = mph::tuple_subset_t<out_idx_seq, ArgTypes>;
-		using InArgs = mph::tuple_subset_t<in_idx_seq, ArgTypes>;
-		using OptArgs = mph::tuple_subset_t<opt_idx_seq, ArgTypes>;
-
-
-		// Sub-sequences of arguments for dealing with type-deferred inputs/outputs
-		using in_im_idx_seq = typename mph::filter_tuple_subseq<is_image, ArgLayout, in_idx_seq>::type;
-
-		using in_im_defer_idx_seq = typename mph::filter_tuple_subseq<is_deferred, ArgLayout, in_im_idx_seq>::type;
-		using out_defer_idx_seq = typename mph::filter_tuple_subseq<is_deferred, ArgLayout, out_idx_seq>::type;
+		using OutArgs = typename S_Out<>::selector::template type<ArgTypes>;
+		using InArgs = typename S_In<>::selector::template type<ArgTypes>;
+		using OptArgs = typename S_Opt<>::selector::template type<ArgTypes>;
 
 
 	public:
 		static constexpr bool has_deferred_image_inputs() noexcept
 		{
-			return (in_im_defer_idx_seq::size() > 0);
+			return (DeferredInImSel::seq::size() > 0);
 		}
 
 		static constexpr bool has_deferred_outputs() noexcept
 		{
-			return (out_defer_idx_seq::size() > 0);
-		}
-
-		template<typename... Types>
-		static constexpr auto selectOptional(std::tuple<Types...>& args)
-			-> mph::tuple_subset_t<opt_idx_seq, std::tuple<typename std::add_lvalue_reference<Types>::type...>>
-		{
-			return mph::tuple_subset(opt_idx_seq(), args);
-		}
-
-		template<typename... Types>
-		static constexpr auto selectInputs(std::tuple<Types...>& argsRefs)
-			-> mph::tuple_subset_t<in_idx_seq, std::tuple<typename std::add_lvalue_reference<Types>::type...>>
-		{
-			return mph::tuple_subset(in_idx_seq(), argsRefs);
-		}
-
-		template<typename... Types>
-		static constexpr auto selectOutputs(std::tuple<Types...>& argsRefs)
-			-> mph::tuple_subset_t<out_idx_seq, std::tuple<typename std::add_lvalue_reference<Types>::type...>>
-		{
-			return mph::tuple_subset(out_idx_seq(), argsRefs);
+			return (DeferredOutSel::seq::size() > 0);
 		}
 
 		template <typename... T>
-		static IdType getInputType(const T&... ioargs)
+		static IdType getInputType(T&&... ioargs)
 		{
-			auto in_defer_tuple = mph::tuple_subset(in_im_defer_idx_seq(), std::tuple<const T&...>(ioargs...));
+			// TODO: Stop this from erroring if no deferred inputs
+			auto in_defer_tuple = DeferredInImSel::select(std::tuple<T...>(std::forward<T>(ioargs)...));
 			return Script::ArrayInfo::getType(std::get<0>(in_defer_tuple));
 		}
 
-
-		static void convertInputs(ArgRefs ioArgs, ScriptRefs scriptRefs)
+		template <typename Selector>
+		static void convertIn(ArgPtrs argPtrs, ScriptPtrs scriptPtrs, Selector)
 		{
 			// TODO: Potentially pre-check for conversion compatibility
 			//  Converters to pass script args to actual non-deferred input types
-			convert_arg_subset(ioArgs, scriptRefs, inopt_idx_seq());
+			convert_arg_subset(argPtrs, scriptPtrs, typename Selector::seq{});
 		}
 
-		template <typename InT>
-		static void convertDeferredInputs(ArgRefs concreteArgs, ArgRefs ioArgs);
+		template <typename Selector>
+		static void convertOut(ScriptPtrs scriptPtrs, ArgPtrs argPtrs, Selector)
+		{
+			// TODO: Potentially pre-check for conversion compatibility
+			//  Converters to pass script args to actual non-deferred output types
+			convert_arg_subset(scriptPtrs, argPtrs, typename Selector::seq{});
+		}
 
 
 
@@ -135,13 +132,13 @@ namespace Script
 
 	protected:
 		template <typename... Targets, typename... Args, size_t... Is>
-		static void convert_arg_subset(std::tuple<Targets...>& targets, const std::tuple<Args...>& args, mph::index_sequence<Is...>)
+		static void convert_arg_subset(std::tuple<Targets*...> targets, std::tuple<Args*...> args, mph::index_sequence<Is...>)
 		{
 			try
 			{
 				(void)std::initializer_list<int>
 				{
-					(ScriptConverter::convert(std::get<Is>(targets), std::get<Is>(args), Is), void(), 0)...
+					(ScriptConverter::convertArg((*std::get<Is>(targets)), (*std::get<Is>(args)), static_cast<int>(Is)), void(), 0)...
 				};
 			}
 			catch ( ArgConvertError& ace )
@@ -149,11 +146,5 @@ namespace Script
 				throw ArgError(ace);
 			}
 		}
-
-		//template <typename... Targets, typename... Args>
-		//static void convert_args(std::tuple<Targets...>& targets, const std::tuple<Args...>& args)
-		//{
-		//	convert_args_subset(targets, args, mph::make_index_sequence<sizeof... (Args)>());
-		//}
 	};
 };

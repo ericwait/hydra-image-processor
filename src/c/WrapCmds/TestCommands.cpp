@@ -20,8 +20,7 @@ struct TestFunc
 DEF_CMD(Test, SCR_PARAMS(SCR_OUTPUT(SCR_IMAGE_DYNAMIC(imOut)), SCR_OPTIONAL(SCR_VECTOR(sigmas, double), Vec<double>(1.0)), SCR_INPUT(SCR_IMAGE_DYNAMIC(im)), SCR_INPUT(SCR_IMAGE_CONVERT(kernel, float))))
 
 template <typename T, typename = void>
-struct valid_type:
-	std::false_type {};
+struct valid_type: std::false_type {};
 
 template <typename T>
 struct valid_type<T, typename T::ArgParser>
@@ -60,7 +59,7 @@ public:
 
 inline typename ScriptCommandTest::ArgParser::OptArgs ScriptCommandTest::defaults()
 {
-	return mph::tuple_subset(typename ArgParser::opt_idx_seq(), std::make_tuple(nullptr, Vec<double>(1.0), nullptr, nullptr));
+	return ArgParser::OptionalSel::select(std::make_tuple(nullptr, Vec<double>(1.0), nullptr, nullptr));
 }
 
 
@@ -87,16 +86,33 @@ void testfunc()
 	//auto parseArgs = ScriptCommandTest::Parser::expand_parse_args(varRefs);
 	//auto test = ScriptCommandTest::Parser::expand_parse_args_impl(varRefs, ScriptCommandTest::Parser::InOptTypeLayout(), mph::make_index_sequence<std::tuple_size<decltype(varRefs)>::value>());
 
+	typename ScriptCommandTest::ArgParser::S_InOpt<>::selector asdjfkl{};
+	typename ScriptCommandTest::ArgParser::OutTypeLayout jfls{};
+
+	//typename ScriptCommandTest::ArgParser::ArgPtrs fdd;
+	//auto ate = ScriptCommandTest::DeferredSel::select(fdd);
+
+	using TestSel = typename Script::compose_selector<ScriptCommandTest::ArgLayout, Script::is_deferred>::selector;
+
+	std::tuple<int,int,int> dff;
+	//Script::arg_selector<mph::make_index_sequence<2>>::select(dff);
+
+	mph::tuple_subset(mph::make_index_sequence<2>{}, (dff));
+	mph::tuple_subset(mph::make_index_sequence<2>{}, std::make_tuple(1,2,3));
+	//mph::internal::tuple_subset_impl(mph::make_index_sequence<2>{}, mph::tie_tuple(std::make_tuple(1, 2, 3)));
+	
+
+	typename ScriptCommandTest::OptionalSel t1{};
+	typename ScriptCommandTest::DeferredSel t2{};
+	typename ScriptCommandTest::NondeferredSel t3{};
+	typename ScriptCommandTest::NondeferInOptSel t4{};
+
 	out = ScriptCommandTest::dispatch(nullptr, in);
 	ScriptCommandTest::defaults();
 
 	ScriptCommandTest::ArgParser::ArgLayout testy;
 
 	ScriptCommandTest::OutMap<float> tres;
-
-	ScriptCommandTest::ArgParser::in_im_idx_seq ims;
-	ScriptCommandTest::ArgParser::in_im_defer_idx_seq a;
-	ScriptCommandTest::ArgParser::out_defer_idx_seq b;
 
 	ScriptCommandTest::ArgParser::InArgs t;
 

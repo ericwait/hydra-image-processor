@@ -168,7 +168,7 @@ namespace Script
 
 	public:
 		template <typename T>
-		static void convert(T& out, const PyObject* inPtr, std::size_t argIdx)
+		static void convertArg(T& out, const PyObject* inPtr, int argIdx)
 		{
 			// NOTE: if inPtr is nullptr then this is presumed to be optional
 			if ( inPtr == nullptr )
@@ -186,9 +186,9 @@ namespace Script
 		}
 
 		template <typename T>
-		static void convert(T& out, const PyArrayObject* inPtr, std::size_t argIdx)
+		static void convertArg(T& out, const PyArrayObject* inPtr, int argIdx)
 		{
-			convert(out, (const PyObject*)inPtr, argIdx);
+			convertArg(out, (const PyObject*)inPtr, argIdx);
 		}
 
 	private:
@@ -464,11 +464,10 @@ namespace Script
 
 		// Script argument type layout (e.g. std::tuple<const PyArrayObject*,...>
 		using typename BaseParser::ScriptTypes;
-		using typename BaseParser::ScriptRefs;
+		using typename BaseParser::ScriptPtrs;
 
 		// Concrete type layouts (e.g. std::tuple<PyObject*,...>)
 		using typename BaseParser::ArgTypes;
-		using typename BaseParser::ArgRefs;
 
 		// IO-type stripped layout subsets (e.g. OutParam<Image<Deferred>> -> Image<Deferred>)
 		using typename BaseParser::OutTypeLayout;
@@ -476,19 +475,12 @@ namespace Script
 		using typename BaseParser::OptTypeLayout;
 
 
-		// Argument sequence selectors
-		using typename BaseParser::out_idx_seq;
-		using typename BaseParser::in_idx_seq;
-		using typename BaseParser::opt_idx_seq;
-
-
-		static ScriptRefs load(ScriptRefs localRefs, Script::ObjectType*& scriptOut, Script::ObjectType* scriptIn)
+		static void load(ScriptPtrs& scriptPtrs, Script::ObjectType*& scriptOut, Script::ObjectType* scriptIn)
 		{
-			set_null(localRefs);
-			mph::tuple_ptr_t<ScriptRefs> scriptPtrs = mph::tuple_addr_of(localRefs);
+			set_null(mph::tuple_deref(scriptPtrs));
 
-			auto inPtrs = mph::tuple_subset(in_idx_seq(), scriptPtrs);
-			auto optPtrs = mph::tuple_subset(opt_idx_seq(), scriptPtrs);
+			auto inPtrs = BaseParser::InputSel::select(scriptPtrs);
+			auto optPtrs = BaseParser::OptionalSel::select(scriptPtrs);
 
 			//  Make parse_string and expanded arg tuple for PyParse_Tuple
 			const std::string parseStr = make_parse_str<InTypeLayout>() + "|" + make_parse_str<OptTypeLayout>();
@@ -500,8 +492,6 @@ namespace Script
 
 			// TODO: Check in-params non-null
 			// TODO: Check input image dimension info
-
-			return mph::tuple_deref(scriptPtrs);
 		}
 
 	private:

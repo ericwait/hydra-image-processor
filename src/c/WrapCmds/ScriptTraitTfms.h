@@ -208,4 +208,50 @@ namespace Script
 		};
 	};
 
+
+	/////////////////////////
+	// arg_selector -
+	//   Helper class used to select argument subsets (built by compose_selector)
+	/////////////////////////
+	template <typename Seq>
+	struct arg_selector {};
+
+	template <std::size_t... Is>
+	struct arg_selector<mph::index_sequence<Is...>>
+	{
+		using seq = typename mph::index_sequence<Is...>;
+
+		template <typename Tuple>
+		using type = typename mph::tuple_subset_t<seq, Tuple>;
+
+		template <typename Tuple>
+		static constexpr auto select(Tuple&& tuple)
+			-> decltype(mph::tuple_subset(seq{}, std::declval<Tuple>()))
+		{
+			return mph::tuple_subset(seq{}, std::forward<Tuple>(tuple));
+		}
+	};
+
+
+	/////////////////////////
+	// compose_selector -
+	//   Composable predicate chains used to build arg_selector<> types
+	/////////////////////////
+	template <typename Layout, template <typename> class Pred, typename... Chain>
+	struct compose_selector {};
+
+	template <typename... Types, template <typename> class Pred, typename... Chain>
+	struct compose_selector<std::tuple<Types...>, Pred, Chain...>
+	{
+		using seq = typename mph::cat_index_sequence<typename mph::filter_tuple_subseq<Pred, std::tuple<Types...>, typename Chain::seq>::type...>::type;
+		using selector = arg_selector<seq>;
+	};
+
+	template <typename... Types, template <typename> class Pred>
+	struct compose_selector<std::tuple<Types...>, Pred>
+	{
+		using seq = typename mph::filter_tuple_seq<Pred, std::tuple<Types...>>::type;
+		using selector = arg_selector<seq>;
+	};
+
 };
