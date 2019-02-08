@@ -13,15 +13,15 @@ namespace mph
 	//   NOTE: Though they can only be created in order (using make_integer_sequence) 
 	//     They can be filtered and concatenated to produce sequences of arbitrary order.
 	/////////////////////////
-	template <typename T, T... I>
+	template <typename T, T... N>
 	struct integer_sequence
 	{
 		static_assert(std::is_integral<T>::value, "Integer sequence type must be integral");
 
 		using value_type = T;
-		static constexpr std::size_t size() noexcept
+		inline static constexpr std::size_t size() noexcept
 		{
-			return sizeof ...(I);
+			return (sizeof... (N));
 		}
 	};
 
@@ -67,6 +67,7 @@ namespace mph
 	// Internals for making integer sequences
 	namespace internal
 	{
+		// Can't use dependent types in template to generate sequences so use std::size_t and convert
 		template <typename T, typename I>
 		struct convert_integer_sequence {};
 
@@ -76,16 +77,18 @@ namespace mph
 			using type = integer_sequence<T, Is...>;
 		};
 
+
+		// Generate index_sequence<0,...,N>
 		template <std::size_t N>
 		struct gen_sequence
 		{
-			using type = typename cat_integer_sequence<std::size_t, typename gen_sequence<N-1>::type, integer_sequence<std::size_t, N>>::type;
+			using type = typename cat_index_sequence<typename gen_sequence<N-1>::type, index_sequence<N>>::type;
 		};
 
 		template <>
 		struct gen_sequence<0>
 		{
-			using type = integer_sequence<std::size_t, 0>;
+			using type = index_sequence<0>;
 		};
 
 
@@ -103,8 +106,9 @@ namespace mph
 	template <typename T, T N>
 	using make_integer_sequence = typename internal::make_int_seq_impl<T, N-1>::type;
 
+
 	/////////////////////////
-	// filter_tuple_seq -
+	// make_index_sequence -
 	//   Make index sequence from 0 to N-1 -> index_sequence<0,...,N-1>
 	/////////////////////////
 	template <std::size_t N>
