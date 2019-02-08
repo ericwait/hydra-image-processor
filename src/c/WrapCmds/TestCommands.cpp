@@ -77,6 +77,8 @@ void testfunc()
 	//Script::ArgParser<Script::OutParam<int>, Script::InParam<int>>::OutArgs a;
 	//printf("%s\n", typeid(a).name());
 
+	static_assert(Script::has_trait<Script::OutParam<int>, Script::OutParam>::value, "Uh oh");
+
 	PyObject* out = nullptr;
 	PyObject* in = nullptr;
 
