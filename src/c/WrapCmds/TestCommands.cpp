@@ -2,12 +2,9 @@
 #include "PyConverters.h"
 
 #include "mph/tuple_helpers.h"
+#include "Cuda/CWrappers.h"
 
 #include <typeinfo>
-
-struct TestFunc
-{
-};
 
 #define DEF_CMD(Name, Params) \
 	struct ScriptCommand_##Name##Parser : public Script::PyArgParser<ScriptCommand_##Name##Parser,Params> \
@@ -15,9 +12,18 @@ struct TestFunc
 		static constexpr const char* argName(int idx);	\
 		static std::string inoptString();				\
 		static std::string outputString();				\
+		static void setOptional(OptPtrs optPtrs);		\
 	};
 
-DEF_CMD(Test, SCR_PARAMS(SCR_OUTPUT(SCR_IMAGE_DYNAMIC(imOut)), SCR_OPTIONAL(SCR_VECTOR(sigmas, double), Vec<double>(1.0)), SCR_INPUT(SCR_IMAGE_DYNAMIC(im)), SCR_INPUT(SCR_IMAGE_CONVERT(kernel, float))))
+
+DEF_CMD(Test, SCR_PARAMS(SCR_INPUT(SCR_IMAGE_DYNAMIC(imageIn)), SCR_OUTPUT(SCR_IMAGE_DYNAMIC(imageOut)), SCR_INPUT(SCR_IMAGE_CONVERT(kernel,float)), SCR_OPTIONAL(SCR_SCALAR(numIterations,int),1), SCR_OPTIONAL(SCR_SCALAR(device,int),-1)))
+
+#undef DEF_CMD;
+
+void ScriptCommand_TestParser::setOptional(ScriptCommand_TestParser::OptPtrs optPtrs)
+{
+	mph::tuple_deref(optPtrs) = OptionalSel::select(std::make_tuple(nullptr,nullptr,nullptr,1,-1));
+}
 
 template <typename T, typename = void>
 struct valid_type: std::false_type {};
@@ -31,37 +37,45 @@ class ScriptCommandTest;
 class ScriptCommandTest_Route: public ScriptCommandImpl<ScriptCommandTest, ScriptCommand_TestParser>
 {
 public:
+	struct ProcessFunc
+	{
+		template <typename... Args>
+		inline static void run(Args&&... args)
+		{
+			closure(args...);
+		}
+	};
+
 	static const char* commandName() { return "Test"; }
 };
 
 class ScriptCommandTest: public ScriptCommandTest_Route
 {
-public:
-	SCR_DEFINE_IO_TYPE_MAP(int,float);
-
-	using ArgLayout = ArgParser::ArgLayout;
-
-	static typename ArgParser::OptArgs defaults();
-
-	using Test = OutMap<int>;
-
-	//static void execute(PyArrayObject*& imOut, Vec<double>& sigmas, const PyArrayObject*& im, ImageContainer<float>& kernel)
-	//{
-	//}
-
-	//template <typename OutT, typename InT>
-	//static void process(Script::ArrayType*& imOut, Vec<double>& sigmas, const Script::ArrayType*& im, ImageContainer<float>& kernel)
-	//{
-	//}
+//public:
+//	//SCR_DEFAULT_IO_TYPE_MAP;
+//
+//	using ArgLayout = ArgParser::ArgLayout;
+//
+//	static typename ArgParser::OptArgs defaults();
+//
+//	using Test = OutMap<int>;
+//	static_assert(std::is_same<uint8_t, OutMap<uint8_t>>::value, "");
+//	static_assert(std::is_same<uint16_t, OutMap<uint16_t>>::value, "");
+//	static_assert(std::is_same<int16_t, OutMap<int16_t>>::value, "");
+//	static_assert(std::is_same<uint32_t, OutMap<uint32_t>>::value, "");
+//	static_assert(std::is_same<int32_t, OutMap<int32_t>>::value, "");
+//	static_assert(std::is_same<float, OutMap<float>>::value, "");
+//	static_assert(std::is_same<double, OutMap<double>>::value, "");
+//
+//	//static void execute(PyArrayObject*& imOut, Vec<double>& sigmas, const PyArrayObject*& im, ImageContainer<float>& kernel)
+//	//{
+//	//}
+//
+//	//template <typename OutT, typename InT>
+//	//static void process(Script::ArrayType*& imOut, Vec<double>& sigmas, const Script::ArrayType*& im, ImageContainer<float>& kernel)
+//	//{
+//	//}
 };
-
-//DEFAULT_IO_TYPE_MAP(ScriptCommandTest);
-
-inline typename ScriptCommandTest::ArgParser::OptArgs ScriptCommandTest::defaults()
-{
-	return ArgParser::OptionalSel::select(std::make_tuple(nullptr, Vec<double>(1.0), nullptr, nullptr));
-}
-
 
 const std::unordered_map<std::string, ScriptCommand::DispatchPtr> ScriptCommand::m_commands =
 	{{ "Test",&ScriptCommandTest::dispatch }};
@@ -94,8 +108,6 @@ void testfunc()
 	//typename ScriptCommandTest::ArgParser::ArgPtrs fdd;
 	//auto ate = ScriptCommandTest::DeferredSel::select(fdd);
 
-	using TestSel = typename Script::compose_selector<ScriptCommandTest::ArgLayout, Script::is_deferred>::selector;
-
 	std::tuple<int,int,int> dff;
 	//Script::arg_selector<mph::make_index_sequence<2>>::select(dff);
 
@@ -103,6 +115,11 @@ void testfunc()
 	mph::tuple_subset(mph::make_index_sequence<2>{}, std::make_tuple(1,2,3));
 	//mph::internal::tuple_subset_impl(mph::make_index_sequence<2>{}, mph::tie_tuple(std::make_tuple(1, 2, 3)));
 	
+	typename ScriptCommandTest::ConcreteArgTypes<Vec<double>,Vec<float>> cctest;
+
+	Script::TypeNameMap<int>::name;
+
+	mph::tuple_fill_value(dff, 0);
 
 	typename ScriptCommandTest::OptionalSel t1{};
 	typename ScriptCommandTest::DeferredSel t2{};
@@ -110,13 +127,10 @@ void testfunc()
 	typename ScriptCommandTest::NondeferInOptSel t4{};
 
 	out = ScriptCommandTest::dispatch(nullptr, in);
-	ScriptCommandTest::defaults();
 
 	ScriptCommandTest::ArgParser::ArgLayout testy;
 
 	ScriptCommandTest::OutMap<float> tres;
-
-	ScriptCommandTest::ArgParser::InArgs t;
 
 	std::tuple<PyObject const*> tmpOut{nullptr};
 	auto arg_ref = mph::tie_tuple(tmpOut);
