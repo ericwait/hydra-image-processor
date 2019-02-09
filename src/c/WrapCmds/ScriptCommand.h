@@ -6,6 +6,7 @@
 #include "mph/tuple_helpers.h"
 
 #include "PyIncludes.h"
+
 #define DISPATCH_P_TYPE PyObject* (*) (PyObject*, PyObject*)
 #define DISPATCH_FUNC											\
 	static PyObject* dispatch(PyObject* self, PyObject* args)	\
@@ -16,8 +17,8 @@
 	}
 
 
-#define SCR_DEFAULT_IO_TYPE_MAP template <typename InT> static InT get_out(InT)
-#define SCR_DEFINE_IO_TYPE_MAP(OutT,InT) static OutT get_out(InT)
+#define SCR_DEFAULT_IO_TYPE_MAP template <typename InT> static InT io_type_map_fcn(InT*)
+#define SCR_DEFINE_IO_TYPE_MAP(OutT,InT) static OutT io_type_map_fcn(InT*)
 
 
 class ScriptCommand
@@ -38,7 +39,9 @@ class ScriptCommandImpl : public ScriptCommand
 	template <typename T>
 	struct Assert
 	{
-		static_assert(!std::is_same<T, T>::value, "Overload ::execute or ::process<T> method in script command subclass, or define script command using DEF_SCRIPT_COMMAND_AUTO.");
+		template <typename... Args> static void run(Args&&...) {}
+
+		static_assert(!std::is_same<T,T>::value, "Overload ::execute or ::process<OutT,InT> method in script command subclass, or define script command using DEF_SCRIPT_COMMAND_AUTO.");
 	};
 
 	using ProcessFunc = Assert<Derived>;
@@ -46,11 +49,11 @@ public:
 	// Helper types for input/output argument type mapping
 	SCR_DEFAULT_IO_TYPE_MAP;
 
-	// This to be an instanced struct type for compiler compatibility
+	// This needs to be an instanced struct type for compiler compatibility
 	template <typename InT>
 	struct OutMap_Impl
 	{
-		using type = decltype(Derived::get_out(std::declval<InT>()));
+		using type = decltype(Derived::io_type_map_fcn(std::declval<InT*>()));
 	};
 
 	// Simplified type-mapping alias access alias
@@ -61,12 +64,26 @@ public:
 	using ArgParser = Parser;
 	using ArgError = typename ArgParser::ArgError;
 
+	// Script/converted argument types from arg parser
+	using ScriptTypes = typename ArgParser::ScriptTypes;
+	using ArgTypes = typename ArgParser::ArgTypes;
+
+	// Pointers to arguments
+	using ScriptPtrs = typename ArgParser::ScriptPtrs;
+	using ArgPtrs = typename ArgParser::ArgPtrs;
+
 	// Selectors
 	using OptionalSel = typename ArgParser::OptionalSel;
 	using DeferredSel = typename ArgParser::DeferredSel;
+	using DeferredOutSel = typename ArgParser::DeferredOutSel;
+	using DeferredInOptSel = typename ArgParser::DeferredInOptSel;
 	using NondeferredSel = typename ArgParser::NondeferredSel;
 	using NondeferOutSel = typename ArgParser::NondeferOutSel;
 	using NondeferInOptSel = typename ArgParser::NondeferInOptSel;
+
+	// Deferred concrete-types
+	template <typename OutT, typename InT>
+	using ConcreteArgTypes = typename ArgParser::template ConcreteArgTypes<OutT, InT>;
 
 	// Script engine-dependent function to dispatch parameters
 	DISPATCH_FUNC;
@@ -79,18 +96,12 @@ public:
 	{
 		try
 		{
-			// Script/converted argument types from arg parser
-			using ScriptTypes = typename ArgParser::ScriptTypes;
-			using ArgTypes = typename ArgParser::ArgTypes;
-
-			// Pointers to arguments
-			using ScriptPtrs = typename ArgParser::ScriptPtrs;
-			using ArgPtrs = typename ArgParser::ArgPtrs;
-
 			// Subset of arguments that have concrete type (non-deferred)
 			using ConcreteArgs = typename NondeferredSel::template type<ArgTypes>;
 
-			ArgPtrs argPtrs;
+			// Points to the C++ arguments converted from script types
+			//  NOTE: These are partially converted as the deferred arguments are converted in ::process<>
+			ArgPtrs convertedPtrs;
 
 			// Memory for script objects corresponding to arguments
 			// NOTE: These local objects are necessary for temporary ownership of non-deferred Python outputs
@@ -101,33 +112,32 @@ public:
 			ArgParser::load(scriptPtrs, std::forward<ScriptInterface>(scriptioArgs)...);
 
 			// NOTE: Requires that args are default-constructible types
-			ConcreteArgs concreteArgs;
+			ConcreteArgs convertedArgs;
 
-			// Hook up argPtrs (non-deferred point to concreteArgs, deferred same as scriptPtrs)
-			DeferredSel::select(argPtrs) = DeferredSel::select(scriptPtrs);
-			NondeferredSel::select(argPtrs) = mph::tuple_addr_of(concreteArgs);
+			// Hook up convertedPtrs (non-deferred point to concreteArgs, deferred same as scriptPtrs)
+			DeferredSel::select(convertedPtrs) = DeferredSel::select(scriptPtrs);
+			NondeferredSel::select(convertedPtrs) = mph::tuple_addr_of(convertedArgs);
 
 			// Load default values for optional arguments (can't be deferred)
-			auto optRefs = mph::tuple_deref(OptionalSel::select(argPtrs));
-			optRefs = Derived::defaults();
+			ArgParser::setOptionalDefaults(convertedPtrs);
 
 			// Convert non-deferred inputs to appropriate arg types
-			ArgParser::convertIn(argPtrs, scriptPtrs, NondeferInOptSel{});
+			ArgParser::convertSelected(convertedPtrs, scriptPtrs, NondeferInOptSel{});
 
 			// TODO: Figure out how to solve the dims inference problem
 			// TODO: Currently no support for creating non-deferred output images
 			// Create non-deferred outputs
-			//ArgParser::createOutIm(argPtrs, scriptPtrs, dims, NondeferOutImSel{});
+			//ArgParser::createOutIm(convertedPtrs, scriptPtrs, dims, NondeferOutImSel{});
 
 			// Run backend cuda filter using default execute() -> process<OutT,InT>()
 			// or run overloaded ::execute or ::process<OutT,InT> functions
-			exec_dispatch(mph::tuple_deref(argPtrs));
+			exec_dispatch(mph::tuple_deref(convertedPtrs));
 
 			// Convert outputs to script types
-			ArgParser::convertOut(scriptPtrs, argPtrs, NondeferOutSel{});
+			ArgParser::convertSelected(scriptPtrs, convertedPtrs, NondeferOutSel{});
 
 			// Load all outputs into script output structure (Necessary for Python)
-			//ArgParser::store(scriptPtrs, std::forward<ScriptInterface>(scriptioArgs)...);
+			ArgParser::store(scriptPtrs, std::forward<ScriptInterface>(scriptioArgs)...);
 		}
 		catch (ArgError& ae)
 		{
@@ -161,6 +171,8 @@ private:
 	}
 
 private:
+	
+
 	/////////////////////////
 	// execute - (Static-overloadable)
 	//   Default execute function dispatches to image-type templated
@@ -220,9 +232,52 @@ private:
 	template <typename OutType, typename InType, typename... Args>
 	static void process(Args&&... args)
 	{
-		
+		// Deferred types (Can now be fully defined)
+		using DeferredArgs = ConcreteArgTypes<OutType, InType>;
+		using DeferredPtrs = typename mph::tuple_ptr_t<DeferredArgs>;
 
-		// TODO: Need to infer output dimensions
-		//ProcessFunc t;
+		using DeferredInArgs = typename DeferredInOptSel::template type<DeferredArgs>;
+		using DeferredOutArgs = typename DeferredOutSel::template type<DeferredArgs>;
+
+		auto argRefs = std::tie(args...);
+		ArgPtrs argPtrs = mph::tuple_addr_of(argRefs);
+
+		// Pointers to fully-converted arguments to be passed (by reference) to the cuda processing function
+		DeferredPtrs convertedPtrs;
+
+		// Storage for deferred in/out types
+		DeferredInArgs concreteInArgs;
+		DeferredOutArgs concreteOutArgs;
+
+		// Hook up convertedPtrs all non-deferred are already converted, deferred get hooked locals
+		NondeferredSel::select(convertedPtrs) = NondeferredSel::select(argPtrs);
+		DeferredInOptSel::select(convertedPtrs) = mph::tuple_addr_of(concreteInArgs);
+		DeferredOutSel::select(convertedPtrs) = mph::tuple_addr_of(concreteOutArgs);
+
+		// Convert non-deferred inputs to appropriate arg types
+		ArgParser::convertSelected(convertedPtrs, argPtrs, DeferredInOptSel{});
+
+		//// TODO: Figure out how to solve the dims inference problem
+		//// TODO: Currently no support for creating non-deferred output images
+		//// Create non-deferred outputs
+		////ArgParser::createOutIm(argPtrs, scriptPtrs, dims, NondeferOutImSel{});
+
+		// Run backend cuda filter
+		run_dispatch(mph::tuple_deref(convertedPtrs));
+
+		// Convert outputs to script types
+		ArgParser::convertSelected(argPtrs, convertedPtrs, DeferredOutSel{});
+	}
+
+	template <typename... Args>
+	static void run_dispatch(std::tuple<Args...> runArgs)
+	{
+		Derived::run_dispatch_impl(runArgs, mph::make_index_sequence<sizeof... (Args)>());
+	}
+
+	template <typename... Args, size_t... Is>
+	static void run_dispatch_impl(std::tuple<Args...> runArgs, mph::index_sequence<Is...>)
+	{
+		Derived::ProcessFunc::run(std::forward<Args>(std::get<Is>(runArgs))...);
 	}
 };

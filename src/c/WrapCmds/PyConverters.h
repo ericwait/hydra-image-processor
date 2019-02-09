@@ -13,6 +13,8 @@
 #include <memory>
 #include <type_traits>
 
+#undef snprintf
+
 #define SCR_PARAMS(...) __VA_ARGS__
 
 #define SCR_OUTPUT(TypeMacro) Script::OutParam<TypeMacro>
@@ -30,7 +32,7 @@
 #define SCR_VECTOR_DYNAMIC(VarName) Script::Vector<Script::DeferredType>
 
 #ifdef _WIN32
- #define SNPRINTF snprintf
+ #define SNPRINTF std::snprintf
 #else
  #define SNPRINTF std::snprintf
 #endif
@@ -91,6 +93,15 @@ namespace Script
 	};
 
 
+
+	template <typename T> struct PyToTypeMap {};
+	template <> struct PyToTypeMap<uint8_t> { using type = unsigned long; };
+	template <> struct PyToTypeMap<uint16_t> { using type = unsigned long; };
+	template <> struct PyToTypeMap<uint32_t> { using type = unsigned long; };
+	template <> struct PyToTypeMap<int16_t> { using type = unsigned long; };
+	template <> struct PyToTypeMap<int32_t> { using type = unsigned long; };
+	template <> struct PyToTypeMap<float> { using type = unsigned long; };
+	template <> struct PyToTypeMap<double> { using type = unsigned long; };
 
 
 	// Script-to-concrete input converter
@@ -167,8 +178,8 @@ namespace Script
 		};
 
 	public:
-		template <typename T>
-		static void convertArg(T& out, const PyObject* inPtr, int argIdx)
+		template <typename OutT, typename InT>
+		static void convertArg(OutT& out, const InT*& inPtr, int argIdx)
 		{
 			// NOTE: if inPtr is nullptr then this is presumed to be optional
 			if ( inPtr == nullptr )
@@ -185,15 +196,23 @@ namespace Script
 			}
 		}
 
-		template <typename T>
-		static void convertArg(T& out, const PyArrayObject* inPtr, int argIdx)
+		template <typename OutT, typename InT>
+		static void convertArg(OutT*& outPtr, const InT& in, int argIdx)
 		{
-			convertArg(out, (const PyObject*)inPtr, argIdx);
+			try
+			{
+				convert_impl(outPtr, in);
+			}
+			catch ( ArgConvertError& ace )
+			{
+				ace.setArgIndex(argIdx);
+				throw;
+			}
 		}
 
 	private:
 		// Have to check python object types when converting individual numbers
-		static bool pyNumericConvert(long* out, PyObject* in)
+		static bool pyToNumericConvert(long* out, PyObject* in)
 		{
 			if ( PyLong_Check(in) )
 				(*out) = PyLong_AsLong(in);
@@ -203,7 +222,7 @@ namespace Script
 			return true;
 		}
 
-		static bool pyNumericConvert(unsigned long* out, PyObject* in)
+		static bool pyToNumericConvert(unsigned long* out, PyObject* in)
 		{
 			if ( PyLong_Check(in) )
 				(*out) = PyLong_AsUnsignedLong(in);
@@ -213,7 +232,7 @@ namespace Script
 			return true;
 		}
 
-		static bool pyNumericConvert(double* out, PyObject* in)
+		static bool pyToNumericConvert(double* out, PyObject* in)
 		{
 			if ( PyLong_Check(in) )
 				(*out) = PyLong_AsDouble(in);
@@ -224,6 +243,7 @@ namespace Script
 
 			return true;
 		}
+
 
 		// Copy-converter for python arrays
 		// NOTE: This doesn't account for stride differences and should only be used for
@@ -244,12 +264,12 @@ namespace Script
 
 
 		template <typename T>
-		static void pyArrayCopyConvert(T* outPtr, PyArrayObject* arrPtr)
+		static void pyArrayCopyConvert(T* outPtr, const PyArrayObject* arrPtr)
 		{
 			// TODO: Check for contiguous
-			std::size_t array_size = PyArray_SIZE(arrPtr);
+			std::size_t array_size = PyArray_SIZE(const_cast<PyArrayObject*>(arrPtr));
 
-			void* data = PyArray_DATA(arrPtr);
+			void* data = PyArray_DATA(const_cast<PyArrayObject*>(arrPtr));
 			Script::IdType type = Script::ArrayInfo::getType(arrPtr);
 			if ( type == NPY_BOOL )
 				convertArray(outPtr, reinterpret_cast<bool*>(data), array_size);
@@ -320,10 +340,9 @@ namespace Script
 
 
 		template <typename T>
-		static void pyArrayToImageCopy(ImageOwner<T>& out, const PyObject* inPtr)
+		static void pyArrayToImageCopy(ImageOwner<T>& out, const PyArrayObject* inPtr)
 		{
-			PyArrayObject* arrPtr = const_cast<PyArrayObject*>(reinterpret_cast<const PyArrayObject*>(inPtr));
-			Script::DimInfo info = Script::getDimInfo(arrPtr);
+			Script::DimInfo info = Script::getDimInfo(inPtr);
 
 			// TODO: Do we need to allow overloads for array checks?
 			if ( !info.contiguous )
@@ -338,76 +357,50 @@ namespace Script
 			inDims.frame = static_cast<unsigned int>((info.dims.size() >= 5) ? info.dims[4] : (1));
 
 			out = ImageOwner<T>(inDims);
-			pyArrayCopyConvert(out.getPtr(), arrPtr);
+			pyArrayCopyConvert(out.getPtr(), inPtr);
 		}
 
-
-		// Passthrough conversion (these should already be checked for validity)
-		static void convert_impl(const PyArrayObject*& outPtr, const PyObject* inPtr)
+		template <typename T>
+		static void pyArrayToImageRef(ImageView<T>& out, const PyArrayObject* inPtr)
 		{
-			// TODO: Recheck for PyArrayObject here?
-			outPtr = reinterpret_cast<const PyArrayObject*>(inPtr);
+			Script::DimInfo info = Script::getDimInfo(inPtr);
+
+			// TODO: Do we need to allow overloads for array checks?
+			if ( !info.contiguous )
+				throw ImageConvertError("Only contiguous numpy arrays are supported");
+
+			Script::IdType type = Script::ArrayInfo::getType(inPtr);
+			if ( Script::TypeToIdMap<T>::typeId != type )
+				throw ImageConvertError("Expected numpy array of type: %s", Script::TypeNameMap<T>::name);
+
+			ImageDimensions inDims(Vec<std::size_t>(1), 1, 1);
+			std::size_t nspatial = std::max<std::size_t>(3, info.dims.size());
+			for ( std::size_t i=0; i < nspatial; ++i )
+				inDims.dims.e[i] = info.dims[i];
+
+			inDims.chan = static_cast<unsigned int>((info.dims.size() >= 4) ? info.dims[3] : (1));
+			inDims.frame = static_cast<unsigned int>((info.dims.size() >= 5) ? info.dims[4] : (1));
+
+			out = ImageView<T>(Script::ArrayInfo::getData<T>(inPtr), inDims);
 		}
 
+
+		//////////////////////////////////
 		// Basic type conversions
-		static void convert_impl(uint8_t& out, const PyObject* inPtr)
+		template <typename T>
+		static void convert_impl(T& out, const PyObject* inPtr)
 		{
-			unsigned long tmp;
-			if ( !pyNumericConvert(&tmp, const_cast<PyObject*>(inPtr)) )
+			typename PyToTypeMap<T>::type tmp;
+			if ( !pyToNumericConvert(&tmp, const_cast<PyObject*>(inPtr)) )
 				throw ScalarConvertError("Must be unsigned integer value");
 
-			out = static_cast<uint8_t>(tmp);
+			out = static_cast<T>(tmp);
 		}
 
-		static void convert_impl(uint16_t& out, const PyObject* inPtr)
+		template <typename T>
+		static void convert_impl(PyObject*& outPtr, const T& in)
 		{
-			unsigned long tmp;
-			if ( !pyNumericConvert(&tmp, const_cast<PyObject*>(inPtr)) )
-				throw ScalarConvertError("Must be unsigned integer value");
-
-			out = static_cast<uint16_t>(tmp);
-		}
-
-		static void convert_impl(int16_t& out, const PyObject* inPtr)
-		{
-			long tmp;
-			if ( !pyNumericConvert(&tmp, const_cast<PyObject*>(inPtr)) )
-				throw ScalarConvertError("Expected integer value");
-
-			out = static_cast<int16_t>(tmp);
-		}
-
-		static void convert_impl(uint32_t& out, const PyObject* inPtr)
-		{
-			unsigned long tmp;
-			if ( !pyNumericConvert(&tmp, const_cast<PyObject*>(inPtr)) )
-				throw ScalarConvertError("Must be unsigned integer value");
-
-			out = static_cast<uint32_t>(tmp);
-		}
-
-		static void convert_impl(int32_t& out, const PyObject* inPtr)
-		{
-			long tmp;
-			if ( !pyNumericConvert(&tmp, const_cast<PyObject*>(inPtr)) )
-				throw ScalarConvertError("Must be integer value");
-
-			out = static_cast<int32_t>(tmp);
-		}
-
-		static void convert_impl(float& out, const PyObject* inPtr)
-		{
-			double tmp;
-			if ( !pyNumericConvert(&tmp, const_cast<PyObject*>(inPtr)) )
-				throw ScalarConvertError("Must be floating-point value");
-
-			out = static_cast<float>(tmp);
-		}
-
-		static void convert_impl(double& out, const PyObject* inPtr)
-		{
-			if ( !pyNumericConvert(&out, const_cast<PyObject*>(inPtr)) )
-				throw ScalarConvertError("Must be floating-point value");
+			outPtr = Script::fromNumeric(in);
 		}
 
 		// Vector conversions
@@ -431,10 +424,18 @@ namespace Script
 			}
 		}
 
+		template <typename T>
+		static void convert_impl(PyObject*& outPtr, const Vec<T>& in)
+		{
+			outPtr = PyTuple_New(3);
+			for ( int i=0; i < 3; ++i )
+				PyTuple_SetItem(outPtr, i, Script::fromNumeric(in.e[i]));
+		}
+
 
 		// Concrete ImageOwner<T> conversions
 		template <typename T>
-		static void convert_impl(ImageOwner<T>& out, const PyObject* inPtr)
+		static void convert_impl(ImageOwner<T>& out, const PyArrayObject* inPtr)
 		{
 			if ( PyArray_Check(inPtr) )
 			{
@@ -445,11 +446,28 @@ namespace Script
 				throw ImageConvertError("Must be a numpy array");
 			}
 		}
+
+
+		template <typename T>
+		static void convert_impl(ImageView<T>& out, const PyArrayObject* inPtr)
+		{
+			if ( PyArray_Check(inPtr) )
+			{
+				pyArrayToImageRef(out, inPtr);
+			}
+			else
+			{
+				throw ImageConvertError("Must be a numpy array");
+			}
+		}
+
+		template <typename T>
+		static void convert_impl(PyArrayObject*& out, const ImageView<T>& in)
+		{
+			if ( out == nullptr )
+				throw ImageConvertError("Output image data should already be created");
+		}
 	};
-
-
-
-
 
 
 	template <typename Derived, typename... Layout>
@@ -477,7 +495,7 @@ namespace Script
 
 		static void load(ScriptPtrs& scriptPtrs, Script::ObjectType*& scriptOut, Script::ObjectType* scriptIn)
 		{
-			set_null(mph::tuple_deref(scriptPtrs));
+			mph::tuple_fill_value(mph::tuple_deref(scriptPtrs), nullptr);
 
 			auto inPtrs = BaseParser::InputSel::select(scriptPtrs);
 			auto optPtrs = BaseParser::OptionalSel::select(scriptPtrs);
@@ -494,22 +512,24 @@ namespace Script
 			// TODO: Check input image dimension info
 		}
 
-	private:
-		template <typename... Types, size_t... Is>
-		static void set_null_impl(std::tuple<Types&...> args, mph::index_sequence<Is...>)
+
+		static void store(ScriptPtrs& scriptPtrs, Script::ObjectType*& scriptOut, Script::ObjectType* scriptIn)
 		{
-			(void)std::initializer_list<int>
+			using OutInfo = typename mph::tuple_info<typename BaseParser::OutputSel::template type<ScriptPtrs>>;
+
+			auto outPtrs = BaseParser::OutputSel::select(scriptPtrs);
+			auto outRefs = mph::tuple_deref(outPtrs);
+
+			if ( OutInfo::size == 1 )
+				scriptOut = reinterpret_cast<Script::ObjectType*>(std::get<0>(outRefs));
+			else
 			{
-				((std::get<Is>(args) = nullptr), void(), 0)...
-			};
+				scriptOut = PyTuple_New(OutInfo::size);
+				set_out_items(scriptOut, BaseParser::OutputSel::select(scriptPtrs));
+			}
 		}
 
-		template <typename... Types>
-		static void set_null(std::tuple<Types&...> args)
-		{
-			set_null_impl(args, mph::make_index_sequence<sizeof... (Types)>());
-		}
-
+	private:
 		template <typename... TypeLayout, typename... Args, size_t... Is>
 		static constexpr auto expand_parse_args_impl(std::tuple<TypeLayout...>, const std::tuple<Args...>& args, mph::index_sequence<Is...>) noexcept
 			-> decltype(std::tuple_cat(ParserArg<TypeLayout>::argTuple(std::declval<Args>())...))
@@ -525,7 +545,7 @@ namespace Script
 		{
 			return expand_parse_args_impl(TypeLayout(), args, mph::make_index_sequence<sizeof... (Args)>());
 		}
-
+		
 
 		// TODO: Change all these to compile-time string classes
 		static std::string strcat_initializer(const std::initializer_list<const char*>& strsIn)
@@ -553,7 +573,7 @@ namespace Script
 		}
 
 
-		template <typename... Args, size_t... Is>
+		template <typename... Args, std::size_t... Is>
 		static bool parse_script_impl(PyObject* scriptIn, const std::string& format, const std::tuple<Args...>& args, mph::index_sequence<Is...>)
 		{
 			return (PyArg_ParseTuple(scriptIn, format.c_str(), std::get<Is>(args)...) != 0);
@@ -565,6 +585,22 @@ namespace Script
 		static bool parse_script(PyObject* scriptIn, const std::string& format, const std::tuple<Args...>& argpack)
 		{
 			return parse_script_impl(scriptIn, format, argpack, mph::make_index_sequence<sizeof... (Args)>());
+		}
+
+
+		template <typename... Args, std::size_t... Is>
+		static void set_out_items_impl(PyObject*& scriptTuple, const std::tuple<Args...>& argpack, mph::index_sequence<Is...>)
+		{
+			(void)std::initializer_list<int>
+			{
+				(PyTuple_SetItem(scriptTuple, Is, reinterpret_cast<Script::ObjectType*>(std::get<Is>(argpack))), void(), 0)...
+			};
+		}
+
+		template <typename... Args>
+		static void set_out_items(PyObject*& scriptTuple, const std::tuple<Args...>& argpack)
+		{
+			set_out_items_impl(scriptTuple, argpack, mph::make_index_sequence<sizeof... (Args)>{});
 		}
 	};
 

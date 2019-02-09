@@ -8,6 +8,26 @@ namespace mph
 	template <bool Test, typename Type = void>
 	using enable_if_t = typename std::enable_if<Test,Type>::type;
 
+	/////////////////////////
+	// tuple_info -
+	//   Produces info about tuples that is useful in constexpr functions
+	/////////////////////////
+	template <typename Tuple>
+	struct tuple_info {};
+
+	template <typename... Types>
+	struct tuple_info<std::tuple<Types...>>
+	{
+		static constexpr const int size = sizeof... (Types);
+		using seq = mph::make_index_sequence<size>;
+		using type = std::tuple<Types...>;
+	};
+
+	template <typename Tuple>
+	using tuple_info_t = typename tuple_info<Tuple>::type;
+
+
+
 	// Internals for tuple-predicate filtering
 	namespace internal
 	{
@@ -53,7 +73,36 @@ namespace mph
 		{
 			using type = std::tuple<typename select_type_impl<Is, Types...>::type...>;
 		};
+
+		template <std::size_t N, typename Tuple>
+		struct select_tuple_type {};
+
+		template <std::size_t N, typename... Types>
+		struct select_tuple_type<N, std::tuple<Types...>>
+		{
+			using type = typename select_type_impl<N, Types...>::type;
+		};
 	};
+
+
+	// Internal implementation for tie_tuple
+	namespace internal
+	{
+		// TODO: Play with std::forward for this?
+		template <std::size_t... Is, typename... Types>
+		inline constexpr std::tuple<Types&...> tie_tuple_impl(index_sequence<Is...>, std::tuple<Types...>& tuple)
+		{
+			return std::tuple<Types&...>(std::get<Is>(tuple)...);
+		}
+
+		template <std::size_t... Is, typename... Types>
+		inline constexpr std::tuple<Types&&...> tie_tuple_impl(index_sequence<Is...>, std::tuple<Types...>&& tuple)
+		{
+			return std::tuple<Types&&...>(std::get<Is>(tuple)...);
+		}
+	};
+
+
 
 	/////////////////////////
 	// filter_tuple_seq -
@@ -88,22 +137,6 @@ namespace mph
 	};
 
 
-	// Internal implementation for tie_tuple
-	namespace internal
-	{
-		// TODO: Play with std::forward for this?
-		template <std::size_t... Is, typename... Types>
-		constexpr std::tuple<Types&...> tie_tuple_impl(index_sequence<Is...>, std::tuple<Types...>& tuple)
-		{
-			return std::tuple<Types&...>(std::get<Is>(tuple)...);
-		}
-
-		template <std::size_t... Is, typename... Types>
-		constexpr std::tuple<Types&&...> tie_tuple_impl(index_sequence<Is...>, std::tuple<Types...>&& tuple)
-		{
-			return std::tuple<Types&&...>(std::get<Is>(tuple)...);
-		}
-	};
 
 	/////////////////////////
 	// tie_tuple -
@@ -112,13 +145,13 @@ namespace mph
 	//   data stored in a tuple
 	/////////////////////////
 	template <typename... Types>
-	constexpr std::tuple<Types&...> tie_tuple(std::tuple<Types...>& tuple)
+	inline constexpr std::tuple<Types&...> tie_tuple(std::tuple<Types...>& tuple)
 	{
 		return internal::tie_tuple_impl(make_index_sequence<sizeof...(Types)>(), tuple);
 	}
 
 	template <typename... Types>
-	constexpr std::tuple<Types&&...> tie_tuple(std::tuple<Types...>&& tuple)
+	inline constexpr std::tuple<Types&&...> tie_tuple(std::tuple<Types...>&& tuple)
 	{
 		return internal::tie_tuple_impl(make_index_sequence<sizeof...(Types)>(), tuple);
 	}
@@ -131,17 +164,24 @@ namespace mph
 	template <typename Seq, typename Tuple>
 	using tuple_subset_t = typename internal::select_tuple_types<Seq, Tuple>::type;
 
+	/////////////////////////
+	// tuple_subset_t -
+	//   Returns the type of the Nth value in tuple
+	/////////////////////////
+	template <std::size_t N, typename Tuple>
+	using tuple_select_t = typename internal::select_tuple_type<N, Tuple>::type;
 
+	// Internals for tuple subset selection
 	namespace internal
 	{
 		template <std::size_t... Is, typename... Types, typename = enable_if_t<!std::is_same<std::tuple<Types...>, std::tuple<>>::value>>
-		constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types&...>> tuple_subset_impl(index_sequence<Is...>, std::tuple<Types&...> tuple)
+		inline constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types&...>> tuple_subset_impl(index_sequence<Is...>, std::tuple<Types&...> tuple)
 		{
 			return tuple_subset_t<index_sequence<Is...>, std::tuple<Types&...>>(std::get<Is>(tuple)...);
 		}
 
 		template <std::size_t... Is, typename... Types>
-		constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types...>> tuple_subset_impl(index_sequence<Is...>, const std::tuple<Types...>& tuple)
+		inline constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types...>> tuple_subset_impl(index_sequence<Is...>, const std::tuple<Types...>& tuple)
 		{
 			return tuple_subset_t<index_sequence<Is...>, std::tuple<Types...>>(std::get<Is>(tuple)...);
 		}
@@ -157,20 +197,20 @@ namespace mph
 	/////////////////////////
 	// TODO: Make const versions of the reference subset functions
 	template <std::size_t... Is, typename... Types, typename = enable_if_t<!std::is_same<std::tuple<Types...>,std::tuple<>>::value>>
-	constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types&...>> tuple_subset(index_sequence<Is...>, std::tuple<Types&...> tuple)
+	inline constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types&...>> tuple_subset(index_sequence<Is...>, std::tuple<Types&...> tuple)
 	{
 		return internal::tuple_subset_impl(index_sequence<Is...>{}, tuple);
 	}
 
 	// Support 
 	template <std::size_t... Is, typename... Types>
-	constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types&...>> tuple_subset(index_sequence<Is...>, std::tuple<Types...>& tuple)
+	inline constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types&...>> tuple_subset(index_sequence<Is...>, std::tuple<Types...>& tuple)
 	{
 		return internal::tuple_subset_impl(index_sequence<Is...>{}, tie_tuple(tuple));
 	}
 
 	template <std::size_t... Is, typename... Types>
-	constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types...>> tuple_subset(index_sequence<Is...>, std::tuple<Types...>&& tuple)
+	inline constexpr tuple_subset_t<index_sequence<Is...>, std::tuple<Types...>> tuple_subset(index_sequence<Is...>, std::tuple<Types...>&& tuple)
 	{
 		return internal::tuple_subset_impl(index_sequence<Is...>{}, tie_tuple(tuple));
 	}
@@ -227,16 +267,17 @@ namespace mph
 	template <typename Tuple>
 	using tuple_deref_t = typename tuple_type_tfm<internal::composed_deref, Tuple>::type;
 
+	// Internals for tuple_ptr/deref
 	namespace internal
 	{
-		template <typename... Types, std::size_t... Is>
-		constexpr tuple_ptr_t<std::tuple<Types...>> tuple_addr_of_impl(index_sequence<Is...>, std::tuple<Types&...> vars)
+		template <std::size_t... Is, typename... Types>
+		inline constexpr tuple_ptr_t<std::tuple<Types...>> tuple_addr_of_impl(index_sequence<Is...>, std::tuple<Types&...> vars)
 		{
 			return tuple_ptr_t<std::tuple<Types...>>((&std::get<Is>(vars))...);
 		}
 
-		template <typename... Types, std::size_t...Is>
-		constexpr tuple_deref_t<std::tuple<Types...>> tuple_deref_impl(index_sequence<Is...>, std::tuple<Types...> vars)
+		template <std::size_t...Is, typename... Types>
+		inline constexpr tuple_deref_t<std::tuple<Types...>> tuple_deref_impl(index_sequence<Is...>, std::tuple<Types...> vars)
 		{
 			return tuple_deref_t<std::tuple<Types...>>((*std::get<Is>(vars))...);
 		}
@@ -247,13 +288,13 @@ namespace mph
 	//   Return a tuple of pointers to input tuple elements (e.g. &var for each element)
 	/////////////////////////
 	template <typename... Types>
-	constexpr tuple_ptr_t<std::tuple<Types...>> tuple_addr_of(std::tuple<Types&...> tuple)
+	inline constexpr tuple_ptr_t<std::tuple<Types...>> tuple_addr_of(std::tuple<Types&...> tuple)
 	{
 		return internal::tuple_addr_of_impl(make_index_sequence<sizeof... (Types)>(), tuple);
 	}
 
 	template <typename... Types>
-	constexpr tuple_ptr_t<std::tuple<Types...>> tuple_addr_of(std::tuple<Types...>& tuple)
+	inline constexpr tuple_ptr_t<std::tuple<Types...>> tuple_addr_of(std::tuple<Types...>& tuple)
 	{
 		return internal::tuple_addr_of_impl(make_index_sequence<sizeof... (Types)>(), tie_tuple(tuple));
 	}
@@ -263,11 +304,40 @@ namespace mph
 	//   Return a tuple of references to values from a tuple of pointers
 	/////////////////////////
 	template <typename... Types>
-	constexpr tuple_deref_t<std::tuple<Types...>> tuple_deref(std::tuple<Types...> tuple)
+	inline constexpr tuple_deref_t<std::tuple<Types...>> tuple_deref(std::tuple<Types...> tuple)
 	{
 		return internal::tuple_deref_impl(make_index_sequence<sizeof... (Types)>(), tuple);
 	}
 
+
+	// Internals for creating a replicated-value tuple
+	namespace internal
+	{
+		template <std::size_t... Is, typename... Types, typename T>
+		inline void tuple_fill_impl(index_sequence<Is...>, std::tuple<Types&...> tuple, T val)
+		{
+			(void)std::initializer_list<int>
+			{
+				((std::get<Is>(tuple) = val), void(), 0)...
+			};
+		}
+	};
+
+	/////////////////////////
+	// tuple_fill_value
+	//   Fill the tuple with a specific value (mostly useful for nulling pointers)
+	/////////////////////////
+	template <typename... Types, typename T>
+	inline void tuple_fill_value(std::tuple<Types&...> tuple, T val)
+	{
+		internal::tuple_fill_impl(make_index_sequence<sizeof... (Types)>{}, tuple, val);
+	}
+
+	template <typename... Types, typename T>
+	inline void tuple_fill_value(std::tuple<Types...>& tuple, T val)
+	{
+		internal::tuple_fill_impl(make_index_sequence<sizeof... (Types)>{}, tie_tuple(tuple), val);
+	}
 
 	// TODO: Move these to a different mph header
 	template <bool B>
@@ -275,6 +345,4 @@ namespace mph
 
 	template<class B>
 	struct negation: bool_constant<!bool(B::value)> { };
-
-	template <class T> typename std::add_rvalue_reference<T>::type declval();
 };

@@ -53,13 +53,13 @@ namespace Script
 	};
 
 	template <typename BaseType>
-	struct dtype_to_script<Script::Image<BaseType>>
+	struct dtype_to_script<Image<BaseType>>
 	{
 		using type = Script::ArrayType*;
 	};
 
 	template <typename BaseType>
-	struct dtype_to_script<Script::ImageRef<BaseType>>
+	struct dtype_to_script<ImageRef<BaseType>>
 	{
 		using type = Script::ArrayType*;
 	};
@@ -79,7 +79,7 @@ namespace Script
 	};
 
 	template <typename DataTraits>
-	struct iotrait_to_script<Script::OutParam<DataTraits>>
+	struct iotrait_to_script<OutParam<DataTraits>>
 	{
 		// TODO: Wrap pointer in simple unique object to avoid leaking on errors
 		using type = typename dtype_to_script<DataTraits>::type;
@@ -184,27 +184,38 @@ namespace Script
 	};
 
 
-	template <typename Traits, typename T>
+	/////////////////////////
+	// deferred_iotrait_to_concrete_impl -
+	//   Transforms from full io-trait types to concrete base types (including deferred types)
+	//   NOTE: The deferred types are all converted using the extra OutT/InT parameters
+	/////////////////////////
+	template <typename Traits, typename OutT, typename InT>
 	struct deferred_iotrait_to_concrete_impl {};
 
-	template <template <typename> class IOTrait, typename DataTraits, typename T>
-	struct deferred_iotrait_to_concrete_impl<IOTrait<DataTraits>, T>
+	template <template <typename> class IOTrait, typename DataTraits, typename OutT, typename InT>
+	struct deferred_iotrait_to_concrete_impl<IOTrait<DataTraits>, OutT, InT>
 	{
-		using type = typename deferred_dtype_to_concrete<DataTraits, T>::type;
+		using type = typename deferred_dtype_to_concrete<DataTraits, InT>::type;
+	};
+
+	template <typename DataTraits, typename OutT, typename InT>
+	struct deferred_iotrait_to_concrete_impl<OutParam<DataTraits>, OutT, InT>
+	{
+		using type = typename deferred_dtype_to_concrete<DataTraits, OutT>::type;
 	};
 
 	/////////////////////////
 	// deferred_to_concrete -
 	//   Transforms all io-trait types to concrete types
-	//   NOTE: The deferred types are all converted using the extra T parameter
+	//   NOTE: The deferred types are all converted using the extra OutT,InT parameters
 	/////////////////////////
-	template <typename T>
+	template <typename OutT, typename InT>
 	struct deferred_to_concrete
 	{
 		template <typename Traits>
 		struct tfm
 		{
-			using type = typename deferred_iotrait_to_concrete_impl<Traits, T>::type;
+			using type = typename deferred_iotrait_to_concrete_impl<Traits, OutT, InT>::type;
 		};
 	};
 

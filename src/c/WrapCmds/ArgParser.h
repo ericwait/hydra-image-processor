@@ -12,8 +12,8 @@ namespace Script
 	template <typename Tuple>
 	using concrete_transform = mph::tuple_type_tfm<iotrait_to_concrete, Tuple>;
 
-	template <typename Tuple>
-	using add_ref_transform = mph::tuple_type_tfm<std::add_lvalue_reference, Tuple>;
+	template <typename OutT, typename InT, typename Tuple>
+	using deferred_concrete_transform = mph::tuple_type_tfm<deferred_to_concrete<OutT,InT>::template tfm, Tuple>;
 
 
 	template <typename Derived, typename ScriptConverter, typename... Layout>
@@ -33,6 +33,10 @@ namespace Script
 		// Concrete type layouts (e.g. std::tuple<PyObject*,...>)
 		using ArgTypes = typename concrete_transform<std::tuple<Layout...>>::type;
 		using ArgPtrs = typename mph::tuple_ptr_t<ArgTypes>;
+
+		// Templated concrete deferred type layout
+		template <typename OutT, typename InT>
+		using ConcreteArgTypes = typename deferred_concrete_transform<OutT,InT,ArgLayout>::type;
 
 		// Compositeable type selectors
 		template <typename... Chain> using S_Arg = compose_selector<ArgLayout, true_pred, Chain...>;
@@ -54,6 +58,7 @@ namespace Script
 		using NondeferredSel = typename S_Nondef<>::selector;
 		using NondeferOutSel = typename S_Nondef<S_Out<>>::selector;
 		using NondeferInOptSel = typename S_Nondef<S_InOpt<>>::selector;
+		using DeferredInOptSel = typename S_Defer<S_InOpt<>>::selector;
 		using DeferredInImSel = typename S_Defer<S_In<S_Image<>>>::selector;
 		using DeferredOutSel = typename S_Defer<S_Out<>>::selector;
 
@@ -67,10 +72,8 @@ namespace Script
 		using InTypeLayout = typename mph::tuple_type_tfm<strip_outer, InLayout>::type;
 		using OptTypeLayout = typename mph::tuple_type_tfm<strip_outer, OptLayout>::type;
 
-		// Convenience typedefs for concrete output and input argument tuples
-		using OutArgs = typename S_Out<>::selector::template type<ArgTypes>;
-		using InArgs = typename S_In<>::selector::template type<ArgTypes>;
-		using OptArgs = typename S_Opt<>::selector::template type<ArgTypes>;
+		// Optional argument pointers (used for setting defaults)
+		using OptPtrs = typename OptionalSel::template type<ArgPtrs>;
 
 
 	public:
@@ -92,22 +95,18 @@ namespace Script
 			return Script::ArrayInfo::getType(std::get<0>(in_defer_tuple));
 		}
 
-		template <typename Selector>
-		static void convertIn(ArgPtrs argPtrs, ScriptPtrs scriptPtrs, Selector)
+		static void setOptionalDefaults(ArgPtrs argPtrs)
+		{
+			Derived::setOptional(OptionalSel::select(argPtrs));
+		}
+
+		template <typename OutPtrs, typename InPtrs, typename Selector>
+		static void convertSelected(OutPtrs outPtrs, InPtrs inPtrs, Selector)
 		{
 			// TODO: Potentially pre-check for conversion compatibility
 			//  Converters to pass script args to actual non-deferred input types
-			convert_arg_subset(argPtrs, scriptPtrs, typename Selector::seq{});
+			convert_arg_subset(outPtrs, inPtrs, typename Selector::seq{});
 		}
-
-		template <typename Selector>
-		static void convertOut(ScriptPtrs scriptPtrs, ArgPtrs argPtrs, Selector)
-		{
-			// TODO: Potentially pre-check for conversion compatibility
-			//  Converters to pass script args to actual non-deferred output types
-			convert_arg_subset(scriptPtrs, argPtrs, typename Selector::seq{});
-		}
-
 
 
 	public:

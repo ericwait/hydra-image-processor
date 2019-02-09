@@ -13,11 +13,11 @@
 #define BEGIN_TYPE_MAP(EnumType)					\
 	typedef EnumType IdType;						\
 	template <typename T> struct TypeToIdMap {};	\
-	template <IdType E> struct IdToTypeMap {};
+	template <typename T> struct TypeNameMap {};	
 
-#define TYPE_MAPPING(Type,TypeID)													\
-	template <> struct TypeToIdMap<Type> {static const IdType typeId = TypeID;};	\
-	template <> struct IdToTypeMap<TypeID> {typedef Type type;};
+#define TYPE_MAPPING(Type,TypeID)															\
+	template <> struct TypeToIdMap<Type> {static constexpr const IdType typeId = TypeID;};	\
+	template <> struct TypeNameMap<Type> {static constexpr const char name[] = #Type;};
 
 #define END_TYPE_MAP(EnumType)
 
