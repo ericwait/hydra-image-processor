@@ -1,4 +1,6 @@
 function captureSnapshot(rootDir, prefix)
+    tic();
+    
     testDir = fullfile(rootDir,'Testing');
     
     if ( ~exist('prefix','var') )
@@ -53,6 +55,8 @@ function captureSnapshot(rootDir, prefix)
             warning(['Command HIP.' cmds{i} '() not run. Snapshot will not include output from this command.']);
         end
     end
+    
+    toc();
 end
 
 function imOut = convertIm(imIn, dataType)
@@ -82,7 +86,10 @@ function runAllCommands(outDir, imRect, imNoise, imSum, numdims, dataType, cmdMa
     pxSize = [1,1,3];
     numsdims = min(3, numdims);
 
-    kernel = ones(repmat(7, 1,numsdims), 'single');
+    fullkerndims = [5,5,3];
+    kerndims = fullkerndims(1:numsdims);
+    
+    kernel = ones(kerndims, 'single');
     sigmas = [10 ./ pxSize(1:numsdims) zeros(1,3-numsdims)];
     highpassSigmas = 2*sigmas;
 
