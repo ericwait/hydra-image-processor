@@ -80,4 +80,6 @@ namespace Script
 	template <> inline PyObject* fromNumeric(int32_t val) { return PyLong_FromLong(val); }
 	template <> inline PyObject* fromNumeric(float val) { return PyFloat_FromDouble(val); }
 	template <> inline PyObject* fromNumeric(double val) { return PyFloat_FromDouble(val); }
+    template <> inline PyObject* fromNumeric(long long val) { return PyLong_FromLongLong(val); }
+	template <> inline PyObject* fromNumeric(unsigned long long val) { return PyLong_FromUnsignedLongLong(val); }
 };
