@@ -47,7 +47,9 @@ namespace Script
 	inline ImageDimensions makeImageDims(const DimInfo& info)
 	{
 		ImageDimensions dimsOut(Vec<std::size_t>(1), 1, 1);
-		for ( int i=0; i < info.dims.size(); ++i )
+
+		int nsdims = std::min<int>(3, (int)info.dims.size());
+		for ( int i=0; i < nsdims; ++i )
 			dimsOut.dims.e[i] = info.dims[i];
 
 		if ( info.dims.size() >= 4 )
