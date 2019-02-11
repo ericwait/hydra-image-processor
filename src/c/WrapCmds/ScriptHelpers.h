@@ -10,10 +10,12 @@
 #include <algorithm>
 
 
-#define BEGIN_TYPE_MAP(EnumType)					\
+#define BEGIN_TYPE_MAP(EnumType,ScriptEngine)		\
 	typedef EnumType IdType;						\
-	template <typename T> struct TypeToIdMap {};	\
-	template <typename T> struct TypeNameMap {};	
+	template <typename T> struct TypeToIdMap		\
+	{static_assert(!std::is_same<T,T>::value, "No " #ScriptEngine " type mapping specified for T");};	\
+	template <typename T> struct TypeNameMap		\
+	{static_assert(!std::is_same<T,T>::value, "No " #ScriptEngine " type mapping specified for T");};
 
 #define TYPE_MAPPING(Type,TypeID)															\
 	template <> struct TypeToIdMap<Type> {static constexpr const IdType typeId = TypeID;};	\

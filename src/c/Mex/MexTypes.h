@@ -12,7 +12,7 @@ namespace Script
 	typedef mxArray ObjectType;
 
 	// Simple template-specialization map for C++ to mex types
-	BEGIN_TYPE_MAP(mxClassID)
+	BEGIN_TYPE_MAP(mxClassID,Matlab)
 		TYPE_MAPPING(bool, mxLOGICAL_CLASS)
 		TYPE_MAPPING(int8_t, mxINT8_CLASS)
 		TYPE_MAPPING(int16_t, mxINT16_CLASS)

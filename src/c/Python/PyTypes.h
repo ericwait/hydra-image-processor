@@ -25,7 +25,7 @@ namespace Script
 	typedef PyArrayObject	ArrayType;
 
 	// Simple template-specialization map for C++ to Python types
-	BEGIN_TYPE_MAP(NPY_TYPES)
+	BEGIN_TYPE_MAP(NPY_TYPES,Python)
 		TYPE_MAPPING(bool, NPY_BOOL)
 		TYPE_MAPPING(int8_t, NPY_INT8)
 		TYPE_MAPPING(int16_t, NPY_INT16)
