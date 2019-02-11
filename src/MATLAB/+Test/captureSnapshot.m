@@ -136,8 +136,8 @@ function runAllCommands(outDir, imRect, imNoise, imSum, numdims, dataType, cmdMa
     imOut = HIP.StdFilter(imSum, kernel, [], []);
     saveCmdOutput(outDir, imOut, 'StdFilter', numdims, dataType, cmdMap);
 
-%     imOut = HIP.Sum(imSum, []);
-%     saveCmdOutput(outDir, imOut, 'Sum', numdims, dataType, cmdMap);
+    imOut = HIP.Sum(imSum, []);
+    saveCmdOutput(outDir, imOut, 'Sum', numdims, dataType, cmdMap);
 
     imOut = HIP.VarFilter(imSum, kernel, [], []);
     saveCmdOutput(outDir, imOut, 'VarFilter', numdims, dataType, cmdMap);

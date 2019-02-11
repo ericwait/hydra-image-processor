@@ -107,9 +107,9 @@ def runAllCommands(outDir, imRect, imNoise, imSum, numdims, dataType):
     imOut = HIP.StdFilter(imSum, kernel)
     saveCmdOutput(outDir, imOut, 'StdFilter', numdims, dataType)
 
-    # sumOut = HIP.Sum(imSum)
-    # imOut = np.array([sumOut])
-    # saveCmdOutput(outDir, imOut, 'Sum', numdims, dataType)
+    sumOut = HIP.Sum(imSum)
+    imOut = np.array([sumOut])
+    saveCmdOutput(outDir, imOut, 'Sum', numdims, dataType)
 
     imOut = HIP.VarFilter(imSum, kernel)
     saveCmdOutput(outDir, imOut, 'VarFilter', numdims, dataType)
