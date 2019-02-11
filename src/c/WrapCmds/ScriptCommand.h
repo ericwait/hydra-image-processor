@@ -37,14 +37,15 @@ template <typename Derived, typename Parser>
 class ScriptCommandImpl : public ScriptCommand
 {
 	template <typename T>
-	struct Assert
+	struct AssertProcessFunc
 	{
 		template <typename... Args> static void run(Args&&...) {}
 
+		// This condition (!is_same<T,T> is always false) forces waiting for dependent type instantiation
 		static_assert(!std::is_same<T,T>::value, "Overload ::execute or ::process<OutT,InT> method in script command subclass, or define script command using DEF_SCRIPT_COMMAND_AUTO.");
 	};
 
-	using ProcessFunc = Assert<Derived>;
+	using ProcessFunc = AssertProcessFunc<Derived>;
 public:
 	// Helper types for input/output argument type mapping
 	SCR_DEFAULT_IO_TYPE_MAP;
@@ -76,6 +77,7 @@ public:
 	using OptionalSel = typename ArgParser::OptionalSel;
 	using DeferredSel = typename ArgParser::DeferredSel;
 	using DeferredOutSel = typename ArgParser::DeferredOutSel;
+	using DeferredOutImSel = typename ArgParser::DeferredOutImSel;
 	using DeferredInOptSel = typename ArgParser::DeferredInOptSel;
 	using NondeferredSel = typename ArgParser::NondeferredSel;
 	using NondeferOutSel = typename ArgParser::NondeferOutSel;
@@ -181,7 +183,7 @@ private:
 	template <typename... Args>
 	static void execute(Args&&... args)
 	{
-		static_assert(ArgParser::has_deferred_image_inputs(), "ArgParser has no deferred inputs. Please overload default execute() function!");
+		static_assert(ArgParser::has_deferred_image_inputs(), "Argument layout has no deferred inputs. Please overload default ::execute() function!");
 
 		Script::IdType type = ArgParser::getInputType(std::forward<Args>(args)...);
 
@@ -254,18 +256,18 @@ private:
 		DeferredInOptSel::select(convertedPtrs) = mph::tuple_addr_of(concreteInArgs);
 		DeferredOutSel::select(convertedPtrs) = mph::tuple_addr_of(concreteOutArgs);
 
-		// Convert non-deferred inputs to appropriate arg types
+		// Convert deferred inputs to appropriate arg types
 		ArgParser::convertSelected(convertedPtrs, argPtrs, DeferredInOptSel{});
 
-		//// TODO: Figure out how to solve the dims inference problem
-		//// TODO: Currently no support for creating non-deferred output images
-		//// Create non-deferred outputs
-		////ArgParser::createOutIm(argPtrs, scriptPtrs, dims, NondeferOutImSel{});
+		// Create imageref outputs
+		// TODO: Better image dims inference
+		Script::DimInfo dimInfo = ArgParser::getInputDimInfo(argRefs);
+		ArgParser::createOutImRefs(convertedPtrs, argPtrs, dimInfo);
 
 		// Run backend cuda filter
 		run_dispatch(mph::tuple_deref(convertedPtrs));
 
-		// Convert outputs to script types
+		// Convert deferred outputs to script types
 		ArgParser::convertSelected(argPtrs, convertedPtrs, DeferredOutSel{});
 	}
 

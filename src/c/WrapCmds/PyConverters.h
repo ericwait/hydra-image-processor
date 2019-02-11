@@ -179,7 +179,7 @@ namespace Script
 
 	public:
 		template <typename OutT, typename InT>
-		static void convertArg(OutT& out, const InT*& inPtr, int argIdx)
+		static void convertArg(OutT& out, const InT* inPtr, int argIdx)
 		{
 			// NOTE: if inPtr is nullptr then this is presumed to be optional
 			if ( inPtr == nullptr )
@@ -348,14 +348,7 @@ namespace Script
 			if ( !info.contiguous )
 				throw ImageConvertError("Only contiguous numpy arrays are supported");
 
-			ImageDimensions inDims(Vec<std::size_t>(1),1,1);
-			std::size_t nspatial = std::max<std::size_t>(3, info.dims.size());
-			for ( std::size_t i=0; i < nspatial; ++i )
-				inDims.dims.e[i] = info.dims[i];
-
-			inDims.chan = static_cast<unsigned int>((info.dims.size() >= 4) ? info.dims[3] : (1));
-			inDims.frame = static_cast<unsigned int>((info.dims.size() >= 5) ? info.dims[4] : (1));
-
+			ImageDimensions inDims = Script::makeImageDims(info);
 			out = ImageOwner<T>(inDims);
 			pyArrayCopyConvert(out.getPtr(), inPtr);
 		}
@@ -373,14 +366,7 @@ namespace Script
 			if ( Script::TypeToIdMap<T>::typeId != type )
 				throw ImageConvertError("Expected numpy array of type: %s", Script::TypeNameMap<T>::name);
 
-			ImageDimensions inDims(Vec<std::size_t>(1), 1, 1);
-			std::size_t nspatial = std::max<std::size_t>(3, info.dims.size());
-			for ( std::size_t i=0; i < nspatial; ++i )
-				inDims.dims.e[i] = info.dims[i];
-
-			inDims.chan = static_cast<unsigned int>((info.dims.size() >= 4) ? info.dims[3] : (1));
-			inDims.frame = static_cast<unsigned int>((info.dims.size() >= 5) ? info.dims[4] : (1));
-
+			ImageDimensions inDims = Script::makeImageDims(info);
 			out = ImageView<T>(Script::ArrayInfo::getData<T>(inPtr), inDims);
 		}
 

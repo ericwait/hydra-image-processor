@@ -55,12 +55,13 @@ namespace Script
 		using InputSel = typename S_In<>::selector;
 		using OptionalSel = typename S_Opt<>::selector;
 		using DeferredSel = typename S_Defer<>::selector;
-		using NondeferredSel = typename S_Nondef<>::selector;
-		using NondeferOutSel = typename S_Nondef<S_Out<>>::selector;
-		using NondeferInOptSel = typename S_Nondef<S_InOpt<>>::selector;
 		using DeferredInOptSel = typename S_Defer<S_InOpt<>>::selector;
 		using DeferredInImSel = typename S_Defer<S_In<S_Image<>>>::selector;
 		using DeferredOutSel = typename S_Defer<S_Out<>>::selector;
+		using DeferredOutImSel = typename S_Defer<S_Out<S_Image<>>>::selector;
+		using NondeferredSel = typename S_Nondef<>::selector;
+		using NondeferOutSel = typename S_Nondef<S_Out<>>::selector;
+		using NondeferInOptSel = typename S_Nondef<S_InOpt<>>::selector;
 
 		// Argument layout subsets
 		using OutLayout = typename OutputSel::template type<ArgLayout>;
@@ -82,17 +83,24 @@ namespace Script
 			return (DeferredInImSel::seq::size() > 0);
 		}
 
-		static constexpr bool has_deferred_outputs() noexcept
+		static constexpr bool has_deferred_image_outputs() noexcept
 		{
-			return (DeferredOutSel::seq::size() > 0);
+			return (DeferredOutImSel::seq::size() > 0);
 		}
 
-		template <typename... T>
-		static IdType getInputType(T&&... ioargs)
+		template <typename... Args>
+		static IdType getInputType(Args&&... ioargs)
 		{
 			// TODO: Stop this from erroring if no deferred inputs
-			auto in_defer_tuple = DeferredInImSel::select(std::tuple<T...>(std::forward<T>(ioargs)...));
+			auto in_defer_tuple = DeferredInImSel::select(std::tuple<Args...>(std::forward<Args>(ioargs)...));
 			return Script::ArrayInfo::getType(std::get<0>(in_defer_tuple));
+		}
+
+		template <typename... Args>
+		static DimInfo getInputDimInfo(const std::tuple<Args...>& argtuple)
+		{
+			auto in_defer_tuple = DeferredInImSel::select(argtuple);
+			return Script::getDimInfo(std::get<0>(in_defer_tuple));
 		}
 
 		static void setOptionalDefaults(ArgPtrs argPtrs)
@@ -106,6 +114,17 @@ namespace Script
 			// TODO: Potentially pre-check for conversion compatibility
 			//  Converters to pass script args to actual non-deferred input types
 			convert_arg_subset(outPtrs, inPtrs, typename Selector::seq{});
+		}
+
+		template <typename ConcretePtrs, typename ScrPtrs>
+		static void createOutImRefs(ConcretePtrs cncPtrs, ScrPtrs scrPtrs, const DimInfo& info)
+		{
+			// TODO: Change image selector (or add new one to make sure this is only for ImageRefs)
+			// TODO: Also add static checks since output image owners unsupported
+			using BaseTypes = base_data_type_t<ConcretePtrs>;
+
+			mph::tuple_deref(DeferredOutImSel::select(scrPtrs)) = create_arrays<BaseTypes>(info, typename DeferredOutImSel::seq{});
+			convert_arg_subset(cncPtrs, scrPtrs, typename DeferredOutImSel::seq{});
 		}
 
 
@@ -144,6 +163,13 @@ namespace Script
 			{
 				throw ArgError(ace);
 			}
+		}
+
+		template <typename TargetTuple, size_t... Is>
+		static auto create_arrays(const DimInfo& info, mph::index_sequence<Is...>)
+			-> decltype(std::make_tuple(createArray<mph::tuple_select_t<Is, TargetTuple>>(std::declval<const DimInfo&>())...))
+		{
+			return std::make_tuple(createArray<mph::tuple_select_t<Is,TargetTuple>>(info)...);
 		}
 	};
 };

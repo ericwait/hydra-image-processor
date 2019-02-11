@@ -25,7 +25,7 @@ namespace Script
 	//   then add all the pointers back (e.g. int** -> const int**)
 	/////////////////////////
 	template <typename T>
-	using force_const_t = mph::data_type_tfm<std::add_const, T>;
+	using force_const_t = mph::data_type_tfm_t<std::add_const, T>;
 
 	/////////////////////////
 	// remove_all_qualifiers_t -
@@ -33,6 +33,34 @@ namespace Script
 	/////////////////////////
 	template <typename T>
 	using remove_all_qualifiers_t = mph::full_type_tfm_t<std::remove_cv, T>;
+
+
+	template <typename RawType, typename Type>
+	struct base_type_impl
+	{
+		using type = Type;
+	};
+
+	template <template <typename> class Trait, typename BaseType, typename Type>
+	struct base_type_impl<Trait<BaseType>, Type>
+	{
+		using type = typename base_type_impl<mph::raw_type_t<BaseType>,BaseType>::type;
+	};
+
+
+	/////////////////////////
+	// base_type -
+	//   Produce underlying contained type (e.g. ImageView<int>& -> int)
+	/////////////////////////
+	template <typename Type>
+	struct base_type
+	{
+		using type = typename base_type_impl<mph::raw_type_t<Type>,Type>::type;
+	};
+
+
+	template <typename Tuple>
+	using base_data_type_t = typename mph::tuple_type_tfm<base_type, Tuple>::type;
 
 
 	//////////////

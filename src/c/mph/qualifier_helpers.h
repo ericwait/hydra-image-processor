@@ -63,6 +63,19 @@ namespace mph
 		};
 
 
+		template <typename T, typename U>
+		struct raw_type_impl
+		{
+			using type = typename raw_type_impl<U, typename traverse_type<U>::type>::type;
+		};
+
+		template <typename T>
+		struct raw_type_impl<T,std::nullptr_t>
+		{
+			using type = T;
+		};
+
+
 
 		template <template <typename> class Tfm, typename T, typename U>
 		struct data_type_tfm_impl
@@ -94,11 +107,22 @@ namespace mph
 	};
 
 	/////////////////////////
-	// data_type_tfm -
-	//   Apply a transform to the underlying data type (e.g. data_type_tfm<add_const, int**> -> (const int)** )
+	// raw_type -
+	//   Remove all qualifiers and pointer/references to get underlying type (const int**& -> int)
+	/////////////////////////
+	template <typename T>
+	using raw_type = internal::raw_type_impl<T,T>;
+
+	template <typename T>
+	using raw_type_t = typename raw_type<T>::type;
+
+
+	/////////////////////////
+	// data_type_tfm_t -
+	//   Apply a transform to the underlying data type (e.g. data_type_tfm_t<add_const, int**> -> (const int)** )
 	/////////////////////////
 	template <template <typename> class Tfm, typename T>
-	using data_type_tfm = typename internal::data_type_tfm_impl<Tfm, T, T>::type;
+	using data_type_tfm_t = typename internal::data_type_tfm_impl<Tfm, T, T>::type;
 
 	/////////////////////////
 	// full_type_tfm_t -
