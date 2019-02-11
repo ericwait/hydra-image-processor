@@ -17,19 +17,18 @@
 
 #define SCR_PARAMS(...) __VA_ARGS__
 
-#define SCR_OUTPUT(TypeMacro) Script::OutParam<TypeMacro>
-#define SCR_INPUT(TypeMacro) Script::InParam<TypeMacro>
-#define SCR_OPTIONAL(TypeMacro, DefVal) Script::OptParam<TypeMacro>
+#define SCR_OUTPUT(TypeMacro, VarName) Script::OutParam<TypeMacro>
+#define SCR_INPUT(TypeMacro, VarName) Script::InParam<TypeMacro>
+#define SCR_OPTIONAL(TypeMacro, VarName, DefVal) Script::OptParam<TypeMacro>
 
-#define SCR_IMAGE_CONVERT(VarName, VarType) Script::Image<VarType>
-//#define SCR_IMAGE_REQUIRE(VarName, VarType) Script::ImageRef<VarType>
-#define SCR_IMAGE_DYNAMIC(VarName) Script::ImageRef<Script::DeferredType>
+#define SCR_SCALAR(VarType) Script::Scalar<VarType>
 
-#define SCR_SCALAR(VarName, VarType) Script::Scalar<VarType>
-#define SCR_SCALAR_DYNAMIC(VarName) Script::Scalar<Script::DeferredType>
+#define SCR_VECTOR(VarType) Script::Vector<VarType>
 
-#define SCR_VECTOR(VarName, VarType) Script::Vector<VarType>
-#define SCR_VECTOR_DYNAMIC(VarName) Script::Vector<Script::DeferredType>
+#define SCR_IMAGE(VarType) Script::ImageRef<VarType>
+#define SCR_IMAGE_CONVERT(VarType) Script::Image<VarType>
+
+#define SCR_DYNAMIC Script::DeferredType
 
 #ifdef _WIN32
  #define SNPRINTF std::snprintf
