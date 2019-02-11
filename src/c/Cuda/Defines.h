@@ -31,6 +31,10 @@ enum ReductionMethods
 // Check for non-narrowing (valid) implicit conversions from SrcType -> DstType
 #define NON_NARROWING(SrcType,DstType) std::is_same<BINOP_TYPE(SrcType,DstType),DstType>::value
 
+#define SIGN_MATCH(TypeA,TypeB) ((std::is_unsigned<TypeA>::value && std::is_unsigned<TypeB>::value) || (std::is_signed<TypeA>::value && std::is_signed<TypeB>::value))
+#define INT_MATCH(Type) (std::is_integral<Type>::value && !IS_BOOL(Type))
+#define INT_SGN_MATCH(SrcType,DstType) (INT_MATCH(SrcType) && SIGN_MATCH(SrcType,DstType))
+#define FLOAT_MATCH(Type) (std::is_floating_point<Type>::value)
 
 //template <typename T> constexpr bool is_bool = std::is_same<T, bool>::value;
 //
