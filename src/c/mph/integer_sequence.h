@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstddef>
-#include <tuple>
 
 namespace mph
 {
@@ -91,11 +90,24 @@ namespace mph
 			using type = index_sequence<0>;
 		};
 
+		// Guard to make sure zero sequences don't get passed in
+		template <std::size_t N>
+		struct gen_seq_guard
+		{
+			using type = typename gen_sequence<N-1>::type;
+		};
+
+		template <>
+		struct gen_seq_guard<0>
+		{
+			using type = integer_sequence<std::size_t>;
+		};
+
 
 		template <typename T, T N>
 		struct make_int_seq_impl
 		{
-			using type = typename convert_integer_sequence<T, typename gen_sequence<N>::type>::type;
+			using type = typename convert_integer_sequence<T, typename gen_seq_guard<N>::type>::type;
 		};
 	};
 
@@ -104,7 +116,7 @@ namespace mph
 	//   Make an integer sequence -> integer_sequence<T, 0,...,N-1>
 	/////////////////////////
 	template <typename T, T N>
-	using make_integer_sequence = typename internal::make_int_seq_impl<T, N-1>::type;
+	using make_integer_sequence = typename internal::make_int_seq_impl<T, N>::type;
 
 
 	/////////////////////////

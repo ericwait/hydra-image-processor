@@ -1,5 +1,7 @@
 #pragma once
 
+#include <tuple>
+
 #include "integer_sequence.h"
 
 namespace mph
@@ -72,6 +74,12 @@ namespace mph
 		struct select_tuple_types<index_sequence<Is...>, std::tuple<Types...>>
 		{
 			using type = std::tuple<typename select_type_impl<Is, Types...>::type...>;
+		};
+
+		template <typename... Types>
+		struct select_tuple_types<index_sequence<>, std::tuple<Types...>>
+		{
+			using type = std::tuple<>;
 		};
 
 		template <std::size_t N, typename Tuple>
@@ -167,6 +175,7 @@ namespace mph
 	/////////////////////////
 	// tuple_subset_t -
 	//   Returns the type of the Nth value in tuple
+	//   TODO: Should use std::tuple_element instead?
 	/////////////////////////
 	template <std::size_t N, typename Tuple>
 	using tuple_select_t = typename internal::select_tuple_type<N, Tuple>::type;
@@ -286,15 +295,16 @@ namespace mph
 	/////////////////////////
 	// tuple_addr_of -
 	//   Return a tuple of pointers to input tuple elements (e.g. &var for each element)
+	//   TODO: Compatibility: Removed constexpr because gcc 5.4.0 flips out
 	/////////////////////////
 	template <typename... Types>
-	inline constexpr tuple_ptr_t<std::tuple<Types...>> tuple_addr_of(std::tuple<Types&...> tuple)
+	inline tuple_ptr_t<std::tuple<Types...>> tuple_addr_of(std::tuple<Types&...> tuple)
 	{
 		return internal::tuple_addr_of_impl(make_index_sequence<sizeof... (Types)>(), tuple);
 	}
 
 	template <typename... Types>
-	inline constexpr tuple_ptr_t<std::tuple<Types...>> tuple_addr_of(std::tuple<Types...>& tuple)
+	inline tuple_ptr_t<std::tuple<Types...>> tuple_addr_of(std::tuple<Types...>& tuple)
 	{
 		return internal::tuple_addr_of_impl(make_index_sequence<sizeof... (Types)>(), tie_tuple(tuple));
 	}
@@ -302,9 +312,10 @@ namespace mph
 	/////////////////////////
 	// tuple_deref -
 	//   Return a tuple of references to values from a tuple of pointers
+	//   TODO: Compatibility: Removed constexpr because gcc 5.4.0 flips out
 	/////////////////////////
 	template <typename... Types>
-	inline constexpr tuple_deref_t<std::tuple<Types...>> tuple_deref(std::tuple<Types...> tuple)
+	inline tuple_deref_t<std::tuple<Types...>> tuple_deref(std::tuple<Types...> tuple)
 	{
 		return internal::tuple_deref_impl(make_index_sequence<sizeof... (Types)>(), tuple);
 	}
