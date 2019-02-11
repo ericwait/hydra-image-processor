@@ -6,29 +6,29 @@
 #include <string.h>
 
 template <typename T>
-void convertKernelImage(ImageView<float> kernel, PyArrayObject* inKernel)
+void convertKernelImage(ImageView<float> kernel, Script::ArrayType* inKernel)
 {
 	float* outPtr = kernel.getPtr();
-	T* kernData = (T*) PyArray_DATA(inKernel);
+	T* kernData = Script::ArrayInfo::getData<T>(inKernel);
 
 	for ( int i=0; i < kernel.getNumElements(); ++i )
 		outPtr[i] = static_cast<float>(kernData[i]);
 }
 
 template <>
-void convertKernelImage<float>(ImageView<float> kernel, PyArrayObject* inKernel)
+void convertKernelImage<float>(ImageView<float> kernel, Script::ArrayType* inKernel)
 {
 	float* outPtr = kernel.getPtr();
-	float* kernData = (float*)PyArray_DATA(inKernel);
+	float* kernData = Script::ArrayInfo::getData<float>(inKernel);
 
 	memcpy(outPtr, kernData, kernel.getNumElements()*sizeof(float));
 }
 
 template <>
-void convertKernelImage<bool>(ImageView<float> kernel, PyArrayObject* inKernel)
+void convertKernelImage<bool>(ImageView<float> kernel, Script::ArrayType* inKernel)
 {
 	float* outPtr = kernel.getPtr();
-	bool* kernData = (bool*)PyArray_DATA(inKernel);
+	bool* kernData = Script::ArrayInfo::getData<bool>(inKernel);
 
 	for ( int i=0; i < kernel.getNumElements(); ++i )
 		outPtr[i] = (kernData[i]) ? (1.0f) : (0.0f);
@@ -42,12 +42,11 @@ ImageOwner<float> getKernel(PyArrayObject* kernel)
 	if ( info.dims.size() < 1 )
 		return ImageOwner<float>();
 
-	Vec<std::size_t> kernDims(1);
-	std::size_t chkDims = std::min<int>((int)info.dims.size(),3);
-	for ( int i=0; i < chkDims; ++i )
-		kernDims.e[i] = info.dims[i];
+	ImageDimensions kernDims = Script::makeImageDims(info);
+	kernDims.chan = 1;
+	kernDims.frame = 1;
 
-	ImageOwner<float> kernelOut(kernDims, 1, 1);
+	ImageOwner<float> kernelOut(kernDims);
 	if ( PyArray_TYPE(kernel) == NPY_BOOL )
 	{
 		convertKernelImage<bool>(kernelOut, kernel);
