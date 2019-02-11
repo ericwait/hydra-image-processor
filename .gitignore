@@ -2,8 +2,13 @@
 Thumbs.db
 #Ignore files build by Visual Studio
 *.obj
+*.iobj
 *.exe
+*.exp
+*.lib
 *.pdb
+*.ipdb
+*.ipch
 *.user
 *.aps
 *.pch
@@ -25,6 +30,8 @@ _ReSharper*/
 src/c/Intermediate/*
 src/c/Output/*
 src/c/ipch/*
+src/c/packages.config
+src/c/packages/
 bin/Release_x64/CudaImageProccessing.lib
 src/c/CudaImageProccessing.sdf
 src/c/CudaMex.mexw64
@@ -38,11 +45,13 @@ src/c/CudaImageProccessing.v11.suo
 *.VC.db
 *.opendb
 
-src/MATLAB/\+ImProc/@Cuda/device02\.txt
+# Ignore pycache folder
+**/__pycache__/
 
-*.ipch
+# Ignore vscode config files
+**/.vscode/
 
+# Ignore sqlite db files
 *.db-shm
-
 *.db-wal
 
