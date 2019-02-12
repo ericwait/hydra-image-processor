@@ -54,27 +54,27 @@ PyObject* PyWrapSum::execute(PyObject* self, PyObject* args)
 	PyObject* outSum = nullptr;
 	if ( PyArray_TYPE(imIn) == NPY_BOOL )
 	{
-		PyWrapSum_run<bool,std::size_t>(imIn, &outSum, device);
+		PyWrapSum_run<bool,uint64_t>(imIn, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imIn) == NPY_UINT8 )
 	{
-		PyWrapSum_run<uint8_t,std::size_t>(imIn, &outSum, device);
+		PyWrapSum_run<uint8_t,uint64_t>(imIn, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imIn) == NPY_UINT16 )
 	{
-		PyWrapSum_run<uint16_t,std::size_t>(imIn, &outSum, device);
+		PyWrapSum_run<uint16_t,uint64_t>(imIn, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imIn) == NPY_INT16 )
 	{
-		PyWrapSum_run<int16_t,long long>(imIn, &outSum, device);
+		PyWrapSum_run<int16_t,int64_t>(imIn, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imIn) == NPY_UINT32 )
 	{
-		PyWrapSum_run<uint32_t,std::size_t>(imIn, &outSum, device);
+		PyWrapSum_run<uint32_t,uint64_t>(imIn, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imIn) == NPY_INT32 )
 	{
-		PyWrapSum_run<int32_t,long long>(imIn, &outSum, device);
+		PyWrapSum_run<int32_t,int64_t>(imIn, &outSum, device);
 	}
 	else if ( PyArray_TYPE(imIn) == NPY_FLOAT )
 	{

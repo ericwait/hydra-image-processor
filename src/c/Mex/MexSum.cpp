@@ -27,27 +27,27 @@ void MexSum::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 	if (mxIsLogical(prhs[0]))
 	{
-		MexSum_run<bool,std::size_t>(prhs[0], &plhs[0], device);
+		MexSum_run<bool,uint64_t>(prhs[0], &plhs[0], device);
 	}
 	else if (mxIsUint8(prhs[0]))
 	{
-		MexSum_run<uint8_t,std::size_t>(prhs[0], &plhs[0], device);
+		MexSum_run<uint8_t,uint64_t>(prhs[0], &plhs[0], device);
 	}
 	else if (mxIsUint16(prhs[0]))
 	{
-		MexSum_run<uint16_t,std::size_t>(prhs[0], &plhs[0], device);
+		MexSum_run<uint16_t,uint64_t>(prhs[0], &plhs[0], device);
 	}
 	else if (mxIsInt16(prhs[0]))
 	{
-		MexSum_run<int16_t,std::ptrdiff_t>(prhs[0], &plhs[0], device);
+		MexSum_run<int16_t,int64_t>(prhs[0], &plhs[0], device);
 	}
 	else if (mxIsUint32(prhs[0]))
 	{
-		MexSum_run<uint32_t,std::size_t>(prhs[0], &plhs[0], device);
+		MexSum_run<uint32_t,uint64_t>(prhs[0], &plhs[0], device);
 	}
 	else if (mxIsInt32(prhs[0]))
 	{
-		MexSum_run<int32_t,std::ptrdiff_t>(prhs[0], &plhs[0], device);
+		MexSum_run<int32_t,int64_t>(prhs[0], &plhs[0], device);
 	}
 	else if (mxIsSingle(prhs[0]))
 	{
