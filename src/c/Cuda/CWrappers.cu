@@ -833,37 +833,37 @@ void gaussian(const ImageView<bool> imageIn, ImageView<bool> imageOut, Vec<doubl
  }
 
 
- void sum(const ImageView<bool> imageIn, std::size_t& valOut, int device /*= -1*/)
+ void sum(const ImageView<bool> imageIn, uint64_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageView<char> imageIn, long long& valOut, int device /*= -1*/)
+ void sum(const ImageView<char> imageIn, int64_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageView<unsigned char> imageIn, std::size_t& valOut, int device /*= -1*/)
+ void sum(const ImageView<unsigned char> imageIn, uint64_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageView<short> imageIn, long long& valOut, int device /*= -1*/)
+ void sum(const ImageView<short> imageIn,int64_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageView<unsigned short> imageIn, std::size_t& valOut, int device /*= -1*/)
+ void sum(const ImageView<unsigned short> imageIn, uint64_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageView<int> imageIn, long long& valOut, int device /*= -1*/)
+ void sum(const ImageView<int> imageIn, int64_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }
 
- void sum(const ImageView<unsigned int> imageIn, std::size_t& valOut, int device /*= -1*/)
+ void sum(const ImageView<unsigned int> imageIn, uint64_t& valOut, int device /*= -1*/)
  {
 	 cSum(imageIn, valOut, device);
  }

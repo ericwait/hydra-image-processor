@@ -193,13 +193,13 @@ IMAGE_PROCESSOR_API void stdFilter(const ImageView<unsigned int> imageIn, ImageV
 IMAGE_PROCESSOR_API void stdFilter(const ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int numIterations = 1, int device = -1);
 IMAGE_PROCESSOR_API void stdFilter(const ImageView<double> imageIn, ImageView<double> imageOut, ImageView<float> kernel, int numIterations = 1, int device = -1);
 
-IMAGE_PROCESSOR_API void sum(const ImageView<bool> imageIn, std::size_t& valOut, int device = -1);
-IMAGE_PROCESSOR_API void sum(const ImageView<char> imageIn, long long& valOut, int device = -1);
-IMAGE_PROCESSOR_API void sum(const ImageView<unsigned char> imageIn, std::size_t& valOut, int device = -1);
-IMAGE_PROCESSOR_API void sum(const ImageView<short> imageIn, long long& valOut, int device = -1);
-IMAGE_PROCESSOR_API void sum(const ImageView<unsigned short> imageIn, std::size_t& valOut, int device = -1);
-IMAGE_PROCESSOR_API void sum(const ImageView<int> imageIn, long long& valOut, int device = -1);
-IMAGE_PROCESSOR_API void sum(const ImageView<unsigned int> imageIn, std::size_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageView<bool> imageIn, uint64_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageView<char> imageIn, int64_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageView<unsigned char> imageIn, uint64_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageView<short> imageIn, int64_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageView<unsigned short> imageIn, uint64_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageView<int> imageIn, int64_t& valOut, int device = -1);
+IMAGE_PROCESSOR_API void sum(const ImageView<unsigned int> imageIn, uint64_t& valOut, int device = -1);
 IMAGE_PROCESSOR_API void sum(const ImageView<float> imageIn, double& valOut, int device = -1);
 IMAGE_PROCESSOR_API void sum(const ImageView<double> imageIn, double& valOut, int device = -1);
 
