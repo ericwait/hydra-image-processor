@@ -48,7 +48,7 @@ def saveCmdOutput(outDir, imOut, cmdStr, numdims, dataType):
         outDataType = 'single'
 
     outFile = path.join(outDir, cmdStr+'_'+str(numdims)+'d_'+str(outDataType)+'.mat')
-    scipy.io.savemat(outFile, {'imOut': imOut})
+    scipy.io.savemat(outFile, {'imOut': imOut}, do_compression=True)
 
 
 def runAllCommands(outDir, imRect, imNoise, imSum, numdims, dataType):
