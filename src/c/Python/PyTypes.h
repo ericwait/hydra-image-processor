@@ -71,7 +71,7 @@ namespace Script
 	bool pylistToVec(ObjectType* list, Vec<double>& outVec);
 	bool pyarrayToVec(ArrayType* ar, Vec<double>& outVec);
 
-	template <typename T> PyObject* fromNumeric(T val){ return nullptr; }
+	template <typename T> PyObject* fromNumeric(T val){ static_assert(!std::is_same<T,T>::value, "Python type converion not implemented"); return nullptr; }
 	template <> inline PyObject* fromNumeric(bool val) { return PyBool_FromLong(val); }
 	template <> inline PyObject* fromNumeric(uint8_t val) { return PyLong_FromLong(val); }
 	template <> inline PyObject* fromNumeric(uint16_t val) { return PyLong_FromLong(val); }
@@ -80,6 +80,8 @@ namespace Script
 	template <> inline PyObject* fromNumeric(int32_t val) { return PyLong_FromLong(val); }
 	template <> inline PyObject* fromNumeric(float val) { return PyFloat_FromDouble(val); }
 	template <> inline PyObject* fromNumeric(double val) { return PyFloat_FromDouble(val); }
+    template <> inline PyObject* fromNumeric(long val) { return PyLong_FromLong(val); }
+    template <> inline PyObject* fromNumeric(unsigned long val) { return PyLong_FromUnsignedLong(val); }
     template <> inline PyObject* fromNumeric(long long val) { return PyLong_FromLongLong(val); }
 	template <> inline PyObject* fromNumeric(unsigned long long val) { return PyLong_FromUnsignedLongLong(val); }
 };
