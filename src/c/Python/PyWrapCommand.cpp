@@ -13,10 +13,10 @@
 
 
 template <typename T, typename U>
-void converter(void* in, void* out, std::size_t len)
+void vec_converter(void* in, void* out, std::size_t len)
 {
 	for ( int i=0; i < len; ++i )
-		((U*)out)[i] = static_cast<U>(((T*)in)[i]);
+		((U*)out)[i] = static_cast<U>(((T*)in)[len-i-1]);
 }
 
 bool Script::pyarrayToVec(PyArrayObject* ar, Vec<double>& outVec)
@@ -30,19 +30,19 @@ bool Script::pyarrayToVec(PyArrayObject* ar, Vec<double>& outVec)
 		return false;
 
 	if ( PyArray_TYPE(ar) == NPY_UINT8 )
-		converter<uint8_t,double>(PyArray_DATA(ar), outVec.e, array_size);
+		vec_converter<uint8_t,double>(PyArray_DATA(ar), outVec.e, array_size);
 	else if ( PyArray_TYPE(ar) == NPY_UINT16 )
-		converter<uint16_t, double>(PyArray_DATA(ar), outVec.e, array_size);
+		vec_converter<uint16_t, double>(PyArray_DATA(ar), outVec.e, array_size);
 	else if ( PyArray_TYPE(ar) == NPY_INT16 )
-		converter<int16_t, double>(PyArray_DATA(ar), outVec.e, array_size);
+		vec_converter<int16_t, double>(PyArray_DATA(ar), outVec.e, array_size);
 	else if ( PyArray_TYPE(ar) == NPY_UINT32 )
-		converter<uint32_t, double>(PyArray_DATA(ar), outVec.e, array_size);
+		vec_converter<uint32_t, double>(PyArray_DATA(ar), outVec.e, array_size);
 	else if ( PyArray_TYPE(ar) == NPY_INT32 )
-		converter<int32_t, double>(PyArray_DATA(ar), outVec.e, array_size);
+		vec_converter<int32_t, double>(PyArray_DATA(ar), outVec.e, array_size);
 	else if ( PyArray_TYPE(ar) == NPY_FLOAT )
-		converter<float, double>(PyArray_DATA(ar), outVec.e, array_size);
+		vec_converter<float, double>(PyArray_DATA(ar), outVec.e, array_size);
 	else if ( PyArray_TYPE(ar) == NPY_DOUBLE )
-		converter<double, double>(PyArray_DATA(ar), outVec.e, array_size);
+		vec_converter<double, double>(PyArray_DATA(ar), outVec.e, array_size);
 
 	return true;
 }
@@ -54,9 +54,10 @@ bool Script::pylistToVec(PyObject* list, Vec<double>& outVec)
 	if ( list_size != 3 )
 		return false;
 
+	// Copy values into vec in reverse order so (e.g. so sigmas are in "row-major" order)
 	for ( int i=0; i < list_size; ++i )
 	{
-		PyObject* item = PyList_GetItem(list, i);
+		PyObject* item = PyList_GetItem(list, list_size-i-1);
 		if ( PyLong_Check(item) )
 			outVec.e[i] = PyLong_AsDouble(item);
 		else if ( PyFloat_Check(item) )
