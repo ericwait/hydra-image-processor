@@ -38,9 +38,17 @@ void convertKernelImage<bool>(ImageView<float> kernel, Script::ArrayType* inKern
 ImageOwner<float> getKernel(PyArrayObject* kernel)
 {
 	Script::DimInfo info = Script::getDimInfo(kernel);
+	if ( !info.contiguous )
+	{
+		PyErr_SetString(PyExc_RuntimeError, "Kernel argument must be a contiguous numpy array.");
+		return ImageOwner<float>();
+	}
 
 	if ( info.dims.size() < 1 )
+	{
+		PyErr_SetString(PyExc_RuntimeError, "Kernel argument must be a non-empty numpy array.");
 		return ImageOwner<float>();
+	}
 
 	ImageDimensions kernDims = Script::makeImageDims(info);
 	kernDims.chan = 1;
