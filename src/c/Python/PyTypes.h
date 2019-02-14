@@ -55,7 +55,7 @@ namespace Script
 	// TODO: Figure out if we can do this without the const-casting?
 	namespace ArrayInfo
 	{
-		inline bool isColumnMajor(const ArrayType* im) { return CHECK_ARRAY_FLAGS(im,NPY_ARRAY_FARRAY_RO); }
+		inline bool isColumnMajor(const ArrayType* im) { return (CHECK_ARRAY_FLAGS(im,NPY_ARRAY_FARRAY_RO) && !CHECK_ARRAY_FLAGS(im, NPY_ARRAY_C_CONTIGUOUS)); }
 		inline bool isContiguous(const ArrayType* im) { return (CHECK_ARRAY_FLAGS(im, NPY_ARRAY_CARRAY_RO) || CHECK_ARRAY_FLAGS(im, NPY_ARRAY_FARRAY_RO)) ; }
 
 		inline std::size_t getNDims(const ArrayType* im) { return PyArray_NDIM(im); }
