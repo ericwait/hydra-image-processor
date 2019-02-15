@@ -70,10 +70,9 @@ public:
 	{}
 
 #ifdef __CUDACC__
-	template<ENABLE_CHK(NON_NARROWING(T,DIM3_ELEM_TYPE))>
+	template<typename V = DIM3_ELEM_TYPE, ENABLE_CHK(NON_NARROWING(T,V))>
 	MIXED_PREFIX operator dim3() const
 	{
-		using V = DIM3_ELEM_TYPE;
 		return dim3{static_cast<V>(x),static_cast<V>(y),static_cast<V>(z)};
 	}
 #endif
