@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\Microsoft.CppCoreCheck.14.0.24210.1\build\native\Microsoft.CppCoreCheck.props" Condition="Exists('packages\Microsoft.CppCoreCheck.14.0.24210.1\build\native\Microsoft.CppCoreCheck.props')" />
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -67,39 +66,36 @@
     <ClInclude Include="ScriptCmds\ScriptTraits.h" />
     <ClInclude Include="ScriptCmds\ScriptTraitTfms.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0957901A-E67A-40C2-9EF5-76DF8EFBC2D5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>CudaPy3DLL</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -230,12 +226,4 @@
     <Import Project="packages\Microsoft.Gsl.0.1.2.1\build\native\Microsoft.Gsl.targets" Condition="Exists('packages\Microsoft.Gsl.0.1.2.1\build\native\Microsoft.Gsl.targets')" />
     <Import Project="packages\Microsoft.CppCoreCheck.14.0.24210.1\build\native\Microsoft.CppCoreCheck.targets" Condition="Exists('packages\Microsoft.CppCoreCheck.14.0.24210.1\build\native\Microsoft.CppCoreCheck.targets')" />
   </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('packages\Microsoft.Gsl.0.1.2.1\build\native\Microsoft.Gsl.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Gsl.0.1.2.1\build\native\Microsoft.Gsl.targets'))" />
-    <Error Condition="!Exists('packages\Microsoft.CppCoreCheck.14.0.24210.1\build\native\Microsoft.CppCoreCheck.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CppCoreCheck.14.0.24210.1\build\native\Microsoft.CppCoreCheck.props'))" />
-    <Error Condition="!Exists('packages\Microsoft.CppCoreCheck.14.0.24210.1\build\native\Microsoft.CppCoreCheck.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CppCoreCheck.14.0.24210.1\build\native\Microsoft.CppCoreCheck.targets'))" />
-  </Target>
 </Project>
