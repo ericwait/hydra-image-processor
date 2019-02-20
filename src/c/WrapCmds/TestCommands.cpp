@@ -6,44 +6,23 @@
 
 #include <typeinfo>
 
-#define DEF_CMD_AUTO(Name, Params, CudaFunc) \
-	struct ScriptCommand_##Name##_Parser : public Script::PyArgParser<ScriptCommand_##Name##_Parser,Params> \
-	{															\
-		inline static constexpr const char* argName(int idx);	\
-		inline static std::string inoptString();				\
-		inline static std::string outputString();				\
-		inline static void setOptional(OptPtrs optPtrs);		\
-	};															\
-																\
-	class ScriptCommand_##Name;									\
-	struct ScriptCommand_##Name##_Base: public ScriptCommandImpl<ScriptCommand_##Name, ScriptCommand_##Name##_Parser>	\
-	{															\
-		struct ProcessFunc										\
-		{														\
-			template <typename... Args>							\
-			inline static void run(Args&&... args) { CudaFunc(args...); }	\
-		};																	\
-		inline static constexpr const char* commandName() { return #Name; }	\
-	};
+
+// Sequence of generators in main script commands header
+#define GENERATE_SCRIPT_COMMANDS
+#include "GenCommands.h"
+#undef GENERATE_SCRIPT_COMMANDS
+
+#define GENERATE_CONSTEXPR_MEM
+#include "GenCommands.h"
+#undef GENERATE_CONSTEXPR_MEM
+
+// 
 
 
-DEF_CMD_AUTO(Test, SCR_PARAMS
-	(
-		SCR_INPUT(SCR_IMAGE(SCR_DYNAMIC), imageIn),
-		SCR_OUTPUT(SCR_IMAGE(SCR_DYNAMIC), imageOut),
-		SCR_INPUT(SCR_IMAGE_CONVERT(float), kernel),
-		SCR_OPTIONAL(SCR_SCALAR(int), numIterations,1),
-		SCR_OPTIONAL(SCR_SCALAR(int), device,-1)
-	),
-	closure
-)
-
-#undef DEF_CMD_AUTO
-
-void ScriptCommand_Test_Parser::setOptional(ScriptCommand_Test_Parser::OptPtrs optPtrs)
-{
-	mph::tuple_deref(optPtrs) = OptionalSel::select(std::make_tuple(nullptr,nullptr,nullptr,1,-1));
-}
+// Goes in the io-typemap header
+#define GENERATE_DEFAULT_IO_MAPPERS
+#include "GenCommands.h"
+#undef GENERATE_DEFAULT_IO_MAPPERS
 
 template <typename T, typename = void>
 struct valid_type: std::false_type {};

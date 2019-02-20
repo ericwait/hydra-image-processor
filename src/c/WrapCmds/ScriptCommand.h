@@ -17,10 +17,6 @@
 	}
 
 
-#define SCR_DEFAULT_IO_TYPE_MAP template <typename InT> static InT io_type_map_fcn(InT*)
-#define SCR_DEFINE_IO_TYPE_MAP(OutT,InT) static OutT io_type_map_fcn(InT*)
-
-
 class ScriptCommand
 {
 public:
@@ -47,20 +43,6 @@ class ScriptCommandImpl : public ScriptCommand
 
 	using ProcessFunc = AssertProcessFunc<Derived>;
 public:
-	// Helper types for input/output argument type mapping
-	SCR_DEFAULT_IO_TYPE_MAP;
-
-	// This needs to be an instanced struct type for compiler compatibility
-	template <typename InT>
-	struct OutMap_Impl
-	{
-		using type = decltype(Derived::io_type_map_fcn(std::declval<InT*>()));
-	};
-
-	// Simplified type-mapping alias access alias
-	template <typename InT>
-	using OutMap = typename OutMap_Impl<InT>::type;
-
 	// Argument load/conversion access types
 	using ArgParser = Parser;
 	using ArgError = typename ArgParser::ArgError;
@@ -86,6 +68,9 @@ public:
 	// Deferred concrete-types
 	template <typename OutT, typename InT>
 	using ConcreteArgTypes = typename ArgParser::template ConcreteArgTypes<OutT, InT>;
+
+	template <typename InT>
+	using OutMap = typename ArgParser::template OutMap<InT>;
 
 	// Script engine-dependent function to dispatch parameters
 	DISPATCH_FUNC;

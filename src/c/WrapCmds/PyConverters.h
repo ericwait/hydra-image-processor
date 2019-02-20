@@ -15,20 +15,6 @@
 
 #undef snprintf
 
-#define SCR_PARAMS(...) __VA_ARGS__
-
-#define SCR_OUTPUT(TypeMacro, VarName) Script::OutParam<TypeMacro>
-#define SCR_INPUT(TypeMacro, VarName) Script::InParam<TypeMacro>
-#define SCR_OPTIONAL(TypeMacro, VarName, DefVal) Script::OptParam<TypeMacro>
-
-#define SCR_SCALAR(VarType) Script::Scalar<VarType>
-
-#define SCR_VECTOR(VarType) Script::Vector<VarType>
-
-#define SCR_IMAGE(VarType) Script::ImageRef<VarType>
-#define SCR_IMAGE_CONVERT(VarType) Script::Image<VarType>
-
-#define SCR_DYNAMIC Script::DeferredType
 
 #ifdef _WIN32
  #define SNPRINTF std::snprintf
@@ -129,18 +115,18 @@ namespace Script
 
 		public:
 			template <typename... Args>
-			ArgConvertError(int argIdx, const char* fmt, Args... args)
-				: std::runtime_error(make_msg(fmt,args...).get()), argIdx(argIdx)
+			ArgConvertError(const char* argName, const char* fmt, Args... args)
+				: std::runtime_error(make_msg(fmt,args...).get()), argName(argName)
 			{}
 
-			int getArgIndex() const { return argIdx; }
-			void setArgIndex(int idx) { argIdx = idx; }
+			const char* getArgName() const { return argName; }
+			void setArgName(const char* name) { argName = name; }
 
 		private:
 			ArgConvertError() = delete;
 
 		private:
-			int argIdx;
+			const char* argName;
 		};
 
 	protected:
@@ -149,7 +135,7 @@ namespace Script
 		public:
 			template <typename... Args>
 			ScalarConvertError(const char* fmt, Args... args)
-				: ArgConvertError(-1, fmt, args...){}
+				: ArgConvertError(nullptr, fmt, args...){}
 		};
 
 		class VectorConvertError: public ArgConvertError
@@ -157,7 +143,7 @@ namespace Script
 		public:
 			template <typename... Args>
 			VectorConvertError(const char* fmt, Args... args)
-				: ArgConvertError(-1, fmt, args...) {}
+				: ArgConvertError(nullptr, fmt, args...) {}
 		};
 
 		class ImageConvertError: public ArgConvertError
@@ -165,7 +151,7 @@ namespace Script
 		public:
 			template <typename... Args>
 			ImageConvertError(const char* fmt, Args... args)
-				: ArgConvertError(-1, fmt, args...) {}
+				: ArgConvertError(nullptr, fmt, args...) {}
 		};
 
 		class ArrayTypeError: public ArgConvertError
@@ -173,12 +159,12 @@ namespace Script
 		public:
 			template <typename... Args>
 			ArrayTypeError(const char* fmt, Args... args)
-				: ArgConvertError(-1, fmt, args...) {}
+				: ArgConvertError(nullptr, fmt, args...) {}
 		};
 
 	public:
 		template <typename OutT, typename InT>
-		static void convertArg(OutT& out, const InT* inPtr, int argIdx)
+		static void convertArg(OutT& out, const InT* inPtr, const char* argName)
 		{
 			// NOTE: if inPtr is nullptr then this is presumed to be optional
 			if ( inPtr == nullptr )
@@ -190,21 +176,24 @@ namespace Script
 			}
 			catch ( ArgConvertError& ace )
 			{
-				ace.setArgIndex(argIdx);
+				ace.setArgName(argName);
 				throw;
 			}
 		}
 
 		template <typename OutT, typename InT>
-		static void convertArg(OutT*& outPtr, const InT& in, int argIdx)
+		static void convertArg(OutT*& outPtr, const InT& in, const char* argName)
 		{
+			if ( outPtr == nullptr )
+				throw ArgConvertError(argName, "Output parameter cannot be null");
+
 			try
 			{
 				convert_impl(outPtr, in);
 			}
 			catch ( ArgConvertError& ace )
 			{
-				ace.setArgIndex(argIdx);
+				ace.setArgName(argName);
 				throw;
 			}
 		}

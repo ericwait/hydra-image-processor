@@ -134,7 +134,7 @@ namespace Script
 		{
 			static std::string make_convert_msg(const ArgConvertError& ace)
 			{
-				return std::string(Derived::argName(ace.getArgIndex())) + ": " + ace.what();
+				return std::string(ace.getArgName()) + ": " + ace.what();
 			}
 
 		public:
@@ -156,7 +156,7 @@ namespace Script
 			{
 				(void)std::initializer_list<int>
 				{
-					(ScriptConverter::convertArg((*std::get<Is>(targets)), (*std::get<Is>(args)), static_cast<int>(Is)), void(), 0)...
+					(ScriptConverter::convertArg((*std::get<Is>(targets)), (*std::get<Is>(args)), std::get<Is>(Derived::argNames)), void(), 0)...
 				};
 			}
 			catch ( ArgConvertError& ace )
