@@ -137,6 +137,9 @@
     <ClInclude Include="WrapCmds\ScriptTraitTfms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mph\preproc_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mph\integer_sequence.h" />
+    <ClInclude Include="mph\preproc_helper.h" />
     <ClInclude Include="mph\qualifier_helpers.h" />
     <ClInclude Include="mph\tuple_helpers.h" />
     <ClInclude Include="Python\PyIncludes.h" />
