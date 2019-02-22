@@ -6,7 +6,7 @@ void MexDeviceStats::execute(int nlhs, mxArray* plhs[], int nrhs, const mxArray*
 {
     DevStats* devStats;
 	mwSize numDevices = (mwSize)deviceStats(&devStats);
-
+	printf("ljsHIP\n");
     mwSize dims[2] = {numDevices, 1};
     const char* fieldNames[] = {"name", "major", "minor", "constMem", "sharedMem", "totalMem", "tccDriver", "mpCount", "threadsPerMP", "warpSize", "maxThreads"};
     plhs[0] = mxCreateStructArray(2, dims, 11, fieldNames);
