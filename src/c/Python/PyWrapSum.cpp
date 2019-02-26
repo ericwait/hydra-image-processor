@@ -29,7 +29,7 @@ void PyWrapSum_run(const PyArrayObject* inIm, PyObject** outSum, int device)
 	SumType outVal = 0;
 	sum(imageIn, outVal, device);
 
-	*outSum = Script::fromNumeric<SumType>(outVal);
+	*outSum = Script::Converter::fromNumeric<SumType>(outVal);
 }
 
 

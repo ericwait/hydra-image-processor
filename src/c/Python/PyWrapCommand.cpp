@@ -19,7 +19,7 @@ void vec_converter(void* in, void* out, std::size_t len)
 		((U*)out)[i] = static_cast<U>(((T*)in)[len-i-1]);
 }
 
-bool Script::pyarrayToVec(PyArrayObject* ar, Vec<double>& outVec)
+bool pyarrayToVec(PyArrayObject* ar, Vec<double>& outVec)
 {
 	int ndim = PyArray_NDIM(ar);
 	if ( ndim > 1 )
@@ -48,7 +48,7 @@ bool Script::pyarrayToVec(PyArrayObject* ar, Vec<double>& outVec)
 }
 
 
-bool Script::pylistToVec(PyObject* list, Vec<double>& outVec)
+bool pylistToVec(PyObject* list, Vec<double>& outVec)
 {
 	Py_ssize_t list_size = PyList_Size(list);
 	if ( list_size != 3 )

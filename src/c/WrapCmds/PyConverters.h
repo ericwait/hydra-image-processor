@@ -13,15 +13,6 @@
 #include <memory>
 #include <type_traits>
 
-#undef snprintf
-
-
-#ifdef _WIN32
- #define SNPRINTF std::snprintf
-#else
- #define SNPRINTF std::snprintf
-#endif
-
 namespace Script
 {
 	// Helper for python arg expanders
@@ -78,376 +69,10 @@ namespace Script
 	};
 
 
-
-	template <typename T> struct PyToTypeMap {};
-	template <> struct PyToTypeMap<uint8_t> { using type = unsigned long; };
-	template <> struct PyToTypeMap<uint16_t> { using type = unsigned long; };
-	template <> struct PyToTypeMap<uint32_t> { using type = unsigned long; };
-	template <> struct PyToTypeMap<int16_t> { using type = unsigned long; };
-	template <> struct PyToTypeMap<int32_t> { using type = unsigned long; };
-	template <> struct PyToTypeMap<float> { using type = unsigned long; };
-	template <> struct PyToTypeMap<double> { using type = unsigned long; };
-
-
-	// Script-to-concrete input converter
-	struct PyTypeConverter
-	{
-		class ArgConvertError: public std::runtime_error
-		{
-			template <typename... Args>
-			static std::unique_ptr<char[]> make_msg(const char* fmt, Args... args)
-			{
-				size_t size = SNPRINTF(nullptr, 0, fmt, args...);
-
-				std::unique_ptr<char[]> msgPtr(new char[size+1]);
-				SNPRINTF(msgPtr.get(), size, fmt, args...);
-				return msgPtr;
-			}
-
-			static std::unique_ptr<char[]> make_msg(const char* fmt)
-			{
-				size_t size = std::strlen(fmt);
-
-				std::unique_ptr<char[]> msgPtr(new char[size+1]);
-				std::strncpy(msgPtr.get(), fmt, size);
-				return msgPtr;
-			}
-
-		public:
-			template <typename... Args>
-			ArgConvertError(const char* argName, const char* fmt, Args... args)
-				: std::runtime_error(make_msg(fmt,args...).get()), argName(argName)
-			{}
-
-			const char* getArgName() const { return argName; }
-			void setArgName(const char* name) { argName = name; }
-
-		private:
-			ArgConvertError() = delete;
-
-		private:
-			const char* argName;
-		};
-
-	protected:
-		class ScalarConvertError: public ArgConvertError
-		{
-		public:
-			template <typename... Args>
-			ScalarConvertError(const char* fmt, Args... args)
-				: ArgConvertError(nullptr, fmt, args...){}
-		};
-
-		class VectorConvertError: public ArgConvertError
-		{
-		public:
-			template <typename... Args>
-			VectorConvertError(const char* fmt, Args... args)
-				: ArgConvertError(nullptr, fmt, args...) {}
-		};
-
-		class ImageConvertError: public ArgConvertError
-		{
-		public:
-			template <typename... Args>
-			ImageConvertError(const char* fmt, Args... args)
-				: ArgConvertError(nullptr, fmt, args...) {}
-		};
-
-		class ArrayTypeError: public ArgConvertError
-		{
-		public:
-			template <typename... Args>
-			ArrayTypeError(const char* fmt, Args... args)
-				: ArgConvertError(nullptr, fmt, args...) {}
-		};
-
-	public:
-		template <typename OutT, typename InT>
-		static void convertArg(OutT& out, const InT* inPtr, const char* argName)
-		{
-			// NOTE: if inPtr is nullptr then this is presumed to be optional
-			if ( inPtr == nullptr )
-				return;
-
-			try
-			{
-				convert_impl(out, inPtr);
-			}
-			catch ( ArgConvertError& ace )
-			{
-				ace.setArgName(argName);
-				throw;
-			}
-		}
-
-		template <typename OutT, typename InT>
-		static void convertArg(OutT*& outPtr, const InT& in, const char* argName)
-		{
-			if ( outPtr == nullptr )
-				throw ArgConvertError(argName, "Output parameter cannot be null");
-
-			try
-			{
-				convert_impl(outPtr, in);
-			}
-			catch ( ArgConvertError& ace )
-			{
-				ace.setArgName(argName);
-				throw;
-			}
-		}
-
-	private:
-		// Have to check python object types when converting individual numbers
-		static bool pyToNumericConvert(long* out, PyObject* in)
-		{
-			if ( PyLong_Check(in) )
-				(*out) = PyLong_AsLong(in);
-			else
-				return false;
-
-			return true;
-		}
-
-		static bool pyToNumericConvert(unsigned long* out, PyObject* in)
-		{
-			if ( PyLong_Check(in) )
-				(*out) = PyLong_AsUnsignedLong(in);
-			else
-				return false;
-
-			return true;
-		}
-
-		static bool pyToNumericConvert(double* out, PyObject* in)
-		{
-			if ( PyLong_Check(in) )
-				(*out) = PyLong_AsDouble(in);
-			else if ( PyFloat_Check(in) )
-				(*out) = PyFloat_AsDouble(in);
-			else
-				return false;
-
-			return true;
-		}
-
-
-		// Copy-converter for python arrays
-		// NOTE: This doesn't account for stride differences and should only be used for
-		//   1-D numpy arrays
-		template <typename OutType, typename InType>
-		static void convertArray(OutType* outPtr, const InType* inPtr, std::size_t length)
-		{
-			for ( std::size_t i = 0; i < length; ++i )
-				outPtr[i] = static_cast<OutType>(inPtr[i]);
-		}
-
-		// Specialization runs a simple memcpy
-		template <typename T>
-		static void convertArray(T* outPtr, const T* inPtr, std::size_t length)
-		{
-			std::memcpy(outPtr, inPtr, length*sizeof(T));
-		}
-
-
-		template <typename T>
-		static void pyArrayCopyConvert(T* outPtr, const PyArrayObject* arrPtr)
-		{
-			// TODO: Check for contiguous
-			std::size_t array_size = PyArray_SIZE(const_cast<PyArrayObject*>(arrPtr));
-
-			void* data = PyArray_DATA(const_cast<PyArrayObject*>(arrPtr));
-			Script::IdType type = Script::ArrayInfo::getType(arrPtr);
-			if ( type == NPY_BOOL )
-				convertArray(outPtr, reinterpret_cast<bool*>(data), array_size);
-			else if ( type == NPY_UINT8 )
-				convertArray(outPtr, reinterpret_cast<uint8_t*>(data), array_size);
-			else if ( type == NPY_UINT16 )
-				convertArray(outPtr, reinterpret_cast<uint16_t*>(data), array_size);
-			else if ( type == NPY_INT16 )
-				convertArray(outPtr, reinterpret_cast<int16_t*>(data), array_size);
-			else if ( type == NPY_UINT32 )
-				convertArray(outPtr, reinterpret_cast<uint32_t*>(data), array_size);
-			else if ( type == NPY_INT32 )
-				convertArray(outPtr, reinterpret_cast<int32_t*>(data), array_size);
-			else if ( type == NPY_FLOAT )
-				convertArray(outPtr, reinterpret_cast<float*>(data), array_size);
-			else if ( type == NPY_DOUBLE )
-				convertArray(outPtr, reinterpret_cast<double*>(data), array_size);
-			else
-				throw ArrayTypeError("Unsupported numpy array type: %x", type);
-		}
-
-
-		// Helpers for Vec<T> conversion
-		template <typename T>
-		static void pyListToVec(Vec<T>& out, const PyObject* inPtr)
-		{
-			PyObject* list = const_cast<PyObject*>(inPtr);
-			Py_ssize_t list_size = PyList_Size(list);
-			if ( list_size != 3 )
-				throw VectorConvertError("List must have 3 numeric values");
-
-			for ( int i=0; i < list_size; ++i )
-			{
-				PyObject* item = PyList_GetItem(list, i);
-				convert_impl(out.e[i], item);
-			}
-		}
-
-		template <typename T>
-		static void pyTupleToVec(Vec<T>& out, const PyObject* inPtr)
-		{
-			PyObject* tuple = const_cast<PyObject*>(inPtr);
-			Py_ssize_t tuple_size = PyTuple_Size(tuple);
-			if ( tuple_size != 3 )
-				throw VectorConvertError("Tuple must have 3 numeric values");
-
-			for ( int i=0; i < tuple_size; ++i )
-			{
-				PyObject* item = PyTuple_GetItem(tuple, i);
-				convert_impl(out.e[i], item);
-			}
-		}
-
-		template <typename T>
-		static void pyArrayToVec(Vec<T>& out, const PyObject* inPtr)
-		{
-			PyArrayObject* arrPtr = const_cast<PyArrayObject*>(reinterpret_cast<const PyArrayObject*>(inPtr));
-			size_t ndim = Script::ArrayInfo::getNDims(arrPtr);
-			if ( ndim > 1 )
-				throw VectorConvertError("Array must be 1-D with 3 numeric values");
-
-			Script::DimType size = Script::ArrayInfo::getDim(arrPtr, 0);
-			if ( size != 3 )
-				throw VectorConvertError("Array must be 1-D with 3 numeric values");
-
-			pyArrayCopyConvert(out.e, arrPtr);
-		}
-
-
-		template <typename T>
-		static void pyArrayToImageCopy(ImageOwner<T>& out, const PyArrayObject* inPtr)
-		{
-			Script::DimInfo info = Script::getDimInfo(inPtr);
-
-			// TODO: Do we need to allow overloads for array checks?
-			if ( !info.contiguous )
-				throw ImageConvertError("Only contiguous numpy arrays are supported");
-
-			ImageDimensions inDims = Script::makeImageDims(info);
-			out = ImageOwner<T>(inDims);
-			pyArrayCopyConvert(out.getPtr(), inPtr);
-		}
-
-		template <typename T>
-		static void pyArrayToImageRef(ImageView<T>& out, const PyArrayObject* inPtr)
-		{
-			Script::DimInfo info = Script::getDimInfo(inPtr);
-
-			// TODO: Do we need to allow overloads for array checks?
-			if ( !info.contiguous )
-				throw ImageConvertError("Only contiguous numpy arrays are supported");
-
-			Script::IdType type = Script::ArrayInfo::getType(inPtr);
-			if ( Script::TypeToIdMap<T>::typeId != type )
-				throw ImageConvertError("Expected numpy array of type: %s", Script::TypeNameMap<T>::name);
-
-			ImageDimensions inDims = Script::makeImageDims(info);
-			out = ImageView<T>(Script::ArrayInfo::getData<T>(inPtr), inDims);
-		}
-
-
-		//////////////////////////////////
-		// Basic type conversions
-		template <typename T>
-		static void convert_impl(T& out, const PyObject* inPtr)
-		{
-			typename PyToTypeMap<T>::type tmp;
-			if ( !pyToNumericConvert(&tmp, const_cast<PyObject*>(inPtr)) )
-				throw ScalarConvertError("Must be unsigned integer value");
-
-			out = static_cast<T>(tmp);
-		}
-
-		template <typename T>
-		static void convert_impl(PyObject*& outPtr, const T& in)
-		{
-			outPtr = Script::fromNumeric(in);
-		}
-
-		// Vector conversions
-		template <typename T>
-		static void convert_impl(Vec<T>& out, const PyObject* inPtr)
-		{
-			try
-			{
-				if ( PyList_Check(inPtr) )
-					pyListToVec(out, inPtr);
-				else if ( PyTuple_Check(inPtr) )
-					pyTupleToVec(out, inPtr);
-				else if ( PyArray_Check(inPtr) )
-					pyArrayToVec(out, inPtr);
-				else
-					throw VectorConvertError("Must be numeric list, tuple, or numpy array");
-			}
-			catch ( ScalarConvertError& )
-			{
-				throw VectorConvertError("Invalid value in vector, expected 3 numeric values");
-			}
-		}
-
-		template <typename T>
-		static void convert_impl(PyObject*& outPtr, const Vec<T>& in)
-		{
-			outPtr = PyTuple_New(3);
-			for ( int i=0; i < 3; ++i )
-				PyTuple_SetItem(outPtr, i, Script::fromNumeric(in.e[i]));
-		}
-
-
-		// Concrete ImageOwner<T> conversions
-		template <typename T>
-		static void convert_impl(ImageOwner<T>& out, const PyArrayObject* inPtr)
-		{
-			if ( PyArray_Check(inPtr) )
-			{
-				pyArrayToImageCopy(out, inPtr);
-			}
-			else
-			{
-				throw ImageConvertError("Must be a numpy array");
-			}
-		}
-
-
-		template <typename T>
-		static void convert_impl(ImageView<T>& out, const PyArrayObject* inPtr)
-		{
-			if ( PyArray_Check(inPtr) )
-			{
-				pyArrayToImageRef(out, inPtr);
-			}
-			else
-			{
-				throw ImageConvertError("Must be a numpy array");
-			}
-		}
-
-		template <typename T>
-		static void convert_impl(PyArrayObject*& out, const ImageView<T>& in)
-		{
-			if ( out == nullptr )
-				throw ImageConvertError("Output image data should already be created");
-		}
-	};
-
-
 	template <typename Derived, typename... Layout>
-	struct PyArgParser : public ArgParser<Derived, PyTypeConverter, Layout...>
+	struct PyArgParser : public ArgParser<Derived, Layout...>
 	{
-		using BaseParser = ArgParser<Derived, PyTypeConverter, Layout...>;
+		using BaseParser = ArgParser<Derived, Layout...>;
 
 		using typename BaseParser::ArgError;
 
@@ -501,6 +126,57 @@ namespace Script
 				scriptOut = PyTuple_New(OutInfo::size);
 				set_out_items(scriptOut, BaseParser::OutputSel::select(scriptPtrs));
 			}
+		}
+
+	public:
+		//////////////////////////////////
+		// Basic type conversions
+		// TODO: Fix const-ness issues for Python converters in concrete types
+		template <typename T>
+		static void convert_impl(T& out, const Script::ObjectType* inPtr)
+		{
+			out = Converter::toNumeric<T>(const_cast<Script::ObjectType*>(inPtr));
+		}
+
+		template <typename T>
+		static void convert_impl(Script::ObjectType*& outPtr, const T& in)
+		{
+			outPtr = Converter::fromNumeric(in);
+		}
+
+		// Vector conversions
+		template <typename T>
+		static void convert_impl(Vec<T>& out, const Script::ObjectType* inPtr)
+		{
+			out = Converter::toVec<T>(const_cast<Script::ObjectType*>(inPtr));
+		}
+
+		template <typename T>
+		static void convert_impl(Script::ObjectType*& outPtr, const Vec<T>& in)
+		{
+			outPtr = Converter::fromVec(in);
+		}
+
+
+		// Concrete ImageOwner<T> conversions
+		template <typename T>
+		static void convert_impl(ImageOwner<T>& out, const Script::ArrayType* inPtr)
+		{
+			out = Converter::toImageCopy<T>(const_cast<Script::ArrayType*>(inPtr));
+		}
+
+
+		template <typename T>
+		static void convert_impl(ImageView<T>& out, const Script::ArrayType* inPtr)
+		{
+			out = Converter::toImage<T>(const_cast<Script::ArrayType*>(inPtr));
+		}
+
+		template <typename T>
+		static void convert_impl(Script::ArrayType*& out, const ImageView<T>& in)
+		{
+			if ( out == nullptr )
+				throw Converter::ImageConvertError("Output image data should already be created");
 		}
 
 	private:

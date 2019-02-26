@@ -30,8 +30,8 @@ void PyWrapMinMax_run(const PyArrayObject* inIm, PyObject* outTuple, int device)
 
 	getMinMax(imageIn.getConstPtr(), imageIn.getNumElements(), minVal, maxVal, device);
 
-	PyTuple_SetItem(outTuple, 0, Script::fromNumeric(minVal));
-	PyTuple_SetItem(outTuple, 1, Script::fromNumeric(maxVal));
+	PyTuple_SetItem(outTuple, 0, Script::Converter::fromNumeric(minVal));
+	PyTuple_SetItem(outTuple, 1, Script::Converter::fromNumeric(maxVal));
 }
 
 

@@ -16,11 +16,11 @@ namespace Script
 	using deferred_concrete_transform = mph::tuple_type_tfm<deferred_to_concrete<OutT,InT>::template tfm, Tuple>;
 
 
-	template <typename Derived, typename ScriptConverter, typename... Layout>
+	template <typename Derived, typename... Layout>
 	struct ArgParser
 	{
 	protected:
-		using ArgConvertError = typename ScriptConverter::ArgConvertError;
+		using ArgConvertError = typename Script::Converter::ArgConvertError;
 
 	public:
 		// Argument type layout alias (e.g. std::tuple<OutParam<Image<Deferred>>,...>)
@@ -149,6 +149,43 @@ namespace Script
 		};
 
 	protected:
+		// Converting input arguments (script types are pointers)
+		template <typename OutT, typename InT>
+		static void convert_arg(OutT& out, const InT* inPtr, const char* argName)
+		{
+			// NOTE: if inPtr is nullptr then this is presumed to be optional
+			if ( inPtr == nullptr )
+				return;
+
+			try
+			{
+				Derived::convert_impl(out, inPtr);
+			}
+			catch ( ArgConvertError& ace )
+			{
+				ace.setArgName(argName);
+				throw;
+			}
+		}
+
+		// Convert output arguments
+		template <typename OutT, typename InT>
+		static void convert_arg(OutT*& outPtr, const InT& in, const char* argName)
+		{
+			if ( outPtr == nullptr )
+				throw ArgConvertError(argName, "Output parameter cannot be null");
+
+			try
+			{
+				Derived::convert_impl(outPtr, in);
+			}
+			catch ( ArgConvertError& ace )
+			{
+				ace.setArgName(argName);
+				throw;
+			}
+		}
+
 		template <typename... Targets, typename... Args, size_t... Is>
 		static void convert_arg_subset(std::tuple<Targets*...> targets, std::tuple<Args*...> args, mph::index_sequence<Is...>)
 		{
@@ -156,7 +193,7 @@ namespace Script
 			{
 				(void)std::initializer_list<int>
 				{
-					(ScriptConverter::convertArg((*std::get<Is>(targets)), (*std::get<Is>(args)), std::get<Is>(Derived::argNames)), void(), 0)...
+					(convert_arg((*std::get<Is>(targets)), (*std::get<Is>(args)), std::get<Is>(Derived::argNames)), void(), 0)...
 				};
 			}
 			catch ( ArgConvertError& ace )
@@ -164,6 +201,7 @@ namespace Script
 				throw ArgError(ace);
 			}
 		}
+
 
 		template <typename TargetTuple, size_t... Is>
 		static auto create_arrays(const DimInfo& info, mph::index_sequence<Is...>)
