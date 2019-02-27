@@ -46,6 +46,7 @@
     <ClCompile Include="WrapCmds\TestCommands.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="mph\const_string.h" />
     <ClInclude Include="mph\integer_sequence.h" />
     <ClInclude Include="mph\preproc_helper.h" />
     <ClInclude Include="mph\qualifier_helpers.h" />
