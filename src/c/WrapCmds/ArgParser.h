@@ -189,7 +189,7 @@ namespace Script
 			{
 				(void)std::initializer_list<int>
 				{
-					(convert_arg((*std::get<Is>(targets)), (*std::get<Is>(args)), std::get<Is>(Derived::argNames)), void(), 0)...
+					(convert_arg((*std::get<Is>(targets)), (*std::get<Is>(args)), std::get<Is>(Derived::argNames).c_str()), void(), 0)...
 				};
 			}
 			catch ( ArgConvertError& ace )

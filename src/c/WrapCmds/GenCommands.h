@@ -8,7 +8,7 @@
 
 // Expansion wrapper so that things like Params can be passed into sub-macros
 #define _PASSTHRU(...) __VA_ARGS__
-#define _STRINGIFY_IMPL(Name) #Name
+#define _STRINGIFY_IMPL(Name) mph::literal(#Name)
 #define _STRINGIFY(...) _STRINGIFY_IMPL(__VA_ARGS__)
 
 // FOREACH selectors to expand subsets of the information in the script command definition
@@ -65,7 +65,6 @@
 			template <typename InT>								\
 			using OutMap = typename OutMap_##Name<InT>::type;	\
 																\
-			inline static const char* argName(int idx);			\
 			inline static void setOptional(OptPtrs optPtrs)		\
 			{													\
 				mph::tuple_deref(optPtrs) = OptionalSel::select(std::make_tuple(_SCR_PRM_DEFVAL_SEL(Params)));	\
