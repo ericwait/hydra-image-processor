@@ -33,24 +33,16 @@ namespace mph
 	// Internals for tuple-predicate filtering
 	namespace internal
 	{
-		template <bool> struct conditional_seq { template <std::size_t I> using type = index_sequence<I>; };
-		template <> struct conditional_seq<false> { template <std::size_t I> using type = index_sequence<>; };
-
 		template <template<typename> class Pred, typename Tuple, typename Seq>
 		struct filter_tuple_seq_impl {};
 
-		template <template<typename> class Pred, typename Head, typename... Tail, std::size_t IH, std::size_t... IT>
-		struct filter_tuple_seq_impl<Pred, std::tuple<Head, Tail...>, index_sequence<IH, IT...>>
+		template <template<typename> class Pred, typename... Ts, std::size_t... Is>
+		struct filter_tuple_seq_impl<Pred, std::tuple<Ts...>, index_sequence<Is...>>
 		{
-			using type = typename mph::cat_integer_sequence<std::size_t,
-				typename conditional_seq<Pred<Head>::value>::template type<IH>,
-				typename filter_tuple_seq_impl<Pred, std::tuple<Tail...>, index_sequence<IT...>>::type>::type;
-		};
+			template <typename T, std::size_t I>
+			using filtered_seq = typename internal::conditional_seq<Pred<T>::value>::template type<std::size_t,I>;
 
-		template <template<typename> class Pred>
-		struct filter_tuple_seq_impl<Pred, std::tuple<>, index_sequence<>>
-		{
-			using type = index_sequence<>;
+			using type = typename mph::cat_integer_sequence<std::size_t, filtered_seq<Ts,Is>...>::type;
 		};
 
 

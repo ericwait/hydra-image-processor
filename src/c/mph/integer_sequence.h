@@ -109,6 +109,45 @@ namespace mph
 		{
 			using type = typename convert_integer_sequence<T, typename gen_seq_guard<N>::type>::type;
 		};
+
+
+		// Useful helper type (conditionally produces a sequence element or empty sequence>
+		template <bool> struct conditional_seq { template <typename T, T I> using type = integer_sequence<T,I>; };
+		template <> struct conditional_seq<false> { template <typename T, T I> using type = integer_sequence<T>; };
+
+
+		// Select a sequence element
+		template <std::size_t N, typename Seq>
+		struct nth_seq_elem{};
+
+		template <std::size_t N, typename T, T I, T... IT>
+		struct nth_seq_elem<N, integer_sequence<T, I, IT...>>
+			: nth_seq_elem<N-1, integer_sequence<T, IT...>> {};
+
+		template <typename T, T I, T... IT>
+		struct nth_seq_elem<0, integer_sequence<T, I, IT...>>
+		{
+			static constexpr const T elem = I;
+		};
+
+		template <typename Seq, typename Subseq>
+		struct select_subseq_impl {};
+
+		template <typename T, T... Is, std::size_t... Isub>
+		struct select_subseq_impl<integer_sequence<T,Is...>, index_sequence<Isub...>>
+		{
+			using type = integer_sequence<T, nth_seq_elem<Isub, integer_sequence<T,Is...>>::elem...>;
+		};
+
+		template <std::size_t N, typename Seq, typename CountSeq>
+		struct split_sequence_impl {};
+
+		template <std::size_t N, typename T, T... Is, std::size_t... Cs>
+		struct split_sequence_impl<N, integer_sequence<T,Is...>, index_sequence<Cs...>>
+		{
+			using left = typename cat_integer_sequence<T, typename conditional_seq<Cs < N >::template type<T,Is>...>::type;
+			using right = typename cat_integer_sequence<T, typename conditional_seq<Cs >= N>::template type<T,Is>...>::type;
+		};
 	};
 
 	/////////////////////////
@@ -125,4 +164,16 @@ namespace mph
 	/////////////////////////
 	template <std::size_t N>
 	using make_index_sequence = make_integer_sequence<std::size_t, N>;
+
+
+	/////////////////////////
+	// split_sequence -
+	//   Splits an integer sequence into left/right sequences at the Nth element
+	//   (e.g. split_sequence<2, index_sequence<0,1,2,3,4>>
+	//           -> left=index_sequence<0,1>, right=index_sequence<2,3,4>
+	/////////////////////////
+	template <std::size_t N, typename Seq>
+	struct split_sequence : internal::split_sequence_impl<N, Seq, make_index_sequence<Seq::size()>>
+	{};
+
 };
