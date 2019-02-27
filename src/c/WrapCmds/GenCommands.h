@@ -102,7 +102,8 @@
 	#define SCR_CMD(Name, Params, WrapperFunc) _SCR_GEN_CONSTEXP_MEM(Name)
 
 	#define _SCR_GEN_CONSTEXP_MEM(Name)	\
-		constexpr const ScriptCommand_##Name##_Parser::NameTuple ScriptCommand_##Name##_Parser::argNames;
+		constexpr const ScriptCommand_##Name##_Parser::NameTuple ScriptCommand_##Name##_Parser::argNames;	\
+		constexpr ScriptCommand_##Name::HelpStrType ScriptCommand_##Name::helpStr;
 		
 
 #elif defined(GENERATE_DEFAULT_IO_MAPPERS)
@@ -123,7 +124,7 @@
 		using OutMap_##Name##_T = typename OutMap_##Name<InT>::type;
 
 #elif defined(GENERATE_COMMAND_MAP)
-// Generate list of commands used by python module loader and mex passthrough Info/Help commands
+// Generate list of commands used by python module loader and mex Info/Help commands
 
 #else
 // Don't generate code for any other inclusions

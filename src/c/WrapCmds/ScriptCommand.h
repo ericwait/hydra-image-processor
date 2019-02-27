@@ -7,25 +7,46 @@
 
 #include "PyIncludes.h"
 
-#define DISPATCH_P_TYPE PyObject* (*) (PyObject*, PyObject*)
-#define DISPATCH_FUNC											\
-	static PyObject* dispatch(PyObject* self, PyObject* args)	\
-	{															\
-		PyObject* output = nullptr;								\
-		convert_dispatch(output, args);							\
-		return output;											\
+#define SCR_MODULE_NAME "HIP"
+
+#define SCR_DISPATCH_FUNC_DECL(TypeName) PyObject* TypeName(PyObject* self, PyObject* args)
+#define SCR_USAGE_FUNC_DECL(TypeName) std::string TypeName()
+#define SCR_HELP_FUNC_DECL(TypeName) std::string TypeName()
+#define SCR_INFO_FUNC_DECL(TypeName) void TypeName(std::string& command, std::string& help, std::vector<std::string>& outArgs, std::vector<std::string>& inArgs)
+
+#define SCR_DISPATCH_FUNC_DEF(Name)			\
+	SCR_DISPATCH_FUNC_DECL(dispatch)		\
+	{									\
+		PyObject* output = nullptr;		\
+		convert_dispatch(output, args);	\
+		return output;					\
 	}
 
 
 class ScriptCommand
 {
+	typedef SCR_DISPATCH_FUNC_DECL((*DispatchFuncType));
+	typedef SCR_USAGE_FUNC_DECL((*UsageFuncType));
+	typedef SCR_HELP_FUNC_DECL((*HelpFuncType));
+	typedef SCR_INFO_FUNC_DECL((*InfoFuncType));
 public:
-	using DispatchPtr = DISPATCH_P_TYPE;
+	// TODO: Should we use virtual functions instead of static dispatch?
+	struct FuncPtrs
+	{
+		DispatchFuncType dispatch;
+		UsageFuncType usage;
+		HelpFuncType help;
+		InfoFuncType info;
+	};
+
+	static_assert(std::is_same<DispatchFuncType,PyObject* (*)(PyObject*,PyObject*)>::value, "Incorrect pointer type");
 	// TODO: Module initialization routines (and matlab dispatch)
 
 protected:
-	static const std::string m_moduleName;
-	static const std::unordered_map<std::string,DispatchPtr> m_commands;
+	inline static const char* moduleName() {return SCR_MODULE_NAME;}
+
+protected:
+	static const std::unordered_map<std::string, FuncPtrs> m_commands;
 };
 
 
@@ -73,7 +94,26 @@ public:
 	using OutMap = typename ArgParser::template OutMap<InT>;
 
 	// Script engine-dependent function to dispatch parameters
-	DISPATCH_FUNC;
+	inline static SCR_DISPATCH_FUNC_DEF(dispatch)
+
+	inline static SCR_HELP_FUNC_DECL(help)
+	{
+		if ( Derived::helpStr.size() > 0 )
+			return Derived::usage() + std::string("\n\n" + Derived::helpStr);
+		else
+			return Derived::usage();
+	}
+	
+	inline static SCR_USAGE_FUNC_DECL(usage)
+	{
+		// TODO: Fix the output wrapping here
+		return std::string("[") + ArgParser::outargstr() + "]"
+			+ " = " + moduleName() + Derived::commandName()
+			+ "("+ ArgParser::inoptargstr() + ")";
+	}
+
+	inline static SCR_INFO_FUNC_DECL(info)
+	{}
 
 	// Non-overloadable - Handles argument conversion and dispatches to execute command
 	// NOTE: default execute command checks for deferred types and passes to
@@ -150,11 +190,6 @@ private:
 	static void exec_dispatch_impl(std::tuple<Args...> ioArgs, mph::index_sequence<Is...>)
 	{
 		Derived::execute(std::forward<Args>(std::get<Is>(ioArgs))...);
-	}
-
-	static std::string usageString()
-	{
-		return ArgParser::outputString() + " = " + m_moduleName + "." + Derived::commandName() + ArgParser::inoptString();
 	}
 
 private:

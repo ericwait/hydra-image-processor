@@ -1,5 +1,7 @@
 #pragma once
 
+#include "mph/const_string.h"
+
 #include "ScriptTraits.h"
 #include "ScriptTraitTfms.h"
 
@@ -93,6 +95,62 @@ namespace Script
 		// Optional argument pointers (used for setting defaults)
 		using OptPtrs = typename OptionalSel::template type<ArgPtrs>;
 
+
+	public:
+		inline static std::string outargstr()
+		{
+			return argstr<OutputSel,BracketNone>();
+		}
+
+		inline static std::string inoptargstr()
+		{
+			if ( OptionalSel::seq::size() > 0 )
+				return argstr<InputSel,BracketNone>() + "," + argstr<OptionalSel,BracketSquare>();
+			else
+				return argstr<InputSel,BracketNone>();
+		}
+
+	private:
+		struct BracketNone
+		{
+			template<std::size_t N>
+			static constexpr auto bracketArg(const mph::const_string<N>& str)
+				-> const mph::const_string<N>&
+			{
+				return str;
+			}
+		};
+
+		struct BracketSquare
+		{
+			template<std::size_t N>
+			static constexpr auto bracketArg(const mph::const_string<N>& str)
+				-> mph::const_string<N+2>
+			{
+				return "[" + str + "]";
+			}
+		};
+
+		template <typename ArgSelector, typename BracketType>
+		inline static std::string argstr()
+		{
+			using Seq = typename ArgSelector::seq;
+			const std::size_t seq_size = Seq::size();
+
+			using CSeq = typename mph::split_sequence<seq_size-1,Seq>::left;
+			using Last = typename mph::split_sequence<seq_size-1,Seq>::right;
+
+			return argstr_impl<BracketType>(CSeq(), Last());
+		}
+
+		template <typename BrackeType, std::size_t... Is, std::size_t Il>
+		inline static std::string argstr_impl(mph::index_sequence<Is...>, mph::index_sequence<Il>)
+		{
+			// TODO: Bubble constexpr upward if we switch to C++14
+			return mph::const_strcat(
+				(BrackeType::bracketArg(std::get<Is>(Derived::argNames)) + ",")...,
+				BrackeType::bracketArg(std::get<Il>(Derived::argNames)));
+		}
 
 	public:
 		static constexpr bool has_deferred_image_inputs() noexcept
