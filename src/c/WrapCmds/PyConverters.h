@@ -91,13 +91,18 @@ namespace Script
 		using typename BaseParser::InTypeLayout;
 		using typename BaseParser::OptTypeLayout;
 
+		// IO Selectors
+		using typename BaseParser::OutputSel;
+		using typename BaseParser::InputSel;
+		using typename BaseParser::OptionalSel;
+
 
 		static void load(ScriptPtrs& scriptPtrs, Script::ObjectType*& scriptOut, Script::ObjectType* scriptIn)
 		{
 			mph::tuple_fill_value(mph::tuple_deref(scriptPtrs), nullptr);
 
-			auto inPtrs = BaseParser::InputSel::select(scriptPtrs);
-			auto optPtrs = BaseParser::OptionalSel::select(scriptPtrs);
+			auto inPtrs = InputSel::select(scriptPtrs);
+			auto optPtrs = OptionalSel::select(scriptPtrs);
 
 			//  Make parse_string and expanded arg tuple for PyParse_Tuple
 			const std::string parseStr = make_parse_str<InTypeLayout>() + "|" + make_parse_str<OptTypeLayout>();
@@ -107,16 +112,15 @@ namespace Script
 			if ( !parse_script(scriptIn, parseStr, parseArgs) )
 				throw ArgError("PyArg_ParseTuple failed");
 
-			// TODO: Check in-params non-null
 			// TODO: Check input image dimension info
 		}
 
 
 		static void store(ScriptPtrs& scriptPtrs, Script::ObjectType*& scriptOut, Script::ObjectType* scriptIn)
 		{
-			using OutInfo = typename mph::tuple_info<typename BaseParser::OutputSel::template type<ScriptPtrs>>;
+			using OutInfo = typename mph::tuple_info<typename OutputSel::template type<ScriptPtrs>>;
 
-			auto outPtrs = BaseParser::OutputSel::select(scriptPtrs);
+			auto outPtrs = OutputSel::select(scriptPtrs);
 			auto outRefs = mph::tuple_deref(outPtrs);
 
 			if ( OutInfo::size == 1 )
@@ -124,7 +128,7 @@ namespace Script
 			else
 			{
 				scriptOut = PyTuple_New(OutInfo::size);
-				set_out_items(scriptOut, BaseParser::OutputSel::select(scriptPtrs));
+				set_out_items(scriptOut, OutputSel::select(scriptPtrs));
 			}
 		}
 

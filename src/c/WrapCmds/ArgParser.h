@@ -22,6 +22,23 @@ namespace Script
 	protected:
 		using ArgConvertError = typename Script::Converter::ArgConvertError;
 
+		// General argument error exception
+		class ArgError: public std::runtime_error
+		{
+			static std::string make_convert_msg(const ArgConvertError& ace)
+			{
+				return std::string(ace.getArgName()) + ": " + ace.what();
+			}
+
+		public:
+			ArgError() = delete;
+			ArgError(const char* msg): std::runtime_error(msg)
+			{}
+
+			ArgError(const ArgConvertError& ace): std::runtime_error(make_convert_msg(ace))
+			{}
+		};
+
 	public:
 		// Argument type layout alias (e.g. std::tuple<OutParam<Image<Deferred>>,...>)
 		using ArgLayout = std::tuple<Layout...>;
@@ -126,27 +143,6 @@ namespace Script
 			mph::tuple_deref(DeferredOutImSel::select(scrPtrs)) = create_arrays<BaseTypes>(info, typename DeferredOutImSel::seq{});
 			convert_arg_subset(cncPtrs, scrPtrs, typename DeferredOutImSel::seq{});
 		}
-
-
-	public:
-		// General argument error exception
-		class ArgError: public std::runtime_error
-		{
-			static std::string make_convert_msg(const ArgConvertError& ace)
-			{
-				return std::string(ace.getArgName()) + ": " + ace.what();
-			}
-
-		public:
-			ArgError(const char* msg): std::runtime_error(msg)
-			{}
-
-			ArgError(const ArgConvertError& ace): std::runtime_error(make_convert_msg(ace))
-			{}
-
-		private:
-			ArgError() = delete;
-		};
 
 	protected:
 		// Converting input arguments (script types are pointers)
