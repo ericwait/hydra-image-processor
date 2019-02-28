@@ -10,9 +10,30 @@
 	#define PRP_EXPAND(...) __VA_ARGS__
 #endif
 
+// Expand (upt to 64 times) to fully evaluate nested argument macros
+#define _EVAL_1(...) __VA_ARGS__
+#define _EVAL_4(...) _EVAL_1(_EVAL_1(_EVAL_1(_EVAL_1(__VA_ARGS__))))
+#define _EVAL_16(...) _EVAL_4(_EVAL_4(_EVAL_4(_EVAL_4(__VA_ARGS__))))
+#define PRP_EVAL(...) _EVAL_16(_EVAL_16(_EVAL_16(_EVAL_16(__VA_ARGS__))))
+
+
 // Expand and concatenate arguments
 #define _PRIM_CAT(a, ...) _MSVC_EXPAND(a ## __VA_ARGS__)
 #define PRP_CAT(a,...) _MSVC_EXPAND(_PRIM_CAT(a,__VA_ARGS__))
+
+// If conditional (arguments must evaluate to 0/1)
+#define IIF(cond) PRP_CAT(IIF_, cond)
+#define IIF_0(t, f) f
+#define IIF_1(t, f) t
+
+// General token check returns 0 unless macro evaluates to PROBE(~)
+#define CHECK_N(x, n, ...) n
+#define CHECK(...) _MSVC_EXPAND(CHECK_N(__VA_ARGS__, 0,))
+#define PROBE(x) x, 1,
+
+// Eat next argument
+#define EAT(...)
+
 
 // Helper macros for use as specialized FOREACH arguments
 // Remove parentheses from an arg (e.g. (a) -> a)

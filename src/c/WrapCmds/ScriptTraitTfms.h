@@ -67,27 +67,27 @@ namespace Script
 	// Data type conversions (compile-time) for use with script trait types
 
 	/////////////////////////
-	// dtype_to_script -
+	// dtrait_to_script -
 	//   Transforms from data-trait type to script base-type
 	//   (e.g. Image<int> -> Script::ArrayType*)
 	/////////////////////////
 	template <typename Traits>
-	struct dtype_to_script {};
+	struct dtrait_to_script {};
 
 	template <template <typename> class DataTrait, typename BaseType>
-	struct dtype_to_script<DataTrait<BaseType>>
+	struct dtrait_to_script<DataTrait<BaseType>>
 	{
 		using type = Script::ObjectType*;
 	};
 
 	template <typename BaseType>
-	struct dtype_to_script<Image<BaseType>>
+	struct dtrait_to_script<Image<BaseType>>
 	{
 		using type = Script::ArrayType*;
 	};
 
 	template <typename BaseType>
-	struct dtype_to_script<ImageRef<BaseType>>
+	struct dtrait_to_script<ImageRef<BaseType>>
 	{
 		using type = Script::ArrayType*;
 	};
@@ -103,68 +103,68 @@ namespace Script
 	template <template <typename> class IOTrait, typename DataTraits>
 	struct iotrait_to_script<IOTrait<DataTraits>>
 	{
-		using type = force_const_t<typename dtype_to_script<DataTraits>::type>;
+		using type = force_const_t<typename dtrait_to_script<DataTraits>::type>;
 	};
 
 	template <typename DataTraits>
 	struct iotrait_to_script<OutParam<DataTraits>>
 	{
 		// TODO: Wrap pointer in simple unique object to avoid leaking on errors
-		using type = typename dtype_to_script<DataTraits>::type;
+		using type = typename dtrait_to_script<DataTraits>::type;
 	};
 
 	/////////////////////////
-	// dtype_to_concrete -
+	// dtrait_to_concrete -
 	//   Transforms from data-trait type to concrete base-type
-	//   (e.g. Image<int> -> ImageContainer<int>)
+	//   (e.g. ImageRef<int> -> ImageView<int>)
 	/////////////////////////
 	template <typename Traits>
-	struct dtype_to_concrete {};
+	struct dtrait_to_concrete {};
 
 	template <typename BaseType>
-	struct dtype_to_concrete<Scalar<BaseType>>
+	struct dtrait_to_concrete<Scalar<BaseType>>
 	{
 		using type = BaseType;
 	};
 
 	template <>
-	struct dtype_to_concrete<Scalar<DeferredType>>
+	struct dtrait_to_concrete<Scalar<DeferredType>>
 	{
 		using type = Script::ObjectType*;
 	};
 
 	template <typename BaseType>
-	struct dtype_to_concrete<Vector<BaseType>>
+	struct dtrait_to_concrete<Vector<BaseType>>
 	{
 		using type = Vec<BaseType>;
 	};
 
 	template <>
-	struct dtype_to_concrete<Vector<DeferredType>>
+	struct dtrait_to_concrete<Vector<DeferredType>>
 	{
 		using type = Script::ObjectType*;
 	};
 
 	template <typename BaseType>
-	struct dtype_to_concrete<Image<BaseType>>
+	struct dtrait_to_concrete<Image<BaseType>>
 	{
 		using type = ImageOwner<BaseType>;
 	};
 
 	template <>
-	struct dtype_to_concrete<Image<DeferredType>>
+	struct dtrait_to_concrete<Image<DeferredType>>
 	{
 		using type = Script::ArrayType*;
 	};
 
 	template <typename BaseType>
-	struct dtype_to_concrete<ImageRef<BaseType>>
+	struct dtrait_to_concrete<ImageRef<BaseType>>
 	{
 		using type = ImageView<BaseType>;
 	};
 
 	template <>
-	struct dtype_to_concrete<ImageRef<DeferredType>>
+	struct dtrait_to_concrete<ImageRef<DeferredType>>
 	{
 		using type = Script::ArrayType*;
 	};
@@ -182,7 +182,7 @@ namespace Script
 	struct iotrait_to_concrete<IOTrait<DataTrait<BaseType>>>
 	{
 		// Use script types for deferred io traits
-		using type = typename dtype_to_concrete<DataTrait<BaseType>>::type;
+		using type = typename dtrait_to_concrete<DataTrait<BaseType>>::type;
 	};
 
 	template <template <typename> class IOTrait, template <typename> class DataTrait>
@@ -192,23 +192,23 @@ namespace Script
 	};
 
 	/////////////////////////
-	// deferred_dtype_to_concrete -
+	// deferred_dtrait_to_concrete -
 	//   Transforms all data-trait types to concrete types
 	//   NOTE: The deferred types are all converted using the extra T parameter
 	/////////////////////////
 	template <typename Traits, typename T>
-	struct deferred_dtype_to_concrete {};
+	struct deferred_dtrait_to_concrete {};
 
 	template <template <typename> class DataTrait, typename BaseType, typename T>
-	struct deferred_dtype_to_concrete<DataTrait<BaseType>, T>
+	struct deferred_dtrait_to_concrete<DataTrait<BaseType>, T>
 	{
-		using type = typename dtype_to_concrete<DataTrait<BaseType>>::type;
+		using type = typename dtrait_to_concrete<DataTrait<BaseType>>::type;
 	};
 
 	template <template <typename> class DataTrait, typename T>
-	struct deferred_dtype_to_concrete<DataTrait<DeferredType>, T>
+	struct deferred_dtrait_to_concrete<DataTrait<DeferredType>, T>
 	{
-		using type = typename dtype_to_concrete<DataTrait<T>>::type;
+		using type = typename dtrait_to_concrete<DataTrait<T>>::type;
 	};
 
 
@@ -223,13 +223,13 @@ namespace Script
 	template <template <typename> class IOTrait, typename DataTraits, typename OutT, typename InT>
 	struct deferred_iotrait_to_concrete_impl<IOTrait<DataTraits>, OutT, InT>
 	{
-		using type = typename deferred_dtype_to_concrete<DataTraits, InT>::type;
+		using type = typename deferred_dtrait_to_concrete<DataTraits, InT>::type;
 	};
 
 	template <typename DataTraits, typename OutT, typename InT>
 	struct deferred_iotrait_to_concrete_impl<OutParam<DataTraits>, OutT, InT>
 	{
-		using type = typename deferred_dtype_to_concrete<DataTraits, OutT>::type;
+		using type = typename deferred_dtrait_to_concrete<DataTraits, OutT>::type;
 	};
 
 	/////////////////////////

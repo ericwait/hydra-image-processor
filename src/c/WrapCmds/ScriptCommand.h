@@ -12,10 +12,10 @@
 #define SCR_DISPATCH_FUNC_DECL(TypeName) PyObject* TypeName(PyObject* self, PyObject* args)
 #define SCR_USAGE_FUNC_DECL(TypeName) std::string TypeName()
 #define SCR_HELP_FUNC_DECL(TypeName) std::string TypeName()
-#define SCR_INFO_FUNC_DECL(TypeName) void TypeName(std::string& command, std::string& help, std::vector<std::string>& outArgs, std::vector<std::string>& inArgs)
+#define SCR_INFO_FUNC_DECL(TypeName) void TypeName(std::string& command, std::string& help, std::string& outArgs, std::string& inArgs)
 
-#define SCR_DISPATCH_FUNC_DEF(Name)			\
-	SCR_DISPATCH_FUNC_DECL(dispatch)		\
+#define SCR_DISPATCH_FUNC_DEF(Name)		\
+	SCR_DISPATCH_FUNC_DECL(dispatch)	\
 	{									\
 		PyObject* output = nullptr;		\
 		convert_dispatch(output, args);	\
@@ -39,8 +39,8 @@ public:
 		InfoFuncType info;
 	};
 
-	static_assert(std::is_same<DispatchFuncType,PyObject* (*)(PyObject*,PyObject*)>::value, "Incorrect pointer type");
 	// TODO: Module initialization routines (and matlab dispatch)
+
 
 protected:
 	inline static const char* moduleName() {return SCR_MODULE_NAME;}
@@ -113,7 +113,12 @@ public:
 	}
 
 	inline static SCR_INFO_FUNC_DECL(info)
-	{}
+	{
+		command = Derived::commandName();
+		help = Derived::help();
+		outArgs = ArgParser::outargstr();
+		inArgs = ArgParser::inoptargstr();
+	}
 
 	// Non-overloadable - Handles argument conversion and dispatches to execute command
 	// NOTE: default execute command checks for deferred types and passes to

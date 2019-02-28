@@ -1,7 +1,6 @@
 #pragma once
 
-#include "mph/tuple_helpers.h"
-#include "mph/qualifier_helpers.h"
+#include <type_traits>
 
 namespace Script
 {

@@ -6,6 +6,22 @@
 
 #include <typeinfo>
 
+// Goes in the io-typemap header
+#define GENERATE_DEFAULT_IO_MAPPERS
+#include "GenCommands.h"
+#undef GENERATE_DEFAULT_IO_MAPPERS
+
+SCR_DEFINE_IO_TYPE_MAP(Test, int, int)
+
+#define GENERATE_PROC_STUB_PROTOTYPES
+#include "GenCommands.h"
+#undef GENERATE_PROC_STUB_PROTOTYPES
+
+#define GENERATE_PROC_STUBS
+#include "GenCommands.h"
+#undef GENERATE_PROC_STUBS
+
+
 
 // Sequence of generators in main script commands header
 #define GENERATE_SCRIPT_COMMANDS
@@ -13,14 +29,6 @@
 #undef GENERATE_SCRIPT_COMMANDS
 
 // 
-
-// Goes in the io-typemap header
-#define GENERATE_DEFAULT_IO_MAPPERS
-#include "GenCommands.h"
-#undef GENERATE_DEFAULT_IO_MAPPERS
-
-
-SCR_DEFINE_IO_TYPE_MAP(Test, int,int)
 
 template <typename T, typename = void>
 struct valid_type: std::false_type {};
@@ -47,8 +55,9 @@ public:
 #undef GENERATE_CONSTEXPR_MEM
 
 
-const std::unordered_map<std::string, ScriptCommand::FuncPtrs> ScriptCommand::m_commands =
-{ {"Test",{&ScriptCommand_Test::dispatch,&ScriptCommand_Test::usage,&ScriptCommand_Test::help,&ScriptCommand_Test::info}} };
+#define GENERATE_COMMAND_MAP
+#include "GenCommands.h"
+#undef GENERATE_COMMAND_MAP
 
 
 void testfunc()
