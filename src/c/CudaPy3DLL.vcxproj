@@ -21,28 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Python\hip_module.cpp" />
-    <ClCompile Include="Python\PyKernel.cpp" />
-    <ClCompile Include="Python\PyWrapClosure.cpp" />
-    <ClCompile Include="Python\PyWrapCommand.cpp" />
-    <ClCompile Include="Python\PyWrapDeviceCount.cpp" />
-    <ClCompile Include="Python\PyWrapDeviceStats.cpp" />
-    <ClCompile Include="Python\PyWrapElementWiseDifference.cpp" />
-    <ClCompile Include="Python\PyWrapEntropyFilter.cpp" />
-    <ClCompile Include="Python\PyWrapGaussian.cpp" />
-    <ClCompile Include="Python\PyWrapGetMinMax.cpp" />
-    <ClCompile Include="Python\PyWrapHighPassFilter.cpp" />
-    <ClCompile Include="Python\PyWrapIdentityFilter.cpp" />
-    <ClCompile Include="Python\PyWrapLoG.cpp" />
-    <ClCompile Include="Python\PyWrapMaxFilter.cpp" />
-    <ClCompile Include="Python\PyWrapMeanFilter.cpp" />
-    <ClCompile Include="Python\PyWrapMedianFilter.cpp" />
-    <ClCompile Include="Python\PyWrapMinFilter.cpp" />
-    <ClCompile Include="Python\PyWrapMultiplySum.cpp" />
-    <ClCompile Include="Python\PyWrapOpener.cpp" />
-    <ClCompile Include="Python\PyWrapStdFilter.cpp" />
-    <ClCompile Include="Python\PyWrapSum.cpp" />
-    <ClCompile Include="Python\PyWrapVarFilter.cpp" />
-    <ClCompile Include="Python\PyWrapWienerFilter.cpp" />
     <ClCompile Include="WrapCmds\TestCommands.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -52,16 +30,14 @@
     <ClInclude Include="mph\qualifier_helpers.h" />
     <ClInclude Include="mph\tuple_helpers.h" />
     <ClInclude Include="Python\PyIncludes.h" />
-    <ClInclude Include="Python\PyKernel.h" />
     <ClInclude Include="Python\PyTypes.h" />
-    <ClInclude Include="Python\PyWrapCommand.h" />
-    <ClInclude Include="Python\PyWrapDef.h" />
     <ClInclude Include="WrapCmds\ArgParser.h" />
     <ClInclude Include="WrapCmds\GenCommands.h" />
     <ClInclude Include="WrapCmds\LinkageTraitTfms.h" />
     <ClInclude Include="WrapCmds\PyConverters.h" />
     <ClInclude Include="WrapCmds\ScriptCommand.h" />
     <ClInclude Include="WrapCmds\ScriptCommands.h" />
+    <ClInclude Include="WrapCmds\ScriptCommandImpl.h" />
     <ClInclude Include="WrapCmds\ScriptHelpers.h" />
     <ClInclude Include="WrapCmds\CommandList.h" />
     <ClInclude Include="WrapCmds\ScriptTraits.h" />
