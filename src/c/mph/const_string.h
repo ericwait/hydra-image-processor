@@ -6,6 +6,35 @@
 
 namespace mph
 {
+	// Wraps a string literal useful for simply storing large help-text strings
+	// NOTE: for now can only be used at runtime through implicit conversion
+	template <std::size_t N>
+	class literal_string
+	{
+	private:
+		const char (&_str)[N+1];
+
+	public:
+		constexpr literal_string(const char(&lit_str)[N+1])
+			: _str{lit_str}
+		{}
+	public:
+		constexpr std::size_t size() const { return N; }
+		constexpr char operator[](int i) const { return _str[i]; }
+
+		constexpr const char* c_str() const { return _str; }
+
+		operator std::string() const { return std::string{ _str }; }
+	};
+
+	template <std::size_t N_INC>
+	inline constexpr literal_string<N_INC-1> literal(const char(&lit)[N_INC])
+	{
+		return literal_string<N_INC-1>(lit);
+	}
+
+
+	// Compile-time constant string (note size is very limited in msvc2015)
 	template <std::size_t N>
 	class const_string
 	{
@@ -26,7 +55,7 @@ namespace mph
 
 	public:
 		constexpr const_string(const char(&lit_str)[N+1])
-			: const_string<N>{mph::make_index_sequence<N>{}, lit_str}
+			: const_string<N>{mph::make_index_sequence<N>(), lit_str}
 		{}
 
 		template <std::size_t M>
@@ -45,13 +74,13 @@ namespace mph
 
 
 	template <std::size_t N_INC>
-	inline constexpr const_string<N_INC-1> literal(const char(&lit)[N_INC])
+	inline constexpr const_string<N_INC-1> make_const_str(const char(&lit)[N_INC])
 	{
 		return const_string<N_INC-1>(lit);
 	}
 
 	template <std::size_t N>
-	inline constexpr const const_string<N>& literal(const const_string<N>& str)
+	inline constexpr const const_string<N>& make_const_str(const const_string<N>& str)
 	{
 		return str;
 	}

@@ -60,7 +60,7 @@ public:
 		inline static SCR_HELP_FUNC_DECL(help)
 	{
 		if ( Derived::helpStr.size() > 0 )
-			return Derived::usage() + std::string("\n\n" + Derived::helpStr);
+			return Derived::usage() + "\n\n" + std::string(Derived::helpStr);
 		else
 			return Derived::usage();
 	}
@@ -69,7 +69,7 @@ public:
 	{
 		// TODO: Fix the output wrapping here
 		return usageOutput(ArgParser::outargstr())
-			+ moduleName() + Derived::commandName()
+			+ moduleName() + "." + Derived::commandName()
 			+ "("+ ArgParser::inoptargstr() + ")";
 	}
 

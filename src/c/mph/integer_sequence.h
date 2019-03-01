@@ -77,24 +77,40 @@ namespace mph
 		};
 
 
-		// Generate index_sequence<0,...,N>
+		// Helper for sequence generation
+		template <typename SeqA, typename SeqB>
+		struct gen_cat_seq {};
+
+		template <std::size_t... Ia, std::size_t... Ib>
+		struct gen_cat_seq<index_sequence<Ia...>,index_sequence<Ib...>>
+		{
+			using type = index_sequence<Ia..., (sizeof...(Ia)+Ib)...>;
+		};
+
+		// Generate index_sequence<0,...,N-1>
 		template <std::size_t N>
 		struct gen_sequence
 		{
-			using type = typename cat_index_sequence<typename gen_sequence<N-1>::type, index_sequence<N>>::type;
+			using type = typename gen_cat_seq<typename gen_sequence<N/2>::type, typename gen_sequence<N-N/2>::type>::type;
+		};
+
+		template <>
+		struct gen_sequence<1>
+		{
+			using type = index_sequence<0>;
 		};
 
 		template <>
 		struct gen_sequence<0>
 		{
-			using type = index_sequence<0>;
+			using type = index_sequence<>;
 		};
 
 		// Guard to make sure zero sequences don't get passed in
 		template <std::size_t N>
 		struct gen_seq_guard
 		{
-			using type = typename gen_sequence<N-1>::type;
+			using type = typename gen_sequence<N>::type;
 		};
 
 		template <>
