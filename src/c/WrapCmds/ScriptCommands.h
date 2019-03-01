@@ -1,27 +1,22 @@
 // This file is used to register commands that are callable via script languages
-BEGIN_SCRIPT_COMMANDS
+SCR_BEGIN_COMMANDS
 	// These are default commands defined for all script wrappers.
-	DEF_SCRIPT_COMMAND(Info, DEF_PARAMS(SCRIPT_OUT()))
-	DEF_SCRIPT_COMMAND(Help, )
-	DEF_SCRIPT_COMMAND(DeviceCount)
-	DEF_SCRIPT_COMMAND(DeviceStats)
+	SCR_CMD_NOPROC(Help, SCR_PARAMS(SCR_OPTIONAL(SCR_SCALAR(std::string), command, "")))
+	//SCR_CMD_NOPROC(Info, SCR_PARAMS(SCR_OUTPUT(SCR_STRUCT, cmdInfo)))
+	//SCR_CMD_NOPROC(DeviceCount, SCR_PARAMS(SCR_OUTPUT(SCR_SCALAR(uint32_t), numCudaDevices),
+	//											SCR_OUTPUT(SCR_STRUCT, memStats)))
+	//SCR_CMD_NOPROC(DeviceStats, SCR_PARAMS(SCR_OUTPUT(SCR_STRUCT, deviceStatsArray)))
+
 	// Additional specific wrapped commands should be added here.
-	DEF_SCRIPT_COMMAND(Closure)
-	DEF_SCRIPT_COMMAND(ElementWiseDifference)
-	DEF_SCRIPT_COMMAND(EntropyFilter)
-	DEF_SCRIPT_COMMAND(Gaussian)
-	DEF_SCRIPT_COMMAND(GetMinMax)
-	DEF_SCRIPT_COMMAND(HighPassFilter)
-	DEF_SCRIPT_COMMAND(IdentityFilter)
-	DEF_SCRIPT_COMMAND(LoG)
-	DEF_SCRIPT_COMMAND(MaxFilter)
-	DEF_SCRIPT_COMMAND(MeanFilter)
-	DEF_SCRIPT_COMMAND(MedianFilter)
-	DEF_SCRIPT_COMMAND(MinFilter)
-	DEF_SCRIPT_COMMAND(MultiplySum)
-	DEF_SCRIPT_COMMAND(Opener)
-	DEF_SCRIPT_COMMAND(StdFilter)
-	DEF_SCRIPT_COMMAND(Sum)
-	DEF_SCRIPT_COMMAND(VarFilter)
-	DEF_SCRIPT_COMMAND(WienerFilter)
-END_SCRIPT_COMMANDS
+	SCR_CMD(Closure, SCR_PARAMS
+		(
+			SCR_INPUT(SCR_IMAGE(SCR_DYNAMIC), imageIn),
+			SCR_OUTPUT(SCR_IMAGE(SCR_DYNAMIC), imageOut),
+			SCR_INPUT(SCR_IMAGE_CONVERT(float), kernel),
+			SCR_OPTIONAL(SCR_SCALAR(int), numIterations, 1),
+			SCR_OPTIONAL(SCR_SCALAR(int), device, -1)
+		),
+		closure
+	)
+
+SCR_END_COMMANDS

@@ -214,11 +214,11 @@
 
 #elif defined(GENERATE_COMMAND_MAP)
 // Generate list of commands used by python module loader and mex Info/Help commands
-	#define SCR_BEGIN_COMMANDS const std::unordered_map<std::string, ScriptCommand::FuncPtrs> ScriptCommand::m_commands = {
+	#define SCR_BEGIN_COMMANDS const ScriptCommand::CommandList ScriptCommand::m_commands = {
 	#define SCR_END_COMMANDS };
 
-#define SCR_CMD_NOPROC(Name, Params)
-#define SCR_CMD(Name, Params, CudaFunc)
+#define SCR_CMD_NOPROC(Name, Params) _SCR_CMD_MAP_LINE(Name)
+#define SCR_CMD(Name, Params, CudaFunc) _SCR_CMD_MAP_LINE(Name)
 
 #define _SCR_CMD_MAP_LINE(Name)				\
 	{										\
@@ -240,31 +240,8 @@
 	#define SCR_CMD(Name, Params, CudaFunc)
 #endif
 
-
-#if defined(GEN_INCLUDE_FILE)
-	#include "ScriptCommands.h"
-#endif
-
-SCR_BEGIN_COMMANDS
-
-SCR_CMD(Test, SCR_PARAMS
-	(
-		SCR_INPUT(SCR_IMAGE(SCR_DYNAMIC), imageIn),
-		SCR_OUTPUT(SCR_IMAGE(SCR_DYNAMIC), imageOut),
-		SCR_INPUT(SCR_IMAGE_CONVERT(float), kernel),
-		SCR_OPTIONAL(SCR_SCALAR(int), numIterations, 1),
-		SCR_OPTIONAL(SCR_SCALAR(int), device, -1)
-	),
-	closure
-)
-
-SCR_END_COMMANDS
-
-#define SCR_DEFINE_IO_TYPE_MAP(Name, OutT,InT)						\
-	namespace CudaCall_##Name##_Stub								\
-	{																\
-		template <> struct OutMap_Impl<InT> {using type = OutT;};	\
-	};
+// Script Command list
+#include "ScriptCommands.h"
 
 // Undefine generator-specific tokens
 //   Script-command class generators
