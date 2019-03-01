@@ -68,6 +68,56 @@ namespace Script
 		};
 	};
 
+	// Helper struct to handle returning 0,1, or tuple of N outputs
+	template <std::size_t N>
+	struct StoreHelper
+	{
+	private:
+		template <typename... ScrOuts, std::size_t... Is>
+		static void store_out_impl(Script::ObjectType*& scriptTuple, const std::tuple<ScrOuts...>& outputs, mph::index_sequence<Is...>)
+		{
+			(void)std::initializer_list<int>
+			{
+				(PyTuple_SetItem(scriptTuple, Is, reinterpret_cast<Script::ObjectType*>(std::get<Is>(outputs))), void(), 0)...
+			};
+		}
+
+	public:
+		template <typename... ScrOuts>
+		static Script::ObjectType* store_out(const std::tuple<ScrOuts...>& outputs)
+		{
+			static_assert(sizeof... (ScrOuts) == N, "**** Output argument selector size mismatch ****");
+
+			Script::ObjectType* scriptOut = PyTuple_New(N);
+			store_out_impl(scriptOut, outputs, mph::make_index_sequence<sizeof... (ScrOuts)>{});
+
+			return scriptOut;
+		}
+	};
+
+	template <>
+	struct StoreHelper<1>
+	{
+		template <typename... ScrOuts>
+		static Script::ObjectType* store_out(const std::tuple<ScrOuts...>& outputs)
+		{
+			static_assert(sizeof... (ScrOuts) == 1, "**** Output argument selector size mismatch ****");
+			return reinterpret_cast<Script::ObjectType*>(std::get<0>(outputs));
+		}
+	};
+
+	template <>
+	struct StoreHelper<0>
+	{
+		template <typename... ScrOuts>
+		static Script::ObjectType* store_out(const std::tuple<ScrOuts...>& outputs)
+		{
+			static_assert(sizeof... (ScrOuts) == 0, "**** Output argument selector size mismatch ****");
+			return Py_None;
+		}
+	};
+
+
 
 	template <typename Derived, typename... Layout>
 	struct PyArgParser : public ArgParser<Derived, Layout...>
@@ -118,18 +168,10 @@ namespace Script
 
 		static void store(ScriptPtrs& scriptPtrs, Script::ObjectType*& scriptOut, Script::ObjectType* scriptIn)
 		{
-			using OutInfo = typename mph::tuple_info<typename OutputSel::template type<ScriptPtrs>>;
-
 			auto outPtrs = OutputSel::select(scriptPtrs);
 			auto outRefs = mph::tuple_deref(outPtrs);
 
-			if ( OutInfo::size == 1 )
-				scriptOut = reinterpret_cast<Script::ObjectType*>(std::get<0>(outRefs));
-			else
-			{
-				scriptOut = PyTuple_New(OutInfo::size);
-				set_out_items(scriptOut, OutputSel::select(scriptPtrs));
-			}
+			scriptOut = StoreHelper<OutputSel::seq::size()>::store_out(outRefs);
 		}
 
 	public:
@@ -146,6 +188,17 @@ namespace Script
 		static void convert_impl(Script::ObjectType*& outPtr, const T& in)
 		{
 			outPtr = Converter::fromNumeric(in);
+		}
+
+		static void convert_impl(std::string& out, const Script::ObjectType* inPtr)
+		{
+			out = Converter::toString(const_cast<Script::ObjectType*>(inPtr));
+		}
+
+		template <typename T>
+		static void convert_impl(Script::ObjectType*& outPtr, const std::string& in)
+		{
+			outPtr = Converter::fromString(in);
 		}
 
 		// Vector conversions
@@ -239,22 +292,6 @@ namespace Script
 		static bool parse_script(PyObject* scriptIn, const std::string& format, const std::tuple<Args...>& argpack)
 		{
 			return parse_script_impl(scriptIn, format, argpack, mph::make_index_sequence<sizeof... (Args)>());
-		}
-
-
-		template <typename... Args, std::size_t... Is>
-		static void set_out_items_impl(PyObject*& scriptTuple, const std::tuple<Args...>& argpack, mph::index_sequence<Is...>)
-		{
-			(void)std::initializer_list<int>
-			{
-				(PyTuple_SetItem(scriptTuple, Is, reinterpret_cast<Script::ObjectType*>(std::get<Is>(argpack))), void(), 0)...
-			};
-		}
-
-		template <typename... Args>
-		static void set_out_items(PyObject*& scriptTuple, const std::tuple<Args...>& argpack)
-		{
-			set_out_items_impl(scriptTuple, argpack, mph::make_index_sequence<sizeof... (Args)>{});
 		}
 	};
 
