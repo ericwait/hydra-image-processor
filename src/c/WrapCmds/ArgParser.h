@@ -99,13 +99,15 @@ namespace Script
 	public:
 		inline static std::string outargstr()
 		{
-			return argstr<OutputSel,BracketNone>();
+			return argstr<OutputSel, BracketNone>();
 		}
 
 		inline static std::string inoptargstr()
 		{
+			if ( InputSel::seq::size() > 0 && OptionalSel::seq::size() > 0 )
+				return argstr<InputSel, BracketNone>() + "," + argstr<OptionalSel, BracketSquare>();
 			if ( OptionalSel::seq::size() > 0 )
-				return argstr<InputSel,BracketNone>() + "," + argstr<OptionalSel,BracketSquare>();
+				return argstr<OptionalSel, BracketSquare>();
 			else
 				return argstr<InputSel,BracketNone>();
 		}
@@ -131,20 +133,40 @@ namespace Script
 			}
 		};
 
+		inline std::string comma_delim(const std::string& strA, const std::string& strB)
+		{
+			if (strA.empty() || strB.empty())
+				return strA + strB;
+			else
+				return strA + "," + strB;
+		}
+
 		template <typename ArgSelector, typename BracketType>
 		inline static std::string argstr()
 		{
-			using Seq = typename ArgSelector::seq;
+			return argstr_impl<BracketType>(typename ArgSelector::seq{});
+		}
+
+		template <typename BracketType, std::size_t... Is>
+		inline static std::string argstr_impl(mph::index_sequence<Is...>)
+		{
+			using Seq = mph::index_sequence<Is...>;
 			const std::size_t seq_size = Seq::size();
 
-			using CSeq = typename mph::split_sequence<seq_size-1,Seq>::left;
-			using Last = typename mph::split_sequence<seq_size-1,Seq>::right;
+			using CSeq = typename mph::split_sequence<seq_size-1, Seq>::left;
+			using Last = typename mph::split_sequence<seq_size-1, Seq>::right;
 
-			return argstr_impl<BracketType>(CSeq(), Last());
+			return argstr_cat<BracketType>(CSeq(), Last());
+		}
+
+		template <typename BracketType>
+		inline static std::string argstr_impl(mph::index_sequence<>)
+		{
+			return "";
 		}
 
 		template <typename BrackeType, std::size_t... Is, std::size_t Il>
-		inline static std::string argstr_impl(mph::index_sequence<Is...>, mph::index_sequence<Il>)
+		inline static std::string argstr_cat(mph::index_sequence<Is...>, mph::index_sequence<Il>)
 		{
 			// TODO: Bubble constexpr upward if we switch to C++14
 			return mph::const_strcat(

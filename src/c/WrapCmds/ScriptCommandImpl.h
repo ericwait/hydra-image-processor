@@ -50,6 +50,10 @@ public:
 	template <typename InT>
 	using OutMap = typename ArgParser::template OutMap<InT>;
 
+public:
+	/////////
+	// These are the four interface functions that are registered in the m_commands FuncPtrs list
+
 	// Script engine-dependent function to dispatch parameters
 	inline static SCR_DISPATCH_FUNC_DEF(dispatch)
 
@@ -64,8 +68,8 @@ public:
 	inline static SCR_USAGE_FUNC_DECL(usage)
 	{
 		// TODO: Fix the output wrapping here
-		return std::string("[") + ArgParser::outargstr() + "]"
-			+ " = " + moduleName() + Derived::commandName()
+		return usageOutput(ArgParser::outargstr())
+			+ moduleName() + Derived::commandName()
 			+ "("+ ArgParser::inoptargstr() + ")";
 	}
 
@@ -76,6 +80,17 @@ public:
 		outArgs = ArgParser::outargstr();
 		inArgs = ArgParser::inoptargstr();
 	}
+
+private:
+	inline static std::string usageOutput(const std::string& outStr)
+	{
+		if ( outStr.empty() )
+			return outStr;
+		else
+			return std::string("[") + outStr + "] = ";
+	}
+
+public:
 
 	// Non-overloadable - Handles argument conversion and dispatches to execute command
 	// NOTE: default execute command checks for deferred types and passes to
