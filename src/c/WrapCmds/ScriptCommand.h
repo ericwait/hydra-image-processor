@@ -1,7 +1,6 @@
 #include <string>
 #include <unordered_map>
 
-
 #include "PyIncludes.h"
 // TODO: Put this in ifdef or py-specific includes
 #define SCR_MODULE_NAME "HIP"
@@ -36,12 +35,23 @@ public:
 		InfoFuncType info;
 	};
 
+	using CommandList = std::unordered_map<std::string, FuncPtrs>;
+
 	// TODO: Module initialization routines (and matlab dispatch)
+	inline static const FuncPtrs* findCommand(const std::string& command)
+	{
+		if ( m_commands.count(command) < 1 )
+			return nullptr;
+
+		return &m_commands.at(command);
+	}
+
+	inline static const CommandList& commands(){return m_commands;}
 
 
 protected:
 	inline static const char* moduleName() {return SCR_MODULE_NAME;}
 
 protected:
-	static const std::unordered_map<std::string, FuncPtrs> m_commands;
+	static const CommandList m_commands;
 };

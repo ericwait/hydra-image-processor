@@ -180,7 +180,7 @@ private:
 	template <typename... Args>
 	static void execute(Args&&... args)
 	{
-		static_assert(ArgParser::has_deferred_image_inputs(), "Argument layout has no deferred inputs. Please overload default ::execute() function!");
+		static_assert(ArgParser::has_deferred_image_inputs(), "**** Argument layout has no deferred inputs. Please overload default ::execute() function! ****");
 
 		Script::IdType type = ArgParser::getInputType(std::forward<Args>(args)...);
 
