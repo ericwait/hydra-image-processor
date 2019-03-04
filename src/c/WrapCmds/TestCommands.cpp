@@ -169,7 +169,7 @@ void testfunc()
 	auto arg_ref = mph::tie_tuple(tmpOut);
 	
 	std::tuple<PyObject const**> tst = 
-		Script::ParserArg<Script::Scalar<float>>::argTuple(&std::get<0>(arg_ref));
+		Script::PyParseExpand<Script::Scalar<float>>::argTuple(&std::get<0>(arg_ref));
 
 	PyArg_ParseTuple(nullptr, "O", std::get<0>(tst));
 

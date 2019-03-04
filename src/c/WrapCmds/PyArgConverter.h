@@ -2,6 +2,7 @@
 
 #include "mph/tuple_helpers.h"
 #include "mph/qualifier_helpers.h"
+#include "mph/const_string.h"
 
 #include "ScriptTraits.h"
 #include "ScriptTraitTfms.h"
@@ -17,10 +18,10 @@ namespace Script
 {
 	// Helper for python arg expanders
 	template <typename T>
-	struct ParserArg {};
+	struct PyParseExpand {};
 
 	template <template<typename> class T, typename C>
-	struct ParserArg<T<C>>
+	struct PyParseExpand<T<C>>
 	{
 		using ArgTuple = std::tuple<Script::ObjectType const**>;
 		static ArgTuple argTuple(Script::ObjectType const** argPtr)
@@ -28,16 +29,15 @@ namespace Script
 			return std::make_tuple(argPtr);
 		}
 
-		// TODO: Move to compile-time strings (maybe library)
-		static const char* argString()
+		// TODO: Switch to auto if we use c++14
+		static constexpr mph::const_string<1> argStr()
 		{
-			static const char parse_type[] = "O";
-			return parse_type;
+			return mph::make_const_str("O");
 		};
 	};
 
 	template <typename C>
-	struct ParserArg<Image<C>>
+	struct PyParseExpand<Image<C>>
 	{
 		using ArgTuple = std::tuple<PyTypeObject*, Script::ArrayType const**>;
 		static ArgTuple argTuple(Script::ArrayType const** argPtr)
@@ -45,15 +45,14 @@ namespace Script
 			return std::make_tuple(&PyArray_Type, argPtr);
 		}
 
-		static const char* argString()
+		static constexpr mph::const_string<2> argStr()
 		{
-			static const char parse_type[] = "O!";
-			return parse_type;
+			return mph::make_const_str("O!");
 		};
 	};
 
 	template <typename C>
-	struct ParserArg<ImageRef<C>>
+	struct PyParseExpand<ImageRef<C>>
 	{
 		using ArgTuple = std::tuple<PyTypeObject*, Script::ArrayType const**>;
 		static ArgTuple argTuple(Script::ArrayType const** argPtr)
@@ -61,10 +60,9 @@ namespace Script
 			return std::make_tuple(&PyArray_Type, argPtr);
 		}
 
-		static const char* argString()
+		static constexpr mph::const_string<2> argStr()
 		{
-			static const char parse_type[] = "O!";
-			return parse_type;
+			return mph::make_const_str("O!");
 		};
 	};
 
@@ -240,9 +238,9 @@ namespace Script
 	private:
 		template <typename... TypeLayout, typename... Args, size_t... Is>
 		static constexpr auto expand_parse_args_impl(std::tuple<TypeLayout...>, const std::tuple<Args...>& args, mph::index_sequence<Is...>) noexcept
-			-> decltype(std::tuple_cat(ParserArg<TypeLayout>::argTuple(std::declval<Args>())...))
+			-> decltype(std::tuple_cat(PyParseExpand<TypeLayout>::argTuple(std::declval<Args>())...))
 		{
-			return std::tuple_cat(ParserArg<TypeLayout>::argTuple(std::get<Is>(args))...);
+			return std::tuple_cat(PyParseExpand<TypeLayout>::argTuple(std::get<Is>(args))...);
 		}
 
 		//////
@@ -253,23 +251,12 @@ namespace Script
 		{
 			return expand_parse_args_impl(TypeLayout(), args, mph::make_index_sequence<sizeof... (Args)>());
 		}
-		
 
-		// TODO: Change all these to compile-time string classes
-		static std::string strcat_initializer(const std::initializer_list<const char*>& strsIn)
-		{
-			std::string out;
-			out.reserve(2*strsIn.size() + 1);
-			for ( const auto& it: strsIn )
-				out += it;
-
-			return out;
-		}
 
 		template <typename... TypeLayout>
 		static std::string make_parse_str_impl(std::tuple<TypeLayout...>)
 		{
-			return strcat_initializer({ ParserArg<TypeLayout>::argString()... });
+			return mph::const_strcat(PyParseExpand<TypeLayout>::argStr()...);
 		}
 
 		//////
