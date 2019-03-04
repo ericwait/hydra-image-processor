@@ -22,8 +22,8 @@ namespace mph
 // TODO: Make a defines helper for this
 #define _SCR_CHK_MAIN_TYPE(Name)								\
 	static_assert(mph::valid_map<OutMap>::value,				\
-			"**** Default IO type map undefined for: " #Name	\
-			". Command name may be mismatched ****");
+			"HIP_COMPILE: Default IO type map undefined for: "	\
+			#Name ". Command name may be mismatched");
 
 #define SCR_DEFINE_IO_TYPE_MAP(Name, OutT,InT)						\
 	namespace CudaCall_##Name##_Stub								\

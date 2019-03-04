@@ -16,7 +16,7 @@ class ScriptCommandImpl: public ScriptCommand
 		template <typename... Args> static void run(Args&&...) {}
 
 		// This condition (!is_same<T,T> is always false) forces waiting for dependent type instantiation
-		static_assert(!std::is_same<T, T>::value, "**** Overload ::execute or ::process<OutT,InT> method in script command subclass, or define script command using SCR_CMD instead of SCR_CMD_NOPROC. ****");
+		static_assert(!std::is_same<T, T>::value, "HIP_COMPILE: Overload ::execute or ::process<OutT,InT> method in script command subclass, or define script command using SCR_CMD instead of SCR_CMD_NOPROC.");
 	};
 
 	using ProcessFunc = AssertProcessFunc<Derived>;
@@ -182,7 +182,7 @@ private:
 	template <typename... Args>
 	static void execute(Args&&... args)
 	{
-		static_assert(ArgParser::has_deferred_image_inputs(), "**** Argument layout has no deferred inputs. Please overload default ::execute() function! ****");
+		static_assert(ArgParser::has_deferred_image_inputs(), "HIP_COMPILE: Argument layout has no dynamic image inputs. Please overload default ::execute() function!");
 
 		Script::IdType type = ArgParser::getInputType(std::forward<Args>(args)...);
 
