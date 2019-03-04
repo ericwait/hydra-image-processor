@@ -53,6 +53,7 @@ public:
 public:
 	/////////
 	// These are the four interface functions that are registered in the m_commands FuncPtrs list
+	// (dispatch, usage, help, info)
 
 	// Script engine-dependent function to dispatch parameters
 	inline static SCR_DISPATCH_FUNC_DEF(dispatch)
@@ -103,6 +104,7 @@ public:
 			// Subset of arguments that have concrete type (non-deferred)
 			using ConcreteArgs = typename NondeferredSel::template type<ArgTypes>;
 
+			// TODO: Specialize output types for python to make sure memory is cleaned up
 			// Points to the C++ arguments converted from script types
 			//  NOTE: These are partially converted as the deferred arguments are converted in ::process<>
 			ArgPtrs convertedPtrs;
@@ -145,14 +147,14 @@ public:
 		}
 		catch ( ArgError& ae )
 		{
-			//TODO: Print error and usage (use Script::ErrorMsg to ignore if PyErr set)
-			Derived::commandName();
+			Script::errorMsg(ae.what());
 		}
 		catch ( std::exception& e )
 		{
 			std::string msg("Internal error: ");
 			msg += e.what();
-			//Script::ErrorMsg(msg.c_str());
+
+			Script::errorMsg(msg.c_str());
 		}
 	}
 

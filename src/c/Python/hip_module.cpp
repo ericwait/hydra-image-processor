@@ -24,13 +24,13 @@ static struct PyModuleDef hip_moduledef =
 // Main module initialization entry point
 MODULE_INIT_FUNC(HIP)
 {
-	ScriptCommand::CommandList commands = ScriptCommand::commands();
+	ScriptCommand::CommandList cmds = ScriptCommand::commands();
 
-	hip_methods = std::unique_ptr<PyMethodDef[]>(new PyMethodDef[commands.size()+1]);
-	hip_docstrs = std::unique_ptr<std::string[]>(new std::string[commands.size()]);
+	hip_methods = std::unique_ptr<PyMethodDef[]>(new PyMethodDef[cmds.size()+1]);
+	hip_docstrs = std::unique_ptr<std::string[]>(new std::string[cmds.size()]);
 
-	ScriptCommand::CommandList::const_iterator it = commands.cbegin();
-	for ( int i=0; it != commands.cend(); ++it, ++i )
+	ScriptCommand::CommandList::const_iterator it = cmds.cbegin();
+	for ( int i=0; it != cmds.cend(); ++it, ++i )
 	{
 		const ScriptCommand::FuncPtrs& cmdFuncs = it->second;
 		const char* cmdName = it->first.c_str();
@@ -42,7 +42,7 @@ MODULE_INIT_FUNC(HIP)
 	}
 
 	// Methods list must end with null element
-	hip_methods[commands.size()] ={ nullptr, nullptr, 0, nullptr };
+	hip_methods[cmds.size()] ={ nullptr, nullptr, 0, nullptr };
 
 
 	hip_moduledef.m_methods = hip_methods.get();

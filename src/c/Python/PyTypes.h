@@ -43,6 +43,16 @@ namespace Script
 	inline DimInfo getDimInfo(const ArrayType* im);
 	inline ImageDimensions makeImageDims(const DimInfo& info);
 
+
+	inline void errorMsg(const char* msg)
+	{
+		// Don't modify error text if there's already a PyError set
+		if ( PyErr_Occurred() )
+			return;
+
+		PyErr_SetString(PyExc_RuntimeError, msg);
+	}
+
 	inline std::vector<DimType> arrayDims(const DimInfo& info)
 	{
 		if ( info.columnMajor )
