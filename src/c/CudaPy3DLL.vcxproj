@@ -35,6 +35,7 @@
     <ClInclude Include="WrapCmds\GenCommands.h" />
     <ClInclude Include="WrapCmds\LinkageTraitTfms.h" />
     <ClInclude Include="WrapCmds\PyConverters.h" />
+    <ClInclude Include="WrapCmds\ScrCmdClosure.h" />
     <ClInclude Include="WrapCmds\ScriptCommand.h" />
     <ClInclude Include="WrapCmds\ScriptCommands.h" />
     <ClInclude Include="WrapCmds\ScriptCommandImpl.h" />
