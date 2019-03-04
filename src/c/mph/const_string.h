@@ -139,6 +139,10 @@ namespace mph
 			static constexpr const std::size_t value = 0;
 		};
 
+		constexpr const const_string<0> const_strcat_impl()
+		{
+			return make_const_str("");
+		}
 
 		template <typename StrType>
 		constexpr const StrType& const_strcat_impl(StrType&& str)
