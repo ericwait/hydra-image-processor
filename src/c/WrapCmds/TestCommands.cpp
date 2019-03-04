@@ -1,5 +1,5 @@
 #include "ScriptCommandImpl.h"
-#include "PyConverters.h"
+#include "PyArgConverter.h"
 
 #include "mph/tuple_helpers.h"
 #include "Cuda/CWrappers.h"
@@ -112,7 +112,7 @@ void testfunc()
 	//typename Script::filter<Script::is_outparam, std::tuple<Script::InParam<std::string>, Script::OutParam<std::vector<int>>>>::type t;
 	//printf("%s\n", typeid(t).name());
 
-	//Script::ArgParser<Script::OutParam<int>, Script::InParam<int>>::OutArgs a;
+	//Script::ArgConverter<Script::OutParam<int>, Script::InParam<int>>::OutArgs a;
 	//printf("%s\n", typeid(a).name());
 
 	//int a = mph::make_index_sequence<2000>::size();
@@ -122,7 +122,7 @@ void testfunc()
 	PyObject* out = nullptr;
 	PyObject* in = nullptr;
 
-	typename ScriptCommand_Help::ArgParser::OutputSel::template type<ScriptCommand_Help::ArgParser::ScriptPtrs> fdsf;
+	typename ScriptCommand_Help::ArgConverter::OutputSel::template type<ScriptCommand_Help::ArgConverter::ScriptPtrs> fdsf;
 
 	//using ParseTupleArgs = typename mph::tuple_type_tfm<Script::PyParseType, ScriptCommandTest::Parser::InOptArgs>::type;
 	//ParseTupleArgs parseVars;
@@ -130,12 +130,12 @@ void testfunc()
 	//auto parseArgs = ScriptCommandTest::Parser::expand_parse_args(varRefs);
 	//auto test = ScriptCommandTest::Parser::expand_parse_args_impl(varRefs, ScriptCommandTest::Parser::InOptTypeLayout(), mph::make_index_sequence<std::tuple_size<decltype(varRefs)>::value>());
 
-	typename ScriptCommand_Closure::ArgParser::S_InOpt<>::selector asdjfkl{};
-	typename ScriptCommand_Closure::ArgParser::OutTypeLayout jfls{};
+	typename ScriptCommand_Closure::ArgConverter::S_InOpt<>::selector asdjfkl{};
+	typename ScriptCommand_Closure::ArgConverter::OutTypeLayout jfls{};
 
 	std::string tstjkfs = mph::literal("fjdklsfs");
 
-	//typename ScriptCommandTest::ArgParser::ArgPtrs fdd;
+	//typename ScriptCommandTest::ArgConverter::ArgPtrs fdd;
 	//auto ate = ScriptCommandTest::DeferredSel::select(fdd);
 
 	std::tuple<int,int,int> dff;
@@ -161,7 +161,7 @@ void testfunc()
 
 	std::string test = ScriptCommand_Closure::usage();
 
-	ScriptCommand_Closure::ArgParser::ArgLayout testy;
+	ScriptCommand_Closure::ArgConverter::ArgLayout testy;
 
 	ScriptCommand_Closure::OutMap<float> tres;
 

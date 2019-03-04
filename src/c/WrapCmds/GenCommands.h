@@ -42,14 +42,14 @@
 
 
 #if defined(GENERATE_SCRIPT_COMMANDS)
-// Generate static subclasses of ScriptCommand and ArgParser for each command name
+// Generate static subclasses of ScriptCommand and ArgConverter for each command name
 	#define SCR_BEGIN_COMMANDS
 	#define SCR_END_COMMANDS
 
 	#if defined(PY_BUILD)
-		#define ARG_CONVERTER Script::PyArgParser
+		#define ARG_CONVERTER Script::PyArgConverter
 	#elif defined(MEXBUILD)
-		#define ARG_CONVERTER Script::MexArgParser
+		#define ARG_CONVERTER Script::MexArgConverter
 	#endif
 
 	// Main definition of a script command (no automated process<OutT,InT>)

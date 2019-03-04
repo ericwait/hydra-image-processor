@@ -17,9 +17,11 @@ namespace Script
 	template <typename OutT, typename InT, typename Tuple>
 	using deferred_concrete_transform = mph::tuple_type_tfm<deferred_to_concrete<OutT,InT>::template tfm, Tuple>;
 
-
+	/////////////
+	// ArgConverter - Base structure for script-engine to c++ argument conversions (used by ScriptCommands)
+	//   NOTE: These types are generated automatically by GenCommands.h and have fixed argument layouts
 	template <typename Derived, typename... Layout>
-	struct ArgParser
+	struct ArgConverter
 	{
 	protected:
 		using ArgConvertError = typename Script::Converter::ArgConvertError;

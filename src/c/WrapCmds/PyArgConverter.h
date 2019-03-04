@@ -5,7 +5,7 @@
 
 #include "ScriptTraits.h"
 #include "ScriptTraitTfms.h"
-#include "ArgParser.h"
+#include "ArgConverter.h"
 
 #include <tuple>
 #include <string>
@@ -118,33 +118,34 @@ namespace Script
 	};
 
 
-
+	/////////////
+	// PyArgConverter - Argument converter/loader for Python script engine
 	template <typename Derived, typename... Layout>
-	struct PyArgParser : public ArgParser<Derived, Layout...>
+	struct PyArgConverter : public ArgConverter<Derived, Layout...>
 	{
-		using BaseParser = ArgParser<Derived, Layout...>;
+		using BaseConverter = ArgConverter<Derived, Layout...>;
 
-		using typename BaseParser::ArgError;
+		using typename BaseConverter::ArgError;
 
 		// Argument type layout alias (e.g. std::tuple<OutParam<Image<Deferred>>,...>)
-		using typename BaseParser::ArgLayout;
+		using typename BaseConverter::ArgLayout;
 
 		// Script argument type layout (e.g. std::tuple<const PyArrayObject*,...>
-		using typename BaseParser::ScriptTypes;
-		using typename BaseParser::ScriptPtrs;
+		using typename BaseConverter::ScriptTypes;
+		using typename BaseConverter::ScriptPtrs;
 
 		// Concrete type layouts (e.g. std::tuple<PyObject*,...>)
-		using typename BaseParser::ArgTypes;
+		using typename BaseConverter::ArgTypes;
 
 		// IO-type stripped layout subsets (e.g. OutParam<Image<Deferred>> -> Image<Deferred>)
-		using typename BaseParser::OutTypeLayout;
-		using typename BaseParser::InTypeLayout;
-		using typename BaseParser::OptTypeLayout;
+		using typename BaseConverter::OutTypeLayout;
+		using typename BaseConverter::InTypeLayout;
+		using typename BaseConverter::OptTypeLayout;
 
 		// IO Selectors
-		using typename BaseParser::OutputSel;
-		using typename BaseParser::InputSel;
-		using typename BaseParser::OptionalSel;
+		using typename BaseConverter::OutputSel;
+		using typename BaseConverter::InputSel;
+		using typename BaseConverter::OptionalSel;
 
 
 		static void load(ScriptPtrs& scriptPtrs, Script::ObjectType*& scriptOut, Script::ObjectType* scriptIn)

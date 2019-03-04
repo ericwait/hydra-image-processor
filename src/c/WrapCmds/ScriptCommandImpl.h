@@ -7,7 +7,7 @@
 
 #include "mph/tuple_helpers.h"
 
-template <typename Derived, typename Parser>
+template <typename Derived, typename ConverterType>
 class ScriptCommandImpl: public ScriptCommand
 {
 	template <typename T>
@@ -22,33 +22,33 @@ class ScriptCommandImpl: public ScriptCommand
 	using ProcessFunc = AssertProcessFunc<Derived>;
 public:
 	// Argument load/conversion access types
-	using ArgParser = Parser;
-	using ArgError = typename ArgParser::ArgError;
+	using ArgConverter = ConverterType;
+	using ArgError = typename ArgConverter::ArgError;
 
 	// Script/converted argument types from arg parser
-	using ScriptTypes = typename ArgParser::ScriptTypes;
-	using ArgTypes = typename ArgParser::ArgTypes;
+	using ScriptTypes = typename ArgConverter::ScriptTypes;
+	using ArgTypes = typename ArgConverter::ArgTypes;
 
 	// Pointers to arguments
-	using ScriptPtrs = typename ArgParser::ScriptPtrs;
-	using ArgPtrs = typename ArgParser::ArgPtrs;
+	using ScriptPtrs = typename ArgConverter::ScriptPtrs;
+	using ArgPtrs = typename ArgConverter::ArgPtrs;
 
 	// Selectors
-	using OptionalSel = typename ArgParser::OptionalSel;
-	using DeferredSel = typename ArgParser::DeferredSel;
-	using DeferredOutSel = typename ArgParser::DeferredOutSel;
-	using DeferredOutImSel = typename ArgParser::DeferredOutImSel;
-	using DeferredInOptSel = typename ArgParser::DeferredInOptSel;
-	using NondeferredSel = typename ArgParser::NondeferredSel;
-	using NondeferOutSel = typename ArgParser::NondeferOutSel;
-	using NondeferInOptSel = typename ArgParser::NondeferInOptSel;
+	using OptionalSel = typename ArgConverter::OptionalSel;
+	using DeferredSel = typename ArgConverter::DeferredSel;
+	using DeferredOutSel = typename ArgConverter::DeferredOutSel;
+	using DeferredOutImSel = typename ArgConverter::DeferredOutImSel;
+	using DeferredInOptSel = typename ArgConverter::DeferredInOptSel;
+	using NondeferredSel = typename ArgConverter::NondeferredSel;
+	using NondeferOutSel = typename ArgConverter::NondeferOutSel;
+	using NondeferInOptSel = typename ArgConverter::NondeferInOptSel;
 
 	// Deferred concrete-types
 	template <typename OutT, typename InT>
-	using ConcreteArgTypes = typename ArgParser::template ConcreteArgTypes<OutT, InT>;
+	using ConcreteArgTypes = typename ArgConverter::template ConcreteArgTypes<OutT, InT>;
 
 	template <typename InT>
-	using OutMap = typename ArgParser::template OutMap<InT>;
+	using OutMap = typename ArgConverter::template OutMap<InT>;
 
 public:
 	/////////
@@ -69,17 +69,17 @@ public:
 	inline static SCR_USAGE_FUNC_DECL(usage)
 	{
 		// TODO: Fix the output wrapping here
-		return usageOutput(ArgParser::outargstr())
+		return usageOutput(ArgConverter::outargstr())
 			+ moduleName() + "." + Derived::commandName()
-			+ "("+ ArgParser::inoptargstr() + ")";
+			+ "("+ ArgConverter::inoptargstr() + ")";
 	}
 
 	inline static SCR_INFO_FUNC_DECL(info)
 	{
 		command = Derived::commandName();
 		help = Derived::help();
-		outArgs = ArgParser::outargstr();
-		inArgs = ArgParser::inoptargstr();
+		outArgs = ArgConverter::outargstr();
+		inArgs = ArgConverter::inoptargstr();
 	}
 
 private:
@@ -115,7 +115,7 @@ public:
 			ScriptPtrs scriptPtrs = mph::tuple_addr_of(scriptObjects);
 
 			// Load script pointers from script engine inputs
-			ArgParser::load(scriptPtrs, std::forward<ScriptInterface>(scriptioArgs)...);
+			ArgConverter::load(scriptPtrs, std::forward<ScriptInterface>(scriptioArgs)...);
 
 			// NOTE: Requires that args are default-constructible types
 			ConcreteArgs convertedArgs;
@@ -125,25 +125,25 @@ public:
 			NondeferredSel::select(convertedPtrs) = mph::tuple_addr_of(convertedArgs);
 
 			// Load default values for optional arguments (can't be deferred)
-			ArgParser::setOptionalDefaults(convertedPtrs);
+			ArgConverter::setOptionalDefaults(convertedPtrs);
 
 			// Convert non-deferred inputs to appropriate arg types
-			ArgParser::convertSelected(convertedPtrs, scriptPtrs, NondeferInOptSel{});
+			ArgConverter::convertSelected(convertedPtrs, scriptPtrs, NondeferInOptSel{});
 
 			// TODO: Figure out how to solve the dims inference problem
 			// TODO: Currently no support for creating non-deferred output images
 			// Create non-deferred outputs
-			//ArgParser::createOutIm(convertedPtrs, scriptPtrs, dims, NondeferOutImSel{});
+			//ArgConverter::createOutIm(convertedPtrs, scriptPtrs, dims, NondeferOutImSel{});
 
 			// Run backend cuda filter using default execute() -> process<OutT,InT>()
 			// or run overloaded ::execute or ::process<OutT,InT> functions
 			exec_dispatch(mph::tuple_deref(convertedPtrs));
 
 			// Convert outputs to script types
-			ArgParser::convertSelected(scriptPtrs, convertedPtrs, NondeferOutSel{});
+			ArgConverter::convertSelected(scriptPtrs, convertedPtrs, NondeferOutSel{});
 
 			// Load all outputs into script output structure (Necessary for Python)
-			ArgParser::store(scriptPtrs, std::forward<ScriptInterface>(scriptioArgs)...);
+			ArgConverter::store(scriptPtrs, std::forward<ScriptInterface>(scriptioArgs)...);
 		}
 		catch ( ArgError& ae )
 		{
@@ -182,9 +182,9 @@ private:
 	template <typename... Args>
 	static void execute(Args&&... args)
 	{
-		static_assert(ArgParser::has_deferred_image_inputs(), "HIP_COMPILE: Argument layout has no dynamic image inputs. Please overload default ::execute() function!");
+		static_assert(ArgConverter::has_deferred_image_inputs(), "HIP_COMPILE: Argument layout has no dynamic image inputs. Please overload default ::execute() function!");
 
-		Script::IdType type = ArgParser::getInputType(std::forward<Args>(args)...);
+		Script::IdType type = ArgConverter::getInputType(std::forward<Args>(args)...);
 
 		if ( type == Script::TypeToIdMap<bool>::typeId )
 		{
@@ -256,18 +256,18 @@ private:
 		DeferredOutSel::select(convertedPtrs) = mph::tuple_addr_of(concreteOutArgs);
 
 		// Convert deferred inputs to appropriate arg types
-		ArgParser::convertSelected(convertedPtrs, argPtrs, DeferredInOptSel{});
+		ArgConverter::convertSelected(convertedPtrs, argPtrs, DeferredInOptSel{});
 
 		// Create imageref outputs
 		// TODO: Better image dims inference
-		Script::DimInfo dimInfo = ArgParser::getInputDimInfo(argRefs);
-		ArgParser::createOutImRefs(convertedPtrs, argPtrs, dimInfo);
+		Script::DimInfo dimInfo = ArgConverter::getInputDimInfo(argRefs);
+		ArgConverter::createOutImRefs(convertedPtrs, argPtrs, dimInfo);
 
 		// Run backend cuda filter
 		run_dispatch(mph::tuple_deref(convertedPtrs));
 
 		// Convert deferred outputs to script types
-		ArgParser::convertSelected(argPtrs, convertedPtrs, DeferredOutSel{});
+		ArgConverter::convertSelected(argPtrs, convertedPtrs, DeferredOutSel{});
 	}
 
 	template <typename... Args>

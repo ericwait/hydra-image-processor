@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\mph">
+      <UniqueIdentifier>{1d57e46c-a421-4ecd-9fce-a4caca83cb16}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Python\hip_module.cpp">
@@ -41,34 +44,13 @@
     <ClInclude Include="WrapCmds\ScriptCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\PyConverters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mph\integer_sequence.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mph\tuple_helpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mph\qualifier_helpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="WrapCmds\ScriptTraits.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WrapCmds\ArgParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WrapCmds\ScriptTraitTfms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WrapCmds\GenCommands.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mph\preproc_helper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mph\const_string.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WrapCmds\LinkageTraitTfms.h">
@@ -79,6 +61,27 @@
     </ClInclude>
     <ClInclude Include="WrapCmds\ScrCmdClosure.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ArgConverter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\PyArgConverter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\const_string.h">
+      <Filter>Header Files\mph</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\integer_sequence.h">
+      <Filter>Header Files\mph</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\qualifier_helpers.h">
+      <Filter>Header Files\mph</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\tuple_helpers.h">
+      <Filter>Header Files\mph</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\preproc_helper.h">
+      <Filter>Header Files\mph</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
