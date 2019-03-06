@@ -22,7 +22,7 @@ void convertKernelImage<float>(ImageView<float> kernel, const Script::ArrayType*
 	float* outPtr = kernel.getPtr();
 	float* kernData = Script::ArrayInfo::getData<float>(inKernel);
 
-	memcpy(outPtr, kernData, kernel.getNumElements()*sizeof(float));
+	std::memcpy(outPtr, kernData, kernel.getNumElements()*sizeof(float));
 }
 
 template <>

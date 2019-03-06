@@ -216,7 +216,7 @@ Vec<std::size_t> MexCommand::FillKernel(const mxArray* matKernelIn, float** kern
         float* matKernel;
         matKernel = (float*)mxGetData(matKernelIn);
 
-        memcpy(kernel, matKernel, sizeof(float)*kernDims.product());
+        std::memcpy(kernel, matKernel, sizeof(float)*kernDims.product());
     } else if(mxIsDouble(matKernelIn))
     {
         double* matKernel;
