@@ -39,32 +39,31 @@ namespace Script
 	};
 
 
+	// Create a formatted messsage string for use by script and error routines
+	template <typename... Args>
+	inline std::string formatMsg(const char* fmt, Args&&... args)
+	{
+		size_t size = std::snprintf(nullptr, 0, fmt, std::forward<Args>(args)...);
+
+		std::unique_ptr<char[]> msgPtr(new char[size+1]);
+		std::snprintf(msgPtr.get(), size, fmt, std::forward<Args>(args)...);
+
+		return std::string(msgPtr.get());
+	}
+
+	inline std::string formatMsg(const char* fmt)
+	{
+		return std::string(fmt);
+	}
+
+
 	// Helper class for creating format-string runtime errors
 	class RuntimeError: public std::runtime_error
 	{
-		template <typename... Args>
-		static std::unique_ptr<char[]> make_msg(const char* fmt, Args&&... args)
-		{
-			size_t size = std::snprintf(nullptr, 0, fmt, std::forward<Args>(args)...);
-
-			std::unique_ptr<char[]> msgPtr(new char[size+1]);
-			std::snprintf(msgPtr.get(), size, fmt, std::forward<Args>(args)...);
-			return msgPtr;
-		}
-
-		static std::unique_ptr<char[]> make_msg(const char* fmt)
-		{
-			size_t size = std::strlen(fmt);
-
-			std::unique_ptr<char[]> msgPtr(new char[size+1]);
-			std::strncpy(msgPtr.get(), fmt, size);
-			return msgPtr;
-		}
-
 	public:
 		template <typename... Args>
 		RuntimeError(const char* fmt, Args&&... args)
-			: std::runtime_error(make_msg(fmt,std::forward<Args>(args)...).get())
+			: std::runtime_error(formatMsg(fmt,std::forward<Args>(args)...))
 		{}
 	};
 

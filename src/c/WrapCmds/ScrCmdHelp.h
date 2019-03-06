@@ -15,7 +15,7 @@ public:
 
 		auto cmd = ScriptCommand::findCommand(commandName);
 		if ( cmd )
-			PySys_WriteStdout("%s\n", cmd->help().c_str());
+			Script::writeMsg("%s\n", cmd->help().c_str());
 	}
 
 private:
@@ -23,7 +23,7 @@ private:
 	{
 		ScriptCommand::CommandList cmds = ScriptCommand::commands();
 		for ( const auto& it: cmds )
-			PySys_WriteStdout("%s\n", it.second.usage().c_str());
+			Script::writeMsg("%s\n", it.second.usage().c_str());
 	}
 
 };

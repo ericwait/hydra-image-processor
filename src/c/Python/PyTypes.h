@@ -33,13 +33,20 @@ namespace Script
 	inline ImageDimensions makeImageDims(const DimInfo& info);
 
 
-	inline void errorMsg(const char* msg)
+	template <typename... Args>
+	inline void writeMsg(const char* fmt, Args&&... args)
+	{
+		PySys_WriteStdout(fmt, std::forward<Args>(args)...);
+	}
+
+	template <typename... Args>
+	inline void errorMsg(const char* fmt, Args&&... args)
 	{
 		// Don't modify error text if there's already a PyError set
 		if ( PyErr_Occurred() )
 			return;
 
-		PyErr_SetString(PyExc_RuntimeError, msg);
+		PyErr_SetString(PyExc_RuntimeError, formatMsg(fmt, std::forward<Args>(args)...).c_str());
 	}
 
 	inline std::vector<DimType> arrayDims(const DimInfo& info)
