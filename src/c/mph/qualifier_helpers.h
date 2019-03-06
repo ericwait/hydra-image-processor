@@ -130,4 +130,9 @@ namespace mph
 	/////////////////////////
 	template <template <typename> class Tfm, typename T>
 	using full_type_tfm_t = typename internal::full_type_tfm_impl<Tfm, T, T>::type;
+
+	/////////////////////////
+	// void_t - C++14 compatibility (used with SFINAE for identifying "valid" type expressions)
+	/////////////////////////
+	template <typename... Ts> using void_t = void;
 };

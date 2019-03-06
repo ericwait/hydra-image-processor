@@ -37,10 +37,12 @@
     <ClInclude Include="WrapCmds\PyArgConverter.h" />
     <ClInclude Include="WrapCmds\ScrCmdClosure.h" />
     <ClInclude Include="WrapCmds\ScriptCommand.h" />
+    <ClInclude Include="WrapCmds\ScriptCommandDefines.h" />
     <ClInclude Include="WrapCmds\ScriptCommands.h" />
     <ClInclude Include="WrapCmds\ScriptCommandImpl.h" />
     <ClInclude Include="WrapCmds\ScriptHelpers.h" />
     <ClInclude Include="WrapCmds\CommandList.h" />
+    <ClInclude Include="WrapCmds\ScriptioMaps.h" />
     <ClInclude Include="WrapCmds\ScriptTraits.h" />
     <ClInclude Include="WrapCmds\ScriptTraitTfms.h" />
   </ItemGroup>

@@ -83,6 +83,12 @@
     <ClInclude Include="mph\preproc_helper.h">
       <Filter>Header Files\mph</Filter>
     </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptioMaps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptCommandDefines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
