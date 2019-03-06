@@ -12,6 +12,7 @@ namespace Script
 	template <typename T> struct Vector {};
 	template <typename T> struct Image {};
 	template <typename T> struct ImageRef {};
+	template <typename T> struct StructTrait {};
 
 
 	// IO Traits (Parameter type, output, input, optional input)

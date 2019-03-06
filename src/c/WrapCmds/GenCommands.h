@@ -22,6 +22,8 @@
 #define SCR_VECTOR(VarType) Script::Vector<VarType>
 #define SCR_IMAGE(VarType) Script::ImageRef<VarType>
 #define SCR_IMAGE_CONVERT(VarType) Script::Image<VarType>
+// TODO: Fix struct type to not use DeferredType machinery
+#define SCR_STRUCT Script::StructTrait<Script::DeferredType>
 
 // Dynamic type (C++ type is inferred from input type)
 #define SCR_DYNAMIC Script::DeferredType
