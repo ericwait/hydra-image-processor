@@ -16,8 +16,6 @@
 #include <limits>
 #include <omp.h>
 
-#pragma optimize("", off)
-
 template <class PixelTypeIn, class PixelTypeOut>
 void cGaussian(ImageView<PixelTypeIn> imageIn, ImageView<PixelTypeOut> imageOut, Vec<double> sigmas, int numIterations = 1, int device = -1)
 {

@@ -1,6 +1,5 @@
 #include <memory>
 
-#pragma optimize("",off)
 
 #define NUMPY_IMPORT_MODULE
 #include "PyIncludes.h"

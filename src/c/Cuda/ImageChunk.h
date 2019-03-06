@@ -8,8 +8,6 @@
 #include <cuda_runtime.h>
 #include <vector>
 
-#pragma optimize("", off)
-
 class ImageChunk
 {
 public:
