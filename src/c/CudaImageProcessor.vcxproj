@@ -140,6 +140,7 @@
     <ClInclude Include="Cuda\CudaSum.cuh" />
     <ClInclude Include="Cuda\CudaVarFilter.cuh" />
     <ClInclude Include="Cuda\CudaWienerFilter.cuh" />
+    <ClInclude Include="Cuda\CWrapperAutogen.h" />
     <ClInclude Include="Cuda\SeparableMultiplySum.cuh">
       <FileType>CppCode</FileType>
     </ClInclude>
@@ -179,6 +180,7 @@
     <ClInclude Include="Cuda\CudaMemoryStats.cuh">
       <FileType>Document</FileType>
     </ClInclude>
+    <CudaCompile Include="Cuda\CWrapperAutogen.cu" />
     <CudaCompile Include="Cuda\CWrappers.cu">
       <FileType>Document</FileType>
     </CudaCompile>

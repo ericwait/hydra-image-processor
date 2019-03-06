@@ -14,6 +14,10 @@
 #define IMAGE_PROCESSOR_API
 #endif // IMAGE_PROCESSOR_DLL
 
+
+#include "CWrapperAutogen.h"
+
+
 IMAGE_PROCESSOR_API void clearDevice();
 
 IMAGE_PROCESSOR_API int deviceCount();
@@ -33,15 +37,7 @@ IMAGE_PROCESSOR_API int memoryStats(std::size_t** stats);
 //IMAGE_PROCESSOR_API void fooFilter(const ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int numIterations = 1, int device = -1);
 //IMAGE_PROCESSOR_API void fooFilter(const ImageView<double> imageIn, ImageView<double> imageOut, ImageView<float> kernel, int numIterations = 1, int device = -1);
 
-IMAGE_PROCESSOR_API void closure(const ImageView<bool> imageIn, ImageView<bool> imageOut, ImageView<float> kernel, int numIterations = 1, int device = -1);
-IMAGE_PROCESSOR_API void closure(const ImageView<char> imageIn, ImageView<char> imageOut, ImageView<float> kernel, int numIterations = 1, int device = -1);
-IMAGE_PROCESSOR_API void closure(const ImageView<unsigned char> imageIn, ImageView<unsigned char> imageOut, ImageView<float> kernel, int numIterations = 1, int device = -1);
-IMAGE_PROCESSOR_API void closure(const ImageView<short> imageIn, ImageView<short> imageOut, ImageView<float> kernel, int numIterations = 1, int device = -1);
-IMAGE_PROCESSOR_API void closure(const ImageView<unsigned short> imageIn, ImageView<unsigned short> imageOut, ImageView<float> kernel, int numIterations = 1, int device = -1);
-IMAGE_PROCESSOR_API void closure(const ImageView<int> imageIn, ImageView<int> imageOut, ImageView<float> kernel, int numIterations = 1, int device = -1);
-IMAGE_PROCESSOR_API void closure(const ImageView<unsigned int> imageIn, ImageView<unsigned int> imageOut, ImageView<float> kernel, int numIterations = 1, int device = -1);
-IMAGE_PROCESSOR_API void closure(const ImageView<float> imageIn, ImageView<float> imageOut, ImageView<float> kernel, int numIterations = 1, int device = -1);
-IMAGE_PROCESSOR_API void closure(const ImageView<double> imageIn, ImageView<double> imageOut, ImageView<float> kernel, int numIterations = 1, int device = -1);
+
 
 IMAGE_PROCESSOR_API void elementWiseDifference(const ImageView<bool> image1In, ImageView<bool> image2In, ImageView<bool> imageOut, int device = -1);
 IMAGE_PROCESSOR_API void elementWiseDifference(const ImageView<char> image1In, ImageView<char> image2In, ImageView<char> imageOut, int device = -1);
