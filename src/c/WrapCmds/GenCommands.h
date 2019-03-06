@@ -48,7 +48,7 @@
 
 	#if defined(PY_BUILD)
 		#define ARG_CONVERTER Script::PyArgConverter
-	#elif defined(MEXBUILD)
+	#elif defined(MEX_BUILD)
 		#define ARG_CONVERTER Script::MexArgConverter
 	#endif
 

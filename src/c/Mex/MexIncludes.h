@@ -2,5 +2,5 @@
 
 #include <mex.h>
 
-#define MEX_BUILD
 #include "../WrapCmds/ScriptHelpers.h"
+#include "../WrapCmds/ScriptCommand.h"

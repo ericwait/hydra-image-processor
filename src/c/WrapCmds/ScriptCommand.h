@@ -1,7 +1,9 @@
+#pragma once
+
 #include <string>
 #include <unordered_map>
 
-#include "PyIncludes.h"
+#include "ScriptIncludes.h"
 // TODO: Put this in ifdef or py-specific includes
 #define SCR_MODULE_NAME "HIP"
 

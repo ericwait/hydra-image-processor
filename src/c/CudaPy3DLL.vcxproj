@@ -42,6 +42,7 @@
     <ClInclude Include="WrapCmds\ScriptCommandImpl.h" />
     <ClInclude Include="WrapCmds\ScriptHelpers.h" />
     <ClInclude Include="WrapCmds\CommandList.h" />
+    <ClInclude Include="WrapCmds\ScriptIncludes.h" />
     <ClInclude Include="WrapCmds\ScriptioMaps.h" />
     <ClInclude Include="WrapCmds\ScriptTraits.h" />
     <ClInclude Include="WrapCmds\ScriptTraitTfms.h" />

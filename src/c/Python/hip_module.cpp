@@ -1,10 +1,8 @@
 #include <memory>
 
-
+// This define forces inclusion of numpy symbols only in the hip_module.cpp file
 #define NUMPY_IMPORT_MODULE
-#include "PyIncludes.h"
-
-#include "../WrapCmds/ScriptCommand.h"
+#include "../WrapCmds/ScriptIncludes.h"
 
 // Make this a unique pointer just in case init can be run more than once
 static std::unique_ptr<PyMethodDef[]> hip_methods = nullptr;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <mex.h>
+#include "MexIncludes.h"
 
 #include <cstddef>
 #include <cstdint>
