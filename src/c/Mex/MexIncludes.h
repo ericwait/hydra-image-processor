@@ -2,5 +2,5 @@
 
 #include <mex.h>
 
-#include "../WrapCmds/ScriptHelpers.h"
-#include "../WrapCmds/ScriptCommand.h"
+#include "ScriptCmds/ScriptHelpers.h"
+#include "ScriptCmds/ScriptCommand.h"

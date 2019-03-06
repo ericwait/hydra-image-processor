@@ -36,7 +36,7 @@
     <ClInclude Include="Mex\MexTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptHelpers.h">
+    <ClInclude Include="ScriptCmds\ScriptHelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

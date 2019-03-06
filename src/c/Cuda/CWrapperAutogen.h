@@ -5,9 +5,9 @@
 #endif
 
 
-#include "../WrapCmds/ScriptioMaps.h"
-#include "../WrapCmds/LinkageTraitTfms.h"
+#include "ScriptCmds/ScriptioMaps.h"
+#include "ScriptCmds/LinkageTraitTfms.h"
 
 #define GENERATE_PROC_STUB_PROTOTYPES
-  #include "../WrapCmds/GenCommands.h"
+  #include "ScriptCmds/GenCommands.h"
 #undef GENERATE_PROC_STUB_PROTOTYPES

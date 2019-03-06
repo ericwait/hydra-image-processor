@@ -100,7 +100,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     <ClInclude Include="Mex\MexWrapDef.h" />
     <ClInclude Include="Mex\MexKernel.h" />
     <ClInclude Include="WrapCmds\CommandList.h" />
-    <ClInclude Include="WrapCmds\ScriptHelpers.h" />
+    <ClInclude Include="ScriptCmds\ScriptHelpers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp" />

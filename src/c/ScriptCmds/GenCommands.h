@@ -219,17 +219,17 @@
 	#define SCR_BEGIN_COMMANDS const ScriptCommand::CommandList ScriptCommand::m_commands = {
 	#define SCR_END_COMMANDS };
 
-#define SCR_CMD_NOPROC(Name, Params) _SCR_CMD_MAP_LINE(Name)
-#define SCR_CMD(Name, Params, CudaFunc) _SCR_CMD_MAP_LINE(Name)
+	#define SCR_CMD_NOPROC(Name, Params) _SCR_CMD_MAP_LINE(Name)
+	#define SCR_CMD(Name, Params, CudaFunc) _SCR_CMD_MAP_LINE(Name)
 
-#define _SCR_CMD_MAP_LINE(Name)				\
-	{										\
-		#Name,								\
-		{&ScriptCommand_##Name::dispatch,	\
-		&ScriptCommand_##Name::usage,		\
-		&ScriptCommand_##Name::help,		\
-		&ScriptCommand_##Name::info}		\
-	},
+	#define _SCR_CMD_MAP_LINE(Name)				\
+		{										\
+			#Name,								\
+			{&ScriptCommand_##Name::dispatch,	\
+			&ScriptCommand_##Name::usage,		\
+			&ScriptCommand_##Name::help,		\
+			&ScriptCommand_##Name::info}		\
+		},
 
 #else
 // Don't generate code for any other inclusions

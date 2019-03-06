@@ -1,12 +1,12 @@
-#include "../Cuda/ImageView.h"
+#include "Cuda/ImageView.h"
 
 #include "mph/tuple_helpers.h"
 #include "mph/qualifier_helpers.h"
 #include "mph/const_string.h"
 
-#include "ScriptTraits.h"
-#include "ScriptTraitTfms.h"
-#include "ArgConverter.h"
+#include "ScriptCmds/ScriptTraits.h"
+#include "ScriptCmds/ScriptTraitTfms.h"
+#include "ScriptCmds/ArgConverter.h"
 
 #include <tuple>
 #include <string>

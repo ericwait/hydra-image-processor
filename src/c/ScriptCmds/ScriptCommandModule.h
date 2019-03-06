@@ -20,7 +20,7 @@
 
 
 #define GENERATE_SCRIPT_COMMANDS
-#include "../WrapCmds/GenCommands.h"
+#include "ScriptCmds/GenCommands.h"
 #undef GENERATE_SCRIPT_COMMANDS
 
 

@@ -38,9 +38,6 @@
     <ClInclude Include="Python\PyTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\PyArgConverter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mph\const_string.h">
       <Filter>Header Files\mph</Filter>
     </ClInclude>
@@ -56,59 +53,62 @@
     <ClInclude Include="mph\preproc_helper.h">
       <Filter>Header Files\mph</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ArgConverter.h">
+    <ClInclude Include="ScriptCmds\ArgConverter.h">
       <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\CommandList.h">
+    <ClInclude Include="ScriptCmds\CommandList.h">
       <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\GenCommands.h">
+    <ClInclude Include="ScriptCmds\GenCommands.h">
       <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptCommand.h">
+    <ClInclude Include="ScriptCmds\ScriptCommand.h">
       <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptCommandDefines.h">
+    <ClInclude Include="ScriptCmds\ScriptCommandDefines.h">
       <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptCommandImpl.h">
+    <ClInclude Include="ScriptCmds\ScriptCommandImpl.h">
       <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptCommandModule.h">
+    <ClInclude Include="ScriptCmds\ScriptCommandModule.h">
       <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptHelpers.h">
+    <ClInclude Include="ScriptCmds\ScriptHelpers.h">
       <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptIncludes.h">
+    <ClInclude Include="ScriptCmds\ScriptIncludes.h">
       <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptioMaps.h">
+    <ClInclude Include="ScriptCmds\ScriptioMaps.h">
       <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptTraits.h">
+    <ClInclude Include="ScriptCmds\ScriptTraits.h">
       <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptTraitTfms.h">
+    <ClInclude Include="ScriptCmds\ScriptTraitTfms.h">
       <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptCommands.h">
+    <ClInclude Include="ScriptCmds\ScriptCommands.h">
       <Filter>Header Files\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScrCmdHelp.h">
+    <ClInclude Include="ScriptCmds\ScrCmdHelp.h">
       <Filter>Header Files\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScrCmdClosure.h">
+    <ClInclude Include="ScriptCmds\ScrCmdClosure.h">
       <Filter>Header Files\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScrCmdInfo.h">
+    <ClInclude Include="ScriptCmds\ScrCmdInfo.h">
       <Filter>Header Files\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScrCmdDeviceCount.h">
+    <ClInclude Include="ScriptCmds\ScrCmdDeviceCount.h">
       <Filter>Header Files\Commands</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScrCmdDeviceStats.h">
+    <ClInclude Include="ScriptCmds\ScrCmdDeviceStats.h">
       <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Python\PyArgConverter.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
