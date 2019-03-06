@@ -16,6 +16,12 @@
     <Filter Include="Header Files\mph">
       <UniqueIdentifier>{1d57e46c-a421-4ecd-9fce-a4caca83cb16}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ScriptCommand">
+      <UniqueIdentifier>{061a7173-48c8-4962-8250-851861579b7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Commands">
+      <UniqueIdentifier>{78c12788-b46d-4f16-a2d9-09c6f13c2d48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Python\hip_module.cpp">
@@ -26,43 +32,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="WrapCmds\CommandList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Python\PyIncludes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptHelpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Python\PyTypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptCommands.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptCommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptTraits.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptTraitTfms.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WrapCmds\GenCommands.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WrapCmds\LinkageTraitTfms.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptCommandImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WrapCmds\ScrCmdClosure.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WrapCmds\ArgConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WrapCmds\PyArgConverter.h">
@@ -83,20 +56,50 @@
     <ClInclude Include="mph\preproc_helper.h">
       <Filter>Header Files\mph</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScrCmdHelp.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="WrapCmds\ArgConverter.h">
+      <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptioMaps.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="WrapCmds\CommandList.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\GenCommands.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptCommand.h">
+      <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
     <ClInclude Include="WrapCmds\ScriptCommandDefines.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptIncludes.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="WrapCmds\ScriptCommandImpl.h">
+      <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
     <ClInclude Include="WrapCmds\ScriptCommandModule.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptHelpers.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptIncludes.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptioMaps.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptTraits.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptTraitTfms.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptCommands.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScrCmdHelp.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScrCmdClosure.h">
+      <Filter>Header Files\Commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

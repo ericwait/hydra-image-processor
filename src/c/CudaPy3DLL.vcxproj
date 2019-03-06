@@ -33,7 +33,6 @@
     <ClInclude Include="Python\PyTypes.h" />
     <ClInclude Include="WrapCmds\ArgConverter.h" />
     <ClInclude Include="WrapCmds\GenCommands.h" />
-    <ClInclude Include="WrapCmds\LinkageTraitTfms.h" />
     <ClInclude Include="WrapCmds\PyArgConverter.h" />
     <ClInclude Include="WrapCmds\ScrCmdClosure.h" />
     <ClInclude Include="WrapCmds\ScrCmdHelp.h" />

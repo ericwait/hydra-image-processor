@@ -144,6 +144,7 @@
     <ClInclude Include="Cuda\SeparableMultiplySum.cuh">
       <FileType>CppCode</FileType>
     </ClInclude>
+    <ClInclude Include="WrapCmds\LinkageTraitTfms.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cuda\CHelpers.h" />
