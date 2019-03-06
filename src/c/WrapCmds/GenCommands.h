@@ -173,9 +173,9 @@
 
 	#define _SCR_PRM_SIGNATURE(InType, ...) PRP_FOREACH(_APPLY_DEFER_TYPE(InType), _SCR_PRM_DROP_DEFVAL(__VA_ARGS__))
 
-	
+	// TODO: Is there a better way to deal with _API prefix?
 	#define _SCR_GEN_TYPED_PROTO(InType, Params, CudaFunc)			\
-		void CudaFunc##_stub(_SCR_PRM_SIGNATURE(InType, _PASSTHRU(Params)));
+		IMAGE_PROCESSOR_API void CudaFunc##_stub(_SCR_PRM_SIGNATURE(InType, _PASSTHRU(Params)));
 
 	#define _SCR_GEN_TYPED_IMPL(InType, Params, CudaFunc)			\
 		void CudaFunc##_stub(_SCR_PRM_SIGNATURE(InType, _PASSTHRU(Params)))	\
