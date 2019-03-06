@@ -21,7 +21,7 @@
     <ClCompile Include="Python\hip_module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WrapCmds\TestCommands.cpp">
+    <ClCompile Include="Python\PyCommandModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,6 +83,9 @@
     <ClInclude Include="mph\preproc_helper.h">
       <Filter>Header Files\mph</Filter>
     </ClInclude>
+    <ClInclude Include="WrapCmds\ScrCmdHelp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="WrapCmds\ScriptioMaps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -90,6 +93,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WrapCmds\ScriptIncludes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScriptCommandModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

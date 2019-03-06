@@ -21,7 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Python\hip_module.cpp" />
-    <ClCompile Include="WrapCmds\TestCommands.cpp" />
+    <ClCompile Include="Python\PyCommandModule.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mph\const_string.h" />
@@ -36,8 +36,10 @@
     <ClInclude Include="WrapCmds\LinkageTraitTfms.h" />
     <ClInclude Include="WrapCmds\PyArgConverter.h" />
     <ClInclude Include="WrapCmds\ScrCmdClosure.h" />
+    <ClInclude Include="WrapCmds\ScrCmdHelp.h" />
     <ClInclude Include="WrapCmds\ScriptCommand.h" />
     <ClInclude Include="WrapCmds\ScriptCommandDefines.h" />
+    <ClInclude Include="WrapCmds\ScriptCommandModule.h" />
     <ClInclude Include="WrapCmds\ScriptCommands.h" />
     <ClInclude Include="WrapCmds\ScriptCommandImpl.h" />
     <ClInclude Include="WrapCmds\ScriptHelpers.h" />

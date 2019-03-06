@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ScriptCommandImpl.h"
+#include "ScriptCommandDefines.h"
 
 SCR_COMMAND_CLASSDEF(Closure)
 {
