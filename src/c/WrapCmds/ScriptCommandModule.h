@@ -29,6 +29,10 @@
 // Place includes for all script command class definitions here
 
 #include "ScrCmdHelp.h"
+#include "ScrCmdInfo.h"
+
+#include "ScrCmdDeviceCount.h"
+#include "ScrCmdDeviceStats.h"
 
 #include "ScrCmdClosure.h"
 

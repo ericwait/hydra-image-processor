@@ -253,9 +253,6 @@ namespace Script
 		template <typename OutT, typename InT>
 		static void convert_arg(OutT*& outPtr, const InT& in, const char* argName)
 		{
-			if ( outPtr == nullptr )
-				throw ArgConvertError(argName, "Output parameter cannot be null");
-
 			try
 			{
 				Derived::convert_impl(outPtr, in);

@@ -101,6 +101,15 @@
     <ClInclude Include="WrapCmds\ScrCmdClosure.h">
       <Filter>Header Files\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="WrapCmds\ScrCmdInfo.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScrCmdDeviceCount.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="WrapCmds\ScrCmdDeviceStats.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

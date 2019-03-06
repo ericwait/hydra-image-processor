@@ -35,7 +35,10 @@
     <ClInclude Include="WrapCmds\GenCommands.h" />
     <ClInclude Include="WrapCmds\PyArgConverter.h" />
     <ClInclude Include="WrapCmds\ScrCmdClosure.h" />
+    <ClInclude Include="WrapCmds\ScrCmdDeviceCount.h" />
+    <ClInclude Include="WrapCmds\ScrCmdDeviceStats.h" />
     <ClInclude Include="WrapCmds\ScrCmdHelp.h" />
+    <ClInclude Include="WrapCmds\ScrCmdInfo.h" />
     <ClInclude Include="WrapCmds\ScriptCommand.h" />
     <ClInclude Include="WrapCmds\ScriptCommandDefines.h" />
     <ClInclude Include="WrapCmds\ScriptCommandModule.h" />
