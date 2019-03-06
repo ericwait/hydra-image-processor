@@ -24,20 +24,21 @@ namespace Script
 		TYPE_MAPPING(double, mxDOUBLE_CLASS)
 	END_TYPE_MAP(mxClassID)
 
-	// Helper functions for array allocation
-	template <typename T>
-	ArrayType* createArray(const DimInfo& info)
+
+	template <typename... Args>
+	inline void writeMsg(const char* fmt, Args&&... args)
 	{
-		return mxCreateNumericArray(info.dims.size(), info.dims.data(), ID_FROM_TYPE(T), mxREAL);
+		mexPrintf(fmt, std::forward<Args>(args)...);
 	}
 
-	template <>
-	inline ArrayType* createArray<bool>(const DimInfo& info)
+	template <typename... Args>
+	inline void errorMsg(const char* fmt, Args&&... args)
 	{
-		return mxCreateLogicalArray(info.dims.size(), info.dims.data());
+		mexErrMsgTxt(formatMsg(fmt, std::forward<Args>(args)...).c_str());
 	}
 
-	namespace ArrayInfo
+
+	namespace Array
 	{
 		inline bool isColumnMajor(const ArrayType* im){return true;}
 		inline bool isContiguous(const ArrayType* im){return true;}
@@ -47,5 +48,41 @@ namespace Script
 
 		template <typename T>
 		T* getData(const ArrayType* im) { return (T*)mxGetData(im); }
+
+
+		// Helper functions for array allocation
+		template <typename T>
+		ArrayType* create(const DimInfo& info)
+		{
+			return mxCreateNumericArray(info.dims.size(), info.dims.data(), ID_FROM_TYPE(T), mxREAL);
+		}
+
+		template <>
+		inline ArrayType* create<bool>(const DimInfo& info)
+		{
+			return mxCreateLogicalArray(info.dims.size(), info.dims.data());
+		}
+	};
+
+
+	// Minimal wrapper around script structure types
+	namespace Struct
+	{
+		const ObjectType* getVal(ObjectType* structPtr, std::size_t idx, const char* field)
+		{
+			return mxGetField(structPtr, idx, field);
+		}
+
+		void setVal(ObjectType* structPtr, std::size_t idx, const char* field, ObjectType* val)
+		{
+			mxSetField(structPtr, idx, field, val);
+		}
+
+		// Wrapper around script structure-array creation/access
+		ObjectType* create(std::size_t size, const std::vector<const char*>& fields)
+		{
+			const char** fieldData = const_cast<const char**>(fields.data());
+			return mxCreateStructMatrix(size, 1, (int)fields.size(), fieldData);
+		}
 	};
 };
