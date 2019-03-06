@@ -26,9 +26,9 @@ MEX_CPP_OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(MEX_CPP_FILES:.cpp=.o)))
 PY_CPP_OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(PY_CPP_FILES:.cpp=.o)))
 TST_CPP_OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(TST_CPP_FILES:.cpp=.o)))
 
-CUDA_INC = -I./Cuda
-MEX_INC = -I./WrapCmds -I./Mex -I./external -I$(MATALAB_DIR)/extern/include
-PY_INC = -I. -I./WrapCmds -I./Python -I./Python -I./external -I$(PYTHON3_INC) -I$(NUMPY3_INC)
+CUDA_INC = -I. -I./Cuda
+MEX_INC = -I. -I./Mex -I./external -I$(MATALAB_DIR)/extern/include
+PY_INC = -I. -I./Python -I./external -I$(PYTHON3_INC) -I$(NUMPY3_INC)
 
 MEX_LIB = -L$(MATALAB_DIR)/bin/glnxa64 -lmx -lmex
 PY_LIB = -L$(PYTHON_LIB) -l$(PYTHON_VER)
@@ -99,7 +99,7 @@ Mex.mexa64: $(CUDA_OBJ) $(MEX_CPP_OBJ) $(CUDA_CPP_OBJ)
 #########################################
 $(OBJ_DIR)/%.o: Cuda/%.cu
 	@mkdir -p $(@D)
-	$(NVCC_PATH) $(NVCC_FLAGS) $(SMODEL) --compiler-options '$(C_FLAGS)' -c $< -o $@ $(NVCC_INC) -dc
+	$(NVCC_PATH) $(NVCC_FLAGS) $(CUDA_INC) $(SMODEL) --compiler-options '$(C_FLAGS)' -c $< -o $@ $(NVCC_INC) -dc
 
 $(OBJ_DIR)/%.o: Cuda/%.cpp
 	@mkdir -p $(@D)
@@ -110,15 +110,11 @@ $(OBJ_DIR)/%.o: Cuda/%.cpp
 #########################################
 $(OBJ_DIR)/%.o: Mex/%.cpp
 	@mkdir -p $(@D)
-	$(C_COMPILER) $(GCC_FLAGS) $(MEX_INC) -c $< -o $@
+	$(C_COMPILER) $(GCC_FLAGS) -DMEX_BUILD $(MEX_INC) -c $< -o $@
 
 $(OBJ_DIR)/%.o: Python/%.cpp
 	@mkdir -p $(@D)
-	$(C_COMPILER) $(GCC_FLAGS) $(PY_INC) -c $< -o $@
-
-$(OBJ_DIR)/%.o: WrapCmds/%.cpp
-	@mkdir -p $(@D)
-	$(C_COMPILER) $(GCC_FLAGS) $(PY_INC) -c $< -o $@
+	$(C_COMPILER) $(GCC_FLAGS) -DPY_BUILD $(PY_INC) -c $< -o $@
 
 #########################################
 # files to clean up
