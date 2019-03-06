@@ -18,7 +18,7 @@ static struct PyModuleDef hip_moduledef =
 };
 
 
-// Main module initialization entry point
+// Main python module initialization entry point
 MODULE_INIT_FUNC(HIP)
 {
 	ScriptCommand::CommandList cmds = ScriptCommand::commands();

@@ -7,19 +7,27 @@
 // TODO: Put this in ifdef or py-specific includes
 #define SCR_MODULE_NAME "HIP"
 
-#define SCR_DISPATCH_FUNC_DECL(TypeName) PyObject* TypeName(PyObject* self, PyObject* args)
 #define SCR_USAGE_FUNC_DECL(TypeName) std::string TypeName()
 #define SCR_HELP_FUNC_DECL(TypeName) std::string TypeName()
 #define SCR_INFO_FUNC_DECL(TypeName) void TypeName(std::string& command, std::string& help, std::string& outArgs, std::string& inArgs)
 
-#define SCR_DISPATCH_FUNC_DEF(Name)		\
-	SCR_DISPATCH_FUNC_DECL(dispatch)	\
-	{									\
-		PyObject* output = nullptr;		\
-		convert_dispatch(output, args);	\
-		return output;					\
-	}
-
+#if defined(PY_BUILD)
+	#define SCR_DISPATCH_FUNC_DECL(TypeName) PyObject* TypeName(PyObject* self, PyObject* args)
+	#define SCR_DISPATCH_FUNC_DEF(Name)		\
+		SCR_DISPATCH_FUNC_DECL(dispatch)	\
+		{									\
+			PyObject* output = nullptr;		\
+			convert_dispatch(output, args);	\
+			return output;					\
+		}
+#elif defined(MEX_BUILD)
+	#define SCR_DISPATCH_FUNC_DECL(TypeName) void TypeName(int nlhs,mxArray* plhs[],int nrhs,const mxArray* prhs[])
+	#define SCR_DISPATCH_FUNC_DEF(Name)				\
+		SCR_DISPATCH_FUNC_DECL(dispatch)			\
+		{											\
+			convert_dispatch(nlhs,plhs, nrhs,prhs);	\
+		}
+#endif
 
 class ScriptCommand
 {

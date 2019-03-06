@@ -111,7 +111,7 @@ namespace Script
 		static Script::ObjectType* store_out(const std::tuple<ScrOuts...>& outputs)
 		{
 			static_assert(sizeof... (ScrOuts) == 0, "HIP_COMPILE: Output argument selector size mismatch");
-			return Py_None;
+			Py_RETURN_NONE;
 		}
 	};
 

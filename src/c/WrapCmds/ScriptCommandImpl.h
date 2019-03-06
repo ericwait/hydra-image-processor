@@ -220,8 +220,7 @@ private:
 		}
 		else
 		{
-			// TODO: Throw type-error here
-			return;
+			throw ArgError("Image type unsupported (%x)", type);
 		}
 	}
 
