@@ -27,7 +27,7 @@ namespace Script
 		using ArgConvertError = typename Script::Converter::ArgConvertError;
 
 		// General argument error exception
-		class ArgError: public std::runtime_error
+		class ArgError: public RuntimeError
 		{
 			static std::string make_convert_msg(const ArgConvertError& ace)
 			{
@@ -36,10 +36,13 @@ namespace Script
 
 		public:
 			ArgError() = delete;
-			ArgError(const char* msg): std::runtime_error(msg)
+
+			template <typename... Args>
+			ArgError(const char* fmt, Args&&... args)
+				: RuntimeError(fmt, std::forward<Args>(args)...)
 			{}
 
-			ArgError(const ArgConvertError& ace): std::runtime_error(make_convert_msg(ace))
+			ArgError(const ArgConvertError& ace): ArgError(make_convert_msg(ace).c_str())
 			{}
 		};
 

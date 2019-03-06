@@ -12,15 +12,6 @@
 #include <algorithm>
 
 
-#undef snprintf
-
-#ifdef _WIN32
- #define SNPRINTF std::snprintf
-#else
- #define SNPRINTF std::snprintf
-#endif
-
-
 #define BEGIN_TYPE_MAP(EnumType,ScriptEngine)		\
 	typedef EnumType IdType;						\
 	template <typename T> struct TypeToIdMap		\
@@ -47,36 +38,48 @@ namespace Script
 		std::vector<std::size_t> dims;
 	};
 
+
+	// Helper class for creating format-string runtime errors
+	class RuntimeError: public std::runtime_error
+	{
+		template <typename... Args>
+		static std::unique_ptr<char[]> make_msg(const char* fmt, Args&&... args)
+		{
+			size_t size = std::snprintf(nullptr, 0, fmt, std::forward<Args>(args)...);
+
+			std::unique_ptr<char[]> msgPtr(new char[size+1]);
+			std::snprintf(msgPtr.get(), size, fmt, std::forward<Args>(args)...);
+			return msgPtr;
+		}
+
+		static std::unique_ptr<char[]> make_msg(const char* fmt)
+		{
+			size_t size = std::strlen(fmt);
+
+			std::unique_ptr<char[]> msgPtr(new char[size+1]);
+			std::strncpy(msgPtr.get(), fmt, size);
+			return msgPtr;
+		}
+
+	public:
+		template <typename... Args>
+		RuntimeError(const char* fmt, Args&&... args)
+			: std::runtime_error(make_msg(fmt,std::forward<Args>(args)...).get())
+		{}
+	};
+
+
 	// Generic script conversion errors used by engine-specific converters
 	class ConvertErrors
 	{
 	public:
 		// Conversion exception types
-		class ArgConvertError: public std::runtime_error
+		class ArgConvertError: public RuntimeError
 		{
-			template <typename... Args>
-			static std::unique_ptr<char[]> make_msg(const char* fmt, Args... args)
-			{
-				size_t size = SNPRINTF(nullptr, 0, fmt, args...);
-
-				std::unique_ptr<char[]> msgPtr(new char[size+1]);
-				SNPRINTF(msgPtr.get(), size, fmt, args...);
-				return msgPtr;
-			}
-
-			static std::unique_ptr<char[]> make_msg(const char* fmt)
-			{
-				size_t size = std::strlen(fmt);
-
-				std::unique_ptr<char[]> msgPtr(new char[size+1]);
-				std::strncpy(msgPtr.get(), fmt, size);
-				return msgPtr;
-			}
-
 		public:
 			template <typename... Args>
-			ArgConvertError(const char* argName, const char* fmt, Args... args)
-				: std::runtime_error(make_msg(fmt, args...).get()), argName(argName)
+			ArgConvertError(const char* argName, const char* fmt, Args&&... args)
+				: RuntimeError(fmt, std::forward<Args>(args)...), argName(argName)
 			{}
 
 			const char* getArgName() const { return argName; }
