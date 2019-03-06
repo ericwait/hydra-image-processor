@@ -10,7 +10,7 @@ template <typename T>
 void convertKernelImage(ImageView<float> kernel, const Script::ArrayType* inKernel)
 {
 	float* outPtr = kernel.getPtr();
-	T* kernData = Script::ArrayInfo::getData<T>(inKernel);
+	T* kernData = Script::Array::getData<T>(inKernel);
 
 	for ( int i=0; i < kernel.getNumElements(); ++i )
 		outPtr[i] = static_cast<float>(kernData[i]);
@@ -20,7 +20,7 @@ template <>
 void convertKernelImage<float>(ImageView<float> kernel, const Script::ArrayType* inKernel)
 {
 	float* outPtr = kernel.getPtr();
-	float* kernData = Script::ArrayInfo::getData<float>(inKernel);
+	float* kernData = Script::Array::getData<float>(inKernel);
 
 	std::memcpy(outPtr, kernData, kernel.getNumElements()*sizeof(float));
 }
@@ -29,7 +29,7 @@ template <>
 void convertKernelImage<bool>(ImageView<float> kernel, const Script::ArrayType* inKernel)
 {
 	float* outPtr = kernel.getPtr();
-	bool* kernData = Script::ArrayInfo::getData<bool>(inKernel);
+	bool* kernData = Script::Array::getData<bool>(inKernel);
 
 	for ( int i=0; i < kernel.getNumElements(); ++i )
 		outPtr[i] = (kernData[i]) ? (1.0f) : (0.0f);

@@ -195,7 +195,7 @@ namespace Script
 		{
 			// TODO: Stop this from erroring if no deferred inputs
 			auto in_defer_tuple = DeferredInImSel::select(std::tuple<Args...>(std::forward<Args>(ioargs)...));
-			return Script::ArrayInfo::getType(std::get<0>(in_defer_tuple));
+			return Script::Array::getType(std::get<0>(in_defer_tuple));
 		}
 
 		template <typename... Args>
@@ -286,9 +286,9 @@ namespace Script
 
 		template <typename TargetTuple, size_t... Is>
 		static auto create_arrays(const DimInfo& info, mph::index_sequence<Is...>)
-			-> decltype(std::make_tuple(createArray<mph::tuple_select_t<Is, TargetTuple>>(std::declval<const DimInfo&>())...))
+			-> decltype(std::make_tuple(Array::create<mph::tuple_select_t<Is, TargetTuple>>(std::declval<const DimInfo&>())...))
 		{
-			return std::make_tuple(createArray<mph::tuple_select_t<Is,TargetTuple>>(info)...);
+			return std::make_tuple(Array::create<mph::tuple_select_t<Is,TargetTuple>>(info)...);
 		}
 	};
 };

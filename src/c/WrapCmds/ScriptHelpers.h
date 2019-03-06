@@ -138,10 +138,10 @@ namespace Script
 	inline DimInfo getDimInfo(const ArrayType* im)
 	{
 		DimInfo info;
-		info.contiguous = ArrayInfo::isContiguous(im);
-		info.columnMajor = ArrayInfo::isColumnMajor(im);
+		info.contiguous = Script::Array::isContiguous(im);
+		info.columnMajor = Script::Array::isColumnMajor(im);
 
-		std::size_t ndims = ArrayInfo::getNDims(im);
+		std::size_t ndims = Script::Array::getNDims(im);
 		info.dims.resize(ndims);
 
 		// Load dimensions in reverse order if row-major
@@ -149,7 +149,7 @@ namespace Script
 		int m = (info.columnMajor) ? (1) : (-1);
 
 		for ( int i=0; i < ndims; ++i )
-			info.dims[i] = ArrayInfo::getDim(im, m*i + offset);
+			info.dims[i] = Array::getDim(im, m*i + offset);
 
 		return info;
 	}
@@ -187,13 +187,13 @@ namespace Script
 	template <typename T>
 	ImageView<T> wrapInputImage(const ArrayType* imageIn, const DimInfo& info)
 	{
-		return ImageView<T>(ArrayInfo::getData<T>(imageIn), makeImageDims(info));
+		return ImageView<T>(Array::getData<T>(imageIn), makeImageDims(info));
 	}
 
 	template <typename T>
 	ImageView<T> createOutputImage(ArrayType** imageOut, const DimInfo& info)
 	{
-		*imageOut = createArray<T>(info);
+		*imageOut = Array::create<T>(info);
 		return wrapInputImage<T>(*imageOut, info);
 	}
 };

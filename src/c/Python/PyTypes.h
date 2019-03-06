@@ -49,23 +49,9 @@ namespace Script
 		PyErr_SetString(PyExc_RuntimeError, formatMsg(fmt, std::forward<Args>(args)...).c_str());
 	}
 
-	inline std::vector<DimType> arrayDims(const DimInfo& info)
-	{
-		if ( info.columnMajor )
-			return std::vector<DimType>(info.dims.begin(), info.dims.end());
-		else
-			return std::vector<DimType>(info.dims.rbegin(), info.dims.rend());
-	}
-
-	template <typename T> ArrayType* createArray(const Script::DimInfo& info)
-	{
-		// Returns reverse-ordered dimensions in case of row-major array
-		std::vector<DimType> dims = Script::arrayDims(info);
-		return ((ArrayType*) PyArray_EMPTY(((int)dims.size()), dims.data(), ID_FROM_TYPE(T), ((int)info.columnMajor)));
-	}
 
 	// TODO: Figure out if we can do this without the const-casting?
-	namespace ArrayInfo
+	namespace Array
 	{
 		inline bool isColumnMajor(const ArrayType* im) { return (CHECK_ARRAY_FLAGS(im,NPY_ARRAY_FARRAY_RO) && !CHECK_ARRAY_FLAGS(im, NPY_ARRAY_C_CONTIGUOUS)); }
 		inline bool isContiguous(const ArrayType* im) { return (CHECK_ARRAY_FLAGS(im, NPY_ARRAY_CARRAY_RO) || CHECK_ARRAY_FLAGS(im, NPY_ARRAY_FARRAY_RO)) ; }
@@ -75,7 +61,59 @@ namespace Script
 		inline DimType getDim(const ArrayType* im, int idim) { return PyArray_DIM(im, idim); }
 
 		template <typename T>
-		T* getData(const ArrayType* im) { return (T*)PyArray_DATA(const_cast<ArrayType*>(im)); }
+		inline T* getData(const ArrayType* im) { return (T*)PyArray_DATA(const_cast<ArrayType*>(im)); }
+
+
+		// Helper for dimensions order for row/column-major arrays
+		inline std::vector<DimType> dimOrder(const DimInfo& info)
+		{
+			if ( info.columnMajor )
+				return std::vector<DimType>(info.dims.begin(), info.dims.end());
+			else
+				return std::vector<DimType>(info.dims.rbegin(), info.dims.rend());
+		}
+
+
+		template <typename T> inline ArrayType* create(const Script::DimInfo& info)
+		{
+			// Returns reverse-ordered dimensions in case of row-major array
+			std::vector<DimType> dims = Script::Array::dimOrder(info);
+			return ((ArrayType*)PyArray_EMPTY(((int)dims.size()), dims.data(), ID_FROM_TYPE(T), ((int)info.columnMajor)));
+		}
+	};
+
+
+	// Minimal wrapper around script structure types
+	// Structure array is implemented as a list of dictionaries for Python
+	namespace Struct
+	{
+		inline const ObjectType* getVal(ObjectType* structPtr, std::size_t idx, const char* field)
+		{
+			ObjectType* dictPtr = PyList_GetItem(structPtr, idx);
+			if ( !dictPtr )
+				return nullptr;
+
+			return PyDict_GetItemString(dictPtr, field);
+		}
+
+		inline void setVal(ObjectType* structPtr, std::size_t idx, const char* field, ObjectType* val)
+		{
+			ObjectType* dictPtr = PyList_GetItem(structPtr, idx);
+			if ( !dictPtr )
+				return;
+
+			PyDict_SetItemString(dictPtr, field, val);
+		}
+
+		// Wrapper around script structure-array creation/access
+		inline ObjectType* create(std::size_t size, const std::vector<const char*>& fields)
+		{
+			ObjectType* list = PyList_New(size);
+			for ( std::size_t i=0; i < size; ++i )
+				PyList_SetItem(list, i, PyDict_New());
+
+			return list;
+		}
 	};
 
 	struct Converter : public ConvertErrors
@@ -119,7 +157,7 @@ namespace Script
 			void* data = PyArray_DATA(pyArray);
 			std::size_t array_size = PyArray_SIZE(pyArray);
 
-			Script::IdType type = ArrayInfo::getType(pyArray);
+			Script::IdType type = Array::getType(pyArray);
 			if ( type == ID_FROM_TYPE(bool) )
 				copyConvertArray<CopyDir>(outPtr, reinterpret_cast<bool*>(data), array_size);
 			else if ( type == ID_FROM_TYPE(uint8_t) )
@@ -195,6 +233,7 @@ namespace Script
 			throw ScalarConvertError("Expected a numeric argument");
 		}
 
+
 		// Python string conversion
 		inline static std::string toString(ObjectType* pyObj)
 		{
@@ -259,11 +298,11 @@ namespace Script
 		template <typename T, ENABLE_CHK(NUMERIC_MATCH(T))>
 		inline static Vec<T> arrayToVec(ArrayType* pyArray)
 		{
-			size_t ndim = Script::ArrayInfo::getNDims(pyArray);
+			size_t ndim = Script::Array::getNDims(pyArray);
 			if ( ndim > 1 )
 				throw VectorConvertError("Array must be 1-D with 3 numeric values");
 
-			Script::DimType size = Script::ArrayInfo::getDim(pyArray, 0);
+			Script::DimType size = Script::Array::getDim(pyArray, 0);
 			if ( size != 3 )
 				throw VectorConvertError("Array must be 1-D with 3 numeric values");
 
@@ -308,11 +347,11 @@ namespace Script
 			if ( !info.contiguous )
 				throw ImageConvertError("Only contiguous numpy arrays are supported");
 
-			Script::IdType type = Script::ArrayInfo::getType(pyArray);
+			Script::IdType type = Script::Array::getType(pyArray);
 			if ( Script::TypeToIdMap<T>::typeId != type )
 				throw ImageConvertError("Expected numpy array of type: %s", NAME_FROM_TYPE(T));
 
-			return ImageView<T>(Script::ArrayInfo::getData<T>(pyArray), Script::makeImageDims(info));
+			return ImageView<T>(Script::Array::getData<T>(pyArray), Script::makeImageDims(info));
 		}
 
 		// Python (numpy array) to ImageOwner conversion
@@ -333,7 +372,4 @@ namespace Script
 		}
 
 	};
-
-
-	bool pyobjToVec(PyObject* list_array, Vec<double>& outVec);
 };
