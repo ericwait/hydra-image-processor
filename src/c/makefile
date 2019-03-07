@@ -27,8 +27,8 @@ PY_CPP_OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(PY_CPP_FILES:.cpp=.o)))
 TST_CPP_OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(TST_CPP_FILES:.cpp=.o)))
 
 CUDA_INC = -I. -I./Cuda
-MEX_INC = -I. -I./Mex -I./external -I$(MATALAB_DIR)/extern/include
-PY_INC = -I. -I./Python -I./external -I$(PYTHON3_INC) -I$(NUMPY3_INC)
+MEX_INC = -I. -I./Mex -I./ScriptCmds -I./external -I$(MATALAB_DIR)/extern/include
+PY_INC = -I. -I./Python -I./ScriptCmds -I./external -I$(PYTHON3_INC) -I$(NUMPY3_INC)
 
 MEX_LIB = -L$(MATALAB_DIR)/bin/glnxa64 -lmx -lmex
 PY_LIB = -L$(PYTHON_LIB) -l$(PYTHON_VER)
