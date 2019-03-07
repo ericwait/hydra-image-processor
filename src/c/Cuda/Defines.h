@@ -35,7 +35,8 @@ enum ReductionMethods
 #define INT_MATCH(Type) (std::is_integral<Type>::value && !IS_BOOL(Type))
 #define INT_SGN_MATCH(SrcType,DstType) (INT_MATCH(SrcType) && SIGN_MATCH(SrcType,DstType))
 #define FLOAT_MATCH(Type) (std::is_floating_point<Type>::value)
-#define NUMERIC_MATCH(Type) (std::is_arithmetic<T>::value)
+#define NUMERIC_MATCH(Type) (std::is_arithmetic<Type>::value)
+#define NUMERIC_NONBOOL(Type) (std::is_arithmetic<Type>::value && !IS_BOOL(Type))
 
 //template <typename T> constexpr bool is_bool = std::is_same<T, bool>::value;
 //

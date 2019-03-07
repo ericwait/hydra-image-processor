@@ -94,6 +94,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Cuda\Vec.h" />
+    <ClInclude Include="Mex\MexArgConverter.h" />
     <ClInclude Include="Mex\MexCommand.h" />
     <ClInclude Include="Mex\MexTypes.h" />
     <ClInclude Include="Mex\MexIncludes.h" />
@@ -104,6 +105,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp" />
+    <ClCompile Include="Mex\MexCommandModule.cpp" />
     <ClCompile Include="Mex\MexElementWiseDifference.cpp" />
     <ClCompile Include="Mex\MexGetMinMax.cpp" />
     <ClCompile Include="Mex\MexEntropyFilter.cpp" />
