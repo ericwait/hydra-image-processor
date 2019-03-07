@@ -76,6 +76,7 @@ namespace Script
 
 		// Specific composites selector types
 		using OutputSel = typename S_Out<>::selector;
+		using InOptSel = typename S_InOpt<>::selector;
 		using InputSel = typename S_In<>::selector;
 		using OptionalSel = typename S_Opt<>::selector;
 		using DeferredSel = typename S_Defer<>::selector;

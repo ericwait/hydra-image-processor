@@ -154,26 +154,24 @@ namespace Script
 			if ( !info.contiguous )
 				throw ArrayTypeError("Numpy array must be contiguous");
 
-			void* data = PyArray_DATA(pyArray);
 			std::size_t array_size = PyArray_SIZE(pyArray);
-
 			Script::IdType type = Array::getType(pyArray);
 			if ( type == ID_FROM_TYPE(bool) )
-				copyConvertArray<CopyDir>(outPtr, reinterpret_cast<bool*>(data), array_size);
+				copyConvertArray<CopyDir>(outPtr, Array::getData<bool>(pyArray), array_size);
 			else if ( type == ID_FROM_TYPE(uint8_t) )
-				copyConvertArray<CopyDir>(outPtr, reinterpret_cast<uint8_t*>(data), array_size);
+				copyConvertArray<CopyDir>(outPtr, Array::getData<uint8_t>(pyArray), array_size);
 			else if ( type == ID_FROM_TYPE(uint16_t) )
-				copyConvertArray<CopyDir>(outPtr, reinterpret_cast<uint16_t*>(data), array_size);
+				copyConvertArray<CopyDir>(outPtr, Array::getData<uint16_t>(pyArray), array_size);
 			else if ( type == ID_FROM_TYPE(int16_t) )
-				copyConvertArray<CopyDir>(outPtr, reinterpret_cast<int16_t*>(data), array_size);
+				copyConvertArray<CopyDir>(outPtr, Array::getData<int16_t>(pyArray), array_size);
 			else if ( type == ID_FROM_TYPE(uint32_t) )
-				copyConvertArray<CopyDir>(outPtr, reinterpret_cast<uint32_t*>(data), array_size);
+				copyConvertArray<CopyDir>(outPtr, Array::getData<uint32_t>(pyArray), array_size);
 			else if ( type == ID_FROM_TYPE(int32_t) )
-				copyConvertArray<CopyDir>(outPtr, reinterpret_cast<int32_t*>(data), array_size);
+				copyConvertArray<CopyDir>(outPtr, Array::getData<int32_t>(pyArray), array_size);
 			else if ( type == ID_FROM_TYPE(float) )
-				copyConvertArray<CopyDir>(outPtr, reinterpret_cast<float*>(data), array_size);
+				copyConvertArray<CopyDir>(outPtr, Array::getData<float>(pyArray), array_size);
 			else if ( type == ID_FROM_TYPE(double) )
-				copyConvertArray<CopyDir>(outPtr, reinterpret_cast<double*>(data), array_size);
+				copyConvertArray<CopyDir>(outPtr, Array::getData<double>(pyArray), array_size);
 			else
 				throw ArrayTypeError("Unsupported numpy array type: %x", type);
 		}
@@ -235,22 +233,22 @@ namespace Script
 
 
 		// Python string conversion
-		inline static std::string toString(ObjectType* pyObj)
-		{
-			if ( PyStr_Check(pyObj) )
-				return PyStr_AsUTF8(pyObj);
-
-			throw ArgConvertError(nullptr, "Expected a string argument");
-		}
-
-		inline static PyObject* fromString(const char* str)
+		inline static ObjectType* fromString(const char* str)
 		{
 			return PyStr_FromString(str);
 		}
 
-		inline static PyObject* fromString(const std::string& str)
+		inline static ObjectType* fromString(const std::string& str)
 		{
 			return fromString(str.c_str());
+		}
+
+		inline static std::string toString(ObjectType* pyObj)
+		{
+			if ( !PyStr_Check(pyObj) )
+				throw ArgConvertError(nullptr, "Expected a string argument");
+
+			return PyStr_AsUTF8(pyObj);
 		}
 
 
@@ -259,7 +257,7 @@ namespace Script
 		template <typename T, ENABLE_CHK(NUMERIC_MATCH(T))>
 		inline static ObjectType* fromVec(const Vec<T>& vec)
 		{
-			PyObject* outPtr = PyTuple_New(3);
+			ObjectType* outPtr = PyTuple_New(3);
 			for ( int i=0; i < 3; ++i )
 				PyTuple_SetItem(outPtr, i, fromNumeric(vec.e[i]));
 
@@ -342,13 +340,11 @@ namespace Script
 				throw ArrayTypeError("Expected a numpy array");
 
 			Script::DimInfo info = Script::getDimInfo(pyArray);
-
-			// TODO: Do we need to allow overloads for array checks?
 			if ( !info.contiguous )
 				throw ImageConvertError("Only contiguous numpy arrays are supported");
 
 			Script::IdType type = Script::Array::getType(pyArray);
-			if ( Script::TypeToIdMap<T>::typeId != type )
+			if ( ID_FROM_TYPE(T) != type )
 				throw ImageConvertError("Expected numpy array of type: %s", NAME_FROM_TYPE(T));
 
 			return ImageView<T>(Script::Array::getData<T>(pyArray), Script::makeImageDims(info));
@@ -363,12 +359,14 @@ namespace Script
 				throw ArrayTypeError("Expected a numpy array");
 
 			Script::DimInfo info = Script::getDimInfo(pyArray);
+			if ( !info.contiguous )
+				throw ImageConvertError("Only contiguous numpy arrays are supported");
 
 			ImageDimensions inDims = Script::makeImageDims(info);
-			ImageOwner<T> out(inDims);
+			ImageOwner<T> outIm(inDims);
 
-			arrayCopy(out.getPtr(), pyArray);
-			return out;
+			arrayCopy(outIm.getPtr(), pyArray);
+			return outIm;
 		}
 
 	};
