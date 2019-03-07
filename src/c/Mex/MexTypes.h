@@ -87,20 +87,19 @@ namespace Script
 		}
 	};
 
+	// Helper Unique pointer type that frees memory with mxFree
+	template <typename T>
+	using mx_unique_ptr = std::unique_ptr<T, decltype(&mxFree)>;
+
+	template <typename T>
+	static mx_unique_ptr<T> make_mx_unique(T* ptr)
+	{
+		return mx_unique_ptr<T>(ptr, mxFree);
+	}
+
 	struct Converter: public ConvertErrors
 	{
 	private:
-		// Unique pointer type that frees memory with mxFree
-		template <typename T>
-		using mx_unique_ptr = std::unique_ptr<T, decltype(&mxFree)>;
-
-		template <typename T>
-		static mx_unique_ptr<T> make_mx_unique(T* ptr)
-		{
-			return mx_unique_ptr<T>(ptr,mxFree);
-		}
-
-
 		template <typename OutT, typename InT>
 		inline static void copyConvertArray(OutT* outPtr, const InT* inPtr, std::size_t length)
 		{
@@ -190,6 +189,9 @@ namespace Script
 				ArgConvertError(nullptr, "Expected a string argument");
 
 			mx_unique_ptr<char> strPtr = make_mx_unique(mxArrayToUTF8String(mexArray));
+			if ( !strPtr )
+				ArgConvertError(nullptr, "Invalid string argument");
+
 			return std::string(strPtr.get());
 		}
 

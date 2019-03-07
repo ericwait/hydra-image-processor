@@ -56,6 +56,13 @@ public:
 		return &m_commands.at(command);
 	}
 
+	inline static void printUsage()
+	{
+		CommandList cmds = commands();
+		for ( const auto& it: cmds )
+			Script::writeMsg("%s\n", it.second.usage().c_str());
+	}
+
 	inline static const CommandList& commands(){return m_commands;}
 
 

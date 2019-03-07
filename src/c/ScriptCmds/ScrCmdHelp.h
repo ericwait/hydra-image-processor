@@ -11,19 +11,10 @@ public:
 	static void execute(const std::string& commandName)
 	{
 		if ( commandName.empty() )
-			print_all();
+			ScriptCommand::printUsage();
 
 		auto cmd = ScriptCommand::findCommand(commandName);
 		if ( cmd )
 			Script::writeMsg("%s\n", cmd->help().c_str());
 	}
-
-private:
-	static void print_all()
-	{
-		ScriptCommand::CommandList cmds = ScriptCommand::commands();
-		for ( const auto& it: cmds )
-			Script::writeMsg("%s\n", it.second.usage().c_str());
-	}
-
 };
