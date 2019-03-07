@@ -95,41 +95,35 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Cuda\Vec.h" />
     <ClInclude Include="Mex\MexArgConverter.h" />
-    <ClInclude Include="Mex\MexCommand.h" />
     <ClInclude Include="Mex\MexTypes.h" />
     <ClInclude Include="Mex\MexIncludes.h" />
-    <ClInclude Include="Mex\MexWrapDef.h" />
-    <ClInclude Include="Mex\MexKernel.h" />
-    <ClInclude Include="WrapCmds\CommandList.h" />
+    <ClInclude Include="mph\const_string.h" />
+    <ClInclude Include="mph\integer_sequence.h" />
+    <ClInclude Include="mph\preproc_helper.h" />
+    <ClInclude Include="mph\qualifier_helpers.h" />
+    <ClInclude Include="mph\tuple_helpers.h" />
+    <ClInclude Include="ScriptCmds\ArgConverter.h" />
+    <ClInclude Include="ScriptCmds\GenCommands.h" />
+    <ClInclude Include="ScriptCmds\ScrCmdClosure.h" />
+    <ClInclude Include="ScriptCmds\ScrCmdDeviceCount.h" />
+    <ClInclude Include="ScriptCmds\ScrCmdDeviceStats.h" />
+    <ClInclude Include="ScriptCmds\ScrCmdHelp.h" />
+    <ClInclude Include="ScriptCmds\ScrCmdInfo.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommand.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommandDefines.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommandImpl.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommandModule.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommands.h" />
     <ClInclude Include="ScriptCmds\ScriptHelpers.h" />
+    <ClInclude Include="ScriptCmds\ScriptIncludes.h" />
+    <ClInclude Include="ScriptCmds\ScriptioMaps.h" />
+    <ClInclude Include="ScriptCmds\ScriptTraits.h" />
+    <ClInclude Include="ScriptCmds\ScriptTraitTfms.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp" />
     <ClCompile Include="Mex\MexCommandModule.cpp" />
-    <ClCompile Include="Mex\MexElementWiseDifference.cpp" />
-    <ClCompile Include="Mex\MexGetMinMax.cpp" />
-    <ClCompile Include="Mex\MexEntropyFilter.cpp" />
-    <ClCompile Include="Mex\MexIdentityFilter.cpp" />
-    <ClCompile Include="Mex\MexMedianFilter.cpp" />
-    <ClCompile Include="Mex\MexClosure.cpp" />
-    <ClCompile Include="Mex\MexCommand.cpp" />
-    <ClCompile Include="Mex\MexDeviceCount.cpp" />
-    <ClCompile Include="Mex\MexDeviceStats.cpp" />
-    <ClCompile Include="Mex\MexGaussian.cpp" />
-    <ClCompile Include="Mex\MexHighPassFilter.cpp" />
-    <ClCompile Include="Mex\MexKernel.cpp" />
-    <ClCompile Include="Mex\MexLoG.cpp" />
-    <ClCompile Include="Mex\MexMaxFilter.cpp" />
-    <ClCompile Include="Mex\MexMeanFilter.cpp" />
-    <ClCompile Include="Mex\MexMinFilter.cpp" />
-    <ClCompile Include="Mex\MexMultiplySum.cpp" />
-    <ClCompile Include="Mex\MexOpener.cpp" />
-    <ClCompile Include="Mex\MexStdFilter.cpp" />
-    <ClCompile Include="Mex\MexSum.cpp" />
-    <ClCompile Include="Mex\MexVarFilter.cpp" />
-    <ClCompile Include="Mex\MexWienerFilter.cpp" />
     <None Include="Mex\_TemplateMex.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

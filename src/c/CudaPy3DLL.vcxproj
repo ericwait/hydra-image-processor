@@ -45,7 +45,6 @@
     <ClInclude Include="ScriptCmds\ScriptCommands.h" />
     <ClInclude Include="ScriptCmds\ScriptCommandImpl.h" />
     <ClInclude Include="ScriptCmds\ScriptHelpers.h" />
-    <ClInclude Include="ScriptCmds\CommandList.h" />
     <ClInclude Include="ScriptCmds\ScriptIncludes.h" />
     <ClInclude Include="ScriptCmds\ScriptioMaps.h" />
     <ClInclude Include="ScriptCmds\ScriptTraits.h" />

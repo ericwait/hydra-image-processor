@@ -13,104 +13,98 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Commands">
+      <UniqueIdentifier>{b97e10b5-6295-418b-9602-3ef1666eda9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\mph">
+      <UniqueIdentifier>{e758fd4c-edbc-4d56-bb1c-db54ef35855d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ScriptCommand">
+      <UniqueIdentifier>{3b6eded8-91f4-4569-9127-f05958d82703}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Cuda\Vec.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mex\MexCommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mex\MexKernel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WrapCmds\CommandList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mex\MexWrapDef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Mex\MexIncludes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Mex\MexTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ScriptCmds\ScriptHelpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Mex\MexArgConverter.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptHelpers.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScrCmdClosure.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScrCmdDeviceCount.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScrCmdDeviceStats.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScrCmdHelp.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScrCmdInfo.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptCommands.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\const_string.h">
+      <Filter>Header Files\mph</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\integer_sequence.h">
+      <Filter>Header Files\mph</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\preproc_helper.h">
+      <Filter>Header Files\mph</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\qualifier_helpers.h">
+      <Filter>Header Files\mph</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\tuple_helpers.h">
+      <Filter>Header Files\mph</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ArgConverter.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\GenCommands.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptCommand.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptCommandDefines.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptCommandImpl.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptCommandModule.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptIncludes.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptioMaps.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptTraits.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptTraitTfms.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScrCmdElementWiseDifference.h">
+      <Filter>Header Files\Commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexCommand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexDeviceStats.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexDeviceCount.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexMaxFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexMinFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexKernel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexMultiplySum.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexGaussian.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexClosure.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexOpener.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexMeanFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexLoG.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexElementWiseDifference.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexHighPassFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexStdFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexMedianFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexGetMinMax.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexEntropyFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexWienerFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexSum.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexVarFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mex\MexIdentityFilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Mex\MexCommandModule.cpp">

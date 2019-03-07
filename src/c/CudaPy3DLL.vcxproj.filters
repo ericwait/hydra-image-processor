@@ -56,9 +56,6 @@
     <ClInclude Include="ScriptCmds\ArgConverter.h">
       <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
-    <ClInclude Include="ScriptCmds\CommandList.h">
-      <Filter>Header Files\ScriptCommand</Filter>
-    </ClInclude>
     <ClInclude Include="ScriptCmds\GenCommands.h">
       <Filter>Header Files\ScriptCommand</Filter>
     </ClInclude>
