@@ -306,6 +306,8 @@ namespace Script
 
 			Vec<T> vec;
 			arrayCopy<CopyReverse>(vec.e, pyArray);
+
+			return vec;
 		}
 
 		template <typename T, ENABLE_CHK(NUMERIC_MATCH(T))>
