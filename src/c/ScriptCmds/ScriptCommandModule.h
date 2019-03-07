@@ -28,13 +28,35 @@
 // SCRIPT_COMMAND_DEF:
 // Place includes for all script command class definitions here
 
-#include "ScrCmdHelp.h"
-#include "ScrCmdInfo.h"
+// Special helper commands for Mex interface
+#include "Commands/ScrCmdHelp.h"
+#include "Commands/ScrCmdInfo.h"
 
-#include "ScrCmdDeviceCount.h"
-#include "ScrCmdDeviceStats.h"
+// Special Cuda device information commands
+#include "Commands/ScrCmdDeviceCount.h"
+#include "Commands/ScrCmdDeviceStats.h"
 
-#include "ScrCmdClosure.h"
+// Cuda processing commands
+#include "Commands/ScrCmdClosure.h"
+#include "Commands/ScrCmdElementWiseDifference.h"
+#include "Commands/ScrCmdEntropyFilter.h"
+#include "Commands/ScrCmdGaussian.h"
+#include "Commands/ScrCmdGetMinMax.h"
+#include "Commands/ScrCmdHelp.h"
+#include "Commands/ScrCmdHighPassFilter.h"
+#include "Commands/ScrCmdIdentityFilter.h"
+#include "Commands/ScrCmdInfo.h"
+#include "Commands/ScrCmdLog.h"
+#include "Commands/ScrCmdMaxFilter.h"
+#include "Commands/ScrCmdMeanFilter.h"
+#include "Commands/ScrCmdMedianFilter.h"
+#include "Commands/ScrCmdMinFilter.h"
+#include "Commands/ScrCmdMultiplySum.h"
+#include "Commands/ScrCmdOpener.h"
+#include "Commands/ScrCmdStdFilter.h"
+#include "Commands/ScrCmdSum.h"
+#include "Commands/ScrCmdVarFilter.h"
+#include "Commands/ScrCmdWienerFilter.h"
 
 /////////////////
 

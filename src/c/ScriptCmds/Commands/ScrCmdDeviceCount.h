@@ -12,7 +12,7 @@ public:
 					"\t\tThe memory structure contains the total memory on the device and the memory available for a Cuda call.\n");
 
 
-	static void execute(uint32_t& numDevices, Script::ObjectType*& memStats)
+	static void execute(int32_t& numDevices, Script::ObjectType*& memStats)
 	{
 		std::size_t* memSizes;
 		numDevices = memoryStats(&memSizes);
