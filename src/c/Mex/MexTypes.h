@@ -263,7 +263,7 @@ namespace Script
 		template <typename T, ENABLE_CHK(NUMERIC_MATCH(T))>
 		inline static ImageView<T> toImage(const ArrayType* mexArray)
 		{
-			if ( !mxIsNumeric(mexArray) || !mxIsLogical(mexArray) )
+			if ( !mxIsNumeric(mexArray) && !mxIsLogical(mexArray) )
 				throw ImageConvertError("Expected a numeric or logical matrix");
 
 			Script::IdType type = Script::Array::getType(mexArray);
@@ -280,7 +280,7 @@ namespace Script
 		template <typename T, ENABLE_CHK(NUMERIC_MATCH(T))>
 		inline static ImageOwner<T> toImageCopy(const ArrayType* mexArray)
 		{
-			if ( !mxIsNumeric(mexArray) || !mxIsLogical(mexArray) )
+			if ( !mxIsNumeric(mexArray) && !mxIsLogical(mexArray) )
 				throw ImageConvertError("Expected a numeric or logical matrix");
 
 			Script::DimInfo info = Script::getDimInfo(mexArray);
