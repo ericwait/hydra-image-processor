@@ -65,12 +65,12 @@ namespace Script
 				throw ArgError("Invalid number of input arguments: at most %d inputs allowed", InOptSel::seq::size());
 
 			// Linkup output subset
-			loadSelected(OutputSel::seq{}, scriptPtrs, nlhs, plhs);
+			loadSelected(OutputSel::select(scriptPtrs), nlhs, plhs);
 
 			// InOpt subset
 			// NOTE: Will set scriptPtrs to null if they are past end of prhs
 			//   nullptrs are ignored during conversion, allowing optionals
-			loadSelected(InOptSel::seq{}, scriptPtrs, nrhs, prhs);
+			loadSelected(InOptSel::select(scriptPtrs), nrhs, prhs);
 		}
 
 
@@ -133,28 +133,40 @@ namespace Script
 
 		template <typename T>
 		static void convert_impl(Script::ArrayType*& out, const ImageView<T>& in)
-		{
-		}
+		{}
 
 	private:
-		template <std::size_t... Is>
-		static void loadSelected(mph::index_sequence<Is...>, ScriptPtrs& scriptPtrs, mwSize count, const Script::ArrayType* args[])
+		template <std::size_t... Is, typename... PtrTypes>
+		static void loadSelected_impl(mph::index_sequence<Is...>, std::tuple<PtrTypes...>& selPtrs, mwSize count, const Script::ArrayType* args[])
 		{
 			(void)std::initializer_list<int>
 			{
 				// NOTE: Have to be careful to only hook up &args[i] for i < count
-				((std::get<Is>(scriptPtrs) = (Is<count) ? (&args[Is]) : (nullptr)), void(), 0)...
+				((std::get<Is>(selPtrs) = (Is<count) ? (&args[Is]) : (nullptr)), void(), 0)...
 			};
 		}
 
-		template <std::size_t... Is>
-		static void loadSelected(mph::index_sequence<Is...>, ScriptPtrs& scriptPtrs, mwSize count, Script::ArrayType* args[])
+		template <std::size_t... Is, typename... PtrTypes>
+		static void loadSelected_impl(mph::index_sequence<Is...>, std::tuple<PtrTypes...>& selPtrs, mwSize count, Script::ArrayType* args[])
 		{
 			(void)std::initializer_list<int>
 			{
 				// NOTE: Have to be careful to only hook up &args[i] for i < count
-				((std::get<Is>(scriptPtrs) = (Is<count) ? (&args[Is]) : (nullptr)), void(), 0)...
+				((std::get<Is>(selPtrs) = (Is<count) ? (&args[Is]) : (nullptr)), void(), 0)...
 			};
+		}
+
+		// Only hook up selected subset of outputs/input pointers to arg set
+		template <typename... PtrTypes>
+		static void loadSelected(std::tuple<PtrTypes...>& selPtrs, mwSize count, const Script::ArrayType* args[])
+		{
+			loadSelected_impl(mph::make_index_sequence<sizeof...(PtrTypes)>{}, selPtrs, count, args);
+		}
+
+		template <typename... PtrTypes>
+		static void loadSelected(std::tuple<PtrTypes...>& selPtrs, mwSize count, Script::ArrayType* args[])
+		{
+			loadSelected_impl(mph::make_index_sequence<sizeof...(PtrTypes)>{}, selPtrs, count, args);
 		}
 
 	};
