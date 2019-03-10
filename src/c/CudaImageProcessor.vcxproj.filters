@@ -161,9 +161,6 @@
     <ClInclude Include="Cuda\CWrapperAutogen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WrapCmds\LinkageTraitTfms.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Cuda\ImageDimensions.cuh">
