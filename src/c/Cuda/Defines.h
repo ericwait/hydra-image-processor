@@ -38,10 +38,7 @@ enum ReductionMethods
 #define NUMERIC_MATCH(Type) (std::is_arithmetic<Type>::value)
 #define NUMERIC_NONBOOL(Type) (std::is_arithmetic<Type>::value && !IS_BOOL(Type))
 
-//template <typename T> constexpr bool is_bool = std::is_same<T, bool>::value;
-//
-//template <typename SrcType, typename DstType>
-//constexpr bool non_narrowing = std::is_same<typename std::common_type<SrcType, DstType>::type, DstType>::value;
+#define IS_SAME(TypeA,TypeB) (std::is_same<TypeA,TypeB>::value)
 
 // These are the outer-most routines for trying to clean up SFINAE conditions
 #define ENABLE_CHK_T(...) typename std::enable_if<__VA_ARGS__, std::nullptr_t>::type

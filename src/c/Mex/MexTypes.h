@@ -66,6 +66,9 @@ namespace Script
 	};
 
 
+	inline bool isEmpty(const ObjectType* mexArray) { return mxIsEmpty(mexArray); }
+
+
 	// Minimal wrapper around script structure types
 	namespace Struct
 	{

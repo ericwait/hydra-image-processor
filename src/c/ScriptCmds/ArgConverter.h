@@ -214,8 +214,7 @@ namespace Script
 		template <typename OutPtrs, typename InPtrs, typename Selector>
 		static void convertSelected(OutPtrs outPtrs, InPtrs inPtrs, Selector)
 		{
-			// TODO: Potentially pre-check for conversion compatibility
-			//  Converters to pass script args to actual non-deferred input types
+			// Converters to pass script args to actual non-deferred input types
 			convert_arg_subset(outPtrs, inPtrs, typename Selector::seq{});
 		}
 
@@ -231,17 +230,40 @@ namespace Script
 		}
 
 	protected:
+		template <typename T, typename U>
+		static void check_convert(T& out, U&& in)
+		{
+			Derived::convert_impl(out, std::forward<U>(in));
+		}
+
+		template <typename T>
+		static void check_convert(T& out, const Script::ObjectType* inPtr)
+		{
+			// NOTE: Arg counts are checked in load() so null/empty is ignored as optional
+			if ( inPtr == nullptr || Script::isEmpty(inPtr) )
+				return;
+
+			Derived::convert_impl(out, inPtr);
+		}
+
+		// Support ArrayType and ObjectType checks (when Script::ArrayType != Script::ObjectType)
+		template <typename T, typename U = Script::ArrayType, ENABLE_CHK(!IS_SAME(U,Script::ObjectType))>
+		static void check_convert(T& out, const Script::ArrayType* inPtr)
+		{
+			// NOTE: Arg counts are checked in load() so null/empty is ignored as optional
+			if ( inPtr == nullptr || Script::isEmpty(inPtr) )
+				return;
+
+			Derived::convert_impl(out, inPtr);
+		}
+
 		// Converting input arguments (script types are pointers)
 		template <typename OutT, typename InT>
 		static void convert_arg(OutT& out, const InT* inPtr, const char* argName)
 		{
-			// NOTE: if inPtr is nullptr then this is presumed to be optional
-			if ( inPtr == nullptr )
-				return;
-
 			try
 			{
-				Derived::convert_impl(out, inPtr);
+				Derived::check_convert(out, inPtr);
 			}
 			catch ( ArgConvertError& ace )
 			{
@@ -256,7 +278,7 @@ namespace Script
 		{
 			try
 			{
-				Derived::convert_impl(outPtr, in);
+				Derived::check_convert(outPtr, in);
 			}
 			catch ( ArgConvertError& ace )
 			{

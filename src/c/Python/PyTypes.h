@@ -82,6 +82,26 @@ namespace Script
 		}
 	};
 
+	inline bool isEmpty(const ObjectType* pyObj)
+	{
+		if ( PyTuple_Check(pyObj) )
+			return (PyTuple_Size(const_cast<ObjectType*>(pyObj)) == 0);
+
+		if ( PyList_Check(pyObj) )
+			return (PyList_Size(const_cast<ObjectType*>(pyObj)) == 0);
+
+		if ( PyArray_Check(pyObj) )
+			return (PyArray_Size(const_cast<ObjectType*>(pyObj)) == 0);
+
+		return (pyObj == nullptr || pyObj == Py_None);
+	}
+
+	inline bool isEmpty(const ArrayType* pyArray)
+	{
+		//ObjectType* pyObj = ((ObjectType*) const_cast<ArrayType*>(pyArray));
+		return (PyArray_SIZE(const_cast<ArrayType*>(pyArray)) == 0);
+	}
+
 
 	// Minimal wrapper around script structure types
 	// Structure array is implemented as a list of dictionaries for Python
