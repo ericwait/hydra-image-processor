@@ -25,6 +25,11 @@ namespace Script
 	END_TYPE_MAP(mxClassID)
 
 
+	// Forward declaration of necessary functions
+	inline DimInfo getDimInfo(const ArrayType* im);
+	inline ImageDimensions makeImageDims(const DimInfo& info);
+
+
 	template <typename... Args>
 	inline void writeMsg(const char* fmt, Args&&... args)
 	{

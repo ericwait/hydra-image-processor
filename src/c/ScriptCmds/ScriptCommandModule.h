@@ -46,7 +46,7 @@
 #include "Commands/ScrCmdHighPassFilter.h"
 #include "Commands/ScrCmdIdentityFilter.h"
 #include "Commands/ScrCmdInfo.h"
-#include "Commands/ScrCmdLog.h"
+#include "Commands/ScrCmdLoG.h"
 #include "Commands/ScrCmdMaxFilter.h"
 #include "Commands/ScrCmdMeanFilter.h"
 #include "Commands/ScrCmdMedianFilter.h"
