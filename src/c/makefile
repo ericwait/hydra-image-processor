@@ -37,7 +37,7 @@ PY_LIB = -L$(PYTHON_LIB) -l$(PYTHON_VER)
 # Common parameters
 #########################################
 # Passed to both Nvidia compiler and gcc/clang
-CPP_FLAGS = -std=c++11 -g
+CPP_FLAGS = -std=c++11 -g -D_MWAITXINTRIN_H_INCLUDED
 
 # Passed to gcc/clang and passthrough (--compiler-options) in nvcc
 # NOTE: Any warning flags such as '-Wall' should go here
