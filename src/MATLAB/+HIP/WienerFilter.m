@@ -1,5 +1,5 @@
 % WienerFilter - A Wiener filter aims to denoise an image in a linear fashion.
-%    arrayOut = HIP.WienerFilter(arrayIn,[kernel],[noiseVariance],[device])
+%    [imageOut] = HIP.WienerFilter(imageIn,kernel,[noiseVariance],[device])
 %    	imageIn = This is a one to five dimensional array. The first three dimensions are treated as spatial.
 %    		The spatial dimensions will have the kernel applied. The last two dimensions will determine
 %    		how to stride or jump to the next spatial block.
@@ -17,12 +17,13 @@
 %    		the data across multiple devices.
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
+%    
 
-function arrayOut = WienerFilter(arrayIn,kernel,noiseVariance,device)
+function [imageOut] = WienerFilter(imageIn,kernel,noiseVariance,device)
     try
-        arrayOut = HIP.Cuda.WienerFilter(arrayIn,kernel,noiseVariance,device);
+        [imageOut] = HIP.Cuda.WienerFilter(imageIn,kernel,noiseVariance,device);
     catch errMsg
         warning(errMsg.message);
-        arrayOut = HIP.Local.WienerFilter(arrayIn,kernel,noiseVariance,device);
+        [imageOut] = HIP.Local.WienerFilter(imageIn,kernel,noiseVariance,device);
     end
 end
