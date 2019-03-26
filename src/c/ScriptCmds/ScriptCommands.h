@@ -162,6 +162,19 @@ SCR_BEGIN_COMMANDS
 		cMultiplySum
 	)
 
+	SCR_CMD(NLMeans, SCR_PARAMS
+	(
+		SCR_INPUT(SCR_IMAGE(SCR_DYNAMIC), imageIn),
+		SCR_OUTPUT(SCR_IMAGE(SCR_DYNAMIC), imageOut),
+		SCR_INPUT(SCR_SCALAR(double), a),
+		SCR_INPUT(SCR_SCALAR(double), h),
+		SCR_OPTIONAL(SCR_SCALAR(double), searchWindowRadius,21),
+		SCR_OPTIONAL(SCR_SCALAR(double), nhoodRadius,5),
+		SCR_OPTIONAL(SCR_SCALAR(int), device, -1)
+	),
+		cNLMeans
+	)
+
 	SCR_CMD(Opener, SCR_PARAMS
 		(
 			SCR_INPUT(SCR_IMAGE(SCR_DYNAMIC), imageIn),

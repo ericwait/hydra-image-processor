@@ -141,6 +141,7 @@
     <ClInclude Include="Cuda\CudaVarFilter.cuh" />
     <ClInclude Include="Cuda\CudaWienerFilter.cuh" />
     <ClInclude Include="Cuda\CWrapperAutogen.h" />
+    <ClInclude Include="Cuda\CudaNLMeans.cuh" />
     <ClInclude Include="Cuda\SeparableMultiplySum.cuh">
       <FileType>CppCode</FileType>
     </ClInclude>
