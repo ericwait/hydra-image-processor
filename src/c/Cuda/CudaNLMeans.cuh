@@ -28,7 +28,7 @@ __global__ void cudaNLMeans(CudaImageContainer<PixelTypeIn> imageIn, CudaImageCo
 	{
 		// for loop over whole image, except for searchWindowSize
 		Vec<int> itc = Vec<int>(threadCoordinate);
-		// nhoodVec makes singleton dimensions go to 0, so we can handle e.g. 2d images in the for loops below
+
 		Vec<int> nhoodVec = Vec<int>::min(Vec<int>(imageIn.getDims())-1, Vec<int>(nhoodRadius));
 
 		Vec<int> searchMin = Vec<int>::max(itc - searchWindowRadius, nhoodVec);
@@ -37,37 +37,32 @@ __global__ void cudaNLMeans(CudaImageContainer<PixelTypeIn> imageIn, CudaImageCo
 		// outValAccumulator is unnormalized output value -- we normalize at the end
 		double outValAccumulator= 0.0; // 
 		// wAccumulator is for the normalizing constant
-		double wAccumulator = 0; // 
+		double wAccumulator = 1e-7; // 
 		
 		for (int z = searchMin.z; z < searchMax.z; z++) {
 			for (int y = searchMin.y; y < searchMax.y; y++) {
 				for (int x = searchMin.x; x < searchMax.x; x++) {
-					Vec<std::size_t> dVector = Vec<std::size_t>(x, y, z) - threadCoordinate;
+										
 					// center the kernel on threadCoordinate
 					// iterator over nhoodSize
-					//KernelIterator kIt(threadCoordinate, imageIn.getDims(), nhoodVec*2+1);
+					KernelIterator kIt(threadCoordinate, imageIn.getDims(), nhoodVec*2+1);
 					// image value at the x,y,z neighborhood window center
 					float searchVal = (float)imageIn( Vec<float>(x,y,z));
-					double wi=0.;
-					for (int k = -nhoodRadius; k < nhoodRadius + 1; k++) 
+					float wi=0.;
+					for (; !kIt.end(); ++kIt)
 					{
-						// if the kernel goes outside the image, skip it
-						// k*nhoodVec/nhoodVec zeros k for singleton dimensions
-						Vec<float> sCoord = Vec<float>(x, y, z) + Vec<float>(k) * nhoodVec / nhoodVec;
-						// use the point on the search kernel with the difference vector to find the 
-						// corresponding point in the input kernel
-						Vec<float> imInPosRaw = sCoord-dVector;
-						Vec<float> imInPos = CLAMP(imInPosRaw, 0, imageIn.getDims());
-						if (imInPosRaw != imInPos)
-							continue; // kernel got clamped -- bail
+						Vec<float> imInPos = kIt.getImageCoordinate();
 						float inVal = (float)imageIn(imInPos);
+						 
+						// now get the corresponding pixel value in the search window space
+						Vec<float> sCoord = Vec<float>(x,y,z)-nhoodVec+ kIt.getKernelCoordinate();
 						float sVal = (float)imageIn(sCoord);
 
 						double diff = SQR(inVal - sVal);
 						// weight by gaussian (Ga from paper)
-						double ga = exp(-1 * (Vec<int>(k)*nhoodVec / nhoodVec - nhoodVec).lengthSqr() / SQR(a));
+						double ga = exp(-1 * (Vec<int>(kIt.getKernelCoordinate()) - nhoodVec).lengthSqr() / SQR(a));
 						// w is gaussian weighted euclidean distance
-						wi += ga*diff;
+						wi += diff;
 					}
 					double w = exp(-wi / SQR(h));
 					outValAccumulator += w*searchVal;
@@ -77,7 +72,6 @@ __global__ void cudaNLMeans(CudaImageContainer<PixelTypeIn> imageIn, CudaImageCo
 		}
 
 		// now normalize
-		//wAccumulator = MAX(wAccumulator, 1e-15);
 		double outVal = outValAccumulator / wAccumulator;
 				
 		imageOut(threadCoordinate) = (PixelTypeOut)CLAMP(outVal, minValue, maxValue);
