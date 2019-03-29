@@ -38,11 +38,14 @@ __global__ void cudaNLMeans(CudaImageContainer<PixelTypeIn> imageIn, CudaImageCo
 		double outValAccumulator= 0.0; // 
 		// wAccumulator is for the normalizing constant
 		double wAccumulator = 1e-7; // 
-		
+		double wMax = 0; // for application when x==y==z==0
 		for (int z = searchMin.z; z < searchMax.z; z++) {
 			for (int y = searchMin.y; y < searchMax.y; y++) {
 				for (int x = searchMin.x; x < searchMax.x; x++) {
 										
+					if ((0 == x) && (0 == y) && (0 == z))
+						continue;
+
 					// center the kernel on threadCoordinate
 					// iterator over nhoodSize
 					KernelIterator kIt(threadCoordinate, imageIn.getDims(), nhoodVec*2+1);
@@ -60,16 +63,24 @@ __global__ void cudaNLMeans(CudaImageContainer<PixelTypeIn> imageIn, CudaImageCo
 
 						double diff = SQR(inVal - sVal);
 						// weight by gaussian (Ga from paper)
-						double ga = exp(-1 * (Vec<int>(kIt.getKernelCoordinate()) - nhoodVec).lengthSqr() / SQR(a));
+						double ga = 1; // exp(-1 * (Vec<int>(kIt.getKernelCoordinate()) - nhoodVec).lengthSqr() / SQR(a));
 						// w is gaussian weighted euclidean distance
-						wi += diff;
+						wi += ga*diff;
 					}
 					double w = exp(-wi / SQR(h));
+
+					if (w > wMax)
+						wMax = w;
+
 					outValAccumulator += w*searchVal;
 					wAccumulator += w;
 				}
 			}
 		}
+		// add in for x==y==z==0
+		outValAccumulator += wMax*(float)imageIn(threadCoordinate);
+		wAccumulator += wMax;
+
 
 		// now normalize
 		double outVal = outValAccumulator / wAccumulator;
