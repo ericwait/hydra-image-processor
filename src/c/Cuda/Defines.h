@@ -31,11 +31,14 @@ enum ReductionMethods
 // Check for non-narrowing (valid) implicit conversions from SrcType -> DstType
 #define NON_NARROWING(SrcType,DstType) std::is_same<BINOP_TYPE(SrcType,DstType),DstType>::value
 
+#define SIGN_MATCH(TypeA,TypeB) ((std::is_unsigned<TypeA>::value && std::is_unsigned<TypeB>::value) || (std::is_signed<TypeA>::value && std::is_signed<TypeB>::value))
+#define INT_MATCH(Type) (std::is_integral<Type>::value && !IS_BOOL(Type))
+#define INT_SGN_MATCH(SrcType,DstType) (INT_MATCH(SrcType) && SIGN_MATCH(SrcType,DstType))
+#define FLOAT_MATCH(Type) (std::is_floating_point<Type>::value)
+#define NUMERIC_MATCH(Type) (std::is_arithmetic<Type>::value)
+#define NUMERIC_NONBOOL(Type) (std::is_arithmetic<Type>::value && !IS_BOOL(Type))
 
-//template <typename T> constexpr bool is_bool = std::is_same<T, bool>::value;
-//
-//template <typename SrcType, typename DstType>
-//constexpr bool non_narrowing = std::is_same<typename std::common_type<SrcType, DstType>::type, DstType>::value;
+#define IS_SAME(TypeA,TypeB) (std::is_same<TypeA,TypeB>::value)
 
 // These are the outer-most routines for trying to clean up SFINAE conditions
 #define ENABLE_CHK_T(...) typename std::enable_if<__VA_ARGS__, std::nullptr_t>::type

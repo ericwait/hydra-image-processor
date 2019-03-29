@@ -13,99 +13,150 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\mph">
+      <UniqueIdentifier>{1d57e46c-a421-4ecd-9fce-a4caca83cb16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ScriptCommand">
+      <UniqueIdentifier>{061a7173-48c8-4962-8250-851861579b7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Commands">
+      <UniqueIdentifier>{78c12788-b46d-4f16-a2d9-09c6f13c2d48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Python\hip_module.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Python\PyWrapCommand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapDeviceCount.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapDeviceStats.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapClosure.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyKernel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapElementWiseDifference.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapEntropyFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapGaussian.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapGetMinMax.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapHighPassFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapLoG.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapMaxFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapMeanFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapMedianFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapMinFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapOpener.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapStdFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapSum.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapVarFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapWienerFilter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapMultiplySum.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Python\PyWrapIdentityFilter.cpp">
+    <ClCompile Include="Python\PyCommandModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="WrapCmds\CommandList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Python\PyWrapDef.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Python\PyWrapCommand.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Python\PyKernel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Python\PyIncludes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WrapCmds\ScriptHelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Python\PyTypes.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\const_string.h">
+      <Filter>Header Files\mph</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\integer_sequence.h">
+      <Filter>Header Files\mph</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\qualifier_helpers.h">
+      <Filter>Header Files\mph</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\tuple_helpers.h">
+      <Filter>Header Files\mph</Filter>
+    </ClInclude>
+    <ClInclude Include="mph\preproc_helper.h">
+      <Filter>Header Files\mph</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ArgConverter.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\GenCommands.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptCommand.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptCommandDefines.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptCommandImpl.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptCommandModule.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptHelpers.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptIncludes.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptioMaps.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptTraits.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptTraitTfms.h">
+      <Filter>Header Files\ScriptCommand</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScriptCommands.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Python\PyArgConverter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdClosure.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdDeviceCount.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdDeviceStats.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdElementWiseDifference.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdEntropyFilter.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdGaussian.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdGetMinMax.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdHelp.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdHighPassFilter.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdIdentityFilter.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdInfo.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdLog.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMaxFilter.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMeanFilter.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMedianFilter.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMinFilter.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMultiplySum.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdOpener.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdStdFilter.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdSum.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdVarFilter.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdWienerFilter.h">
+      <Filter>Header Files\Commands</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

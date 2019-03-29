@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -20,68 +20,82 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Python\hip_module.cpp" />
-    <ClCompile Include="Python\PyKernel.cpp" />
-    <ClCompile Include="Python\PyWrapClosure.cpp" />
-    <ClCompile Include="Python\PyWrapCommand.cpp" />
-    <ClCompile Include="Python\PyWrapDeviceCount.cpp" />
-    <ClCompile Include="Python\PyWrapDeviceStats.cpp" />
-    <ClCompile Include="Python\PyWrapElementWiseDifference.cpp" />
-    <ClCompile Include="Python\PyWrapEntropyFilter.cpp" />
-    <ClCompile Include="Python\PyWrapGaussian.cpp" />
-    <ClCompile Include="Python\PyWrapGetMinMax.cpp" />
-    <ClCompile Include="Python\PyWrapHighPassFilter.cpp" />
-    <ClCompile Include="Python\PyWrapIdentityFilter.cpp" />
-    <ClCompile Include="Python\PyWrapLoG.cpp" />
-    <ClCompile Include="Python\PyWrapMaxFilter.cpp" />
-    <ClCompile Include="Python\PyWrapMeanFilter.cpp" />
-    <ClCompile Include="Python\PyWrapMedianFilter.cpp" />
-    <ClCompile Include="Python\PyWrapMinFilter.cpp" />
-    <ClCompile Include="Python\PyWrapMultiplySum.cpp" />
-    <ClCompile Include="Python\PyWrapOpener.cpp" />
-    <ClCompile Include="Python\PyWrapStdFilter.cpp" />
-    <ClCompile Include="Python\PyWrapSum.cpp" />
-    <ClCompile Include="Python\PyWrapVarFilter.cpp" />
-    <ClCompile Include="Python\PyWrapWienerFilter.cpp" />
+    <ClCompile Include="Python\PyCommandModule.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="mph\const_string.h" />
+    <ClInclude Include="mph\integer_sequence.h" />
+    <ClInclude Include="mph\preproc_helper.h" />
+    <ClInclude Include="mph\qualifier_helpers.h" />
+    <ClInclude Include="mph\tuple_helpers.h" />
+    <ClInclude Include="Python\PyArgConverter.h" />
     <ClInclude Include="Python\PyIncludes.h" />
-    <ClInclude Include="Python\PyKernel.h" />
     <ClInclude Include="Python\PyTypes.h" />
-    <ClInclude Include="Python\PyWrapCommand.h" />
-    <ClInclude Include="Python\PyWrapDef.h" />
-    <ClInclude Include="WrapCmds\ScriptHelpers.h" />
-    <ClInclude Include="WrapCmds\CommandList.h" />
+    <ClInclude Include="ScriptCmds\ArgConverter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdClosure.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdDeviceCount.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdDeviceStats.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdElementWiseDifference.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdEntropyFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdGaussian.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdGetMinMax.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdHelp.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdHighPassFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdIdentityFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdInfo.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdLog.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMaxFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMeanFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMedianFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMinFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMultiplySum.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdOpener.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdStdFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdSum.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdVarFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdWienerFilter.h" />
+    <ClInclude Include="ScriptCmds\GenCommands.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommand.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommandDefines.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommandModule.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommands.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommandImpl.h" />
+    <ClInclude Include="ScriptCmds\ScriptHelpers.h" />
+    <ClInclude Include="ScriptCmds\ScriptIncludes.h" />
+    <ClInclude Include="ScriptCmds\ScriptioMaps.h" />
+    <ClInclude Include="ScriptCmds\ScriptTraits.h" />
+    <ClInclude Include="ScriptCmds\ScriptTraitTfms.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0957901A-E67A-40C2-9EF5-76DF8EFBC2D5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>CudaPy3DLL</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -137,8 +151,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;CUDAPY3DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>external;Python;$(PYTHON3_DIR)/include;$(NUMPY3_DIR)/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PY_BUILD;WIN32;_DEBUG;_WINDOWS;_USRDLL;CUDAPY3DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;external;Python;$(PYTHON3_DIR)/include;$(NUMPY3_DIR)/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
@@ -154,8 +168,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;CUDAPY3DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>external;Python;$(PYTHON3_DIR)/include;$(NUMPY3_DIR)/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PY_BUILD;_DEBUG;_WINDOWS;_USRDLL;CUDAPY3DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;external;Python;$(PYTHON3_DIR)/include;$(NUMPY3_DIR)/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
@@ -173,8 +187,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;CUDAPY3DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>external;Python;$(PYTHON3_DIR)/include;$(NUMPY3_DIR)/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PY_BUILD;WIN32;NDEBUG;_WINDOWS;_USRDLL;CUDAPY3DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;external;Python;$(PYTHON3_DIR)/include;$(NUMPY3_DIR)/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
@@ -194,8 +208,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;CUDAPY3DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>external;Python;$(PYTHON3_DIR)/include;$(NUMPY3_DIR)/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>PY_BUILD;NDEBUG;_WINDOWS;_USRDLL;CUDAPY3DLL_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;external;Python;$(PYTHON3_DIR)/include;$(NUMPY3_DIR)/core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
@@ -209,5 +223,7 @@
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\Microsoft.Gsl.0.1.2.1\build\native\Microsoft.Gsl.targets" Condition="Exists('packages\Microsoft.Gsl.0.1.2.1\build\native\Microsoft.Gsl.targets')" />
+    <Import Project="packages\Microsoft.CppCoreCheck.14.0.24210.1\build\native\Microsoft.CppCoreCheck.targets" Condition="Exists('packages\Microsoft.CppCoreCheck.14.0.24210.1\build\native\Microsoft.CppCoreCheck.targets')" />
   </ImportGroup>
 </Project>

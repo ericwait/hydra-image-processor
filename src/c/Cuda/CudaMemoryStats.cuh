@@ -6,6 +6,7 @@ int cMemoryStats(std::size_t** stats)
 	int deviceCount = 0;
 	cudaGetDeviceCount(&deviceCount);
 
+	// TODO: Make this a unique_ptr struct or vector<struct>
 	*stats = new std::size_t[deviceCount*2];
 
 	for(int i=0; i<deviceCount; ++i)

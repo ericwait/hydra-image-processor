@@ -13,6 +13,7 @@
 #include <cuda_runtime.h>
 #include <limits>
 #include <omp.h>
+#include <cstring>
 
 template <class PixelType>
 __device__ PixelType* SubDivide(PixelType* pB, PixelType* pE)
@@ -115,7 +116,7 @@ void cMedianFilter(ImageView<PixelTypeIn> imageIn, ImageView<PixelTypeOut> image
 	{
 		if (std::is_same<PixelTypeIn, PixelTypeOut>::value)
 		{
-			memcpy(imageOut.getPtr(), imageIn.getPtr(), sizeof(PixelTypeOut)*imageOut.getNumElements());
+			std::memcpy(imageOut.getPtr(), imageIn.getPtr(), sizeof(PixelTypeOut)*imageOut.getNumElements());
 		}
 		else
 		{

@@ -1,0 +1,2 @@
+
+#include "ScriptCmds/ScriptCommandModule.h"

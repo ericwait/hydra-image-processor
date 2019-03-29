@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -13,18 +13,19 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6698E8EC-49D9-421E-AA87-5BCC6B466347}</ProjectGuid>
     <RootNamespace>CudaMex</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -53,15 +54,16 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(MATLAB_DIR)\extern\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;_CRTDBG_MAP_ALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;$(MATLAB_DIR)\extern\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MEX_BUILD;_WINDLL;_CRT_SECURE_NO_WARNINGS;_CRTDBG_MAP_ALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(MATLAB_DIR)\extern\lib\win64\microsoft;$(SolutionDir)Output\CudaImageProcessor\$(Configuration)_$(PlatformName)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>CudaImageProcessor_d.lib;libmx.lib;libmex.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>$(SolutionDir)Mex\CudaMex.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>echo copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"
@@ -75,8 +77,8 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(MATLAB_DIR)\extern\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_WINDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.;$(MATLAB_DIR)\extern\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MEX_BUILD;_WINDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
@@ -85,7 +87,8 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(MATLAB_DIR)\extern\lib\win64\microsoft;$(SolutionDir)Output\CudaImageProcessor\$(Configuration)_$(PlatformName)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>CudaImageProcessor.lib;libmx.lib;libmex.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>$(SolutionDir)Mex\CudaMex.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>echo copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"
@@ -93,43 +96,53 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Cuda\Vec.h" />
-    <ClInclude Include="Mex\MexCommand.h" />
+    <ClInclude Include="Mex\MexArgConverter.h" />
     <ClInclude Include="Mex\MexTypes.h" />
     <ClInclude Include="Mex\MexIncludes.h" />
-    <ClInclude Include="Mex\MexWrapDef.h" />
-    <ClInclude Include="Mex\MexKernel.h" />
-    <ClInclude Include="WrapCmds\CommandList.h" />
-    <ClInclude Include="WrapCmds\ScriptHelpers.h" />
+    <ClInclude Include="mph\const_string.h" />
+    <ClInclude Include="mph\integer_sequence.h" />
+    <ClInclude Include="mph\preproc_helper.h" />
+    <ClInclude Include="mph\qualifier_helpers.h" />
+    <ClInclude Include="mph\tuple_helpers.h" />
+    <ClInclude Include="ScriptCmds\ArgConverter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdClosure.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdDeviceCount.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdDeviceStats.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdElementWiseDifference.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdEntropyFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdGaussian.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdGetMinMax.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdHelp.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdHighPassFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdIdentityFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdInfo.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdLoG.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMaxFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMeanFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMedianFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMinFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdMultiplySum.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdOpener.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdStdFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdSum.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdVarFilter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdWienerFilter.h" />
+    <ClInclude Include="ScriptCmds\GenCommands.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommand.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommandDefines.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommandImpl.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommandModule.h" />
+    <ClInclude Include="ScriptCmds\ScriptCommands.h" />
+    <ClInclude Include="ScriptCmds\ScriptHelpers.h" />
+    <ClInclude Include="ScriptCmds\ScriptIncludes.h" />
+    <ClInclude Include="ScriptCmds\ScriptioMaps.h" />
+    <ClInclude Include="ScriptCmds\ScriptTraits.h" />
+    <ClInclude Include="ScriptCmds\ScriptTraitTfms.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp" />
-    <ClCompile Include="Mex\MexElementWiseDifference.cpp" />
-    <ClCompile Include="Mex\MexGetMinMax.cpp" />
-    <ClCompile Include="Mex\MexEntropyFilter.cpp" />
-    <ClCompile Include="Mex\MexIdentityFilter.cpp" />
-    <ClCompile Include="Mex\MexMedianFilter.cpp" />
-    <ClCompile Include="Mex\MexClosure.cpp" />
-    <ClCompile Include="Mex\MexCommand.cpp" />
-    <ClCompile Include="Mex\MexDeviceCount.cpp" />
-    <ClCompile Include="Mex\MexDeviceStats.cpp" />
-    <ClCompile Include="Mex\MexGaussian.cpp" />
-    <ClCompile Include="Mex\MexHighPassFilter.cpp" />
-    <ClCompile Include="Mex\MexKernel.cpp" />
-    <ClCompile Include="Mex\MexLoG.cpp" />
-    <ClCompile Include="Mex\MexMaxFilter.cpp" />
-    <ClCompile Include="Mex\MexMeanFilter.cpp" />
-    <ClCompile Include="Mex\MexMinFilter.cpp" />
-    <ClCompile Include="Mex\MexMultiplySum.cpp" />
-    <ClCompile Include="Mex\MexOpener.cpp" />
-    <ClCompile Include="Mex\MexStdFilter.cpp" />
-    <ClCompile Include="Mex\MexSum.cpp" />
-    <ClCompile Include="Mex\MexVarFilter.cpp" />
-    <ClCompile Include="Mex\MexWienerFilter.cpp" />
+    <ClCompile Include="Mex\MexCommandModule.cpp" />
     <None Include="Mex\_TemplateMex.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Mex\CudaMex.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
