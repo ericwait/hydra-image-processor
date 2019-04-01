@@ -1,5 +1,5 @@
 % HighPassFilter - Filters out low frequency by subtracting a Gaussian blurred version of the input based on the sigmas provided.
-%    arrayOut = HIP.Cuda.HighPassFilter(arrayIn,sigmas,[device])
+%    [imageOut] = HIP.Cuda.HighPassFilter(imageIn,sigmas,[device])
 %    	imageIn = This is a one to five dimensional array. The first three dimensions are treated as spatial.
 %    		The spatial dimensions will have the kernel applied. The last two dimensions will determine
 %    		how to stride or jump to the next spatial block.
@@ -12,6 +12,7 @@
 %    		the data across multiple devices.
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
-function arrayOut = HighPassFilter(arrayIn,sigmas,device)
-    [arrayOut] = HIP.Cuda.Mex('HighPassFilter',arrayIn,sigmas,device);
+%    
+function [imageOut] = HighPassFilter(imageIn,sigmas,device)
+    [imageOut] = HIP.Cuda.Mex('HighPassFilter',imageIn,sigmas,device);
 end

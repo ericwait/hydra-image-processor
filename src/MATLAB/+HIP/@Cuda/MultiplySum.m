@@ -1,5 +1,5 @@
 % MultiplySum - Multiplies the kernel with the neighboring values and sums these new values.
-%    arrayOut = HIP.Cuda.MultiplySum(arrayIn,kernel,[numIterations],[device])
+%    [imageOut] = HIP.Cuda.MultiplySum(imageIn,kernel,[numIterations],[device])
 %    	imageIn = This is a one to five dimensional array. The first three dimensions are treated as spatial.
 %    		The spatial dimensions will have the kernel applied. The last two dimensions will determine
 %    		how to stride or jump to the next spatial block.
@@ -17,6 +17,7 @@
 %    		the data across multiple devices.
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
-function arrayOut = MultiplySum(arrayIn,kernel,numIterations,device)
-    [arrayOut] = HIP.Cuda.Mex('MultiplySum',arrayIn,kernel,numIterations,device);
+%    
+function [imageOut] = MultiplySum(imageIn,kernel,numIterations,device)
+    [imageOut] = HIP.Cuda.Mex('MultiplySum',imageIn,kernel,numIterations,device);
 end

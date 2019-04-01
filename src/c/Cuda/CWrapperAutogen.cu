@@ -20,6 +20,7 @@
 #include "CudaSum.cuh"
 #include "CudaVarFilter.cuh"
 #include "CudaWienerFilter.cuh"
+#include "CudaNLMeans.cuh"
 
 // Autogenerate all stub calls to cuda backends
 #define GENERATE_PROC_STUBS

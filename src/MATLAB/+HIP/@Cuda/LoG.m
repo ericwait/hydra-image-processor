@@ -1,5 +1,5 @@
 % LoG - Apply a Lapplacian of Gaussian filter with the given sigmas.
-%    arrayOut = HIP.Cuda.LoG(arrayIn,sigmas,[device])
+%    [imageOut] = HIP.Cuda.LoG(imageIn,sigmas,[device])
 %    	imageIn = This is a one to five dimensional array. The first three dimensions are treated as spatial.
 %    		The spatial dimensions will have the kernel applied. The last two dimensions will determine
 %    		how to stride or jump to the next spatial block.
@@ -12,6 +12,7 @@
 %    		the data across multiple devices.
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
-function arrayOut = LoG(arrayIn,sigmas,device)
-    [arrayOut] = HIP.Cuda.Mex('LoG',arrayIn,sigmas,device);
+%    
+function [imageOut] = LoG(imageIn,sigmas,device)
+    [imageOut] = HIP.Cuda.Mex('LoG',imageIn,sigmas,device);
 end

@@ -1,5 +1,5 @@
 % Opener - This kernel will erode follow by a dilation.
-%    arrayOut = HIP.Opener(arrayIn,kernel,[numIterations],[device])
+%    [imageOut] = HIP.Opener(imageIn,kernel,[numIterations],[device])
 %    	imageIn = This is a one to five dimensional array. The first three dimensions are treated as spatial.
 %    		The spatial dimensions will have the kernel applied. The last two dimensions will determine
 %    		how to stride or jump to the next spatial block.
@@ -17,12 +17,13 @@
 %    		the data across multiple devices.
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
+%    
 
-function arrayOut = Opener(arrayIn,kernel,numIterations,device)
+function [imageOut] = Opener(imageIn,kernel,numIterations,device)
     try
-        arrayOut = HIP.Cuda.Opener(arrayIn,kernel,numIterations,device);
+        [imageOut] = HIP.Cuda.Opener(imageIn,kernel,numIterations,device);
     catch errMsg
         warning(errMsg.message);
-        arrayOut = HIP.Local.Opener(arrayIn,kernel,numIterations,device);
+        [imageOut] = HIP.Local.Opener(imageIn,kernel,numIterations,device);
     end
 end

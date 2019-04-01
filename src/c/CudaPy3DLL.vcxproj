@@ -49,6 +49,7 @@
     <ClInclude Include="ScriptCmds\Commands\ScrCmdMedianFilter.h" />
     <ClInclude Include="ScriptCmds\Commands\ScrCmdMinFilter.h" />
     <ClInclude Include="ScriptCmds\Commands\ScrCmdMultiplySum.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdNLMeans.h" />
     <ClInclude Include="ScriptCmds\Commands\ScrCmdOpener.h" />
     <ClInclude Include="ScriptCmds\Commands\ScrCmdStdFilter.h" />
     <ClInclude Include="ScriptCmds\Commands\ScrCmdSum.h" />

@@ -158,5 +158,8 @@
     <ClInclude Include="ScriptCmds\Commands\ScrCmdWienerFilter.h">
       <Filter>Header Files\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdNLMeans.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

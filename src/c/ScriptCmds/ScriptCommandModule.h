@@ -57,6 +57,7 @@
 #include "Commands/ScrCmdSum.h"
 #include "Commands/ScrCmdVarFilter.h"
 #include "Commands/ScrCmdWienerFilter.h"
+#include "Commands/ScrCmdNLMeans.h"
 
 /////////////////
 

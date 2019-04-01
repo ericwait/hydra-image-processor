@@ -1,5 +1,5 @@
 % MedianFilter - This will calculate the median for each neighborhood defined by the kernel.
-%    arrayOut = HIP.Cuda.MedianFilter(arrayIn,kernel,[numIterations],[device])
+%    [imageOut] = HIP.Cuda.MedianFilter(imageIn,kernel,[numIterations],[device])
 %    	imageIn = This is a one to five dimensional array. The first three dimensions are treated as spatial.
 %    		The spatial dimensions will have the kernel applied. The last two dimensions will determine
 %    		how to stride or jump to the next spatial block.
@@ -17,6 +17,7 @@
 %    		the data across multiple devices.
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
-function arrayOut = MedianFilter(arrayIn,kernel,numIterations,device)
-    [arrayOut] = HIP.Cuda.Mex('MedianFilter',arrayIn,kernel,numIterations,device);
+%    
+function [imageOut] = MedianFilter(imageIn,kernel,numIterations,device)
+    [imageOut] = HIP.Cuda.Mex('MedianFilter',imageIn,kernel,numIterations,device);
 end

@@ -133,6 +133,7 @@
     <ClInclude Include="Cuda\CudaMeanFilter.cuh" />
     <ClInclude Include="Cuda\CudaMedianFilter.cuh" />
     <ClInclude Include="Cuda\CudaMinMax.cuh" />
+    <ClInclude Include="Cuda\CudaNLMeans.cuh" />
     <ClInclude Include="Cuda\CudaOpener.cuh" />
     <ClInclude Include="Cuda\CudaElementWiseDifference.cuh" />
     <ClInclude Include="Cuda\CudaHighPassFilter.cuh" />
