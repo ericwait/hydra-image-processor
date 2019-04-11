@@ -8,6 +8,9 @@ PYTHON3_INC = /usr/include/$(PYTHON_VER)
 NUMPY3_INC = /usr/include/$(PYTHON_VER)
 PYTHON_LIB = /usr/lib/$(PYTHON_VER)/config-3.5m-x86_64-linux-gnu
 
+# Include directory for cuda toolkit
+NVCC_INC = /usr/include
+
 #########################################
 # Default files and include dirs
 #########################################
@@ -26,7 +29,7 @@ MEX_CPP_OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(MEX_CPP_FILES:.cpp=.o)))
 PY_CPP_OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(PY_CPP_FILES:.cpp=.o)))
 TST_CPP_OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(TST_CPP_FILES:.cpp=.o)))
 
-CUDA_INC = -I. -I./Cuda
+CUDA_INC = -I. -I./Cuda -I$(NVCC_INC)
 MEX_INC = -I. -I./Mex -I./ScriptCmds -I./external -I$(MATALAB_DIR)/extern/include
 PY_INC = -I. -I./Python -I./ScriptCmds -I./external -I$(PYTHON3_INC) -I$(NUMPY3_INC)
 
@@ -51,7 +54,6 @@ LD_FLAGS = --no-undefined
 NVCC_PATH = nvcc
 NVCC_FLAGS = $(CPP_FLAGS)
 SMODEL = -arch=sm_30
-NVCC_INC = -I/usr/include
 
 ifndef COMP
 	COMP=clang
@@ -99,7 +101,7 @@ Mex.mexa64: $(CUDA_OBJ) $(MEX_CPP_OBJ) $(CUDA_CPP_OBJ)
 #########################################
 $(OBJ_DIR)/%.o: Cuda/%.cu
 	@mkdir -p $(@D)
-	$(NVCC_PATH) $(NVCC_FLAGS) $(CUDA_INC) $(SMODEL) --compiler-options '$(C_FLAGS)' -c $< -o $@ $(NVCC_INC) -dc
+	$(NVCC_PATH) $(NVCC_FLAGS) $(CUDA_INC) $(SMODEL) --compiler-options '$(C_FLAGS)' -c $< -o $@ -dc
 
 $(OBJ_DIR)/%.o: Cuda/%.cpp
 	@mkdir -p $(@D)
