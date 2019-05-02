@@ -1,9 +1,9 @@
 #########################################
 # Set these for MATLAB/Python versions
 #########################################
-MATALAB_DIR = /usr/local/MATLAB/R2018b
+MATALAB_DIR = /usr/local/MATLAB/R2017b
 # NOTE: Currently only builds against python3
-PYTHON_VER = python3.5
+PYTHON_VER = python3.6m
 PYTHON3_INC = /usr/include/$(PYTHON_VER)
 NUMPY3_INC = /usr/include/$(PYTHON_VER)
 PYTHON_LIB = /usr/lib/$(PYTHON_VER)/config-3.5m-x86_64-linux-gnu
@@ -27,7 +27,7 @@ PY_CPP_OBJ = $(addprefix $(OBJ_DIR)/,$(notdir $(PY_CPP_FILES:.cpp=.o)))
 SCRPY_CPP_OBJ = $(addprefix $(OBJ_DIR)/Py,$(notdir $(SCR_CPP_FILES:.cpp=.o)))
 SCRMEX_CPP_OBJ = $(addprefix $(OBJ_DIR)/Mx,$(notdir $(SCR_CPP_FILES:.cpp=.o)))
 
-CUDA_INC = -I. -I./Cuda
+CUDA_INC = -I. -I./Cuda -I/usr/local/cuda/include
 MEX_INC = -I. -I./Mex -I./ScriptCmds -I./external -I$(MATALAB_DIR)/extern/include
 PY_INC = -I. -I./Python -I./ScriptCmds -I./external -I$(PYTHON3_INC) -I$(NUMPY3_INC)
 
@@ -52,7 +52,7 @@ LD_FLAGS = --no-undefined
 NVCC_PATH = nvcc
 NVCC_FLAGS = $(CPP_FLAGS)
 SMODEL = -arch=sm_30
-NVCC_INC = -I/usr/include
+NVCC_INC = -I/usr/include 
 
 ifndef COMP
 	COMP=clang
@@ -71,7 +71,7 @@ OMP_LIB = -lgomp
 #########################################
 # gcc/g++/clang parameters
 #########################################
-GCC_FLAGS = $(CPP_FLAGS) $(C_FLAGS)
+GCC_FLAGS = $(CPP_FLAGS) $(C_FLAGS) -static
 GCC_LIBS = $(OMP_LIB)
 
 #########################################
@@ -92,7 +92,7 @@ matlab: Mex.mexa64
 HIP.so: $(CUDA_OBJ) $(PY_CPP_OBJ) $(SCRPY_CPP_OBJ) $(CUDA_CPP_OBJ)
 	$(NVCC_PATH) $(GCC_LIBS) $(PY_LIB) -shared $^ -o HIP.so $(SMODEL) --linker-options '$(LD_FLAGS)'
 
-Mex.mexa64: $(CUDA_OBJ) $(MEX_CPP_OBJ) $(SCRMX_CPP_OBJ) $(CUDA_CPP_OBJ)
+Mex.mexa64: $(CUDA_OBJ) $(MEX_CPP_OBJ) $(SCRMEX_CPP_OBJ) $(CUDA_CPP_OBJ)
 	$(NVCC_PATH) $(GCC_LIBS) $(MEX_LIB) -shared $^ -o Mex.mexa64 $(SMODEL) --linker-options '$(LD_FLAGS)'
 
 #########################################
