@@ -1,1 +1,0 @@
-im = tiffReader('DAPI Olig2-514 GFAP-488 Dcx-647 Laminin-Cy3 Bcatenin-568 20x1 TopLeft');
