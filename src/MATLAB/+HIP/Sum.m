@@ -1,5 +1,5 @@
 % Sum - This sums up the entire array in.
-%    valueOut = HIP.Sum(arrayIn,[device])
+%    [imageOut] = HIP.Sum(imageIn,[device])
 %    	imageIn = This is a one to five dimensional array. The first three dimensions are treated as spatial.
 %    		The spatial dimensions will have the kernel applied. The last two dimensions will determine
 %    		how to stride or jump to the next spatial block.
@@ -9,12 +9,13 @@
 %    		the data across multiple devices.
 %    
 %    	valueOut = This is the summation of the entire array.
+%    
 
-function valueOut = Sum(arrayIn,device)
+function [imageOut] = Sum(imageIn,device)
     try
-        valueOut = HIP.Cuda.Sum(arrayIn,device);
+        [imageOut] = HIP.Cuda.Sum(imageIn,device);
     catch errMsg
         warning(errMsg.message);
-        valueOut = HIP.Local.Sum(arrayIn,device);
+        [imageOut] = HIP.Local.Sum(imageIn,device);
     end
 end

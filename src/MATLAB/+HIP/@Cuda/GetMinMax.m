@@ -1,5 +1,5 @@
 % GetMinMax - This function finds the lowest and highest value in the array that is passed in.
-%    [minValue,maxValue] = HIP.Cuda.GetMinMax(arrayIn,[device])
+%    [minVal,maxVal] = HIP.Cuda.GetMinMax(imageIn,[device])
 %    	imageIn = This is a one to five dimensional array.
 %    
 %    	device (optional) = Use this if you have multiple devices and want to select one explicitly.
@@ -8,6 +8,7 @@
 %    
 %    	minValue = This is the lowest value found in the array.
 %    	maxValue = This is the highest value found in the array.
-function [minValue,maxValue] = GetMinMax(arrayIn,device)
-    [minValue,maxValue] = HIP.Cuda.Mex('GetMinMax',arrayIn,device);
+%    
+function [minVal,maxVal] = GetMinMax(imageIn,device)
+    [minVal,maxVal] = HIP.Cuda.Mex('GetMinMax',imageIn,device);
 end

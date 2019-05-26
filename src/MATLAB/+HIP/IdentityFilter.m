@@ -1,5 +1,5 @@
-% IdentityFilter - Identity Filter for testing. Copies image data to GPU memory and back into output image
-%    arrayOut = HIP.IdentityFilter(arrayIn,[device])
+% IdentityFilter - Identity Filter for testing. Copies image data to GPU memory and back into output image.
+%    [imageOut] = HIP.IdentityFilter(imageIn,[device])
 %    	imageIn = This is a one to five dimensional array. The first three dimensions are treated as spatial.
 %    		The spatial dimensions will have the kernel applied. The last two dimensions will determine
 %    		how to stride or jump to the next spatial block.
@@ -9,12 +9,13 @@
 %    		the data across multiple devices.
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
+%    
 
-function arrayOut = IdentityFilter(arrayIn,device)
+function [imageOut] = IdentityFilter(imageIn,device)
     try
-        arrayOut = HIP.Cuda.IdentityFilter(arrayIn,device);
+        [imageOut] = HIP.Cuda.IdentityFilter(imageIn,device);
     catch errMsg
         warning(errMsg.message);
-        arrayOut = HIP.Local.IdentityFilter(arrayIn,device);
+        [imageOut] = HIP.Local.IdentityFilter(imageIn,device);
     end
 end

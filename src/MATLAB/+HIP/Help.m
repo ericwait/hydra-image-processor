@@ -1,5 +1,4 @@
-% Help - Help on a specified command.
-%    HIP.Help(command)
-%    Print detailed usage information for the specified command.
+% Help - Print detailed usage information for the specified command.
+%    HIP.Help([command])
 function Help(command)
 end

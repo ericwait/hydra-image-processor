@@ -1,16 +1,17 @@
 % Info - Get information on all available mex commands.
-%    commandInfo = HIP.Info()
+%    [cmdInfo] = HIP.Info()
 %    Returns commandInfo structure array containing information on all mex commands.
 %       commandInfo.command - Command string
-%       commandInfo.outArgs - Cell array of output arguments
-%       commandInfo.inArgs - Cell array of input arguments
-%       commandInfo.helpLines - Cell array of input arguments
+%       commandInfo.outArgs - Comma-delimited string list of output arguments
+%       commandInfo.inArgs - Comma-delimited string list of input arguments
+%       commandInfo.helpLines - Help string
+%    
 
-function commandInfo = Info()
+function [cmdInfo] = Info()
     try
-        commandInfo = HIP.Cuda.Info();
+        [cmdInfo] = HIP.Cuda.Info();
     catch errMsg
         warning(errMsg.message);
-        commandInfo = HIP.Local.Info();
+        [cmdInfo] = HIP.Local.Info();
     end
 end

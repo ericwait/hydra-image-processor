@@ -1,5 +1,5 @@
 % EntropyFilter - This calculates the entropy within the neighborhood given by the kernel.
-%    arrayOut = HIP.EntropyFilter(arrayIn,kernel,[device])
+%    [imageOut] = HIP.EntropyFilter(imageIn,kernel,[device])
 %    	imageIn = This is a one to five dimensional array. The first three dimensions are treated as spatial.
 %    		The spatial dimensions will have the kernel applied. The last two dimensions will determine
 %    		how to stride or jump to the next spatial block.
@@ -13,12 +13,13 @@
 %    		the data across multiple devices.
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
+%    
 
-function arrayOut = EntropyFilter(arrayIn,kernel,device)
+function [imageOut] = EntropyFilter(imageIn,kernel,device)
     try
-        arrayOut = HIP.Cuda.EntropyFilter(arrayIn,kernel,device);
+        [imageOut] = HIP.Cuda.EntropyFilter(imageIn,kernel,device);
     catch errMsg
         warning(errMsg.message);
-        arrayOut = HIP.Local.EntropyFilter(arrayIn,kernel,device);
+        [imageOut] = HIP.Local.EntropyFilter(imageIn,kernel,device);
     end
 end

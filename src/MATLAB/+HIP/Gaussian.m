@@ -1,5 +1,5 @@
 % Gaussian - Gaussian smoothing.
-%    arrayOut = HIP.Gaussian(arrayIn,sigmas,[numIterations],[device])
+%    [imageOut] = HIP.Gaussian(imageIn,sigmas,[numIterations],[device])
 %    	imageIn = This is a one to five dimensional array. The first three dimensions are treated as spatial.
 %    		The spatial dimensions will have the kernel applied. The last two dimensions will determine
 %    		how to stride or jump to the next spatial block.
@@ -16,12 +16,13 @@
 %    		the data across multiple devices.
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
+%    
 
-function arrayOut = Gaussian(arrayIn,sigmas,numIterations,device)
+function [imageOut] = Gaussian(imageIn,sigmas,numIterations,device)
     try
-        arrayOut = HIP.Cuda.Gaussian(arrayIn,sigmas,numIterations,device);
+        [imageOut] = HIP.Cuda.Gaussian(imageIn,sigmas,numIterations,device);
     catch errMsg
         warning(errMsg.message);
-        arrayOut = HIP.Local.Gaussian(arrayIn,sigmas,numIterations,device);
+        [imageOut] = HIP.Local.Gaussian(imageIn,sigmas,numIterations,device);
     end
 end
