@@ -163,5 +163,8 @@
     <None Include="Mex\_TemplateMex.cpp">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="CudaMex.def">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
