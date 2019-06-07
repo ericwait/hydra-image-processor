@@ -62,8 +62,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(MATLAB_DIR)\extern\lib\win64\microsoft;$(SolutionDir)Output\CudaImageProcessor\$(Configuration)_$(PlatformName)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>CudaImageProcessor_d.lib;libmx.lib;libmex.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>
-      </ModuleDefinitionFile>
+      <ModuleDefinitionFile>CudaMex.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>echo copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"
@@ -87,8 +86,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(MATLAB_DIR)\extern\lib\win64\microsoft;$(SolutionDir)Output\CudaImageProcessor\$(Configuration)_$(PlatformName)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>CudaImageProcessor.lib;libmx.lib;libmex.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>
-      </ModuleDefinitionFile>
+      <ModuleDefinitionFile>CudaMex.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
       <Command>echo copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"
@@ -145,6 +143,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     <ClCompile Include="Mex\CudaMex.cpp" />
     <ClCompile Include="Mex\MexCommandModule.cpp" />
     <ClCompile Include="ScriptCmds\ScopedProcessMutex.cpp" />
+    <None Include="CudaMex.def" />
     <None Include="Mex\_TemplateMex.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
