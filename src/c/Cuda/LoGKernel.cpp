@@ -17,8 +17,6 @@ float* createLoG_GausKernels(Vec<double> sigmas, Vec<std::size_t>& dimsOut)
 	float* kernelOut = new float[dimsOut.sum()*2];
 
 	Vec<double> sigmaSqr = sigmas.pwr(2);
-	Vec<double> oneOverSigSqr = Vec<double>(1.0) / sigmaSqr;
-	Vec<double> twoSigmaSqr = sigmaSqr * 2;
 	Vec<double> sigmaForth = sigmas.pwr(4);
 
 	int loGstride = dimsOut.sum();
@@ -43,11 +41,17 @@ float* createLoG_GausKernels(Vec<double> sigmas, Vec<std::size_t>& dimsOut)
 		{
 			double pos = j - mid.e[i];
 			double posSqr = SQR(pos);
-			double gauss = exp(-(posSqr / twoSigmaSqr.e[i]));
-			double logVal = (posSqr / sigmaForth.e[i] - oneOverSigSqr.e[i])*gauss;
-			kernelOut[j + stride] = (float)logVal;
-			kernelOut[j + stride + loGstride] = gauss;
-			gaussSum += gauss;
+
+			double gaussVal = exp(-(posSqr / (2.0 * sigmaSqr.e[i])));
+			double logVal = (posSqr / sigmaForth.e[i] - 1.0 / sigmaSqr.e[i]) * gaussVal;
+
+			// Multiply by sigma^2 to get a scale-invariant LoG
+			double scaleInvVal = sigmaSqr.e[i] * logVal;
+
+			gaussSum += gaussVal;
+
+			kernelOut[j + stride] = scaleInvVal;
+			kernelOut[j + stride + loGstride] = gaussVal;
 		}
 
 		double sumVal = 0.0;
