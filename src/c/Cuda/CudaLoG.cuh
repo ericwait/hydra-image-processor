@@ -70,6 +70,7 @@ void cLoG(ImageView<PixelTypeIn> imageIn, ImageView<float> imageOut, Vec<double>
 			{
 				if (!chunks[i].sendROI(imageIn, deviceImages.getCurBuffer()))
 					std::runtime_error("Error sending ROI to device!");
+
 				cudaMultiplySumBias<<<chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constLoGKernelMem_x, MIN_VAL, MAX_VAL, constGausKernelMem_x, true);
 				deviceImages.incrementBuffer();
 				if (sigmas.y!=0)
@@ -91,6 +92,7 @@ void cLoG(ImageView<PixelTypeIn> imageIn, ImageView<float> imageOut, Vec<double>
 			{
 				if (!chunks[i].sendROI(imageIn, deviceImages.getCurBuffer()))
 					std::runtime_error("Error sending ROI to device!");
+
 				if (sigmas.x!=0)
 				{
 					cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constGausKernelMem_x, MIN_VAL, MAX_VAL);
@@ -112,6 +114,7 @@ void cLoG(ImageView<PixelTypeIn> imageIn, ImageView<float> imageOut, Vec<double>
 			{
 				if (!chunks[i].sendROI(imageIn, deviceImages.getCurBuffer()))
 					std::runtime_error("Error sending ROI to device!");
+
 				if (sigmas.x!=0)
 				{
 					cudaMultiplySum << <chunks[i].blocks, chunks[i].threads >> > (*(deviceImages.getCurBuffer()), *(deviceImages.getNextBuffer()), constGausKernelMem_x, MIN_VAL, MAX_VAL);
