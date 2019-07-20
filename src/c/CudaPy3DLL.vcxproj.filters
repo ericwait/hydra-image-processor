@@ -30,6 +30,9 @@
     <ClCompile Include="Python\PyCommandModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ScriptCmds\ScopedProcessMutex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Python\PyIncludes.h">
@@ -157,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="ScriptCmds\Commands\ScrCmdWienerFilter.h">
       <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScopedProcessMutex.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
