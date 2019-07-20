@@ -8,11 +8,17 @@
 
 #ifdef _WIN32
  #define USE_WINDOWS_IPC_MUTEX (1)
+#elif defined(__linux__)
+ #define USE_PTHREADS_ROBUST_MUTEX (1)
+#else
+ #define USE_BOOST_IPC_MUTEX (1)
 #endif
 
-#ifndef USE_WINDOWS_IPC_MUTEX
-	#define BOOST_DATE_TIME_NO_LIB (1)
-	#include "boost/interprocess/sync/named_mutex.hpp"
+#if defined(USE_PTHREADS_ROBUST_MUTEX)
+ #include <memory>
+#elif defined(USE_BOOST_IPC_MUTEX)
+ #define BOOST_DATE_TIME_NO_LIB (1)
+ #include "boost/interprocess/sync/named_mutex.hpp"
 #endif
 
 class ScopedProcessMutex
@@ -31,10 +37,16 @@ public:
 
 	~ScopedProcessMutex();
 
+	// Allow force release of mutex resource (cross-process removal)
+	static void remove(const char* name);
+
 private:
 
-#ifdef USE_WINDOWS_IPC_MUTEX
+#if defined(USE_WINDOWS_IPC_MUTEX)
 	static void* mutexHandle;
+#elif defined(USE_PTHREADS_ROBUST_MUTEX)
+	struct PThreadMutex;
+	static thread_local std::unique_ptr<PThreadMutex> procMutex;
 #else
 	boost::interprocess::named_mutex ipc_mutex;
 #endif
