@@ -150,6 +150,12 @@
     <ClInclude Include="ScriptCmds\Commands\ScrCmdLoG.h">
       <Filter>Header Files\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdNLMeans.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCmds\ScopedProcessMutex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Mex\CudaMex.cpp">
@@ -158,13 +164,16 @@
     <ClCompile Include="Mex\MexCommandModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ScriptCmds\ScopedProcessMutex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Mex\_TemplateMex.cpp">
       <Filter>Source Files</Filter>
     </None>
     <None Include="CudaMex.def">
-      <Filter>Source Files</Filter>
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
 </Project>

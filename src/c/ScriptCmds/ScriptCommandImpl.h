@@ -4,6 +4,7 @@
 #include <tuple>
 
 #include "ScriptCommand.h"
+#include "ScopedProcessMutex.h"
 
 #include "mph/tuple_helpers.h"
 
@@ -182,6 +183,10 @@ private:
 	template <typename... Args>
 	static void execute(Args&&... args)
 	{
+		// Use a scoped process-level mutex to run only a single GPU kernel at a time
+		// TODO: Figure out a scheduling system multi-process HIP calls
+		SCOPED_PROCESS_MUTEX(hip_cmd_gpu_);
+
 		static_assert(ArgConverter::has_deferred_image_inputs(), "HIP_COMPILE: Argument layout has no dynamic image inputs. Please overload default ::execute() function!");
 
 		Script::IdType type = ArgConverter::getInputType(std::forward<Args>(args)...);
