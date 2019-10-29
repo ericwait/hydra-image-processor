@@ -20,7 +20,7 @@ function arrayOut = MedianFilter(arrayIn,kernel,numIterations,device,suppressWar
                  else
                      for z=1:size(arrayIn,3)
                          for x=1:size(arrayIn,2)
-                             arrayOut(:,x,z,c,t) = medfilt(arrayIn(:,x,z,c,t),size(kernel,1));
+                             arrayOut(:,x,z,c,t) = medfilt1(arrayIn(:,x,z,c,t),size(kernel,1));
                          end
                      end
                  end
