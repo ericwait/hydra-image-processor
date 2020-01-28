@@ -1,8 +1,8 @@
-#Hydra Image Processor
+# Hydra Image Processor
 
-##BSD 3-Clause License
+## BSD 3-Clause License
 
-Copyright (c) 2018 Eric Wait, 
+Copyright (c) 2020 Eric Wait,
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
