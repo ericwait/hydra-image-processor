@@ -47,7 +47,6 @@ public:
 
 	using CommandList = std::unordered_map<std::string, FuncPtrs>;
 
-	// TODO: Module initialization routines (and matlab dispatch)
 	inline static const FuncPtrs* findCommand(const std::string& command)
 	{
 		if ( m_commands.count(command) < 1 )

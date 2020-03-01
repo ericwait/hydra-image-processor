@@ -33,6 +33,7 @@
     <ClInclude Include="Python\PyIncludes.h" />
     <ClInclude Include="Python\PyTypes.h" />
     <ClInclude Include="ScriptCmds\ArgConverter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdCheckConfig.h" />
     <ClInclude Include="ScriptCmds\Commands\ScrCmdClosure.h" />
     <ClInclude Include="ScriptCmds\Commands\ScrCmdDeviceCount.h" />
     <ClInclude Include="ScriptCmds\Commands\ScrCmdDeviceStats.h" />

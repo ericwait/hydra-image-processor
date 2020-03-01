@@ -103,6 +103,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     <ClInclude Include="mph\qualifier_helpers.h" />
     <ClInclude Include="mph\tuple_helpers.h" />
     <ClInclude Include="ScriptCmds\ArgConverter.h" />
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdCheckConfig.h" />
     <ClInclude Include="ScriptCmds\Commands\ScrCmdClosure.h" />
     <ClInclude Include="ScriptCmds\Commands\ScrCmdDeviceCount.h" />
     <ClInclude Include="ScriptCmds\Commands\ScrCmdDeviceStats.h" />

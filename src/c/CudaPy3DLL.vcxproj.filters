@@ -170,5 +170,8 @@
     <ClInclude Include="ScriptCmds\HydraConfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ScriptCmds\Commands\ScrCmdCheckConfig.h">
+      <Filter>Header Files\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

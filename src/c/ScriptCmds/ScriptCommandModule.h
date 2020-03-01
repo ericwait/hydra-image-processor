@@ -36,6 +36,9 @@
 #include "Commands/ScrCmdDeviceCount.h"
 #include "Commands/ScrCmdDeviceStats.h"
 
+// Debugging: Check Hydra library config from script
+#include "Commands/ScrCmdCheckConfig.h"
+
 // Cuda processing commands
 #include "Commands/ScrCmdClosure.h"
 #include "Commands/ScrCmdElementWiseDifference.h"
