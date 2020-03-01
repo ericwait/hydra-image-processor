@@ -6,6 +6,7 @@
 #endif
 
 #include "ScriptCmds/ScriptIncludes.h"
+#include "ScriptCmds/HydraConfig.h"
 
 HYDRA_CONFIG_MODULE();
 

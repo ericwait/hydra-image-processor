@@ -3,6 +3,7 @@
 // This define forces inclusion of numpy symbols only in the hip_module.cpp file
 #define NUMPY_IMPORT_MODULE
 #include "ScriptCmds/ScriptIncludes.h"
+#include "ScriptCmds/HydraConfig.h"
 
 HYDRA_CONFIG_MODULE();
 

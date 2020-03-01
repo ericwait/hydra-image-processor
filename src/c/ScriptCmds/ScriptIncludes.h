@@ -11,7 +11,5 @@
 #undef max
 #undef min
 
-#include "ScriptCmds/HydraConfig.h"
-
 #include "ScriptCmds/ScriptHelpers.h"
 #include "ScriptCmds/ScriptCommand.h"
