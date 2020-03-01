@@ -37,6 +37,12 @@ namespace Script
 	}
 
 	template <typename... Args>
+	inline void warnMsg(const char* fmt, Args&&... args)
+	{
+		mexWarnMsgTxt(formatMsg(fmt, std::forward<Args>(args)...).c_str());
+	}
+
+	template <typename... Args>
 	inline void errorMsg(const char* fmt, Args&&... args)
 	{
 		mexErrMsgTxt(formatMsg(fmt, std::forward<Args>(args)...).c_str());

@@ -40,6 +40,12 @@ namespace Script
 	}
 
 	template <typename... Args>
+	inline void warnMsg(const char* fmt, Args&&... args)
+	{
+		PyErr_WarnFormat(nullptr, 2, fmt, std::forward<Args>(args)...);
+	}
+
+	template <typename... Args>
 	inline void errorMsg(const char* fmt, Args&&... args)
 	{
 		// Don't modify error text if there's already a PyError set
