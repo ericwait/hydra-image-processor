@@ -6,6 +6,8 @@
 #include "ScriptCommand.h"
 #include "ScopedProcessMutex.h"
 
+#include "HydraConfig.h"
+
 #include "mph/tuple_helpers.h"
 
 template <typename Derived, typename ConverterType>
@@ -169,63 +171,32 @@ private:
 	template <typename... Args, size_t... Is>
 	static void exec_dispatch_impl(std::tuple<Args...> ioArgs, mph::index_sequence<Is...>)
 	{
+		// TODO: MRW - Should all execute() routines dispatch through SCOPED_PROCESS_MUTEX since it can be disabled now?
 		Derived::execute(std::forward<Args>(std::get<Is>(ioArgs))...);
 	}
 
 private:
-
-
 	/////////////////////////
 	// execute - (Static-overloadable)
 	//   Default execute function dispatches to image-type templated
 	//   process<OutT,InT>(Args...) function
+	//
+	//   NOTE: Main purpose of default execute() is to check config and
+	//     dispatch to exec_internal()
 	/////////////////////////
 	template <typename... Args>
 	static void execute(Args&&... args)
 	{
-		// Use a scoped process-level mutex to run only a single GPU kernel at a time
-		// TODO: Figure out a scheduling system multi-process HIP calls
-		SCOPED_PROCESS_MUTEX(hip_cmd_gpu_);
-
-		static_assert(ArgConverter::has_deferred_image_inputs(), "HIP_COMPILE: Argument layout has no dynamic image inputs. Please overload default ::execute() function!");
-
-		Script::IdType type = ArgConverter::getInputType(std::forward<Args>(args)...);
-
-		if ( type == Script::TypeToIdMap<bool>::typeId )
+		if ( HydraConfig::useProcessMutex() )
 		{
-			Derived::template process<OutMap<bool>, bool>(std::forward<Args>(args)...);
-		}
-		else if ( type == Script::TypeToIdMap<uint8_t>::typeId )
-		{
-			Derived::template process<OutMap<uint8_t>, uint8_t>(std::forward<Args>(args)...);
-		}
-		else if ( type == Script::TypeToIdMap<uint16_t>::typeId )
-		{
-			Derived::template process<OutMap<uint16_t>, uint16_t>(std::forward<Args>(args)...);
-		}
-		else if ( type == Script::TypeToIdMap<int16_t>::typeId )
-		{
-			Derived::template process<OutMap<int16_t>, int16_t>(std::forward<Args>(args)...);
-		}
-		else if ( type == Script::TypeToIdMap<uint32_t>::typeId )
-		{
-			Derived::template process<OutMap<uint32_t>, uint32_t>(std::forward<Args>(args)...);
-		}
-		else if ( type == Script::TypeToIdMap<int32_t>::typeId )
-		{
-			Derived::template process<OutMap<int32_t>, int32_t>(std::forward<Args>(args)...);
-		}
-		else if ( type == Script::TypeToIdMap<float>::typeId )
-		{
-			Derived::template process<OutMap<float>, float>(std::forward<Args>(args)...);
-		}
-		else if ( type == Script::TypeToIdMap<double>::typeId )
-		{
-			Derived::template process<OutMap<double>, double>(std::forward<Args>(args)...);
+			// Use a scoped process-level mutex to run only a single GPU kernel at a time
+			// TODO: Figure out a scheduling system for multi-process HIP calls
+			SCOPED_PROCESS_MUTEX(hip_cmd_gpu_);
+			Derived::exec_internal(std::forward<Args>(args)...);
 		}
 		else
 		{
-			throw ArgError("Image type unsupported (%x)", type);
+			Derived::exec_internal(std::forward<Args>(args)...);
 		}
 	}
 
@@ -273,6 +244,57 @@ private:
 		// Convert deferred outputs to script types
 		ArgConverter::convertSelected(argPtrs, convertedPtrs, DeferredOutSel{});
 	}
+
+	/////////////////////////
+	// exec_internal - (Not overloadable)
+	//   Dispatch to processing function:
+	//   process<OutT,inT>()
+	/////////////////////////
+	template <typename... Args>
+	static void exec_internal(Args&&... args)
+	{
+		static_assert(ArgConverter::has_deferred_image_inputs(), "HIP_COMPILE: Argument layout has no dynamic image inputs. Please overload default ::execute() function!");
+
+		Script::IdType type = ArgConverter::getInputType(std::forward<Args>(args)...);
+
+		if (type == Script::TypeToIdMap<bool>::typeId)
+		{
+			Derived::template process<OutMap<bool>, bool>(std::forward<Args>(args)...);
+		}
+		else if (type == Script::TypeToIdMap<uint8_t>::typeId)
+		{
+			Derived::template process<OutMap<uint8_t>, uint8_t>(std::forward<Args>(args)...);
+		}
+		else if (type == Script::TypeToIdMap<uint16_t>::typeId)
+		{
+			Derived::template process<OutMap<uint16_t>, uint16_t>(std::forward<Args>(args)...);
+		}
+		else if (type == Script::TypeToIdMap<int16_t>::typeId)
+		{
+			Derived::template process<OutMap<int16_t>, int16_t>(std::forward<Args>(args)...);
+		}
+		else if (type == Script::TypeToIdMap<uint32_t>::typeId)
+		{
+			Derived::template process<OutMap<uint32_t>, uint32_t>(std::forward<Args>(args)...);
+		}
+		else if (type == Script::TypeToIdMap<int32_t>::typeId)
+		{
+			Derived::template process<OutMap<int32_t>, int32_t>(std::forward<Args>(args)...);
+		}
+		else if (type == Script::TypeToIdMap<float>::typeId)
+		{
+			Derived::template process<OutMap<float>, float>(std::forward<Args>(args)...);
+		}
+		else if (type == Script::TypeToIdMap<double>::typeId)
+		{
+			Derived::template process<OutMap<double>, double>(std::forward<Args>(args)...);
+		}
+		else
+		{
+			throw ArgError("Image type unsupported (%x)", type);
+		}
+	}
+
 
 	template <typename... Args>
 	static void run_dispatch(std::tuple<Args...> runArgs)
