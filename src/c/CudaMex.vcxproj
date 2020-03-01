@@ -127,6 +127,7 @@ copy $(OutDir)CudaMex.dll "$(ProjectDir)Mex.mexw64"</Command>
     <ClInclude Include="ScriptCmds\Commands\ScrCmdVarFilter.h" />
     <ClInclude Include="ScriptCmds\Commands\ScrCmdWienerFilter.h" />
     <ClInclude Include="ScriptCmds\GenCommands.h" />
+    <ClInclude Include="ScriptCmds\HydraConfig.h" />
     <ClInclude Include="ScriptCmds\ScopedProcessMutex.h" />
     <ClInclude Include="ScriptCmds\ScriptCommand.h" />
     <ClInclude Include="ScriptCmds\ScriptCommandDefines.h" />

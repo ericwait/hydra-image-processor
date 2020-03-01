@@ -4,6 +4,8 @@
 #define NUMPY_IMPORT_MODULE
 #include "ScriptCmds/ScriptIncludes.h"
 
+HYDRA_CONFIG_MODULE();
+
 // Make this a unique pointer just in case init can be run more than once
 static std::unique_ptr<PyMethodDef[]> hip_methods = nullptr;
 static std::unique_ptr<std::string[]> hip_docstrs = nullptr;

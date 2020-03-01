@@ -5,7 +5,9 @@
   #define DLL_EXPORT_SYM __attribute__((visibility("default")))
 #endif
 
-#include "MexIncludes.h"
+#include "ScriptCmds/ScriptIncludes.h"
+
+HYDRA_CONFIG_MODULE();
 
 void mexFunction(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 {

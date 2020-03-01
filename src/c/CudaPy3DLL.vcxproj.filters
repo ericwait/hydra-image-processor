@@ -167,5 +167,8 @@
     <ClInclude Include="ScriptCmds\ScopedProcessMutex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ScriptCmds\HydraConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
