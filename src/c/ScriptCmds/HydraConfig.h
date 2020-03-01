@@ -7,6 +7,9 @@
 #include <string>
 #include <algorithm>
 
+#include "ScopedProcessMutex.h"
+#include "ScriptIncludes.h"
+
 class HydraConfig
 {
 public:
@@ -48,11 +51,20 @@ private:
 		}
 	}
 
+	// TODO: MRW HACK - this is a pretty nasty way to get config info to user
+	static void checkConfig(HydraConfig* pInst)
+	{
+		if ( pInst->bUseProcessMutex && !SUPPORT_PROCESS_MUTEX() )
+			Script::warnMsg("HYDRA_ENABLE_MUTEX set to TRUE but Hydra was compiled without USE_PROCESS_MUTEX flag!\n");
+	}
+
 	static HydraConfig* initConfig()
 	{
 		HydraConfig* pInst = new HydraConfig();
 
 		HydraConfig::loadConfig(pInst);
+		HydraConfig::checkConfig(pInst);
+
 		return pInst;
 	}
 
