@@ -1,0 +1,2 @@
+In Windows Run:
+cmake ..

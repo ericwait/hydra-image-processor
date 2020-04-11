@@ -1,0 +1,2 @@
+In Linux Run:
+cmake ..
