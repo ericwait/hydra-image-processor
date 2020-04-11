@@ -24,26 +24,15 @@ Thumbs.db
 *.ilk
 *.log
 *.sbr
-obj/
-_ReSharper*/
-[Tt]est[Rr]esult*
-src/c/Intermediate/*
-src/c/Output/*
-src/c/ipch/*
-src/c/packages.config
-src/c/packages/
-bin/Release_x64/CudaImageProccessing.lib
-src/c/CudaImageProccessing.sdf
-src/c/CudaMex.mexw64
-src/MATLAB/cudart32_55.dll
-src/MATLAB/cudart64_55.dll
-src/c/CudaImageProccessing.opensdf
-src/c/CudaImageProccessing.sdf
-src/c/CudaImageProccessing.v11.suo
 *.asv
 *.~
 *.VC.db
 *.opendb
+
+# Ignore CMake cache and build directiories (assume build*/)
+CmakeCache.txt
+build*/
+**/CMakeFiles
 
 # Ignore pycache folder
 **/__pycache__/
