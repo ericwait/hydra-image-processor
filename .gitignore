@@ -31,7 +31,7 @@ Thumbs.db
 
 # Ignore CMake cache and build directiories (assume build*/)
 CmakeCache.txt
-build*/
+/build*/
 **/CMakeFiles
 
 # Ignore pycache folder

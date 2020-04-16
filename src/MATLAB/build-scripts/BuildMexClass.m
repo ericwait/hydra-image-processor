@@ -1,4 +1,4 @@
-function BuildMexObject(mexFile, objectName, parentPackage)
+function BuildMexClass(mexFile, packagePath, className, parentPackage)
     oldPath = pwd();
     cleanupObj = onCleanup(@()(cleanupFunc(oldPath)));
 
@@ -6,49 +6,48 @@ function BuildMexObject(mexFile, objectName, parentPackage)
     cd(mexPath);
 
     mexFunc = str2func(mexName);
-	commandList = mexFunc('Info');
+    commandList = mexFunc('Info');
 
-    cd(oldPath);
+    cd(packagePath);
     
     % Delete old function definitions
-    if ( exist(['@' objectName], 'dir') )
-        delete(fullfile(['@' objectName], '*.m'));
+    if ( exist(['@' className], 'dir') )
+        delete(fullfile(['@' className], '*.m'));
     end
     
-    makeClassdef(objectName, mexName, commandList);
+    makeClassdef(className, mexName, commandList);
     for i=1:length(commandList)
-        makeStaticMethod(objectName, mexName, commandList(i), parentPackage);
+        makeStaticMethod(className, mexName, commandList(i), parentPackage);
     end
 
-    copyfile(mexFile, ['@' objectName]);
-    clear mex
+    copyfile(mexFile, ['@' className]);
 end
 
-function makeClassdef(objectName, mexName, commandList)
-    if ( ~exist(['@' objectName],'dir') )
-        mkdir(['@' objectName]);
+function makeClassdef(className, mexName, commandList)
+    if ( ~exist(['@' className],'dir') )
+        mkdir(['@' className]);
     end
-    objFile = fopen(fullfile(['@' objectName],[objectName '.m']), 'wt');
+    classFile = fopen(fullfile(['@' className],[className '.m']), 'wt');
 
-    fprintf(objFile, 'classdef (Abstract,Sealed) %s\n', objectName);
+    fprintf(classFile, 'classdef (Abstract,Sealed) %s\n', className);
 
-    fprintf(objFile, 'methods (Static)\n');
+    fprintf(classFile, 'methods (Static)\n');
     for i=1:length(commandList)
-        fprintf(objFile, '    %s\n', makePrototypeString(commandList(i)));
+        fprintf(classFile, '    %s\n', makePrototypeString(commandList(i)));
     end
-    fprintf(objFile, 'end\n');
+    fprintf(classFile, 'end\n');
 
-    fprintf(objFile, 'methods (Static, Access = private)\n');
-    fprintf(objFile, '    varargout = %s(command, varargin)\n', mexName);
-    fprintf(objFile, 'end\n');
+    fprintf(classFile, 'methods (Static, Access = private)\n');
+    fprintf(classFile, '    varargout = %s(command, varargin)\n', mexName);
+    fprintf(classFile, 'end\n');
 
-    fprintf(objFile, 'end\n');
+    fprintf(classFile, 'end\n');
 
-    fclose(objFile);
+    fclose(classFile);
 end
 
-function makeStaticMethod(objectName, mexName, commandInfo, parentPackage)
-    methodFile = fopen(fullfile(['@' objectName],[commandInfo.command '.m']), 'wt');
+function makeStaticMethod(className, mexName, commandInfo, parentPackage)
+    methodFile = fopen(fullfile(['@' className],[commandInfo.command '.m']), 'wt');
 
     helpLines = strsplit(commandInfo.help, '\n', 'CollapseDelimiters',false);
     validIdx = find(cellfun(@(x)(~isempty(x)), helpLines));
@@ -71,7 +70,7 @@ function makeStaticMethod(objectName, mexName, commandInfo, parentPackage)
     fprintf(methodFile, '%% %s - %s\n', commandInfo.command, summaryString);
 
     % Write call protoype string
-    fprintf(methodFile, '%%    %s\n', makePrototypeString(commandInfo,objectName,parentPackage,true));
+    fprintf(methodFile, '%%    %s\n', makePrototypeString(commandInfo,className,parentPackage,true));
 
     % Write remaining help lines directly
     if ( length(validIdx) > 2 )
@@ -82,13 +81,13 @@ function makeStaticMethod(objectName, mexName, commandInfo, parentPackage)
 
     % Output function body
     fprintf(methodFile, 'function %s\n', makePrototypeString(commandInfo));
-    fprintf(methodFile, '    %s;\n', makeCommandString(objectName, mexName,commandInfo,parentPackage));
+    fprintf(methodFile, '    %s;\n', makeCommandString(className, mexName,commandInfo,parentPackage));
     fprintf(methodFile, 'end\n');
 
     fclose(methodFile);
 end
 
-function commandString = makeCommandString(objectName, mexName, commandInfo, parentPackage)
+function commandString = makeCommandString(className, mexName, commandInfo, parentPackage)
     commandString = '';
     if ( ~isempty(commandInfo.outArgs) )
          commandString = ['[' makeCommaList(commandInfo.outArgs) '] = '];
@@ -100,7 +99,7 @@ function commandString = makeCommandString(objectName, mexName, commandInfo, par
         parentPackage = [parentPackage '.'];
     end
 
-    mexCall = [parentPackage objectName '.' mexName];
+    mexCall = [parentPackage className '.' mexName];
     commandString = [commandString mexCall '(''' commandInfo.command ''''];
     if ( ~isempty(commandInfo.inArgs) )
          commandString = [commandString ',' makeCommaList(commandInfo.inArgs)];
@@ -108,9 +107,9 @@ function commandString = makeCommandString(objectName, mexName, commandInfo, par
     commandString = [commandString ')'];
 end
 
-function protoString = makePrototypeString(commandInfo, objectName, parentPackage, leaveOptBrackets)
-    if ( ~exist('objectName','var') )
-        objectName = [];
+function protoString = makePrototypeString(commandInfo, className, parentPackage, leaveOptBrackets)
+    if ( ~exist('className','var') )
+        className = [];
     end
     if ( ~exist('parentPackage','var') )
         parentPackage = [];
@@ -131,8 +130,8 @@ function protoString = makePrototypeString(commandInfo, objectName, parentPackag
         protoString = [protoString ' = '];
     end
 
-    if ( ~isempty(objectName) )
-        protoString = [protoString parentPackage objectName '.'];
+    if ( ~isempty(className) )
+        protoString = [protoString parentPackage className '.'];
     end
 
     protoString = [protoString commandInfo.command '('];
@@ -156,5 +155,4 @@ end
 
 function cleanupFunc(oldPath)
     cd(oldPath);
-    clear mex;
 end

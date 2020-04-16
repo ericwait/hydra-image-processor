@@ -10,7 +10,7 @@ set(HYDRA_MODULE_NAME "HIP")
 find_package(CUDA REQUIRED)
 find_package(OpenMP REQUIRED)
 
-find_package(Matlab)
+find_package(Matlab COMPONENTS MAIN_PROGRAM)
 find_package(Python COMPONENTS Development NumPy)
 
 # Setup backend Hydra CUDA library (static) for cuda building
