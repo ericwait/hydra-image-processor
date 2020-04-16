@@ -15,5 +15,5 @@
 %    	imageOut = This will be an array of the same type and shape as the input array.
 %    
 function [imageOut] = EntropyFilter(imageIn,kernel,device)
-    [imageOut] = HIP.Cuda.Mex('EntropyFilter',imageIn,kernel,device);
+    [imageOut] = HIP.Cuda.HIP('EntropyFilter',imageIn,kernel,device);
 end

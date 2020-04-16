@@ -11,5 +11,5 @@
 %    	nhoodRadius = radius of patch size (comparison window).
 %    
 function [imageOut] = NLMeans(imageIn,h,searchWindowRadius,nhoodRadius,device)
-    [imageOut] = HIP.Cuda.Mex('NLMeans',imageIn,h,searchWindowRadius,nhoodRadius,device);
+    [imageOut] = HIP.Cuda.HIP('NLMeans',imageIn,h,searchWindowRadius,nhoodRadius,device);
 end

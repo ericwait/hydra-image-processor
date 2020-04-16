@@ -19,5 +19,5 @@
 %    	imageOut = This will be an array of the same type and shape as the input array.
 %    
 function [imageOut] = WienerFilter(imageIn,kernel,noiseVariance,device)
-    [imageOut] = HIP.Cuda.Mex('WienerFilter',imageIn,kernel,noiseVariance,device);
+    [imageOut] = HIP.Cuda.HIP('WienerFilter',imageIn,kernel,noiseVariance,device);
 end

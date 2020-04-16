@@ -14,5 +14,5 @@
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
 function [imageOut] = ElementWiseDifference(image1In,image2In,device)
-    [imageOut] = HIP.Cuda.Mex('ElementWiseDifference',image1In,image2In,device);
+    [imageOut] = HIP.Cuda.HIP('ElementWiseDifference',image1In,image2In,device);
 end

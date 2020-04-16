@@ -13,7 +13,6 @@
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
 %    
-
 function [imageOut] = LoG(imageIn,sigmas,device)
     try
         [imageOut] = HIP.Cuda.LoG(imageIn,sigmas,device);

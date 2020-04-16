@@ -18,7 +18,6 @@
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
 %    
-
 function [imageOut] = VarFilter(imageIn,kernel,numIterations,device)
     try
         [imageOut] = HIP.Cuda.VarFilter(imageIn,kernel,numIterations,device);

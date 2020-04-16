@@ -5,5 +5,5 @@
 %    		The memory structure contains the total memory on the device and the memory available for a Cuda call.
 %    
 function [numCudaDevices,memStats] = DeviceCount()
-    [numCudaDevices,memStats] = HIP.Cuda.Mex('DeviceCount');
+    [numCudaDevices,memStats] = HIP.Cuda.HIP('DeviceCount');
 end

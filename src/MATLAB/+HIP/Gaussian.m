@@ -17,7 +17,6 @@
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
 %    
-
 function [imageOut] = Gaussian(imageIn,sigmas,numIterations,device)
     try
         [imageOut] = HIP.Cuda.Gaussian(imageIn,sigmas,numIterations,device);

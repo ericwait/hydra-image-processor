@@ -10,7 +10,6 @@
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
 %    
-
 function [imageOut] = IdentityFilter(imageIn,device)
     try
         [imageOut] = HIP.Cuda.IdentityFilter(imageIn,device);

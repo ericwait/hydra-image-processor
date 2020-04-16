@@ -7,5 +7,5 @@
 %       commandInfo.helpLines - Help string
 %    
 function [cmdInfo] = Info()
-    [cmdInfo] = HIP.Cuda.Mex('Info');
+    [cmdInfo] = HIP.Cuda.HIP('Info');
 end

@@ -19,5 +19,5 @@
 %    	imageOut = This will be an array of the same type and shape as the input array.
 %    
 function [imageOut] = Opener(imageIn,kernel,numIterations,device)
-    [imageOut] = HIP.Cuda.Mex('Opener',imageIn,kernel,numIterations,device);
+    [imageOut] = HIP.Cuda.HIP('Opener',imageIn,kernel,numIterations,device);
 end

@@ -14,5 +14,5 @@
 %    	imageOut = This will be an array of the same type and shape as the input array.
 %    
 function [imageOut] = HighPassFilter(imageIn,sigmas,device)
-    [imageOut] = HIP.Cuda.Mex('HighPassFilter',imageIn,sigmas,device);
+    [imageOut] = HIP.Cuda.HIP('HighPassFilter',imageIn,sigmas,device);
 end

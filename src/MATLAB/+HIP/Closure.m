@@ -17,7 +17,6 @@
 %    		the data across multiple devices.
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
-
 function [imageOut] = Closure(imageIn,kernel,numIterations,device)
     try
         [imageOut] = HIP.Cuda.Closure(imageIn,kernel,numIterations,device);

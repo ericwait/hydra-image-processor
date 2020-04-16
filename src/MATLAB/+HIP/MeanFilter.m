@@ -18,7 +18,6 @@
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
 %    
-
 function [imageOut] = MeanFilter(imageIn,kernel,numIterations,device)
     try
         [imageOut] = HIP.Cuda.MeanFilter(imageIn,kernel,numIterations,device);

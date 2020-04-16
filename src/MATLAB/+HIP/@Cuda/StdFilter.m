@@ -19,5 +19,5 @@
 %    	imageOut = This will be an array of the same type and shape as the input array.
 %    
 function [imageOut] = StdFilter(imageIn,kernel,numIterations,device)
-    [imageOut] = HIP.Cuda.Mex('StdFilter',imageIn,kernel,numIterations,device);
+    [imageOut] = HIP.Cuda.HIP('StdFilter',imageIn,kernel,numIterations,device);
 end

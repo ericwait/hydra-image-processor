@@ -14,7 +14,6 @@
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
 %    
-
 function [imageOut] = EntropyFilter(imageIn,kernel,device)
     try
         [imageOut] = HIP.Cuda.EntropyFilter(imageIn,kernel,device);

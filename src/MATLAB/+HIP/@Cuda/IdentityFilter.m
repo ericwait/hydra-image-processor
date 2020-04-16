@@ -11,5 +11,5 @@
 %    	imageOut = This will be an array of the same type and shape as the input array.
 %    
 function [imageOut] = IdentityFilter(imageIn,device)
-    [imageOut] = HIP.Cuda.Mex('IdentityFilter',imageIn,device);
+    [imageOut] = HIP.Cuda.HIP('IdentityFilter',imageIn,device);
 end

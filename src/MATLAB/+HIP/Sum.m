@@ -10,7 +10,6 @@
 %    
 %    	valueOut = This is the summation of the entire array.
 %    
-
 function [imageOut] = Sum(imageIn,device)
     try
         [imageOut] = HIP.Cuda.Sum(imageIn,device);

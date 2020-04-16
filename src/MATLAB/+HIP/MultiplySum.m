@@ -18,7 +18,6 @@
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
 %    
-
 function [imageOut] = MultiplySum(imageIn,kernel,numIterations,device)
     try
         [imageOut] = HIP.Cuda.MultiplySum(imageIn,kernel,numIterations,device);

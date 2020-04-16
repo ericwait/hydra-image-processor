@@ -10,5 +10,5 @@
 %    	maxValue = This is the highest value found in the array.
 %    
 function [minVal,maxVal] = GetMinMax(imageIn,device)
-    [minVal,maxVal] = HIP.Cuda.Mex('GetMinMax',imageIn,device);
+    [minVal,maxVal] = HIP.Cuda.HIP('GetMinMax',imageIn,device);
 end

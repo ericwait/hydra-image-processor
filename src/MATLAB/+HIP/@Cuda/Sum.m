@@ -11,5 +11,5 @@
 %    	valueOut = This is the summation of the entire array.
 %    
 function [imageOut] = Sum(imageIn,device)
-    [imageOut] = HIP.Cuda.Mex('Sum',imageIn,device);
+    [imageOut] = HIP.Cuda.HIP('Sum',imageIn,device);
 end

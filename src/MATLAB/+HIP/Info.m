@@ -6,7 +6,6 @@
 %       commandInfo.inArgs - Comma-delimited string list of input arguments
 %       commandInfo.helpLines - Help string
 %    
-
 function [cmdInfo] = Info()
     try
         [cmdInfo] = HIP.Cuda.Info();

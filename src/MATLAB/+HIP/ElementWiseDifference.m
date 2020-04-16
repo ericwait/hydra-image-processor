@@ -13,7 +13,6 @@
 %    		the data across multiple devices.
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
-
 function [imageOut] = ElementWiseDifference(image1In,image2In,device)
     try
         [imageOut] = HIP.Cuda.ElementWiseDifference(image1In,image2In,device);

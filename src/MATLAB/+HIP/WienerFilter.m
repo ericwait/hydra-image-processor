@@ -18,7 +18,6 @@
 %    
 %    	imageOut = This will be an array of the same type and shape as the input array.
 %    
-
 function [imageOut] = WienerFilter(imageIn,kernel,noiseVariance,device)
     try
         [imageOut] = HIP.Cuda.WienerFilter(imageIn,kernel,noiseVariance,device);
