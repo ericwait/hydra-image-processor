@@ -19,6 +19,7 @@ set_target_properties(HydraPy
         OUTPUT_NAME ${HYDRA_MODULE_NAME}
         PREFIX ""
         POSITION_INDEPENDENT_CODE ON
+        LIBRARY_OUTPUT_DIRECTORY $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/Python>
 )
 
 # On windows specifically set the suffix to .pyd
@@ -32,7 +33,6 @@ target_include_directories(HydraPy PRIVATE Python::Python Python::NumPy)
 # Setup src include directories
 target_include_directories(HydraPy
     PRIVATE
-        $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../ScriptCmds>

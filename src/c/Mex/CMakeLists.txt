@@ -1,6 +1,9 @@
 # Setup MEX interface if Matlab was found
 add_library(HydraMex MODULE "")
 
+# Set up custom post-build command to run MATLAB build scripts
+include(autoBuildMex.cmake)
+
 # Require c++11 and set build definition to MEX_BUILD
 target_compile_features(HydraMex PRIVATE cxx_std_11)
 target_compile_definitions(HydraMex PRIVATE MEX_BUILD)
@@ -13,7 +16,7 @@ endif()
 # Link against Matlab libraries
 target_link_libraries(HydraMex PRIVATE HydraCudaLib ${Matlab_MX_LIBRARY} ${Matlab_MEX_LIBRARY})
 
-# Change output library name to Hydra.mex<plaform>
+# Change output library name to <ModuleName>.mex<plaform>
 set_target_properties(HydraMex
     PROPERTIES
         OUTPUT_NAME ${HYDRA_MODULE_NAME}
@@ -28,7 +31,6 @@ target_include_directories(HydraMex PRIVATE ${Matlab_INCLUDE_DIRS})
 # Setup src include directories
 target_include_directories(HydraMex
     PRIVATE
-        $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../ScriptCmds>
