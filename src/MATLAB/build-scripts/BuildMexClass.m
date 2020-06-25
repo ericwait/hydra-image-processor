@@ -8,6 +8,10 @@ function BuildMexClass(mexFile, packagePath, className, parentPackage)
     mexFunc = str2func(mexName);
     commandList = mexFunc('Info');
 
+    % Create stable ordering of commands
+    [~,srtidx] = sort({commandList.command}.');
+    commandList = commandList(srtidx);
+
     cd(packagePath);
     
     % Delete old function definitions
