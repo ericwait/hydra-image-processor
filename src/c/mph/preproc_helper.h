@@ -62,12 +62,18 @@
 #define _MAPL_8(_apply,_wrap_out,_wrap_arg,_delim, x, ...) _MSVC_EXPAND(_MAPL_7(_apply,_wrap_out,_wrap_arg,_delim, __VA_ARGS__)) _delim() _wrap_out(PRP_EXPAND(_apply _wrap_arg(x)))
 #define _MAPL_9(_apply,_wrap_out,_wrap_arg,_delim, x, ...) _MSVC_EXPAND(_MAPL_8(_apply,_wrap_out,_wrap_arg,_delim, __VA_ARGS__)) _delim() _wrap_out(PRP_EXPAND(_apply _wrap_arg(x)))
 #define _MAPL_10(_apply,_wrap_out,_wrap_arg,_delim, x, ...) _MSVC_EXPAND(_MAPL_9(_apply,_wrap_out,_wrap_arg,_delim, __VA_ARGS__)) _delim() _wrap_out(PRP_EXPAND(_apply _wrap_arg(x)))
+#define _MAPL_11(_apply,_wrap_out,_wrap_arg,_delim, x, ...) _MSVC_EXPAND(_MAPL_10(_apply,_wrap_out,_wrap_arg,_delim, __VA_ARGS__)) _delim() _wrap_out(PRP_EXPAND(_apply _wrap_arg(x)))
+#define _MAPL_12(_apply,_wrap_out,_wrap_arg,_delim, x, ...) _MSVC_EXPAND(_MAPL_11(_apply,_wrap_out,_wrap_arg,_delim, __VA_ARGS__)) _delim() _wrap_out(PRP_EXPAND(_apply _wrap_arg(x)))
+#define _MAPL_13(_apply,_wrap_out,_wrap_arg,_delim, x, ...) _MSVC_EXPAND(_MAPL_12(_apply,_wrap_out,_wrap_arg,_delim, __VA_ARGS__)) _delim() _wrap_out(PRP_EXPAND(_apply _wrap_arg(x)))
+#define _MAPL_14(_apply,_wrap_out,_wrap_arg,_delim, x, ...) _MSVC_EXPAND(_MAPL_13(_apply,_wrap_out,_wrap_arg,_delim, __VA_ARGS__)) _delim() _wrap_out(PRP_EXPAND(_apply _wrap_arg(x)))
+#define _MAPL_15(_apply,_wrap_out,_wrap_arg,_delim, x, ...) _MSVC_EXPAND(_MAPL_14(_apply,_wrap_out,_wrap_arg,_delim, __VA_ARGS__)) _delim() _wrap_out(PRP_EXPAND(_apply _wrap_arg(x)))
 
-#define _NTH_ARG_10(_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,N,...) N
-#define _REV_FOREACH(_apply,_wrap,_unwrap,_delim, ...)		\
-			_MSVC_EXPAND(_NTH_ARG_10(__VA_ARGS__,				\
-				_MAPL_10, _MAPL_9, _MAPL_8, _MAPL_7, _MAPL_6,	\
-				_MAPL_5, _MAPL_4, _MAPL_3, _MAPL_2, _MAPL_1)	\
+#define _NTH_ARG_15(_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11,_12,_13,_14,_15,N,...) N
+#define _REV_FOREACH(_apply,_wrap,_unwrap,_delim, ...)				\
+			_MSVC_EXPAND(_NTH_ARG_15(__VA_ARGS__,					\
+				_MAPL_15, _MAPL_14, _MAPL_13, _MAPL_12, _MAPL_11,	\
+				_MAPL_10, _MAPL_9, _MAPL_8, _MAPL_7, _MAPL_6,		\
+				_MAPL_5, _MAPL_4, _MAPL_3, _MAPL_2, _MAPL_1)		\
 				(_apply,_wrap,_unwrap,_delim, __VA_ARGS__))
 
 
@@ -75,7 +81,7 @@
 //  _apply - macro transform to apply to each argument
 //  _wrap_out - macro to wrap _apply macro's output (e.g. in parentheses)
 //  _wrap_arg - macro to wrap input arguments in parentheses
-//  _delim - empty function-like macro to generate delimiters (e.g. _COMMA() -> ,)
+//  _delim - empty function-like macro to generate delimiters (e.g. _DELIM_COMMA() -> ,)
 #define PRP_FOREACH_IOD(_apply, _wrap_out, _wrap_arg, _delim, ...)		\
 			_REV_FOREACH(_apply, _wrap_out, _IDENTITY, _delim,			\
 				_REV_FOREACH(_IDENTITY, _WRAP_PAREN, _wrap_arg, _DELIM_COMMA, __VA_ARGS__))
