@@ -1,8 +1,9 @@
 # Setup backend Hydra CUDA library (static) for cuda building
 add_library(HydraCudaLib STATIC "")
 
-target_compile_features(HydraCudaLib PRIVATE cxx_std_11 cuda_std_11)
+target_compile_features(HydraCudaLib PRIVATE cxx_std_11)
 target_link_libraries(HydraCudaLib PRIVATE OpenMP::OpenMP_CXX)
+set_property(TARGET HydraCudaLib PROPERTY CUDA_STANDARD 11)
 
 # Set a variable to turn on/off PROCESS_MUTEX support
 set(USE_PROCESS_MUTEX ON CACHE BOOL "Use process-level mutex to guard GPU calls")
