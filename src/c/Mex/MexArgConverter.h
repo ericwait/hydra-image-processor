@@ -77,64 +77,6 @@ namespace Script
 		static void store(ScriptPtrs& scriptPtrs, mwSize nlhs, Script::ArrayType* plhs[], mwSize nrhs, const Script::ArrayType* prhs[])
 		{}
 
-	public:
-		//////////////////////////////////
-		// Basic type conversions
-		template <typename T>
-		static void convert_impl(T& out, const Script::ObjectType* inPtr)
-		{
-			out = Converter::toNumeric<T>(const_cast<Script::ObjectType*>(inPtr));
-		}
-
-		template <typename T>
-		static void convert_impl(Script::ObjectType*& outPtr, const T& in)
-		{
-			outPtr = Converter::fromNumeric(in);
-		}
-
-		static void convert_impl(std::string& out, const Script::ObjectType* inPtr)
-		{
-			out = Converter::toString(const_cast<Script::ObjectType*>(inPtr));
-		}
-
-		template <typename T>
-		static void convert_impl(Script::ObjectType*& outPtr, const std::string& in)
-		{
-			outPtr = Converter::fromString(in);
-		}
-
-		// Vector conversions
-		template <typename T>
-		static void convert_impl(Vec<T>& out, const Script::ObjectType* inPtr)
-		{
-			out = Converter::toVec<T>(const_cast<Script::ObjectType*>(inPtr));
-		}
-
-		template <typename T>
-		static void convert_impl(Script::ObjectType*& outPtr, const Vec<T>& in)
-		{
-			outPtr = Converter::fromVec(in);
-		}
-
-
-		// Concrete ImageOwner<T> conversions
-		template <typename T>
-		static void convert_impl(ImageOwner<T>& out, const Script::ArrayType* inPtr)
-		{
-			out = Converter::toImageCopy<T>(const_cast<Script::ArrayType*>(inPtr));
-		}
-
-
-		template <typename T>
-		static void convert_impl(ImageView<T>& out, const Script::ArrayType* inPtr)
-		{
-			out = Converter::toImage<T>(const_cast<Script::ArrayType*>(inPtr));
-		}
-
-		template <typename T>
-		static void convert_impl(Script::ArrayType*& out, const ImageView<T>& in)
-		{}
-
 	private:
 		template <std::size_t... Isel, std::size_t... Icnt>
 		static void loadSelected_impl(mph::index_sequence<Isel...>, mph::index_sequence<Icnt...>, ScriptPtrs& scriptPtrs, mwSize countArgs, const Script::ArrayType* args[])
