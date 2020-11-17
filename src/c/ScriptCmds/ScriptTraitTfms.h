@@ -1,5 +1,7 @@
 #pragma once
 
+#include "mph/qualifier_helpers.h"
+#include "mph/tuple_helpers.h"
 #include "ScriptTraits.h"
 
 
@@ -17,22 +19,6 @@ namespace Script
 	{
 		using type = U;
 	};
-
-
-	/////////////////////////
-	// force_const_t -
-	//   Tear away all pointers on type and set const on the underlying data type
-	//   then add all the pointers back (e.g. int** -> const int**)
-	/////////////////////////
-	template <typename T>
-	using force_const_t = mph::data_type_tfm_t<std::add_const, T>;
-
-	/////////////////////////
-	// remove_all_qualifiers_t -
-	//   Recursively remove type qualifiers (e.g. const int * const * const -> int**)
-	/////////////////////////
-	template <typename T>
-	using remove_all_qualifiers_t = mph::full_type_tfm_t<std::remove_cv, T>;
 
 
 	template <typename RawType, typename Type>
@@ -103,14 +89,13 @@ namespace Script
 	template <template <typename> class IOTrait, typename DataTraits>
 	struct iotrait_to_script<IOTrait<DataTraits>>
 	{
-		using type = force_const_t<typename dtrait_to_script<DataTraits>::type>;
+		using type = mph::force_const_t<typename dtrait_to_script<DataTraits>::type>;
 	};
 
 	template <typename DataTraits>
 	struct iotrait_to_script<OutParam<DataTraits>>
 	{
-		// TODO: Wrap pointer in simple unique object to avoid leaking on errors
-		using type = typename dtrait_to_script<DataTraits>::type;
+		using type = typename dtrait_to_scriptout<DataTraits>::type;
 	};
 
 	/////////////////////////

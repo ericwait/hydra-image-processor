@@ -135,4 +135,19 @@ namespace mph
 	// void_t - C++14 compatibility (used with SFINAE for identifying "valid" type expressions)
 	/////////////////////////
 	template <typename... Ts> using void_t = void;
+
+	/////////////////////////
+	// force_const_t -
+	//   Tear away all pointers on type and set const on the underlying data type
+	//   then add all the pointers back (e.g. int** -> const int**)
+	/////////////////////////
+	template <typename T>
+	using force_const_t = mph::data_type_tfm_t<std::add_const, T>;
+
+	/////////////////////////
+	// remove_all_qualifiers_t -
+	//   Recursively remove type qualifiers (e.g. const int * const * const -> int**)
+	/////////////////////////
+	template <typename T>
+	using remove_all_qualifiers_t = mph::full_type_tfm_t<std::remove_cv, T>;
 };

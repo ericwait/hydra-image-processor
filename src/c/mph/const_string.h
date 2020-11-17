@@ -181,7 +181,7 @@ namespace mph
 	template <typename... Strs>
 	std::string strcat_all(Strs&&... strs)
 	{
-		return internal:: strcat_all_impl(std::forward<Strs>(strs)...);
+		return internal::strcat_all_impl(std::forward<Strs>(strs)...);
 	}
 };
 
