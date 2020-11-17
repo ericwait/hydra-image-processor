@@ -12,7 +12,7 @@ public:
 		"Returns hydraConfig structure with configuration information.\n");
 
 
-	static void execute(Script::ObjectType*& hydraConfig)
+	static void execute(Script::GuardOutObjectPtr& hydraConfig)
 	{
 		if ( !HydraConfig::validConfig() )
 			Script::errorMsg("Hydra Library configuration was not initialized correctly!");

@@ -78,23 +78,23 @@ namespace Script
 		{}
 
 	private:
-		template <std::size_t... Isel, std::size_t... Icnt>
-		static void loadSelected_impl(mph::index_sequence<Isel...>, mph::index_sequence<Icnt...>, ScriptPtrs& scriptPtrs, mwSize countArgs, const Script::ArrayType* args[])
+		// TODO: Type-check ScriptArg to make sure it is: const Script::Array* or Script::Array*
+		template <typename ScriptPtr, typename ScriptArg>
+		static void loadSelected_entry(ScriptPtr& scriptPtr, ScriptArg args[], int idx, mwSize countArgs)
 		{
-			(void)std::initializer_list<int>
-			{
-				// NOTE: Have to be careful to only hook up &args[i] for i < count
-				((std::get<Isel>(scriptPtrs) = (Icnt<countArgs) ? (&args[Icnt]) : (nullptr)), void(), 0)...
-			};
+			if ( idx < countArgs )
+				scriptPtr = ScriptPtr(&args[idx]);
+			else
+				scriptPtr = nullptr;
 		}
 
-		template <std::size_t... Isel, std::size_t... Icnt>
-		static void loadSelected_impl(mph::index_sequence<Isel...>, mph::index_sequence<Icnt...>, ScriptPtrs& scriptPtrs, mwSize countArgs, Script::ArrayType* args[])
+		template <typename ScriptArg, std::size_t... Isel, std::size_t... Icnt>
+		static void loadSelected_impl(mph::index_sequence<Isel...>, mph::index_sequence<Icnt...>, ScriptPtrs& scriptPtrs, mwSize countArgs, ScriptArg&& args)
 		{
 			(void)std::initializer_list<int>
 			{
 				// NOTE: Have to be careful to only hook up &args[i] for i < count
-				((std::get<Isel>(scriptPtrs) = (Icnt<countArgs) ? (&args[Icnt]) : (nullptr)), void(), 0)...
+				(loadSelected_entry(std::get<Isel>(scriptPtrs), std::forward<ScriptArg>(args), Icnt, countArgs), void(), 0)...
 			};
 		}
 

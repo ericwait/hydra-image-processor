@@ -17,6 +17,15 @@ namespace Script
 	template <typename OutT, typename InT, typename Tuple>
 	using deferred_concrete_transform = mph::tuple_type_tfm<deferred_to_concrete<OutT,InT>::template tfm, Tuple>;
 
+	// Function for unguarding GuardOutArrayPtr/GuardOutObjectPtr when passing objects back to script
+	inline Script::ObjectType* unwrap_script_out(Script::GuardOutObjectPtr& out){return out.release();}
+
+	template <typename U = Script::ArrayType, ENABLE_CHK(!IS_SAME(U,Script::ObjectType))>
+	inline Script::ArrayType* unwrap_script_out(Script::GuardOutArrayPtr& out){return out.release();}
+
+	template <typename T, ENABLE_CHK(std::is_pointer<T>::value)>
+	inline T& unwrap_script_out(T& out){return out;}
+
 	/////////////
 	// ArgConverter - Base structure for script-engine to c++ argument conversions (used by ScriptCommands)
 	//   NOTE: These types are generated automatically by GenCommands.h and have fixed argument layouts
@@ -51,11 +60,11 @@ namespace Script
 		using ArgLayout = std::tuple<Layout...>;
 
 		// Script argument type layout (e.g. std::tuple<const PyArrayObject*,...>
-		using ScriptTypes = typename script_transform<std::tuple<Layout...>>::type;
+		using ScriptTypes = typename script_transform<ArgLayout>::type;
 		using ScriptPtrs = typename mph::tuple_ptr_t<ScriptTypes>;
 
 		// Concrete type layouts (e.g. std::tuple<PyObject*,...>)
-		using ArgTypes = typename concrete_transform<std::tuple<Layout...>>::type;
+		using ArgTypes = typename concrete_transform<ArgLayout>::type;
 		using ArgPtrs = typename mph::tuple_ptr_t<ArgTypes>;
 
 		// Templated concrete deferred type layout
@@ -270,14 +279,14 @@ namespace Script
 		}
 
 
-		// Concrete ImageOwner<T> conversions
+		// Concrete ImageOwner<T> conversions (no output form is allowed)
 		template <typename T>
 		static void convert_impl(ImageOwner<T>& out, const Script::ArrayType* inPtr)
 		{
 			out = Converter::toImageCopy<T>(const_cast<Script::ArrayType*>(inPtr));
 		}
 
-
+		// Concrete ImageView<T> conversions
 		template <typename T>
 		static void convert_impl(ImageView<T>& out, const Script::ArrayType* inPtr)
 		{
@@ -288,6 +297,19 @@ namespace Script
 		static void convert_impl(Script::ArrayType*& out, const ImageView<T>& in)
 		{
 			if ( out == nullptr )
+				throw Converter::ImageConvertError("Output image data should already be created");
+		}
+
+		template <typename T>
+		static void convert_impl(ImageView<T>& out, const Script::GuardOutArrayPtr& inPtr)
+		{
+			out = Converter::toImage<T>(const_cast<Script::ArrayType*>(inPtr.get()));
+		}
+
+		template <typename T>
+		static void convert_impl(Script::GuardOutArrayPtr& out, const ImageView<T>& in)
+		{
+			if ( !out )
 				throw Converter::ImageConvertError("Output image data should already be created");
 		}
 
@@ -337,6 +359,21 @@ namespace Script
 		// Convert output arguments
 		template <typename OutT, typename InT>
 		static void convert_arg(OutT*& outPtr, const InT& in, const char* argName)
+		{
+			try
+			{
+				Derived::check_convert(outPtr, in);
+			}
+			catch ( ArgConvertError& ace )
+			{
+				ace.setArgName(argName);
+				throw;
+			}
+		}
+
+		// Convert output arguments (that are ImagePtrs)
+		template <typename OutT, typename InT>
+		static void convert_arg(OutT& outPtr, const InT& in, const char* argName)
 		{
 			try
 			{

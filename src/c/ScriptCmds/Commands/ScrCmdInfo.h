@@ -14,7 +14,7 @@ public:
 					"   commandInfo.helpLines - Help string\n");
 
 
-	static void execute(Script::ObjectType*& cmdInfo)
+	static void execute(Script::GuardOutObjectPtr& cmdInfo)
 	{
 		ScriptCommand::CommandList cmds = ScriptCommand::commands();
 

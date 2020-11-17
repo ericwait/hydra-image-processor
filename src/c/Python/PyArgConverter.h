@@ -76,7 +76,7 @@ namespace Script
 		{
 			(void)std::initializer_list<int>
 			{
-				(PyTuple_SetItem(scriptTuple, Is, reinterpret_cast<Script::ObjectType*>(std::get<Is>(outputs))), void(), 0)...
+				(PyTuple_SetItem(scriptTuple, Is, reinterpret_cast<Script::ObjectType*>(Script::unwrap_script_out(std::get<Is>(outputs)))), void(), 0)...
 			};
 		}
 
@@ -100,7 +100,7 @@ namespace Script
 		static Script::ObjectType* store_out(const std::tuple<ScrOuts...>& outputs)
 		{
 			static_assert(sizeof... (ScrOuts) == 1, "HIP_COMPILE: Output argument selector size mismatch");
-			return reinterpret_cast<Script::ObjectType*>(std::get<0>(outputs));
+			return reinterpret_cast<Script::ObjectType*>(Script::unwrap_script_out(std::get<0>(outputs)));
 		}
 	};
 

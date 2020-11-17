@@ -14,6 +14,12 @@ namespace Script
 	typedef PyObject		ObjectType;
 	typedef PyArrayObject	ArrayType;
 
+	struct ObjectDeleter { void operator() (ObjectType const* ptr){Py_XDECREF(ptr);} };
+	struct ArrayDeleter { void operator() (ArrayType const* ptr){Py_XDECREF(ptr);} };
+
+	typedef std::unique_ptr<ObjectType,ObjectDeleter>	GuardOutObjectPtr;
+	typedef std::unique_ptr<ArrayType,ArrayDeleter>		GuardOutArrayPtr;
+
 	// Simple template-specialization map for C++ to Python types
 	BEGIN_TYPE_MAP(NPY_TYPES,Python)
 		TYPE_MAPPING(bool, NPY_BOOL)
@@ -80,11 +86,11 @@ namespace Script
 		}
 
 
-		template <typename T> inline ArrayType* create(const Script::DimInfo& info)
+		template <typename T> inline GuardOutArrayPtr create(const Script::DimInfo& info)
 		{
 			// Returns reverse-ordered dimensions in case of row-major array
 			std::vector<DimType> dims = Script::Array::dimOrder(info);
-			return ((ArrayType*)PyArray_EMPTY(((int)dims.size()), dims.data(), ID_FROM_TYPE(T), ((int)info.columnMajor)));
+			return GuardOutArrayPtr((ArrayType*)PyArray_EMPTY(((int)dims.size()), dims.data(), ID_FROM_TYPE(T), ((int)info.columnMajor)));
 		}
 	};
 
@@ -122,9 +128,14 @@ namespace Script
 			return PyDict_GetItemString(dictPtr, field);
 		}
 
-		inline void setVal(ObjectType* structPtr, std::size_t idx, const char* field, ObjectType* val)
+		inline const ObjectType* getVal(GuardOutObjectPtr& structPtr, std::size_t idx, const char* field)
 		{
-			ObjectType* dictPtr = PyList_GetItem(structPtr, idx);
+			return getVal(structPtr.get(), idx, field);
+		}
+
+		inline void setVal(GuardOutObjectPtr& structPtr, std::size_t idx, const char* field, ObjectType* val)
+		{
+			ObjectType* dictPtr = PyList_GetItem(structPtr.get(), idx);
 			if ( !dictPtr )
 				return;
 
@@ -132,11 +143,11 @@ namespace Script
 		}
 
 		// Wrapper around script structure-array creation/access
-		inline ObjectType* create(std::size_t size, const std::vector<const char*>& fields)
+		inline GuardOutObjectPtr create(std::size_t size, const std::vector<const char*>& fields)
 		{
-			ObjectType* list = PyList_New(size);
+			GuardOutObjectPtr list = GuardOutObjectPtr(PyList_New(size));
 			for ( std::size_t i=0; i < size; ++i )
-				PyList_SetItem(list, i, PyDict_New());
+				PyList_SetItem(list.get(), i, PyDict_New());
 
 			return list;
 		}

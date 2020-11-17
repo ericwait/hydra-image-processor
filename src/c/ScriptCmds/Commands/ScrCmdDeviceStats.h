@@ -11,7 +11,7 @@ public:
 					"\t\tThe struct has these fields: name, major, minor, constMem, sharedMem, totalMem, tccDriver, mpCount, threadsPerMP, warpSize, maxThreads.");
 
 
-	static void execute(Script::ObjectType*& deviceStruct)
+	static void execute(Script::GuardOutObjectPtr& deviceStruct)
 	{
 		DevStats* devStats;
 		int numDevices = deviceStats(&devStats);

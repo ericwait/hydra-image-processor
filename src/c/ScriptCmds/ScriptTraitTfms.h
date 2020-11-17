@@ -79,6 +79,33 @@ namespace Script
 	};
 
 	/////////////////////////
+	// dtrait_to_scriptout -
+	//   Transforms from data-trait type to script base-type (output only)
+	//   (e.g. Image<int> -> Script::GuardOutObjectPtr)
+	/////////////////////////
+	template <typename Traits>
+	struct dtrait_to_scriptout {};
+
+	template <template <typename> class DataTrait, typename BaseType>
+	struct dtrait_to_scriptout<DataTrait<BaseType>>
+	{
+		static_assert(!std::is_same<DataTrait<BaseType>,Image<BaseType>>::value, "HIP_COMPILE: Only ImageRefs (not Images) are allowed as script outputs");
+		using type = typename dtrait_to_script<DataTrait<BaseType>>::type;
+	};
+
+	template <typename BaseType>
+	struct dtrait_to_scriptout<StructTrait<BaseType>>
+	{
+		using type = Script::GuardOutObjectPtr;
+	};
+
+	template <typename BaseType>
+	struct dtrait_to_scriptout<ImageRef<BaseType>>
+	{
+		using type = Script::GuardOutArrayPtr;
+	};
+
+	/////////////////////////
 	// iotrait_to_script -
 	//   Transforms from full io-trait type to base script type.
 	//   (e.g. InParam<Image<Deferred>> -> const Script::ArrayType*)

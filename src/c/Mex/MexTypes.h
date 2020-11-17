@@ -11,6 +11,12 @@ namespace Script
 	typedef mxArray ArrayType;
 	typedef mxArray ObjectType;
 
+	struct ObjectDeleter { void operator() (ObjectType const* ptr){} };
+	struct ArrayDeleter { void operator() (ArrayType const* ptr){} };
+
+	typedef std::unique_ptr<ObjectType,ObjectDeleter>	GuardOutObjectPtr;
+	typedef std::unique_ptr<ArrayType,ArrayDeleter>		GuardOutArrayPtr;
+
 	// Simple template-specialization map for C++ to mex types
 	BEGIN_TYPE_MAP(mxClassID,Matlab)
 		TYPE_MAPPING(bool, mxLOGICAL_CLASS)
@@ -23,7 +29,6 @@ namespace Script
 		TYPE_MAPPING(float, mxSINGLE_CLASS)
 		TYPE_MAPPING(double, mxDOUBLE_CLASS)
 	END_TYPE_MAP(mxClassID)
-
 
 	// Forward declaration of necessary functions
 	inline DimInfo getDimInfo(const ArrayType* im);
@@ -64,15 +69,15 @@ namespace Script
 
 		// Helper functions for array allocation
 		template <typename T>
-		ArrayType* create(const DimInfo& info)
+		inline GuardOutArrayPtr create(const DimInfo& info)
 		{
-			return mxCreateNumericArray(info.dims.size(), info.dims.data(), ID_FROM_TYPE(T), mxREAL);
+			return GuardOutArrayPtr(mxCreateNumericArray(info.dims.size(), info.dims.data(), ID_FROM_TYPE(T), mxREAL));
 		}
 
 		template <>
-		inline ArrayType* create<bool>(const DimInfo& info)
+		inline GuardOutArrayPtr create<bool>(const DimInfo& info)
 		{
-			return mxCreateLogicalArray(info.dims.size(), info.dims.data());
+			return GuardOutArrayPtr(mxCreateLogicalArray(info.dims.size(), info.dims.data()));
 		}
 	};
 
@@ -88,16 +93,21 @@ namespace Script
 			return mxGetField(structPtr, idx, field);
 		}
 
-		inline void setVal(ObjectType* structPtr, std::size_t idx, const char* field, ObjectType* val)
+		inline const ObjectType* getVal(GuardOutObjectPtr& structPtr, std::size_t idx, const char* field)
 		{
-			mxSetField(structPtr, idx, field, val);
+			return getVal(structPtr.get(), idx, field);
+		}
+
+		inline void setVal(GuardOutObjectPtr& structPtr, std::size_t idx, const char* field, ObjectType* val)
+		{
+			mxSetField(structPtr.get(), idx, field, val);
 		}
 
 		// Wrapper around script structure-array creation/access
-		inline ObjectType* create(std::size_t size, const std::vector<const char*>& fields)
+		inline GuardOutObjectPtr create(std::size_t size, const std::vector<const char*>& fields)
 		{
 			const char** fieldData = const_cast<const char**>(fields.data());
-			return mxCreateStructMatrix(size, 1, (int)fields.size(), fieldData);
+			return GuardOutObjectPtr(mxCreateStructMatrix(size, 1, (int)fields.size(), fieldData));
 		}
 	};
 
@@ -296,7 +306,7 @@ namespace Script
 
 			Script::DimInfo info = Script::getDimInfo(mexArray);
 			if ( !info.contiguous )
-				throw ImageConvertError("Only contiguous numpy arrays are supported");
+				throw ImageConvertError("Only contiguous arrays are supported");
 
 			ImageDimensions inDims = Script::makeImageDims(info);
 			ImageOwner<T> outIm(inDims);
