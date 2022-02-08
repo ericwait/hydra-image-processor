@@ -10,13 +10,15 @@ set(USE_PROCESS_MUTEX ON CACHE BOOL "Use process-level mutex to guard GPU calls"
 
 # Complie compute architectures
 # NOTE: Comment out some of these to speed up builds if you know your hardware capabilities
-string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_30,code=sm_30")
-string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_35,code=sm_35")
-string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_50,code=sm_50")
-string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_52,code=sm_52")
-string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_60,code=sm_60")
-string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_61,code=sm_61")
-string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_70,code=compute_70")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_30,code=sm_30")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_35,code=sm_35")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_50,code=sm_50")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_52,code=sm_52")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_60,code=sm_60")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_61,code=sm_61")
+# string(APPEND CMAKE_CUDA_FLAGS " -gencode=arch=compute_70,code=compute_70")
+
+set_target_properties(HydraCudaLib PROPERTIES CUDA_ARCHITECTURES "52;60;61;70")
 
 set_target_properties(HydraCudaLib
     PROPERTIES 
