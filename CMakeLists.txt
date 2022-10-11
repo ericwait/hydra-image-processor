@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.15.0)
 cmake_policy(VERSION 3.15)
 
+execute_process(COMMAND set | grep PROFILE)
 project(HydraImageProcessor LANGUAGES C CXX CUDA)
 
 set(HYDRA_MODULE_NAME "HIP")
