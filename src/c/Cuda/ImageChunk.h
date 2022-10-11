@@ -83,7 +83,7 @@ public:
 	template <typename PixelTypeOut, typename PixelTypeIn>
 	void retriveROI(ImageView<PixelTypeOut> outImage, CudaImageContainer<PixelTypeIn>* deviceImage)
 	{
-		cudaThreadSynchronize();
+		cudaDeviceSynchronize();
 		HANDLE_ERROR(cudaPeekAtLastError());
 
 		Vec<std::size_t> chunkVolSize = getFullChunkSize();
