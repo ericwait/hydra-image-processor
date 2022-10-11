@@ -10,6 +10,7 @@
 #include <string>
 #include <memory>
 #include <algorithm>
+#include <stdexcept>
 
 
 #define BEGIN_TYPE_MAP(EnumType,ScriptEngine)		\
