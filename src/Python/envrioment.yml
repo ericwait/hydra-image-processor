@@ -1,0 +1,10 @@
+name: hydra
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - scikit-image
+  - matplotlib
+  - numpy
+prefix: ~\.conda\envs\hydra
