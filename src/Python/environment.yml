@@ -7,4 +7,3 @@ dependencies:
   - scikit-image
   - matplotlib
   - numpy
-prefix: ~\.conda\envs\hydra
