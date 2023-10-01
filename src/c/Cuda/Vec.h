@@ -93,9 +93,9 @@ public:
 
 	// Adds each element by adder
 	template<typename U>
-	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator+ (U adder) const
+	MIXED_PREFIX Vec<BINOP_TYPE(T,U)> operator+ (U adder) const
 	{
-		Vec<typename std::common_type<T, U>::type> outVec;
+		Vec<BINOP_TYPE(T,U)> outVec;
 		for ( int i=0; i < 3; ++i )
 			outVec.e[i] = e[i] + adder;
 
@@ -104,9 +104,9 @@ public:
 
 	// Subtracts each element by subtractor
 	template<typename U>
-	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator- (U subtractor) const
+	MIXED_PREFIX Vec<BINOP_TYPE(T,U)> operator- (U subtractor) const
 	{
-		Vec<typename std::common_type<T, U>::type> outVec;
+		Vec<BINOP_TYPE(T,U)> outVec;
 		for ( int i=0; i < 3; ++i )
 			outVec.e[i] = e[i] - subtractor;
 
@@ -115,9 +115,9 @@ public:
 
 	// Divides each element by divisor
 	template<typename U>
-	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator/ (U divisor) const
+	MIXED_PREFIX Vec<BINOP_TYPE(T,U)> operator/ (U divisor) const
 	{
-		Vec<typename std::common_type<T, U>::type> outVec;
+		Vec<BINOP_TYPE(T,U)> outVec;
 		for ( int i=0; i < 3; ++i )
 			outVec.e[i] = e[i] / divisor;
 
@@ -126,9 +126,9 @@ public:
 
 	// Multiplies each element by mult
 	template<typename U>
-	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> operator* (U mult) const
+	MIXED_PREFIX Vec<BINOP_TYPE(T,U)> operator* (U mult) const
 	{
-		Vec<typename std::common_type<T, U>::type> outVec;
+		Vec<BINOP_TYPE(T,U)> outVec;
 		for ( int i=0; i < 3; ++i )
 			outVec.e[i] = e[i] * mult;
 
@@ -137,9 +137,9 @@ public:
 
 	// Raises each element to the pwr
 	template<typename U>
-	MIXED_PREFIX Vec<typename std::common_type<T, U>::type> pwr (U pw) const
+	MIXED_PREFIX Vec<BINOP_TYPE(T,U)> pwr (U pw) const
 	{
-		Vec<typename std::common_type<T, U>::type> outVec;
+		Vec<BINOP_TYPE(T,U)> outVec;
 		for ( int i=0; i < 3; ++i )
 			outVec.e[i] = pow((double)e[i], pw);
 
