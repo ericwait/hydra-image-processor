@@ -14,7 +14,7 @@ if ( USE_PROCESS_MUTEX )
 endif()
 
 # Link against Matlab libraries
-target_link_libraries(HydraMex PRIVATE HydraCudaLib ${Matlab_MX_LIBRARY} ${Matlab_MEX_LIBRARY})
+target_link_libraries(HydraMex PRIVATE HydraCudaStatic ${Matlab_MX_LIBRARY} ${Matlab_MEX_LIBRARY})
 
 # Change output library name to <ModuleName>.mex<plaform>
 set_target_properties(HydraMex

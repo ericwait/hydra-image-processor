@@ -13,9 +13,9 @@ float* createEllipsoidKernel(Vec<std::size_t> radii, Vec<std::size_t>& kernelDim
 	std::memset(kernel,0,sizeof(float)*kernelDims.product());
 
 	Vec<int> mid((kernelDims-1)/2);
-	Vec<float> dimScale = Vec<float>(1,1,1) / Vec<float>(radii.pwr(2));
+	Vec<float> dimScale = Vec<float>(1.0f) / Vec<float>(radii.pwr(2));
 
-	Vec<int> cur(0,0,0);
+	Vec<int> cur(0);
 	for (cur.z=0; cur.z<kernelDims.z; ++cur.z)
 	{
 		for (cur.y=0; cur.y<kernelDims.y; ++cur.y)

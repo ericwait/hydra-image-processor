@@ -11,7 +11,7 @@ if ( USE_PROCESS_MUTEX )
 endif()
 
 # Link against Python and NumPy libraries
-target_link_libraries(HydraPy PRIVATE HydraCudaLib Python::Python Python::NumPy)
+target_link_libraries(HydraPy PRIVATE HydraCudaStatic Python::Python Python::NumPy)
 
 # Change output library name to Hydra.<dll/so/dylib>
 set_target_properties(HydraPy

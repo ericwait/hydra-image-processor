@@ -1,22 +1,30 @@
 #pragma once
-#include "Vec.h"
-#include "CudaDeviceStats.h"
-#include "ImageView.h"
+
+#ifdef _WIN32
+    #define DLL_EXPORT_API __declspec(dllexport)
+    #define DLL_IMPORT_API __declspec(dllimport)
+#else
+    #define DLL_EXPORT_API __attribute__((visibility("default")))
+    #define DLL_IMPORT_API 
+#endif 
+
+#ifdef IMAGE_PROCESSOR_DLL
+    #ifdef IMAGE_PROCESSOR_EXPORT
+        #define IMAGE_PROCESSOR_API DLL_EXPORT_API
+    #else
+        #define IMAGE_PROCESSOR_API DLL_IMPORT_API
+    #endif // IMAGE_PROCESSOR_EXPORT
+#else
+    #define IMAGE_PROCESSOR_API
+#endif // IMAGE_PROCESSOR_DLL
+
 
 #include <limits>
 #include <algorithm>
 
-
-#ifdef IMAGE_PROCESSOR_DLL
-#ifdef IMAGE_PROCESSOR_INTERNAL
-#define IMAGE_PROCESSOR_API __declspec(dllexport)
-#else
-#define IMAGE_PROCESSOR_API __declspec(dllimport)
-#endif // IMAGE_PROCESSOR_INTERNAL
-#else
-#define IMAGE_PROCESSOR_API
-#endif // IMAGE_PROCESSOR_DLL
-
+#include "Vec.h"
+#include "ImageView.h"
+#include "CudaDeviceStats.h"
 
 #include "CWrapperAutogen.h"
 
