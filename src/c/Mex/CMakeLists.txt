@@ -5,7 +5,7 @@ add_library(HydraMex MODULE "")
 include(autoBuildMex.cmake)
 
 # Require c++11 and set build definition to MEX_BUILD
-target_compile_features(HydraMex PRIVATE cxx_std_11)
+target_compile_features(HydraMex PRIVATE cxx_std_17)
 target_compile_definitions(HydraMex PRIVATE MEX_BUILD)
 
 # Set USE_PROCESS_MUTEX if cmake variable is set
