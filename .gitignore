@@ -44,3 +44,6 @@ CmakeCache.txt
 *.db-shm
 *.db-wal
 
+out
+.vs
+CMakeSettings.json
