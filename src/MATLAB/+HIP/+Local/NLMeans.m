@@ -1,7 +1,7 @@
 function [imageOut] = NLMeans(imageIn,a,h,searchWindowRadius,nhoodRadius,device,suppressWarning)
      error('NLMeans not yet implemented in MATLAB!'); %delete this line when implemented
      if (~exist('suppressWarning','var') || isempty(suppressWarning) || ~suppressWarning)
-         warning('Falling back to matlab.');
+         error('Falling back to matlab. But this function is not implemented yet...');
      end
      
      if (~exist('numIterations','var') || isempty(numIterations))
