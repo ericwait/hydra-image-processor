@@ -1,15 +1,15 @@
 <deployment-project plugin="plugin.toolbox" plugin-version="1.0">
-  <configuration build-checksum="548970074" file="D:\Users\ewait\git\programming\hydra-image-processor\src\MATLAB\HydraImageProcessor.prj" location="D:\Users\ewait\git\programming\hydra-image-processor\src\MATLAB" name="HydraImageProcessor" target="target.toolbox" target-name="Package Toolbox">
+  <configuration build-checksum="2141562086" file="D:\Users\ewait\git\programming\hydra-image-processor\src\MATLAB\HydraImageProcessor.prj" location="D:\Users\ewait\git\programming\hydra-image-processor\src\MATLAB" name="HydraImageProcessor" target="target.toolbox" target-name="Package Toolbox">
     <param.appname>Hydra Image Processor</param.appname>
     <param.authnamewatermark>Eric Wait</param.authnamewatermark>
     <param.email>eric@waitphoto.com</param.email>
-    <param.company />
+    <param.company>Passion Project</param.company>
     <param.summary>Hydra Image Processor handles large 1D to 5D image data by optimally chunking across GPUs, ensuring energy-insulated boundaries.</param.summary>
     <param.description>Hydra Image Processor (Hydra) is a collection of signal filters for image analysis that can handle 1-5 dimensional data (x, y, z, channels, time), efficiently processing data larger than GPU memory by optimally chunking it and distributing higher-dimensional chunks across multiple GPUs, while ensuring energy-insulated boundary conditions to prevent energy leakage at the edges.
 
 See https://hydraimageprocessor.com/</param.description>
     <param.screenshot>d:\Users\ewait\git\programming\hydra-image-processor\logo.png</param.screenshot>
-    <param.version>3.0</param.version>
+    <param.version>3.1</param.version>
     <param.output>${PROJECT_ROOT}\Hydra Image Processor.mltbx</param.output>
     <param.products.name>
       <item>Image Processing Toolbox</item>
@@ -51,7 +51,9 @@ build-scripts</param.exclude.filters>
     <param.registered.apps />
     <param.docs />
     <param.getting.started.guide />
-    <param.matlabpath.excludes />
+    <param.matlabpath.excludes>
+      <item>/</item>
+    </param.matlabpath.excludes>
     <param.javaclasspath.excludes />
     <param.exported.on.package>false</param.exported.on.package>
     <param.required.addons />
@@ -71,6 +73,8 @@ build-scripts</param.exclude.filters>
     <param.additional.sw.mac.url />
     <param.additional.sw.linux.url />
     <unset>
+      <param.authnamewatermark />
+      <param.email />
       <param.company />
       <param.output />
       <param.platforms />
@@ -81,7 +85,6 @@ build-scripts</param.exclude.filters>
       <param.registered.apps />
       <param.docs />
       <param.getting.started.guide />
-      <param.matlabpath.excludes />
       <param.javaclasspath.excludes />
       <param.exported.on.package />
       <param.required.addons />

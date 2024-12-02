@@ -9,7 +9,7 @@ find_package(CUDAToolkit REQUIRED)
 find_package(OpenMP REQUIRED)
 
 # Find optional dependencies
-find_package(Matlab COMPONENTS MAIN_PROGRAM OPTIONAL_COMPONENTS MexCompiler)
+find_package(Matlab COMPONENTS MAIN_PROGRAM OPTIONAL_COMPONENTS MEX_COMPILER)
 find_package(Python COMPONENTS Development NumPy OPTIONAL)
 
 # Set OpenMP and CUDA flags depending on the platform
