@@ -9,7 +9,7 @@
 
 See https://hydraimageprocessor.com/</param.description>
     <param.screenshot>d:\Users\ewait\git\programming\hydra-image-processor\logo.png</param.screenshot>
-    <param.version>3.1.1</param.version>
+    <param.version>3.1.2</param.version>
     <param.output>${PROJECT_ROOT}\Hydra Image Processor.mltbx</param.output>
     <param.products.name>
       <item>Image Processing Toolbox</item>
