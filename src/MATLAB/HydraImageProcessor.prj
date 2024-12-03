@@ -9,7 +9,7 @@
 
 See https://hydraimageprocessor.com/</param.description>
     <param.screenshot>d:\Users\ewait\git\programming\hydra-image-processor\logo.png</param.screenshot>
-    <param.version>3.1</param.version>
+    <param.version>3.1.1</param.version>
     <param.output>${PROJECT_ROOT}\Hydra Image Processor.mltbx</param.output>
     <param.products.name>
       <item>Image Processing Toolbox</item>
@@ -51,9 +51,7 @@ build-scripts</param.exclude.filters>
     <param.registered.apps />
     <param.docs />
     <param.getting.started.guide />
-    <param.matlabpath.excludes>
-      <item>/</item>
-    </param.matlabpath.excludes>
+    <param.matlabpath.excludes />
     <param.javaclasspath.excludes />
     <param.exported.on.package>false</param.exported.on.package>
     <param.required.addons />
@@ -85,6 +83,7 @@ build-scripts</param.exclude.filters>
       <param.registered.apps />
       <param.docs />
       <param.getting.started.guide />
+      <param.matlabpath.excludes />
       <param.javaclasspath.excludes />
       <param.exported.on.package />
       <param.required.addons />
@@ -116,38 +115,7 @@ build-scripts</param.exclude.filters>
     <workflow />
     <matlab>
       <root>C:\Program Files\MATLAB\R2024b</root>
-      <toolboxes>
-        <toolbox name="matlabcoder" />
-        <toolbox name="gpucoder" />
-        <toolbox name="fixedpoint" />
-        <toolbox name="matlabhdlcoder" />
-        <toolbox name="neuralnetwork" />
-      </toolboxes>
-      <toolbox>
-        <matlabcoder>
-          <enabled>true</enabled>
-        </matlabcoder>
-      </toolbox>
-      <toolbox>
-        <gpucoder>
-          <enabled>true</enabled>
-        </gpucoder>
-      </toolbox>
-      <toolbox>
-        <fixedpoint>
-          <enabled>true</enabled>
-        </fixedpoint>
-      </toolbox>
-      <toolbox>
-        <matlabhdlcoder>
-          <enabled>true</enabled>
-        </matlabhdlcoder>
-      </toolbox>
-      <toolbox>
-        <neuralnetwork>
-          <enabled>true</enabled>
-        </neuralnetwork>
-      </toolbox>
+      <toolboxes />
     </matlab>
     <platform>
       <unix>false</unix>
