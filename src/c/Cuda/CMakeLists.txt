@@ -118,4 +118,4 @@ endfunction()
 
 # Setup static and shared libraries
 setup_cuda_library(HydraCudaStatic STATIC)
-setup_cuda_library(HydraCuda SHARED)
+# setup_cuda_library(HydraCuda SHARED)
