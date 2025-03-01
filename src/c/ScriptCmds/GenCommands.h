@@ -72,7 +72,7 @@
 			: public ARG_CONVERTER<ScriptCommand_##Name##_Parser, _SCR_PRM_TYPE_SEL(Params)> \
 		{														\
 			template <typename InT>								\
-			using OutMap = typename CudaCall_##Name##_Stub::OutMap<InT>;	\
+			using OutMap = typename CudaCall_##Name::OutMap<InT>;	\
 																\
 			inline static void setOptional(OptPtrs optPtrs)		\
 			{													\
@@ -102,7 +102,7 @@
 			{																	\
 				template <typename... Args>										\
 				inline static void run(Args&&... args)							\
-				{ CudaCall_##Name##_Stub::CudaFunc##_stub(args...); }			\
+				{ CudaCall_##Name::run(args...); }			\
 			};																	\
 			inline static constexpr const char* commandName() { return #Name; }	\
 		};
@@ -130,7 +130,7 @@
 
 
 	#define _SCR_GEN_IOMAPPER(Name)									\
-		namespace CudaCall_##Name##_Stub							\
+		namespace CudaCall_##Name							\
 		{															\
 			template <typename InT>									\
 			struct OutMap_Impl { using type = InT;};				\
@@ -177,10 +177,10 @@
 
 	// TODO: Is there a better way to deal with _API prefix?
 	#define _SCR_GEN_TYPED_PROTO(InType, Params, CudaFunc)			\
-		IMAGE_PROCESSOR_API void CudaFunc##_stub(_SCR_PRM_SIGNATURE(InType, _PASSTHRU(Params)));
+		IMAGE_PROCESSOR_API void run(_SCR_PRM_SIGNATURE(InType, _PASSTHRU(Params)));
 
 	#define _SCR_GEN_TYPED_IMPL(InType, Params, CudaFunc)			\
-		void CudaFunc##_stub(_SCR_PRM_SIGNATURE(InType, _PASSTHRU(Params)))	\
+		void run(_SCR_PRM_SIGNATURE(InType, _PASSTHRU(Params)))	\
 		{															\
 			CudaFunc(_SCR_PRM_NAME_SEL(Params));					\
 		}	
@@ -188,7 +188,7 @@
 
 	// This is the prototype stub call that separates the frontend(script)/backend(cuda) modules
 	#define _SCR_GEN_STUB_PROTO(Name, Params, CudaFunc)					\
-		namespace CudaCall_##Name##_Stub								\
+		namespace CudaCall_##Name								\
 		{																\
 			_SCR_GEN_TYPED_PROTO(bool, _PASSTHRU(Params), CudaFunc)		\
 			_SCR_GEN_TYPED_PROTO(uint8_t, _PASSTHRU(Params), CudaFunc)	\
@@ -202,7 +202,7 @@
 
 	// This is the implementation stub call that separates the frontend(script)/backend(cuda) modules
 	#define _SCR_GEN_STUB_IMPL(Name, Params, CudaFunc)					\
-		namespace CudaCall_##Name##_Stub								\
+		namespace CudaCall_##Name								\
 		{																\
 			_SCR_GEN_TYPED_IMPL(bool, _PASSTHRU(Params), CudaFunc)		\
 			_SCR_GEN_TYPED_IMPL(uint8_t, _PASSTHRU(Params), CudaFunc)	\

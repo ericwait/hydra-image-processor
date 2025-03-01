@@ -23,7 +23,7 @@ struct valid_map<T, mph::void_t<typename T<void>::type>>: std::true_type {};
 /////////////
 // SCR_DEFINE_IO_TYPE_MAP - Define an input->output io map for the specified script command
 #define SCR_DEFINE_IO_TYPE_MAP(Name, OutT,InT)						\
-	namespace CudaCall_##Name##_Stub								\
+	namespace CudaCall_##Name								\
 	{																\
 		_SCR_CHK_MAIN_TYPE(Name)									\
 		template <> struct OutMap_Impl<InT> {using type = OutT;};	\

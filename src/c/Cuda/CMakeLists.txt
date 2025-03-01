@@ -77,9 +77,13 @@ set(COMMON_CPP_SOURCES
 
 # Determine the OpenMP flag based on the compiler
 if(MSVC)
+    message(STATUS "MSVC compiler detected")
     set(OPENMP_FLAG "/openmp")
+    # set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler=/openmp")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message(STATUS "GCC/Clang compiler detected")
     set(OPENMP_FLAG "-fopenmp")
+    # set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler=-fopenmp")
 else()
     message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
 endif()
@@ -99,6 +103,7 @@ function(setup_cuda_library LIB_NAME STATIC_OR_SHARED)
     # Set CUDA-specific compile options
     # Pass the OpenMP flag to the host compiler via nvcc
     target_compile_options(${LIB_NAME} PRIVATE
+        # $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>
         $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OPENMP_FLAG}>
     )
 
