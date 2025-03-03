@@ -98,7 +98,7 @@ function(setup_cuda_library LIB_NAME STATIC_OR_SHARED)
     )
     
     # Link OpenMP libraries
-    target_link_libraries(${LIB_NAME} PRIVATE OpenMP::OpenMP_CXX)
+    target_link_libraries(${LIB_NAME} PRIVATE CUDA::cudart_static PRIVATE OpenMP::OpenMP_CXX)
     
     # Set CUDA-specific compile options
     # Pass the OpenMP flag to the host compiler via nvcc
