@@ -3,11 +3,13 @@
 
 #include <cstring>
 #include <vector>
+#include <cmath>
 
 
 float* createEllipsoidKernel(Vec<std::size_t> radii, Vec<std::size_t>& kernelDims)
 {
 	kernelDims = radii*2 +1;
+	radii = Vec<std::size_t>::max(radii, Vec<std::size_t>(1)); // make sure we have at least 1 in each dimension
 
 	float* kernel = new float[kernelDims.product()];
 	std::memset(kernel,0,sizeof(float)*kernelDims.product());
@@ -22,8 +24,11 @@ float* createEllipsoidKernel(Vec<std::size_t> radii, Vec<std::size_t>& kernelDim
 		{
 			for (cur.x=0; cur.x<kernelDims.x; ++cur.x)
 			{
-				Vec<float> tmp = dimScale * Vec<float>((cur-mid).pwr(2));
-				if (tmp.x+tmp.y+tmp.z<=1.0f)
+				Vec<float> squared = Vec<float>(cur - mid).pwr(2);
+				Vec<float> curDimScale = dimScale * squared;
+				double sum = double(curDimScale.sum());
+				double distanceFromCenter = std::sqrt(sum);
+				if (distanceFromCenter <= 1.0f)
 				{
 					kernel[kernelDims.linearAddressAt(cur)] = 1.0f;
 				}
