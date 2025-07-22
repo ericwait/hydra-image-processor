@@ -1,12 +1,24 @@
 cmake_minimum_required(VERSION 3.22)
 
+# ===========================
+# CUDA Architecture Targets
+# ===========================
+# Uses modern format (native for CUDA ≥ 11.1)
+# Allows user override from command line: -DCMAKE_CUDA_ARCHITECTURES=...
+# Use all known GPU archs by default, but allow user to override
+if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+    set(CMAKE_CUDA_ARCHITECTURES "89;90;103;121"
+        CACHE STRING "CUDA architectures to build for"
+        FORCE)
+endif()
+
 project(HydraImageProcessor LANGUAGES C CXX CUDA)
 
 set(HYDRA_MODULE_NAME "HIP")
 
 # Use CMake's modern FindCUDAToolkit module
 find_package(CUDAToolkit REQUIRED)
-find_package(OpenMP)
+find_package(OpenMP REQUIRED COMPONENTS CXX)
 
 # Find optional dependencies
 find_package(Matlab COMPONENTS MAIN_PROGRAM OPTIONAL_COMPONENTS MEX_COMPILER)

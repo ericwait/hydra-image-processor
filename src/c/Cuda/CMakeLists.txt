@@ -1,8 +1,15 @@
-# Set a variable to turn on/off PROCESS_MUTEX support
+cmake_minimum_required(VERSION 3.22)  # Ensure good CUDA support
+
+# ===========================
+# Options
+# ===========================
 option(USE_PROCESS_MUTEX "Use process-level mutex to guard GPU calls" OFF)
 
-# Common settings for both libraries
-set(CUDA_ARCHITECTURES "52;61;70;75;86;89")
+project(HydraCuda LANGUAGES CXX CUDA)
+
+# ===========================
+# Common Includes and Sources
+# ===========================
 set(COMMON_INCLUDES
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
@@ -75,52 +82,48 @@ set(COMMON_CPP_SOURCES
     KernelIterator.cu
 )
 
-# Determine the OpenMP flag based on the compiler
-if(MSVC)
-    message(STATUS "MSVC compiler detected")
-    set(OPENMP_FLAG "/openmp")
-    # set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler=/openmp")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    message(STATUS "GCC/Clang compiler detected")
-    set(OPENMP_FLAG "-fopenmp")
-    # set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler=-fopenmp")
-else()
-    message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
-endif()
+# ===========================
+# OpenMP Setup
+# ===========================
+find_package(OpenMP REQUIRED COMPONENTS CXX)
 
-# Function to set up both static and shared CUDA libraries
-function(setup_cuda_library LIB_NAME STATIC_OR_SHARED)
-    add_library(${LIB_NAME} ${STATIC_OR_SHARED} "")
+# ===========================
+# CUDA Library Builder Function
+# ===========================
+function(setup_cuda_library LIB_NAME LIB_TYPE)
+    add_library(${LIB_NAME} ${LIB_TYPE})
 
     target_compile_features(${LIB_NAME} PRIVATE cxx_std_17)
+
     target_include_directories(${LIB_NAME}
         PUBLIC ${COMMON_INCLUDES}
-    )
-    
-    # Link OpenMP libraries
-    target_link_libraries(${LIB_NAME} PRIVATE CUDA::cudart_static PRIVATE OpenMP::OpenMP_CXX)
-    
-    # Set CUDA-specific compile options
-    # Pass the OpenMP flag to the host compiler via nvcc
-    target_compile_options(${LIB_NAME} PRIVATE
-        # $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>
-        $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OPENMP_FLAG}>
-    )
-
-    set_target_properties(${LIB_NAME} PROPERTIES
-        CUDA_STANDARD 11
-        CUDA_SEPARABLE_COMPILATION ON
-        CUDA_RESOLVE_DEVICE_SYMBOLS ON
-        CUDA_ARCHITECTURES "${CUDA_ARCHITECTURES}"
-        POSITION_INDEPENDENT_CODE ON
     )
 
     target_sources(${LIB_NAME}
         PUBLIC ${COMMON_HEADERS}
         PRIVATE ${COMMON_CUDA_SOURCES} ${COMMON_CPP_SOURCES}
     )
+
+    # Link CUDA and OpenMP
+    target_link_libraries(${LIB_NAME}
+        PRIVATE CUDA::cudart_static
+        PRIVATE OpenMP::OpenMP_CXX
+    )
+
+    # CUDA-specific compile options
+    target_compile_options(${LIB_NAME} PRIVATE
+        $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OpenMP_CXX_FLAGS}>
+    )
+
+    set_target_properties(${LIB_NAME} PROPERTIES
+        CUDA_SEPARABLE_COMPILATION ON
+        CUDA_RESOLVE_DEVICE_SYMBOLS ON
+        POSITION_INDEPENDENT_CODE ON
+    )
 endfunction()
 
-# Setup static and shared libraries
+# ===========================
+# Library Targets
+# ===========================
 setup_cuda_library(HydraCudaStatic STATIC)
 # setup_cuda_library(HydraCuda SHARED)
