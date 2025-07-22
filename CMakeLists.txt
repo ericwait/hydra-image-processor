@@ -1,5 +1,27 @@
 cmake_minimum_required(VERSION 3.22)
 
+# Only use these if not set externally
+if(NOT DEFINED GITVERSION_SEMVER)
+  set(GITVERSION_SEMVER "0.0.0-dev")
+endif()
+if(NOT DEFINED GITVERSION_MAJOR)
+  set(GITVERSION_MAJOR 0)
+endif()
+if(NOT DEFINED GITVERSION_MINOR)
+  set(GITVERSION_MINOR 0)
+endif()
+if(NOT DEFINED GITVERSION_PATCH)
+  set(GITVERSION_PATCH 0)
+endif()
+
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/c/Version.h.in
+  ${CMAKE_BINARY_DIR}/generated/Version.h
+  @ONLY
+)
+
+include_directories(${CMAKE_BINARY_DIR}/generated)
+
 # ===========================
 # CUDA Architecture Targets
 # ===========================
