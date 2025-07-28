@@ -18,10 +18,10 @@ jobs:
             runner: self-hosted
             cuda_arch: "89;90"
             config: Release
-          - os: Linux
-            runner: ubuntu-latest
-            cuda_arch: "89;90"
-            config: Release
+          # - os: Linux
+          #   runner: ubuntu-latest
+          #   cuda_arch: "89;90"
+          #   config: Release
 
     steps:
       - name: Checkout repository
