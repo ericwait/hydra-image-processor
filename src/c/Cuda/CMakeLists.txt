@@ -1,23 +1,26 @@
-cmake_minimum_required(VERSION 3.22)  # Ensure good CUDA support
+cmake_minimum_required(VERSION 3.22)
+
+project(HydraCuda LANGUAGES CXX CUDA)
 
 # ===========================
 # Options
 # ===========================
 option(USE_PROCESS_MUTEX "Use process-level mutex to guard GPU calls" OFF)
 
-project(HydraCuda LANGUAGES CXX CUDA)
-
 # ===========================
-# Common Includes and Sources
+# Common Includes
 # ===========================
 set(COMMON_INCLUDES
     $<INSTALL_INTERFACE:include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/..>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
     ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
 )
 
-set(COMMON_HEADERS
+# ===========================
+# Header Files (full paths + validation)
+# ===========================
+set(HEADER_NAMES
     BufferConversions.h
     CHelpers.h
     CommandLineProgress.h
@@ -33,6 +36,17 @@ set(COMMON_HEADERS
     Vec.h
 )
 
+set(COMMON_HEADERS "")
+foreach(hdr IN LISTS HEADER_NAMES)
+    list(APPEND COMMON_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/${hdr})
+    if(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${hdr})
+        message(FATAL_ERROR "Missing header: ${hdr}")
+    endif()
+endforeach()
+
+# ===========================
+# Source Files
+# ===========================
 set(COMMON_CUDA_SOURCES
     CudaAddTwoImages.cuh
     CudaClosure.cuh
@@ -100,17 +114,14 @@ function(setup_cuda_library LIB_NAME LIB_TYPE)
     )
 
     target_sources(${LIB_NAME}
-        PUBLIC ${COMMON_HEADERS}
-        PRIVATE ${COMMON_CUDA_SOURCES} ${COMMON_CPP_SOURCES}
+        PRIVATE ${COMMON_CPP_SOURCES} ${COMMON_CUDA_SOURCES}
     )
 
-    # Link CUDA and OpenMP
     target_link_libraries(${LIB_NAME}
         PRIVATE CUDA::cudart_static
         PRIVATE OpenMP::OpenMP_CXX
     )
 
-    # CUDA-specific compile options
     target_compile_options(${LIB_NAME} PRIVATE
         $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OpenMP_CXX_FLAGS}>
     )
@@ -123,7 +134,29 @@ function(setup_cuda_library LIB_NAME LIB_TYPE)
 endfunction()
 
 # ===========================
-# Library Targets
+# Build Targets
 # ===========================
 setup_cuda_library(HydraCudaStatic STATIC)
 # setup_cuda_library(HydraCuda SHARED)
+
+# ===========================
+# Installation
+# ===========================
+install(FILES
+    ${COMMON_HEADERS}
+    DESTINATION include/hydra
+)
+
+install(TARGETS HydraCudaStatic
+    EXPORT HydraTargets
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES DESTINATION include
+)
+
+install(EXPORT HydraTargets
+    FILE HydraTargets.cmake
+    NAMESPACE Hydra::
+    DESTINATION lib/cmake/Hydra
+)

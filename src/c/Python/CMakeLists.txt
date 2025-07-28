@@ -1,36 +1,34 @@
-# Setup MEX interface if Matlab was found
-add_library(HydraPy MODULE "")
+# ===========================
+# Hydra Python Interface
+# ===========================
 
-# Require c++11 and set build definition to PY_BUILD
-target_compile_features(HydraPy PRIVATE cxx_std_11)
+add_library(HydraPy MODULE)
+
+# Require modern C++ and define for Python build
+target_compile_features(HydraPy PRIVATE cxx_std_17)
 target_compile_definitions(HydraPy PRIVATE PY_BUILD)
 
-# Set USE_PROCESS_MUTEX if cmake variable is set
-if ( USE_PROCESS_MUTEX )
+if (USE_PROCESS_MUTEX)
     target_compile_definitions(HydraPy PRIVATE USE_PROCESS_MUTEX)
 endif()
 
-# Link against Python and NumPy libraries
-target_link_libraries(HydraPy PRIVATE HydraCudaStatic Python::Python Python::NumPy)
-
-# Change output library name to Hydra.<dll/so/dylib>
-set_target_properties(HydraPy
-    PROPERTIES
-        OUTPUT_NAME ${HYDRA_MODULE_NAME}
-        PREFIX ""
-        POSITION_INDEPENDENT_CODE ON
-        LIBRARY_OUTPUT_DIRECTORY $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/Python>
+# Output name should be Hydra.<suffix> (e.g., .pyd on Windows)
+set_target_properties(HydraPy PROPERTIES
+    OUTPUT_NAME ${HYDRA_MODULE_NAME}
+    PREFIX ""
+    POSITION_INDEPENDENT_CODE ON
+    LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/src/Python
+    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/src/Python
 )
 
-# On windows specifically set the suffix to .pyd
-if ( WIN32 )
-    set_target_properties(HydraPy PROPERTIES SUFFIX .pyd)
+# On Windows, set the suffix to .pyd for Python modules
+if (WIN32)
+    set_target_properties(HydraPy PROPERTIES SUFFIX ".pyd")
 endif()
 
-# Setup Python/NumPy include directories
-target_include_directories(HydraPy PRIVATE Python::Python Python::NumPy)
-
-# Setup src include directories
+# ===========================
+# Includes and Linking
+# ===========================
 target_include_directories(HydraPy
     PRIVATE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
@@ -39,18 +37,30 @@ target_include_directories(HydraPy
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../external>
 )
 
+target_link_libraries(HydraPy
+    PRIVATE HydraCudaStatic
+    PRIVATE Python::Python
+    PRIVATE Python::NumPy
+)
+
+# ===========================
+# Python Binding Sources
+# ===========================
 target_sources(HydraPy
     PRIVATE
+        # Local headers
         PyArgConverter.h
         PyIncludes.h
         PyTypes.h
 
+        # Meta programming helpers
         ../mph/const_string.h
         ../mph/integer_sequence.h
         ../mph/preproc_helper.h
         ../mph/qualifier_helpers.h
         ../mph/tuple_helpers.h
 
+        # Script command infrastructure
         ../ScriptCmds/ArgConverter.h
         ../ScriptCmds/GenCommands.h
         ../ScriptCmds/HydraConfig.h
@@ -67,6 +77,7 @@ target_sources(HydraPy
         ../ScriptCmds/ScriptTraits.h
         ../ScriptCmds/ScriptTraitTfms.h
 
+        # Script command implementations
         ../ScriptCmds/Commands/ScrCmdCheckConfig.h
         ../ScriptCmds/Commands/ScrCmdClosure.h
         ../ScriptCmds/Commands/ScrCmdDeviceCount.h
@@ -92,6 +103,7 @@ target_sources(HydraPy
         ../ScriptCmds/Commands/ScrCmdVarFilter.h
         ../ScriptCmds/Commands/ScrCmdWienerFilter.h
 
+        # Source files
         ../ScriptCmds/ScopedProcessMutex.cpp
         HydraPyModule.cpp
         PyCommandModule.cpp
