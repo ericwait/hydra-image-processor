@@ -1,0 +1,117 @@
+name: Hydra CUDA CI
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  DEFAULT_CUDA_ARCH: "89;90"
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - os: Windows
+            runner: self-hosted
+            cuda_arch: ${{ env.DEFAULT_CUDA_ARCH }}
+            config: Release
+          - os: Linux
+            runner: ubuntu-latest
+            cuda_arch: ${{ env.DEFAULT_CUDA_ARCH }}
+            config: Release
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed for GitVersion
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.10.2
+        with:
+          versionSpec: '5.x'
+
+      - name: Determine version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.10.2
+
+      - name: Print GitVersion Info
+        run: echo "Calculated version is ${{ steps.gitversion.outputs.semVer }}"
+
+      - name: Patch vcpkg files
+        run: >
+          python scripts/update-vcpkg-files.py
+          v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}
+          ${{ steps.gitversion.outputs.semVer }}
+
+      - name: Install CUDA Toolkit (Linux only)
+        if: matrix.os == 'Linux'
+        uses: Jimver/cuda-toolkit@v0.2.11
+        with:
+          cuda: '12.3.2'
+
+      - name: Configure CMake
+        run: >
+            cmake -S . -B build
+            -DGITVERSION_SEMVER="${{ steps.gitversion.outputs.semVer }}"
+            -DGITVERSION_MAJOR="${{ steps.gitversion.outputs.major }}"
+            -DGITVERSION_MINOR="${{ steps.gitversion.outputs.minor }}"
+            -DGITVERSION_PATCH="${{ steps.gitversion.outputs.patch }}"
+            -DCMAKE_CUDA_ARCHITECTURES="${{ matrix.cuda_arch }}"
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+
+      - name: Build HydraCudaStatic
+        run: cmake --build build --target HydraCudaStatic --config ${{ matrix.config }} --parallel
+
+      - name: Build MEX bindings (optional)
+        run: cmake --build build --target Mex --config ${{ matrix.config }} --parallel
+        continue-on-error: true
+
+      - name: Build Python bindings (optional)
+        run: cmake --build build --target Python --config ${{ matrix.config }} --parallel
+        continue-on-error: true
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p staging/${{ matrix.os }}
+          cp -r build/src/c/Cuda/*.{dll,lib,pdb,so,a} staging/${{ matrix.os }} 2>/dev/null || true
+          cp -r build/src/c/Python/*.pyd staging/${{ matrix.os }} 2>/dev/null || true
+          cp -r build/src/c/Mex/*.mex* staging/${{ matrix.os }} 2>/dev/null || true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: hydra-${{ matrix.os }}-${{ steps.gitversion.outputs.semVer }}
+          path: staging/${{ matrix.os }}
+
+      - name: Install to staging dir
+        run: cmake --install build --prefix install-root
+
+      - name: Upload installable artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: hydra-install-${{ matrix.os }}
+          path: install-root
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Hydra Release ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          files: |
+            hydra-*/**

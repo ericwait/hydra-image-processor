@@ -1,0 +1,53 @@
+name: Hydra CUDA CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  DEFAULT_CUDA_ARCH: "89;90"
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - os: Windows
+            runner: self-hosted
+            cuda_arch: ${{ env.DEFAULT_CUDA_ARCH }}
+            config: Release
+          - os: Linux
+            runner: ubuntu-latest
+            cuda_arch: ${{ env.DEFAULT_CUDA_ARCH }}
+            config: Release
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install CUDA Toolkit (Linux only)
+        if: matrix.os == 'Linux'
+        uses: Jimver/cuda-toolkit@v0.2.11
+        with:
+          cuda: '12.3.2'
+
+      - name: Configure CMake
+        run: >
+          cmake -S . -B build
+          -DCMAKE_CUDA_ARCHITECTURES="${{ matrix.cuda_arch }}"
+          -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+
+      - name: Build HydraCudaStatic
+        run: cmake --build build --target HydraCudaStatic --config ${{ matrix.config }} --parallel
+
+      - name: Build MEX bindings (optional)
+        run: cmake --build build --target Mex --config ${{ matrix.config }} --parallel
+        continue-on-error: true
+
+      - name: Build Python bindings (optional)
+        run: cmake --build build --target Python --config ${{ matrix.config }} --parallel
+        continue-on-error: true
