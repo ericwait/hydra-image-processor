@@ -7,5 +7,6 @@ function [hydraConfig] = CheckConfig()
         [hydraConfig] = HIP.Cuda.CheckConfig();
     catch errMsg
         warning(errMsg.message);
+        [hydraConfig] = HIP.Local.CheckConfig();
     end
 end
