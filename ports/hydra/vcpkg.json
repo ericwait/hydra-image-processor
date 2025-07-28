@@ -1,6 +1,6 @@
 {
   "name": "hydra",
-  "version": "0.1.0", // TODO: Update version dynamically
+  "version": "0.1.0",
   "description": "Hydra Image Processor: CUDA-accelerated image analysis backend.",
   "homepage": "https://github.com/ericwait/hydra-image-processor",
   "license": "BSD-3-Clause",
