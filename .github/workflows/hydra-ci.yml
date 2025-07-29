@@ -50,8 +50,8 @@ jobs:
       - name: Install CUDA Toolkit (Linux only)
         if: matrix.os == 'Linux'
         uses: Jimver/cuda-toolkit@v0.2.11
-        with:
-          cuda: '12.9.1'
+        # with:
+        #   cuda: '12.3.2'
 
       - name: Configure CMake
         run: >
