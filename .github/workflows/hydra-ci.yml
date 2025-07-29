@@ -44,7 +44,7 @@ jobs:
       - name: Patch vcpkg files
         run: >
           python scripts/update-vcpkg-files.py
-          v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.${{ steps.gitversion.outputs.patch }}
+          ${{ steps.gitversion.outputs.VersionSourceSha }}
           ${{ steps.gitversion.outputs.semVer }}
 
       - name: Install CUDA Toolkit (Linux only)
