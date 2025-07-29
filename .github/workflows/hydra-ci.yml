@@ -51,7 +51,7 @@ jobs:
         if: matrix.os == 'Linux'
         uses: Jimver/cuda-toolkit@v0.2.11
         with:
-          cuda: '12.3.2'
+          cuda: '12.9.1'
 
       - name: Configure CMake
         run: >
