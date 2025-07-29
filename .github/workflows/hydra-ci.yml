@@ -93,7 +93,7 @@ jobs:
       - name: Upload installable artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: hydra-install-${{ matrix.os }}
+          name: hydra_install_${{ matrix.os }}
           path: install-root
 
   release:
