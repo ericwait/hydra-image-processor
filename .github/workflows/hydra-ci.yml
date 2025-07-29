@@ -15,7 +15,7 @@ jobs:
       matrix:
         include:
           - os: Windows
-            runner: self-hosted
+            runner: windows-latest
             cuda_arch: "89;90"
             config: Release
           # - os: Linux
