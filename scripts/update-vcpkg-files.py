@@ -15,12 +15,12 @@ sha512 = hashlib.sha512(tarball_data).hexdigest()
 print(f"Computed SHA512: {sha512}")
 
 # Patch vcpkg.json
-with open("vcpkg.json", "r") as f:
+with open("ports/hydra/vcpkg.json", "r") as f:
     vcpkg = json.load(f)
 
 vcpkg["version"] = version
 
-with open("vcpkg.json", "w") as f:
+with open("ports/hydra/vcpkg.json", "w") as f:
     json.dump(vcpkg, f, indent=2)
     f.write("\n")
 
