@@ -74,19 +74,21 @@ jobs:
         run: cmake --build build --target Python --config ${{ matrix.config }} --parallel
         continue-on-error: true
 
-      - name: Collect artifacts
+      - name: Collect artifacts (Windows)
+        if: matrix.os == 'Windows'
         run: |
-          if [ "${{ matrix.os }}" = "Windows" ]; then
-            mkdir -p staging/${{ matrix.os }}
-            cp -r build/src/c/Cuda/*.{dll,lib,pdb} staging/${{ matrix.os }} 2>/dev/null || true
-            cp -r build/src/c/Python/*.pyd staging/${{ matrix.os }} 2>/dev/null || true
-            cp -r build/src/c/Mex/*.mex* staging/${{ matrix.os }} 2>/dev/null || true
-          else
-            mkdir -p staging/${{ matrix.os }}
-            cp -r build/src/c/Cuda/*.{so,a} staging/${{ matrix.os }} 2>/dev/null || true
-            cp -r build/src/c/Python/*.so staging/${{ matrix.os }} 2>/dev/null || true
-            cp -r build/src/c/Mex/*.mexa64 staging/${{ matrix.os }} 2>/dev/null || true
-          fi
+          mkdir -p staging/${{ matrix.os }}
+          cp -r build/src/c/Cuda/*.{dll,lib,pdb} staging/${{ matrix.os }} 2> $null || true
+          cp -r build/src/c/Python/*.pyd staging/${{ matrix.os }} 2> $null || true
+          cp -r build/src/c/Mex/*.mex* staging/${{ matrix.os }} 2> $null || true
+
+      - name: Collect artifacts (Linux)
+        if: matrix.os != 'Windows'
+        run: |
+          mkdir -p staging/${{ matrix.os }}
+          cp -r build/src/c/Cuda/*.{so,a} staging/${{ matrix.os }} 2>/dev/null || true
+          cp -r build/src/c/Python/*.so staging/${{ matrix.os }} 2>/dev/null || true
+          cp -r build/src/c/Mex/*.mexa64 staging/${{ matrix.os }} 2>/dev/null || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
