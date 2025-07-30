@@ -33,7 +33,7 @@ public:
 		}
 		else
 		{
-			std::runtime_error("This copy direction is not supported!");
+			throw std::runtime_error("This copy direction is not supported!");
 		}
 	}
 

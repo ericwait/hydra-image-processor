@@ -1,0 +1,31 @@
+mode: Mainline
+branches:
+  main:
+    regex: ^main$
+    increment: Minor
+    prevent-increment-of-merged-branch-version: true
+    is-release-branch: true
+    tag: ''
+  develop:
+    regex: ^develop$
+    increment: Patch
+    tag: ''
+  feature:
+    regex: ^features?[/-]
+    increment: Inherit
+    tag: useBranchName
+  hotfix:
+    regex: ^hotfix(es)?[/-]
+    increment: Patch
+    tag: useBranchName
+  release:
+    regex: ^releases?[/-]
+    increment: None
+    tag: 'rc'
+  pull-request:
+    tag: 'pr'
+    increment: Inherit
+ignore:
+  sha: []
+commit-message-incrementing: Enabled
+merge-message-strategy: MergeMessage

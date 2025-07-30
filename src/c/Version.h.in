@@ -1,0 +1,6 @@
+# src/c/Version.h.in
+#pragma once
+#define HYDRA_VERSION "@GITVERSION_SEMVER@"
+#define HYDRA_MAJOR @GITVERSION_MAJOR@
+#define HYDRA_MINOR @GITVERSION_MINOR@
+#define HYDRA_PATCH @GITVERSION_PATCH@
