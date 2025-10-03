@@ -2,7 +2,7 @@
 option(USE_PROCESS_MUTEX "Use process-level mutex to guard GPU calls" OFF)
 
 # Common settings for both libraries
-set(CUDA_ARCHITECTURES "52;61;70;75;86;89")
+set(CUDA_ARCHITECTURES "75;86;89;120")
 set(COMMON_INCLUDES
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
