@@ -78,12 +78,15 @@ set(COMMON_CPP_SOURCES
 # Determine the OpenMP flag based on the compiler
 if(MSVC)
     message(STATUS "MSVC compiler detected")
-    set(OPENMP_FLAG "/openmp")
-    # set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler=/openmp")
+    # Use LLVM OpenMP for better static linking support
+    # Check if /openmp:llvm is available (VS 2019 16.9+)
+    set(OPENMP_FLAG "/openmp:llvm")
+    set(OPENMP_STATIC_FLAG "/openmp:llvm")
+    message(STATUS "Using LLVM OpenMP for static linking")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     message(STATUS "GCC/Clang compiler detected")
     set(OPENMP_FLAG "-fopenmp")
-    # set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler=-fopenmp")
+    set(OPENMP_STATIC_FLAG "-fopenmp")
 else()
     message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
 endif()
@@ -97,15 +100,25 @@ function(setup_cuda_library LIB_NAME STATIC_OR_SHARED)
         PUBLIC ${COMMON_INCLUDES}
     )
     
+    # Link CUDA static runtime
+    target_link_libraries(${LIB_NAME} PRIVATE CUDA::cudart_static)
+
     # Link OpenMP libraries
-    target_link_libraries(${LIB_NAME} PRIVATE CUDA::cudart_static PRIVATE OpenMP::OpenMP_CXX)
-    
-    # Set CUDA-specific compile options
-    # Pass the OpenMP flag to the host compiler via nvcc
-    target_compile_options(${LIB_NAME} PRIVATE
-        # $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>
-        $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OPENMP_FLAG}>
-    )
+    if(MSVC)
+        # For MSVC with LLVM OpenMP, manually link the static library
+        target_link_libraries(${LIB_NAME} PRIVATE OpenMP::OpenMP_CXX)
+        # Add compiler flags for static OpenMP
+        target_compile_options(${LIB_NAME} PRIVATE
+            $<$<COMPILE_LANGUAGE:CXX>:${OPENMP_STATIC_FLAG}>
+            $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OPENMP_STATIC_FLAG}>
+        )
+    else()
+        target_link_libraries(${LIB_NAME} PRIVATE OpenMP::OpenMP_CXX)
+        # Set CUDA-specific compile options for non-MSVC
+        target_compile_options(${LIB_NAME} PRIVATE
+            $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OPENMP_FLAG}>
+        )
+    endif()
 
     set_target_properties(${LIB_NAME} PROPERTIES
         CUDA_STANDARD 11
