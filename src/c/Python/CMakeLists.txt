@@ -19,36 +19,12 @@ set_target_properties(HydraPy
         OUTPUT_NAME ${HYDRA_MODULE_NAME}
         PREFIX ""
         POSITION_INDEPENDENT_CODE ON
-        LIBRARY_OUTPUT_DIRECTORY $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/Python>
+        LIBRARY_OUTPUT_DIRECTORY $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/Python/hydra_image_processor>
 )
 
 # On windows specifically set the suffix to .pyd
 if ( WIN32 )
     set_target_properties(HydraPy PROPERTIES SUFFIX .pyd)
-
-    # Copy OpenMP DLL to the output directory for portability
-    # Try to find the libomp140.x86_64.dll
-    find_file(LIBOMP_DLL
-        NAMES libomp140.x86_64.dll
-        PATHS
-            "C:/Windows/System32"
-            "$ENV{SystemRoot}/System32"
-            "${CMAKE_CXX_COMPILER_DIR}"
-            "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Redist/MSVC/*/x64/Microsoft.VC143.OpenMP.LLVM"
-        NO_DEFAULT_PATH
-    )
-
-    if(LIBOMP_DLL)
-        message(STATUS "Found OpenMP DLL: ${LIBOMP_DLL}")
-        add_custom_command(TARGET HydraPy POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                "${LIBOMP_DLL}"
-                "${PROJECT_SOURCE_DIR}/src/Python/libomp140.x86_64.dll"
-            COMMENT "Copying OpenMP DLL to output directory for portability"
-        )
-    else()
-        message(WARNING "Could not find libomp140.x86_64.dll - the module may not be portable")
-    endif()
 endif()
 
 # Setup Python/NumPy include directories
