@@ -150,7 +150,7 @@ void cSum(ImageView<PixelTypeIn> imageIn, OutType& outVal, int device=-1)
 		for (int i = CUDA_IDX; i < chunks.size(); i += N_THREADS)
 		{
 			if (!chunks[i].sendROI(imageIn, deviceImages.getCurBuffer()))
-				std::runtime_error("Error sending ROI to device!");
+				throw std::runtime_error("Error sending ROI to device!");
 
 			deviceImages.setAllDims(chunks[i].getFullChunkSize());
 

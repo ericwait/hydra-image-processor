@@ -119,7 +119,7 @@ __host__ Kernel& Kernel::getOffsetCopy(Vec<std::size_t> dimensions, std::size_t 
 	kernOut->init();
 
 	if (dims.product() < startOffset + dimensions.product())
-		std::runtime_error("Trying to make a Kernel that access outside of the original memory space!");
+		throw std::runtime_error("Trying to make a Kernel that access outside of the original memory space!");
 
 	kernOut->dims = dimensions;
 	kernOut->cudaKernel = cudaKernel + startOffset;

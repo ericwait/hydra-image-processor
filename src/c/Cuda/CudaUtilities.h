@@ -44,7 +44,7 @@ static void HandleError( cudaError_t err, const char *file, int line )
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
 #ifdef _DEBUG
-#define DEBUG_KERNEL_CHECK() { cudaThreadSynchronize(); HandleError( cudaPeekAtLastError(), __FILE__, __LINE__ ); }
+#define DEBUG_KERNEL_CHECK() { cudaDeviceSynchronize(); HandleError( cudaPeekAtLastError(), __FILE__, __LINE__ ); }
 #else
 #define DEBUG_KERNEL_CHECK() {}
 #endif // _DEBUG

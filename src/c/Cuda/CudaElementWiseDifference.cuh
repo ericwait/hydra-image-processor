@@ -59,9 +59,9 @@ void cElementWiseDifference(ImageView<PixelType1In> image1In, ImageView<PixelTyp
 		for (int i = CUDA_IDX; i < chunks.size(); i += N_THREADS)
 		{
 			if (!chunks[i].sendROI(image1In, deviceImages.getCurBuffer()))
-				std::runtime_error("Error sending ROI to device!");
+				throw std::runtime_error("Error sending ROI to device!");
 			if (!chunks[i].sendROI(image2In, deviceImages.getNextBuffer()))
-				std::runtime_error("Error sending ROI to device!");
+				throw std::runtime_error("Error sending ROI to device!");
 
 			deviceImages.setAllDims(chunks[i].getFullChunkSize());
 
