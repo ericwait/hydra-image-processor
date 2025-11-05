@@ -1,3 +1,12 @@
+/**
+ * @file MexTypes.h
+ * @brief MATLAB MEX interface type definitions and conversion utilities
+ *
+ * Provides type mappings, conversion functions, and utility wrappers for
+ * interfacing C++ code with MATLAB through the MEX API. Includes conversions
+ * for scalars, vectors, strings, and image data between C++ and MATLAB types.
+ */
+
 #pragma once
 
 #include "MexIncludes.h"
@@ -5,16 +14,34 @@
 #include <cstddef>
 #include <cstdint>
 
+/**
+ * @brief Script interface namespace for MATLAB/Python abstraction
+ *
+ * Contains type definitions and conversion utilities that abstract the
+ * differences between MATLAB MEX and Python interfaces.
+ */
 namespace Script
 {
+	/// @brief Type for array dimensions in MEX API
 	typedef mwSize	DimType;
+	/// @brief MATLAB array type
 	typedef mxArray ArrayType;
+	/// @brief MATLAB object type
 	typedef mxArray ObjectType;
 
+	/**
+	 * @brief No-op deleter for MATLAB objects (memory managed by MATLAB)
+	 */
 	struct ObjectDeleter { void operator() (ObjectType const* ptr){} };
+
+	/**
+	 * @brief No-op deleter for MATLAB arrays (memory managed by MATLAB)
+	 */
 	struct ArrayDeleter { void operator() (ArrayType const* ptr){} };
 
+	/// @brief Smart pointer for MATLAB objects with appropriate deleter
 	typedef std::unique_ptr<ObjectType,ObjectDeleter>	GuardOutObjectPtr;
+	/// @brief Smart pointer for MATLAB arrays with appropriate deleter
 	typedef std::unique_ptr<ArrayType,ArrayDeleter>		GuardOutArrayPtr;
 
 	// Simple template-specialization map for C++ to mex types

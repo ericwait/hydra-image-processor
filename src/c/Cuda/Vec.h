@@ -13,6 +13,14 @@
 //LEVer in file "gnu gpl v3.txt".  If not, see  <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @file Vec.h
+ * @brief 3D vector template class with mathematical operations
+ *
+ * Provides a generic 3D vector class that can be used on both CPU and GPU (CUDA).
+ * Supports arithmetic operations, geometric calculations, and type conversions.
+ */
+
 #ifndef INCLUDE_VEC
 #define INCLUDE_VEC
 
@@ -28,29 +36,44 @@
 #define MIXED_PREFIX __host__ __device__
 
 #include "vector_types.h"
-#define DIM3_ELEM_TYPE decltype(std::declval<dim3>().x) 
+#define DIM3_ELEM_TYPE decltype(std::declval<dim3>().x)
 #else
 #define MIXED_PREFIX
 #endif
 
-
+/**
+ * @brief 3D vector template class with x, y, z components
+ *
+ * A versatile 3D vector class that supports element-wise operations,
+ * vector arithmetic, comparisons, and geometric calculations. Can be
+ * used in both host and device code when compiled with CUDA.
+ *
+ * @tparam T The numeric type of the vector components (e.g., int, float, double)
+ */
 template<typename T>
 class Vec
 {
 public:
 	union
 	{
-		T e[3];
-		struct  
+		T e[3];  ///< Array accessor for vector components
+		struct
 		{
-			T x;
-			T y;
-			T z;
+			T x;  ///< X component
+			T y;  ///< Y component
+			T z;  ///< Z component
 		};
 	};
 
+	/**
+	 * @brief Default constructor - initializes all components to zero
+	 */
 	MIXED_PREFIX Vec() : x(0),y(0),z(0){}
-	
+
+	/**
+	 * @brief Uniform value constructor - sets all components to the same value
+	 * @param val The value to set for all components
+	 */
 	MIXED_PREFIX Vec(T val)
 		: x(val), y(val), z(val)
 	{}
@@ -77,11 +100,20 @@ public:
 	}
 #endif
 
+	/**
+	 * @brief Component-wise constructor
+	 * @param x The x component value
+	 * @param y The y component value
+	 * @param z The z component value
+	 */
 	MIXED_PREFIX Vec(T x, T y, T z)
 		: x(x), y(y), z(z)
 	{}
 
-	// Negates each element
+	/**
+	 * @brief Unary negation operator - negates each element
+	 * @return A new vector with negated components
+	 */
 	MIXED_PREFIX Vec<T> operator- () const
 	{
 		Vec<T> outVec;

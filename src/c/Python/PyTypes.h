@@ -1,3 +1,12 @@
+/**
+ * @file PyTypes.h
+ * @brief Python interface type definitions and conversion utilities
+ *
+ * Provides type mappings, conversion functions, and utility wrappers for
+ * interfacing C++ code with Python through NumPy. Includes conversions
+ * for scalars, vectors, strings, and image data between C++ and Python types.
+ */
+
 #pragma once
 
 #include "PyIncludes.h"
@@ -5,19 +14,41 @@
 #include <cstddef>
 #include <cstdint>
 
-
+/**
+ * @brief Checks if a NumPy array has specific flags set
+ * @param IM The PyArrayObject to check
+ * @param FLAG The flag(s) to test for
+ */
 #define CHECK_ARRAY_FLAGS(IM,FLAG) ((PyArray_FLAGS(IM) & (FLAG)) == (FLAG))
 
+/**
+ * @brief Script interface namespace for MATLAB/Python abstraction
+ *
+ * Contains type definitions and conversion utilities that abstract the
+ * differences between MATLAB MEX and Python interfaces.
+ */
 namespace Script
 {
+	/// @brief Type for array dimensions in NumPy API
 	typedef npy_intp		DimType;
+	/// @brief Python object type
 	typedef PyObject		ObjectType;
+	/// @brief NumPy array type
 	typedef PyArrayObject	ArrayType;
 
+	/**
+	 * @brief Deleter for Python objects using Py_XDECREF
+	 */
 	struct ObjectDeleter { void operator() (ObjectType const* ptr){Py_XDECREF(ptr);} };
+
+	/**
+	 * @brief Deleter for NumPy arrays using Py_XDECREF
+	 */
 	struct ArrayDeleter { void operator() (ArrayType const* ptr){Py_XDECREF(ptr);} };
 
+	/// @brief Smart pointer for Python objects with reference counting
 	typedef std::unique_ptr<ObjectType,ObjectDeleter>	GuardOutObjectPtr;
+	/// @brief Smart pointer for NumPy arrays with reference counting
 	typedef std::unique_ptr<ArrayType,ArrayDeleter>		GuardOutArrayPtr;
 
 	// Simple template-specialization map for C++ to Python types

@@ -1,3 +1,11 @@
+/**
+ * @file CommandLineProgress.h
+ * @brief Command-line progress reporting utility
+ *
+ * Provides a progress bar and time estimation for long-running operations
+ * in command-line applications. Cross-platform support for Windows and Linux.
+ */
+
 #ifndef CMD_LINE_PRGS_H
 #define CMD_LINE_PRGS_H
 
@@ -16,10 +24,13 @@
 #include <ctime>
 #endif
 
-
-/* Returns the amount of milliseconds elapsed since the UNIX epoch. Works on both
-* windows and linux. */
-
+/**
+ * @brief Returns the amount of milliseconds elapsed since the UNIX epoch
+ *
+ * Cross-platform function that works on both Windows and Linux.
+ *
+ * @return Milliseconds since UNIX epoch (January 1, 1970)
+ */
 uint64 GetTimeMs64()
 {
 #ifdef _WIN32
@@ -55,6 +66,14 @@ uint64 GetTimeMs64()
 #endif
 }
 
+/**
+ * @brief Formats a time duration in milliseconds to a human-readable string
+ *
+ * Converts milliseconds to "HHh:MMm:SS.SSs" format.
+ *
+ * @param timeInMS Time in milliseconds
+ * @return Dynamically allocated string containing formatted time. Caller must delete[].
+ */
 char* PrintTime(std::size_t timeInMS)
 {
 	char* buff = new char[256];
@@ -69,9 +88,19 @@ char* PrintTime(std::size_t timeInMS)
 	return buff;
 }
 
+/**
+ * @brief Command-line progress indicator with time estimation
+ *
+ * Displays a progress percentage and estimated time remaining for iterative
+ * operations. Can optionally overwrite the same line for a clean display.
+ */
 class CmdLineProgress
 {
 public:
+	/**
+	 * @brief Constructs a progress indicator
+	 * @param numIterations Total number of iterations to complete
+	 */
 	CmdLineProgress(unsigned int numIterations)
 	{
 		defaults();
@@ -79,6 +108,11 @@ public:
 		firstTime = GetTimeMs64();
 	}
 
+	/**
+	 * @brief Constructs a progress indicator with overwrite option
+	 * @param numIterations Total number of iterations to complete
+	 * @param overwrite If true, updates progress on the same line
+	 */
 	CmdLineProgress(unsigned int numIterations, bool overwrite)
 	{
 		defaults();
@@ -87,20 +121,33 @@ public:
 		useBackspace = overwrite;
 	}
 
+	/**
+	 * @brief Constructs a progress indicator with title and overwrite option
+	 * @param numIterations Total number of iterations to complete
+	 * @param overwrite If true, updates progress on the same line
+	 * @param title Descriptive title to display with progress
+	 */
 	CmdLineProgress(unsigned int numIterations, bool overwrite, std::string title)
 	{
 		defaults();
 		iterations = numIterations;
 		firstTime = GetTimeMs64();
 		useBackspace = overwrite;
-		titleText = title;		
+		titleText = title;
 	}
 
+	/**
+	 * @brief Destructor - cleans up progress display
+	 */
 	~CmdLineProgress()
-	{	
+	{
 		defaults();
 	}
 
+	/**
+	 * @brief Prints the current progress and estimated time remaining
+	 * @param curIteration Current iteration number (0-based or 1-based depending on usage)
+	 */
 	void print(unsigned int curIteration)
 	{
 		uint64 cur = GetTimeMs64();
@@ -131,6 +178,10 @@ public:
 			backspaces = prntStr.size();
 	}
 
+	/**
+	 * @brief Clears the progress display and optionally prints total time
+	 * @param printTotalTime If true, displays the total elapsed time before clearing
+	 */
 	void clear(bool printTotalTime=false)
 	{
 		printBackspaces();
@@ -139,7 +190,7 @@ public:
 		{
 			uint64 totalTime = GetTimeMs64() - firstTime;
 			char* timeString = PrintTime(totalTime);
-			
+
 			if (!titleText.empty())
 				printf("%s took: %s\n", titleText.c_str(), timeString);
 			else
