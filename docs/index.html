@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hydra Image Processor - Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        ul {
+            margin: 15px 0;
+        }
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Hydra Image Processor Documentation</h1>
+
+        <div class="warning">
+            <strong>⚠️ Documentation Not Yet Built</strong><br>
+            The API documentation has not been generated yet. Please build it first using the instructions below.
+        </div>
+
+        <h2>🔨 Building the Documentation</h2>
+
+        <div class="info">
+            <strong>Prerequisites:</strong><br>
+            You need to have <a href="https://www.doxygen.nl/">Doxygen</a> installed on your system.
+        </div>
+
+        <h3>Installation</h3>
+        <p><strong>Ubuntu/Debian:</strong></p>
+        <pre><code>sudo apt-get install doxygen graphviz</code></pre>
+
+        <p><strong>macOS:</strong></p>
+        <pre><code>brew install doxygen graphviz</code></pre>
+
+        <p><strong>Windows:</strong></p>
+        <p>Download and install from <a href="https://www.doxygen.nl/download.html">doxygen.nl/download.html</a></p>
+
+        <h3>Generate Documentation</h3>
+        <p>From the root directory of the project, run one of these commands:</p>
+
+        <p><strong>Using the build script (Linux/macOS):</strong></p>
+        <pre><code>./build_docs.sh</code></pre>
+
+        <p><strong>Using Doxygen directly:</strong></p>
+        <pre><code>doxygen Doxyfile</code></pre>
+
+        <p>After building, the documentation will be available at:</p>
+        <pre><code>docs/html/index.html</code></pre>
+
+        <a href="html/index.html" class="button">📖 View Documentation (after building)</a>
+
+        <h2>📑 What's Documented</h2>
+        <ul>
+            <li><strong>CUDA C++ API</strong> - Core image processing functions and classes</li>
+            <li><strong>Image Containers</strong> - ImageView and ImageOwner classes</li>
+            <li><strong>Vector Math</strong> - 3D vector operations and utilities</li>
+            <li><strong>Device Management</strong> - CUDA device queries and memory management</li>
+            <li><strong>Interface Layers</strong> - MATLAB MEX and Python bindings</li>
+            <li><strong>Script Commands</strong> - High-level command interface</li>
+        </ul>
+
+        <h2>🔗 Quick Links</h2>
+        <ul>
+            <li><a href="https://github.com/ericwait/hydra-image-processor">GitHub Repository</a></li>
+            <li><a href="README.md">Documentation Build Instructions</a></li>
+        </ul>
+
+        <h2>📧 Questions?</h2>
+        <p>If you encounter issues building the documentation, please check the <code>docs/README.md</code> file for detailed instructions or open an issue on GitHub.</p>
+    </div>
+
+    <script>
+        // Check if the generated documentation exists
+        fetch('html/index.html')
+            .then(response => {
+                if (response.ok) {
+                    // Redirect to the actual documentation
+                    window.location.href = 'html/index.html';
+                }
+            })
+            .catch(error => {
+                // Documentation hasn't been built yet, stay on this page
+                console.log('Documentation not yet built');
+            });
+    </script>
+</body>
+</html>

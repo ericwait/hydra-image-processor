@@ -47,3 +47,9 @@ CmakeCache.txt
 out
 .vs
 CMakeSettings.json
+
+# Doxygen generated documentation
+docs/html/
+docs/latex/
+docs/xml/
+docs/man/

@@ -12,6 +12,24 @@ Happy processing and enjoy!
 
 [https://www.hydraimageprocessor.com/quick-start](https://www.hydraimageprocessor.com/quick-start)
 
+## API Documentation
+
+Full C/C++ API documentation can be generated using Doxygen:
+
+**Linux/macOS:**
+```bash
+./build_docs.sh
+```
+
+**Windows:**
+```batch
+build_docs.bat
+```
+
+The generated documentation will be available at `docs/html/index.html`.
+
+For detailed instructions and hosting options, see [docs/README.md](docs/README.md).
+
 ## Feedback
 
 If you would like to provide feedback about this tutorial or HIP in general, please use the forum [here](https://www.hydraimageprocessor.com/forum).
