@@ -1,0 +1,1 @@
+recursive-include hydra_image_processor *.pyd *.dll *.so *.dylib
