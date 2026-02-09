@@ -48,3 +48,7 @@ out
 .vs
 CMakeSettings.json
 src/Python/hydra_image_processor.egg-info
+
+# Agent and Build artifacts
+.claude/
+conda-build-dir/
