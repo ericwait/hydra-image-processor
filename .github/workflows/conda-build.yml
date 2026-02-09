@@ -1,0 +1,58 @@
+name: Conda Build
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-conda:
+    name: Build Conda Package (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install CUDA Toolkit
+        uses: Jimver/cuda-toolkit@v0.2.14
+        id: cuda-toolkit
+        with:
+          cuda: '12.4.1'
+
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+          channels: conda-forge, defaults
+
+      - name: Install Conda Build Tools
+        shell: bash -l {0}
+        run: |
+          conda install -y conda-build conda-verify anaconda-client
+
+      - name: Build Conda Package
+        shell: bash -l {0}
+        run: |
+          conda build recipe --python ${{ matrix.python-version }}
+
+      - name: Upload to Anaconda (Optional)
+        # Only upload on main branch pushes, not PRs
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash -l {0}
+        env:
+          ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+        run: |
+          if [ -n "$ANACONDA_TOKEN" ]; then
+            anaconda -t $ANACONDA_TOKEN upload --user hydra-image-processor $(conda build recipe --output)
+          else
+            echo "ANACONDA_TOKEN not found, skipping upload."
+          fi
