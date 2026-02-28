@@ -30,12 +30,21 @@ requirements:
     - cuda-version >=12.4
 
 test:
+  source_files:
+    - test_data
+    - src/Python/Test
   imports:
     - hydra_image_processor
     - hydra_image_processor.cuda
     - hydra_image_processor.local
+  requires:
+    - tifffile
   commands:
     - python -c "import hydra_image_processor; print(hydra_image_processor.__version__)"
+    # Run accuracy tests (will skip if no GPU)
+    # Note: source_files copies test_data to {test_work_dir}/test_data and src/Python/Test to {test_work_dir}/src/Python/Test
+    # We need to run the test script.
+    - python -m unittest src/Python/Test/test_accuracy.py
 
 about:
   home: https://github.com/zfphil/hydra-image-processor

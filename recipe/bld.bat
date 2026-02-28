@@ -18,6 +18,16 @@ if errorlevel 1 exit 1
 cmake --build . --config Release --target HydraPy
 if errorlevel 1 exit 1
 
+:: Build the C++ tests
+cmake --build . --config Release --target test_accuracy
+if errorlevel 1 exit 1
+
+:: Run the C++ tests
+:: Ninja places the executable in src/c/test_back/
+echo Running C++ Accuracy Tests...
+src\c\test_back\test_accuracy.exe
+if errorlevel 1 exit 1
+
 :: The build should have placed Hydra.pyd into src/Python/hydra_image_processor
 :: Verify it exists (optional but good for debugging)
 if not exist "%SRC_DIR%\src\Python\hydra_image_processor\Hydra.pyd" (
