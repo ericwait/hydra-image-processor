@@ -43,8 +43,8 @@ To build and install the Python package locally:
 # Navigate to the project root
 cd E:\programming\hydra-image-processor
 
-# Install in editable mode (requires scikit-build-core or manual cmake invocation usually, 
-# but this project uses a standard setup.py/cmake flow or pip install .)
+# This project uses scikit-build-core: `pip install` drives CMake, compiles the
+# CUDA extension, and installs the package.
 pip install .
 ```
 
@@ -55,13 +55,15 @@ cmake --preset dev
 cmake --build build --config Release --target HydraPy
 ```
 
-### Conda Package Build
+### Conda Package Distribution
 
-To build the Conda package:
+The package is distributed via the conda-forge feedstock
+(`conda-forge/hydra-image-processor-feedstock`), a thin `pip install .` wrapper
+around this repository's scikit-build-core build. There is no in-repo recipe;
+releases are tag-driven (see CONTRIBUTING.md). Install with:
 
 ```bash
-conda install conda-build
-conda build recipe
+conda install -c conda-forge hydra-image-processor
 ```
 
 ### MATLAB Build

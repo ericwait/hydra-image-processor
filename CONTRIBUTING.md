@@ -20,3 +20,41 @@ From the very beginning Hydra was written to be clean, consistent, and as clear 
 1. _**Try crazy things**_! Hydra was built to quickly get operations onto GPU hardware. Use this opportunity to create things that would not otherwise be tractable. 
 
 ### These guidelines are intended for GitHub pull requests. Do not let them be a barrier to experimentation. Have FUN!
+
+# Building & testing locally
+
+The Python package builds with [scikit-build-core](https://scikit-build-core.readthedocs.io/):
+a single `pip install` configures CMake, compiles the CUDA extension, and installs the
+package. You need a CUDA toolkit, a C++ compiler, and a conda environment with the build
+tools:
+
+```bash
+conda create -n hydra-dev -c conda-forge python numpy cmake ninja scikit-build-core pip
+conda activate hydra-dev
+pip install . --no-build-isolation -v        # from the repository root
+
+# Smoke test (no GPU required to import)
+python -c "import hydra_image_processor as HIP; print(HIP.__version__, HIP.device_count())"
+```
+
+The full TIFF accuracy suite (`src/Python/Test`) and the C++ `test_accuracy` binary require a
+real NVIDIA GPU and the LFS-tracked ground-truth images (`git lfs pull`). CI runners have no
+GPU, so they only verify the package builds and imports; **run the accuracy suite locally on a
+GPU box before tagging a release.**
+
+# Releasing
+
+Releases are tag-driven. conda-forge's autotick bot watches for new GitHub releases and opens
+a feedstock version-bump PR automatically.
+
+1. Run the full accuracy suite locally on a GPU and confirm it passes.
+2. Bump `[project].version` in `pyproject.toml` and add a section to `CHANGELOG.md`.
+3. Merge to `main` with a green CI gate.
+4. Tag and push: `git tag vX.Y.Z && git push origin vX.Y.Z` (the tag **must** match the
+   `pyproject.toml` version — the release workflow enforces this).
+5. The `Release` workflow creates the GitHub Release. Merge the resulting feedstock autotick
+   PR (or open one manually), updating the recipe if the build inputs changed.
+
+The conda-forge recipe lives in the
+[`hydra-image-processor-feedstock`](https://github.com/conda-forge/hydra-image-processor-feedstock)
+repository and is a thin `pip install .` wrapper — keep it free of source patches.

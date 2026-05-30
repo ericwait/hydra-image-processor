@@ -1,75 +1,79 @@
-# Hydra Python Module
+# Hydra Image Processor (Python)
 
-This directory contains the Hydra Python extension module for GPU-accelerated image processing.
+`hydra-image-processor` provides GPU-accelerated (CUDA) image-processing operations for
+1–5 dimensional data (x, y, z, channels, time), efficiently processing data larger than GPU
+memory by optimally chunking it.
 
-## Files
+## Installation
 
-- **Hydra.pyd** - The Python extension module (Windows)
-- **libomp140.x86_64.dll** - OpenMP runtime library (bundled for portability)
-- **test_import.py** - Test script to verify the module imports correctly
+Distributed through [conda-forge](https://conda-forge.org/). Requires an NVIDIA
+CUDA-capable GPU with an up-to-date driver.
 
-## Distribution
+```bash
+conda install -c conda-forge hydra-image-processor
+# or: mamba install -c conda-forge hydra-image-processor
+# or: pixi add hydra-image-processor
+```
 
-To distribute this module to others, simply copy both files:
-1. `Hydra.pyd`
-2. `libomp140.x86_64.dll`
+> **pip / uv are not supported.** This is a CUDA-only compiled extension with no PyPI
+> wheels — install it with conda, mamba, or pixi.
 
-Keep them in the same directory, and Python will automatically find the DLL when importing the module.
-
-## Requirements
-
-- Python 3.12
-- NumPy
-- NVIDIA CUDA-capable GPU (for running the image processing operations)
+The CUDA runtime is statically linked, so importing the package needs no separate CUDA
+toolkit install; an NVIDIA driver is required to run GPU operations.
 
 ## Usage
 
 ```python
-import Hydra
+import hydra_image_processor as HIP
+import numpy as np
 
 # Check available CUDA devices
-num_devices = Hydra.DeviceCount()
-print(f"Available CUDA devices: {num_devices}")
+print(f"Found {HIP.device_count()} GPU(s)")
 
-# Get help on available functions
-Hydra.Help()
+# Apply a Gaussian smoothing
+image = np.random.rand(100, 100, 50).astype(np.float32)
+smoothed = HIP.gaussian(image, sigmas=[2.0, 2.0, 1.0])
 
-# Example: Apply Gaussian filter
-# result = Hydra.Gaussian(input_array, sigma=1.5)
+# Median filter with a custom kernel
+kernel = HIP.make_ball_mask(radius=3)
+filtered = HIP.median_filter(image, kernel)
 ```
 
-## Testing
+### Package layout
 
-Run the test script to verify the module is working:
+- `hydra_image_processor` — the public, Pythonic API (snake_case, e.g. `gaussian`,
+  `device_count`). This is the recommended entry point.
+- `hydra_image_processor.cuda` — thin wrappers over the compiled `Hydra` CUDA extension.
+- `hydra_image_processor.utils` — helpers such as mask creation.
+
+### Backwards compatibility
+
+Earlier releases shipped a top-level `HIP` (and `Hydra`) module exposing the raw extension
+API (e.g. `HIP.Gaussian`). Those imports still work via compatibility shims:
+
+```python
+import HIP        # legacy: resolves to the compiled extension (raw API)
+import Hydra      # legacy: same compiled extension
+```
+
+New code should prefer `import hydra_image_processor as HIP`.
+
+## Building from source
+
+Builds use [scikit-build-core](https://scikit-build-core.readthedocs.io/); a single
+`pip install` configures CMake, compiles the CUDA extension, and installs the package.
+From a conda environment with `cmake`, `ninja`, `scikit-build-core`, and `numpy`, plus a
+CUDA toolkit and C++ compiler available:
 
 ```bash
-python test_import.py
+# from the repository root (where pyproject.toml lives)
+pip install .
 ```
 
-## Building from Source
-
-The module is built using CMake with the following key features:
-- Linked against Python 3.12
-- Uses LLVM OpenMP (`/openmp:llvm`) for better performance
-- Statically links CUDA runtime
-- Automatically bundles the OpenMP DLL for portability
-
-To rebuild:
+To build for a specific GPU architecture instead of the default `all-major`:
 
 ```bash
-cd ../..  # Go to project root
-cmake --preset dev
-cmake --build build --config Release --target HydraPy
+CMAKE_ARGS="-DCMAKE_CUDA_ARCHITECTURES=native" pip install .
 ```
 
-The build system will automatically:
-1. Find the correct Python 3.12 installation
-2. Link against the hydra conda environment
-3. Copy the OpenMP DLL to this directory
-
-## Notes
-
-- The module requires the OpenMP DLL at runtime. This is automatically bundled during the build process.
-- The module was compiled against Python 3.12.11 and requires that specific Python version.
-- CUDA runtime is statically linked, so no separate CUDA runtime installation is needed for basic import.
-- However, NVIDIA GPU drivers must be installed to actually run GPU operations.
+See [CONTRIBUTING.md](../../CONTRIBUTING.md) for the full developer and release workflow.
