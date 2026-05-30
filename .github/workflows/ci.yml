@@ -1,0 +1,78 @@
+name: CI
+
+# Build-gate: compile the CUDA extension and import the package on the same
+# platforms conda-forge ships (Windows + Linux). This catches source/recipe
+# drift *before* a release reaches the feedstock. Runners have no GPU, so we
+# only verify the package builds and imports; the full TIFF accuracy suite is
+# run locally on a GPU box before tagging a release.
+
+on:
+  push:
+    branches: [main, develop, conda-forge]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      python-matrix:
+        description: "Comma-separated Python versions to build"
+        default: "3.12"
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-gate:
+    name: Build & import (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.12"]
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false   # source build does not need the LFS test images
+
+      - name: Install CUDA toolkit (compiler only; runners have no GPU)
+        uses: Jimver/cuda-toolkit@v0.2.21
+        with:
+          cuda: "12.6.2"
+          method: network
+
+      - name: Set up MSVC (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          python-version: ${{ matrix.python }}
+          channels: conda-forge
+
+      - name: Install build dependencies
+        run: conda install -y -c conda-forge cmake ninja "scikit-build-core>=0.10" numpy pip
+
+      - name: Build & install (mirrors the feedstock pip path)
+        env:
+          # A single architecture keeps the gate fast; we only need it to
+          # compile + import, not to run on a specific GPU.
+          CMAKE_ARGS: "-DCMAKE_CUDA_ARCHITECTURES=75"
+        run: python -m pip install . --no-build-isolation -v
+
+      - name: Import smoke test (no GPU required to import)
+        run: |
+          python - <<'PY'
+          import hydra_image_processor as hip
+          import HIP, Hydra            # legacy back-compat shims
+          print("hydra_image_processor", hip.__version__)
+          assert hip.__version__ == "4.0.0", hip.__version__
+          assert HIP is Hydra, "shims should both alias the compiled extension"
+          print("device_count:", hip.device_count())   # 0 on a GPU-less runner
+          PY

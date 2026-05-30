@@ -1,0 +1,47 @@
+name: Release
+
+# Tag-driven release. Pushing a `vX.Y.Z` tag (after the CI gate is green on
+# main) creates a GitHub Release. conda-forge's autotick bot detects the new
+# release, opens a version-bump PR on the feedstock (updating version + sha256),
+# and once merged the feedstock builds and publishes every variant.
+#
+# Release checklist:
+#   1. Bump `[project].version` in pyproject.toml and update CHANGELOG.md.
+#   2. Merge to main with a green CI gate.
+#   3. git tag vX.Y.Z && git push origin vX.Y.Z   (must match pyproject version)
+#   4. Merge the feedstock autotick PR (or open one manually).
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write   # required to create a GitHub Release
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify tag matches pyproject version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pyproj="$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")"
+          echo "tag=$tag  pyproject=$pyproj"
+          if [ "$tag" != "$pyproj" ]; then
+            echo "::error::Tag '$GITHUB_REF_NAME' does not match pyproject version '$pyproj'"
+            exit 1
+          fi
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --generate-notes --verify-tag
