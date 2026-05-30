@@ -76,7 +76,15 @@ Available Functions
     - identity_filter
 """
 
-__version__ = "0.1.0"
+from importlib.metadata import PackageNotFoundError, version as _pkg_version
+
+try:
+    # Single source of truth: the version declared in pyproject.toml and
+    # recorded in the installed package metadata.
+    __version__ = _pkg_version("hydra-image-processor")
+except PackageNotFoundError:  # running from a source tree without an install
+    __version__ = "0.0.0+unknown"
+
 __author__ = "Eric Wait"
 __email__ = "info@ericwait.com"
 

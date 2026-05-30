@@ -52,3 +52,14 @@ src/Python/hydra_image_processor.egg-info
 # Agent and Build artifacts
 .claude/
 conda-build-dir/
+
+# Compiled extension dropped into the package dir by local CMake/pip builds
+# (the wheel gets its copy from the CMake install rule, not from git)
+/src/Python/hydra_image_processor/*.pyd
+/src/Python/hydra_image_processor/*.so
+/src/Python/hydra_image_processor/*.dylib
+
+# Python build artifacts (scikit-build-core / pip / wheels)
+/dist/
+*.egg-info/
+*.whl

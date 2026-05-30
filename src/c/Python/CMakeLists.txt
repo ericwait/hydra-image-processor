@@ -96,3 +96,16 @@ target_sources(HydraPy
         HydraPyModule.cpp
         PyCommandModule.cpp
 )
+
+# --- Installation (used by scikit-build-core to assemble the wheel) ---
+# Place the compiled extension module inside the hydra_image_processor package.
+# (MODULE libraries are always treated as LIBRARY targets, on Windows too.)
+install(TARGETS HydraPy LIBRARY DESTINATION hydra_image_processor)
+
+# Backwards-compatibility shims so legacy `import HIP` / `import Hydra` keep
+# working. Preferred form going forward is `import hydra_image_processor as HIP`.
+install(FILES
+        "${PROJECT_SOURCE_DIR}/src/Python/HIP.py"
+        "${PROJECT_SOURCE_DIR}/src/Python/Hydra.py"
+    DESTINATION "."
+)
