@@ -1,7 +1,9 @@
 # Hydra Image Processor Roadmap
 
-This document assesses how far the current implementation is from the project's ideals and lays out a dependency-ordered path to get there.
-It was last grounded against the codebase in July 2026 (branch `conda-forge`, commit `c7f1f07`); file paths and claims reference that state.
+This document assesses how far the current implementation is from the project's ideals and lays out the agreed plan of record:
+five ordered steps, plus later phases, executed on feature branches that PR into `develop`.
+It was last grounded against the codebase in July 2026 (commit `c7f1f07`); file paths and claims reference that state.
+The re-arrangeable operation backlog referenced by Step 5 lives in [BACKLOG.md](BACKLOG.md).
 
 ## Vision
 
@@ -31,15 +33,14 @@ and **throughput features** (no FFT, no cross-call GPU residency, no GPU-direct 
 
 | Goal | Current state | Distance |
 | --- | --- | --- |
+| conda / mamba / pixi / uv | Working-ish recipe with Windows-only CI uploading to an anaconda.org channel. Not on conda-forge. Nothing on PyPI, so uv has nothing to install. Known bugs listed in Step 0. | Medium |
 | vcpkg / conan | Unmerged `feature/vcpkg` branch has near-complete CMake install/export and a port skeleton with a `SHA512 0` placeholder. Mainline has zero `install()` rules, no `project(VERSION)`. | Medium — salvage and finish |
-| conda / mamba / pixi | Working-ish recipe with Windows-only CI uploading to an anaconda.org channel. Not on conda-forge. Known bugs listed in Phase 0. | Medium |
-| C# + NuGet | Nothing. No `extern "C"` API (only mangled C++ templates over `ImageView<T>`), shared-lib target commented out, empty `.def` files. | Far — needs C ABI + shared lib |
-| Non-NVIDIA GPU | Raw CUDA everywhere; zero OpenCL/SYCL/HIP references. The only backend seam is the generated `CudaCall_<Name>::run` stubs calling CUDA drivers directly. | Far — deliberately deferred (Phase 2) |
 | CPU fallback | C++: none — the build fails without the CUDA toolkit. Python: 100% `NotImplementedError` stubs. MATLAB: ~14/19 real toolbox fallbacks, but with divergent boundary behavior. | Medium — the dispatch seam makes it tractable |
-| Additional filters | 19 compute commands today. Several new filters are nearly free as compositions of existing ones. | Near for tier 1 |
-| FFT filters | Zero FFT references anywhere. All convolution is direct spatial; Gaussian is separable spatial. | Medium |
 | Pipelining (vRAM residency) | Every API call is a full upload-compute-download round trip. Composites (Closure, Gaussian, LoG) already ping-pong on-device within one call, but nothing survives across calls. | Medium-far |
-| GPU-direct disk I/O | The C++ core has zero file I/O by design (in-memory `ImageView` only). No GDS/nvImageCodec/nvTIFF references. | Far — and of questionable value (Phase 5) |
+| Additional filters / FFT | 19 compute commands today; zero FFT references; global ops (watershed, connected components) absent. Full candidate list now lives in [BACKLOG.md](BACKLOG.md). | Near for compositions, far for global ops |
+| C# + NuGet | Nothing. No `extern "C"` API (only mangled C++ templates over `ImageView<T>`), shared-lib target commented out, empty `.def` files. | Far — needs C ABI + shared lib (later phase) |
+| Non-NVIDIA GPU | Raw CUDA everywhere; zero OpenCL/SYCL/HIP references. The only backend seam is the generated `CudaCall_<Name>::run` stubs calling CUDA drivers directly. | Far — deliberately deferred (later phase) |
+| GPU-direct disk I/O | The C++ core has zero file I/O by design (in-memory `ImageView` only). No GDS/nvImageCodec/nvTIFF references. | Far — and of questionable value (later phase) |
 
 Cross-cutting problems the path below fixes along the way:
 
@@ -47,36 +48,50 @@ Cross-cutting problems the path below fixes along the way:
   git tags reach v3.15; CMake declares no version.
   Decision: continue the 3.x lineage — the packaging-era relaunch is **v4.0.0**.
 - **CI has never executed a filter**: all runners are GPU-less GitHub-hosted machines, so accuracy tests always skip.
-  The CPU backend fixes this permanently.
-- **Stale `main`**: all recent work lives on the `conda-forge` dev branch; `origin/main` is 22 commits behind with nothing unique.
+  The CPU backend (Step 3) fixes this permanently.
 - **Test data weight**: `test_data/` is ~435 MB of Git-LFS TIFFs — a CI bandwidth hazard as jobs multiply.
 
-## The path
+## Development workflow
+
+- **`develop` is the integration branch.** It starts by fast-forwarding to the current working HEAD plus this roadmap
+  (`origin/develop` is a clean ancestor — 0 unique commits, 31 behind — so this is conflict-free).
+  The old `conda-forge` dev branch is retired after the fast-forward; that name is reserved for the future feedstock.
+- **All work happens on feature branches PR'd into `develop`** (e.g. `feature/version-single-source`,
+  `feature/scikit-build-core`, `feature/cpu-backend-infra`). Useful material is pulled or cherry-picked from
+  existing branches — notably `feature/vcpkg` — rather than merged wholesale (see Step 0).
+- **`main` is the release branch**: untouched until the first `v4.0.0` release PR from `develop`; tags live there.
+- **Parallel lanes.** Steps 1-2 (packaging: CMake install/export, recipes, CI) and Step 3 (CPU backend: `src/c/Cpu/`,
+  dispatch macro, tests) touch mostly disjoint files and can proceed concurrently on separate feature branches
+  once Step 0 lands. Step 4 should follow Step 3, because the CPU parity tests are the safety net for its refactoring.
+  Backlog items (Step 5) unlock as Step 3's op waves land.
+
+```text
+Step 0: foundations (branch reset, version single-source, recipe fixes, install/export)
+    │
+    ├──► Step 1: conda / mamba / pixi / uv(sdist) ──► Step 2: vcpkg / conan
+    │        (CPU wheels + conda CPU variant are Step 3 deliverables that close Step 1 follow-ups)
+    │
+    └──► Step 3: CPU fallback (parallel lane with Steps 1-2)
+                │
+                └──► Step 4: pipelining (design doc ──► device-apply refactor ──► executor)
+
+Step 5: operation backlog (BACKLOG.md — seeded now, groomed continuously)
+Later:  C ABI ──► C# + NuGet;  non-NVIDIA GPU assessment;  GPU-direct disk I/O
+```
 
 Effort key (solo-maintainer scale): **S** = days, **M** = 1-3 weeks, **L** = 1-2 months, **XL** = a quarter or more.
 
-```text
-Phase 0 (foundations, ~2-3 weeks)
-    ├──► Track A: CPU backend ─────────────► v4.0.0 release
-    ├──► Track B: packaging/install ───────►    │
-    │                                            ├──► Phase 2: C ABI + shared lib ──► C# + NuGet
-    │                                            ├──► Phase 2: device-apply refactor ──► Phase 3: pipelining ──► FFT deconvolution
-    │                                            ├──► Phase 4: FFT convolution/bandpass
-    │                                            └──► Phase 5: GPU-direct I/O (assess-only, last)
-    Ongoing: filter catalog (tier 1 unlocks right after Track A starts landing ops)
-```
+## Step 0 — Foundations (~2-3 weeks; prerequisite for everything)
 
-### Phase 0 — Foundations (~2-3 weeks total)
+All items are S unless noted.
 
-Everything else builds on these. All items are S unless noted.
-
-- **Consolidate branches**: merge the `conda-forge` dev branch into `main` (main has nothing unique) and retire the branch name —
-  reserve `conda-forge` for the future feedstock.
+- **Branch reset**: fast-forward `develop` to the current working HEAD, commit this roadmap and `BACKLOG.md` there,
+  retire the `conda-forge` branch name. `main` waits for the v4.0.0 release.
 - **Salvage `feature/vcpkg` by file, not by merge** (M).
-  Both branches diverged from the same commit and both modified the CMakeLists files, so a merge is all conflicts.
+  It diverged from the same commit as the current work and both sides modified the CMakeLists files, so a merge is all conflicts.
   Take verbatim: `cmake/hydra-config.cmake.in`; `src/c/Version.h.in` (adapt `@GITVERSION_*@` placeholders to `@PROJECT_VERSION*@`);
-  `ports/hydra/vcpkg.json`, `ports/hydra/portfile.cmake`, and `scripts/update-vcpkg-files.py` (parked until Phase 1B).
-  Re-implement by hand on mainline: the install/export blocks — `GNUInstallDirs`,
+  `ports/hydra/vcpkg.json`, `ports/hydra/portfile.cmake`, and `scripts/update-vcpkg-files.py` (parked until Step 2).
+  Re-implement by hand on a feature branch: the install/export blocks — `GNUInstallDirs`,
   `configure_package_config_file` + `write_basic_package_version_file`, `install(EXPORT HydraTargets NAMESPACE Hydra::)`,
   and headers installed to `include/hydra`.
   Skip `.gitversion.yml` and the self-hosted `hydra-ci.yml` (documented later as an option).
@@ -84,7 +99,7 @@ Everything else builds on these. All items are S unless noted.
   Git-derived schemes (GitVersion, setuptools_scm) fail exactly where packaging needs them:
   conda-forge and vcpkg build from GitHub tarballs that contain no `.git` directory.
   Consumers: CMake reads it into `project(VERSION)` and configures `Version.h.in`;
-  `pyproject.toml` via scikit-build-core's regex metadata provider (Phase 1B); `meta.yaml` via Jinja `load_file_regex`;
+  `pyproject.toml` via scikit-build-core's regex metadata provider (Step 1); `meta.yaml` via Jinja `load_file_regex`;
   the MATLAB `.prj` is patched by the release workflow.
   A CI guard asserts git tag == `VERSION` on every tag push.
 - **Fix the known recipe bugs**: add the missing backslash continuations in `recipe/build.sh`
@@ -94,7 +109,7 @@ Everything else builds on these. All items are S unless noted.
 - **License/metadata cleanup**: keep `LICENSE.md` as canonical, delete the duplicate `license.txt`,
   pick one author email everywhere, and add build-from-source instructions to `readme.md`
   (required for registry reviews anyway).
-- **Small code prep for Track A**: fix the `sum_array`/`sum` binding bug in `src/Python/hydra_image_processor/core.py`
+- **Small code prep for Step 3**: fix the `sum_array`/`sum` binding bug in `src/Python/hydra_image_processor/core.py`
   (the fallback path raises `AttributeError` instead of the intended `NotImplementedError`);
   reserve `HYDRA_DEVICE_CPU = -2` in `src/c/Cuda/Defines.h` (`-1` already means "all GPUs");
   add a `HYDRA_HOST_DEVICE` macro (`__host__ __device__` under `__CUDACC__`, empty otherwise).
@@ -102,22 +117,83 @@ Everything else builds on these. All items are S unless noted.
   mainline pins `75;86;89;120` while `feature/vcpkg` changed it to `89;90;103;121` —
   keep the mainline list as default and let packagers override.
 
-### Phase 1, Track A — CPU backend (near-term centerpiece; XL total; ships in v4.0.0)
+## Step 1 — conda / mamba / pixi / uv, with a documented update process
 
-**Why first**: it fixes "build requires nvcc," gives all three frontends automatic fallback in one place,
-makes the library usable on non-GPU machines, lets CI actually execute filters for the first time,
-makes the conda-forge feedstock testable, and is the honest non-NVIDIA story until a second GPU backend is justified.
+**Goal**: a user can `conda install`/`mamba install`/`pixi add` a GPU build, `uv pip install` an sdist,
+and the maintainer can publish an update with one tag push.
+
+- **Python build integration — scikit-build-core** (L). The prerequisite for everything Python-facing.
+  Move `pyproject.toml` to the repo root and let `pip install .` / `uv pip install .` drive the top-level CMake.
+  Add `install(TARGETS HydraPy ...)` and stop writing build products into the source tree
+  (today `src/c/Python/CMakeLists.txt` drops `Hydra.pyd/.so` into `src/Python/hydra_image_processor/`
+  and `MANIFEST.in` bundles whatever is lying around —
+  a `pip install .` without a prior manual CMake build yields an importable-but-nonfunctional package).
+  Standardize on `find_package(Python COMPONENTS Interpreter Development.Module NumPy)`
+  (scikit-build-core hints the `Python` find module, not `Python3`).
+- **PyPI / uv story, sequenced honestly**: publish the **sdist** now — `uv pip install hydra-image-processor` works
+  but compiles from source and requires the CUDA toolkit locally; document this loudly.
+  **No CUDA wheels on PyPI** (GB-class, ABI-fragile, a maintenance treadmill).
+  CPU-only wheels via cibuildwheel are an explicit **Step 3 deliverable** that upgrades uv users to binary installs.
+  Until then, the documented binary path is conda/mamba/pixi.
+- **conda-forge feedstock** (M + review latency).
+  Changes vs the current recipe: GitHub release tarball URL + `sha256` instead of `source: path: ..`
+  (needs the first v4.0.0 release); `{{ compiler('cuda') }}` / `{{ compiler('cxx') }}` / `{{ stdlib("c") }}` conventions;
+  imports-only tests for the GPU variant (conda-forge CI has no GPUs — building CUDA packages there is standard).
+  Submit linux-64 first, win-64 as a follow-up.
+  The CPU variant (`cuda_compiler_version: [None, 12.x]` matrix) is a **Step 3 deliverable**.
+  Interim: keep the anaconda.org channel healthy (fix CI trigger branches, add ubuntu to the matrix once `build.sh` is fixed).
+  mamba and pixi consume conda-forge automatically; add a root `pixi.toml` with dev/test tasks as contributor convenience (S).
+- **Release automation + documentation** (M): one `release.yml` on `v*` tags —
+  guard (tag == `VERSION`), GitHub Release with notes, conda build + anaconda.org upload
+  (until the feedstock's bot takes over), sdist to PyPI via trusted publishing,
+  `.mltbx` build with `.prj` version patched from `VERSION`.
+  Write **`RELEASING.md`**: the exact update process (bump `VERSION`, update changelog, tag, what automation does,
+  what to verify afterward, how conda-forge/vcpkg pick up the release). "Easy to update" is a deliverable, not a hope.
+- **LFS bandwidth**: default `lfs: false` in checkouts; one dedicated data-test job restoring LFS objects
+  from `actions/cache`; longer term, move test data to a GitHub Release asset or Zenodo.
+
+## Step 2 — vcpkg / conan
+
+**Goal**: a C++ consumer gets `find_package(Hydra)` from a registry, and each release updates the port automatically.
+
+- **vcpkg** (M). Finish the port parked in Step 0:
+  replace `SHA512 0` and `REF v${GITVERSION_SEMVER}` with literals written by `scripts/update-vcpkg-files.py`,
+  wired into `release.yml` so every tag opens a port-update PR (extend `RELEASING.md` accordingly).
+  Add a `HYDRA_BUILD_BINDINGS=OFF` guard so the port build needs no Python/MATLAB.
+  Ship as an **overlay port / small self-hosted registry first**;
+  submit to the central microsoft/vcpkg registry after 2-3 stable releases
+  (central CI review of CUDA ports is slow, and every release needs a version-database PR).
+- **conan** (S-M). Assess after vcpkg works: the Step 0 install/export is package-manager-agnostic,
+  so a `conanfile.py` is mostly metadata. Publish to ConanCenter only if users ask;
+  otherwise document consuming via `conan` from a git URL.
+- **C ABI design note** (S, design only — implementation is a later phase):
+  while the export surface is being shaped here, write down the flat C API design (see "Later phases")
+  so Step 2's installed headers and targets don't need rework when it lands.
+
+## Step 3 — CPU fallback (parallel lane with Steps 1-2; XL total)
+
+**Goal**: every filter runs on machines without an NVIDIA GPU; implicit fallback **warns**;
+a **strict flag** turns fallback into an error; CI finally executes filters.
 
 - **Where the code lives**: new `src/c/Cpu/` mirroring the CUDA headers one-to-one (`CpuMultiplySum.h`, `CpuMaxFilter.h`, ...).
   Each defines a host driver with the **same name and signature** as its CUDA counterpart, inside `namespace CpuBackend`.
   Identical signatures keep the dispatch change to a two-line macro edit.
 - **Dispatch, two layers**:
     1. CMake option `HYDRA_CPU_ONLY`: builds `src/c/Cpu/` only — no `LANGUAGES CUDA`, no `find_package(CUDAToolkit)`.
-       This is the packaging enabler.
-    2. In dual builds, the generated stub body (`_SCR_GEN_TYPED_IMPL` in `src/c/ScriptCmds/GenCommands.h`, ~lines 182-186) becomes:
-       if `device == HYDRA_DEVICE_CPU` or `deviceCount() == 0`, call `CpuBackend::cFoo(...)`, else call the CUDA driver.
+       This unlocks the Step 1 follow-ups (CPU wheels, conda CPU variant) and GPU-less CI.
+    2. In dual builds, the generated stub body (`_SCR_GEN_TYPED_IMPL` in `src/c/ScriptCmds/GenCommands.h`, ~lines 182-186)
+       becomes: if `device == HYDRA_DEVICE_CPU` or `deviceCount() == 0`, call `CpuBackend::cFoo(...)`,
+       else call the CUDA driver.
        Fallback semantics move out of the Python/MATLAB wrappers and into C++, where every frontend inherits them.
        A future HIP backend is another namespace and another branch — no rewrite.
+- **Fallback UX (explicit requirements)**:
+    - **Warning on implicit fallback**: when `device == -1` (default) and no GPU is found, the dispatch emits a warning
+      through each frontend's native channel — Python `RuntimeWarning`, MATLAB `warning('Hydra:cpuFallback', ...)`,
+      C/C++ a stderr message (later a registerable callback). Explicitly requesting `device = HYDRA_DEVICE_CPU` is silent —
+      intentional CPU use is not a fallback.
+    - **Strict mode**: `HYDRA_REQUIRE_GPU=1` environment variable (following the existing `HYDRA_ENABLE_MUTEX` pattern
+      in `src/c/ScriptCmds/HydraConfig.h`, surfaced via the `CheckConfig` command) makes implicit fallback an error
+      instead of a warning. Useful for benchmarking and for pipelines where silent CPU execution would be misleading.
 - **Boundary-condition parity is non-negotiable — share the code, don't reimplement it**:
     - Move `KernelIterator` method bodies into the header and decorate with `HYDRA_HOST_DEVICE`.
       The class is pure `Vec` arithmetic with no CUDA intrinsics,
@@ -147,6 +223,8 @@ makes the conda-forge feedstock testable, and is the honest non-NVIDIA story unt
     - Consolidate the loose Python scripts into a pytest suite under `src/Python/tests/`, parameterized over the 8 pixel types.
     - New CPU-only CI workflow (linux/macos/windows matrix, `-DHYDRA_CPU_ONLY=ON`) —
       the first CI in the project's history that computes anything.
+    - Close the Step 1 follow-ups: CPU wheels via cibuildwheel to PyPI (uv users get binaries),
+      CPU variant added to the conda-forge feedstock.
 - **Risk mitigations**: land the `GenCommands.h` macro edit with the CUDA path only and diff preprocessor output
   before adding the CPU branch (an X-macro mistake breaks all 24 commands at once);
   add a dedicated even-kernel interpolation parity test;
@@ -154,179 +232,102 @@ makes the conda-forge feedstock testable, and is the honest non-NVIDIA story unt
   currently duplicated across `ScriptCommandImpl.h`, `GenCommands.h`, and `LinkageTraitTfms.h` — into one X-macro header.
   Document clearly that CPU mode is a correctness/accessibility path, not a performance claim.
 
-### Phase 1, Track B — Packaging and install (parallel with Track A)
+## Step 4 — Filter pipelining (XL; after Step 3; starts with a design doc)
 
-- **Python build integration — scikit-build-core** (L).
-  Move `pyproject.toml` to the repo root and let `pip install .` drive the top-level CMake.
-  Add `install(TARGETS HydraPy ...)` and stop writing build products into the source tree
-  (today `src/c/Python/CMakeLists.txt` drops `Hydra.pyd/.so` into `src/Python/hydra_image_processor/`
-  and `MANIFEST.in` bundles whatever is lying around —
-  a `pip install .` without a prior manual CMake build yields an importable-but-nonfunctional package).
-  Standardize on `find_package(Python COMPONENTS Interpreter Development.Module NumPy)`
-  (scikit-build-core hints the `Python` find module, not `Python3`).
-  Once `HYDRA_CPU_ONLY` exists, auto-select it when no CUDA toolkit is found so `pip install .` works everywhere.
-- **Wheel strategy**: **no CUDA wheels on PyPI.**
-  They are GB-class, ABI-fragile, and a maintenance treadmill for a solo maintainer.
-  Ship: sdist always; CPU-only wheels via cibuildwheel once Track A lands
-  (small, testable on GPU-less CI, gives every `pip install hydra-image-processor` a working baseline);
-  GPU binaries via conda. Document "GPU users: conda/mamba/pixi" prominently.
-- **conda-forge feedstock** (M + review latency).
-  Requirements vs the current recipe: GitHub release tarball URL + `sha256` instead of `source: path: ..`
-  (needs the first v4.0.0 release); `{{ compiler('cuda') }}` / `{{ compiler('cxx') }}` / `{{ stdlib("c") }}` conventions;
-  imports-only tests for the GPU variant (conda-forge CI has no GPUs — building CUDA packages there is standard).
-  Submit linux-64 first, win-64 as a follow-up.
-  When Track A lands, add the CPU variant (`cuda_compiler_version: [None, 12.x]` matrix) —
-  that variant runs real filter tests on conda-forge CI.
-  Interim: keep the anaconda.org channel healthy (fix CI trigger branches, add ubuntu to the matrix once `build.sh` is fixed).
-  mamba and pixi consume conda-forge automatically;
-  optionally add a root `pixi.toml` with dev tasks as contributor convenience (S).
-- **vcpkg** (M). Finish the parked port:
-  replace `SHA512 0` and `REF v${GITVERSION_SEMVER}` with literals written by `scripts/update-vcpkg-files.py`,
-  wired into the release workflow so every tag refreshes the port.
-  Add a `HYDRA_BUILD_BINDINGS=OFF` guard so the port build needs no Python/MATLAB.
-  Ship as an **overlay port / small self-hosted registry first**;
-  submit to the central microsoft/vcpkg registry after 2-3 stable releases
-  (central CI review of CUDA ports is slow, and every release needs a version-database PR).
-- **Conan**: skip for now, vcpkg-first.
-  The Phase 0 install/export work is package-manager-agnostic, so a conanfile is cheap later if users ask.
-- **Release automation** (M): one `release.yml` on `v*` tags —
-  guard (tag == `VERSION`), GitHub Release with notes,
-  conda build + anaconda.org upload (until the feedstock's bot takes over),
-  vcpkg port-update PR, `.mltbx` build with `.prj` version patched from `VERSION`;
-  later phases append sdist/CPU wheels (PyPI trusted publishing), C-ABI shared libs, and NuGet push.
-- **LFS bandwidth**: default `lfs: false` in checkouts;
-  one dedicated data-test job restoring LFS objects from `actions/cache`;
-  longer term, move test data to a GitHub Release asset or Zenodo.
+**Goal**: run a chain of filters keeping data in vRAM as long as possible,
+with the ability to emit intermediate results to host memory at chosen points.
 
-### Phase 2 — Bridge: C ABI, shared library, backend seam hardening (post-4.0)
+This step explicitly begins with a **design document** (`docs/design/pipeline.md`, reviewed as its own PR)
+before implementation — the descriptor format, memory model, and frontend API deserve deliberate design.
+Direction of record, to be refined by that document:
 
-- **C ABI + shared library** (L; design it early — other bindings benefit from targeting it):
-    - New `src/c/CApi/`: `HydraC.h` (pure C public header), `HydraCTypes.h`, `HydraC.cpp`.
-    - Shape: **one exported C function per operation** (~19 + ~5 utilities),
-      with pixel type carried as an enum inside a caller-owned image descriptor struct
-      (`dims[3]`, `channels`, `frames`, `pixel_type`, `data`) mirroring `ImageView`/`ImageDimensions`.
-      The 8-way type dispatch happens inside the shim,
-      generated from the same `GenCommands.h` X-macros so new ops get C entry points automatically.
-      (Rejected: per-op-per-type exports — ~150 brittle symbols;
-      a single string-dispatch entry — discards compile-time signature checking and needs a third arg-converter stack.)
-    - Errors: every function returns an `int32_t` status; `hydra_last_error_message()` with thread-local storage;
-      every call wrapped in `try/catch` — nothing throws across the ABI.
-    - Build: `hydra_c` as a SHARED library statically linking `HydraCudaStatic`,
-      `CXX_VISIBILITY_PRESET hidden` so only the `extern "C"` surface exports.
-      This sidesteps the C++ ABI tar-pit entirely — the templated surface never crosses a DLL boundary.
-      `CUDA_RESOLVE_DEVICE_SYMBOLS` and PIC are already set on the static target;
-      verify device-symbol resolution on both platforms. Delete the empty `.def` files.
-    - Build it against the CPU backend too, so the C ABI is testable in GPU-less CI.
-      This layer also serves Rust/Julia/Java/ctypes users, not just C#.
-- **C# + NuGet** (M + M, after the C ABI):
-    - `bindings/csharp/`: netstandard2.0 class library,
-      `[DllImport("hydra_c")]` declarations mirroring `HydraC.h` (~24 functions — hand-written is fine),
-      an ergonomic `Span<T>`-based layer, and tests running on the CPU backend so `dotnet test` needs no GPU.
-    - NuGet layout: managed lib in `lib/netstandard2.0/`,
-      natives in `runtimes/win-x64/native/` and `runtimes/linux-x64/native/`, pulled from release artifacts.
-    - CUDA redistribution: `cudart_static` is currently the only CUDA dependency, so packages stay small.
-      **Standing cross-check**: the FFT phase adding cuFFT (a large dynamic redistributable) would break this —
-      if that happens, split a CPU-only base package from a GPU add-on package.
-- **Device-apply refactor** (L, mechanical, fully covered by the parity tests):
-  split each CUDA driver into `deviceApply(residentBuffers, params, chunk)` plus the existing transfer shell.
-  No behavior change; it is the prerequisite for pipelining and improves code health regardless.
-- **Non-NVIDIA GPU assessment** (assessment only, no dates): **hipify/ROCm over SYCL/Kokkos** when the time comes.
-  The kernels are idiomatic CUDA (`__constant__` kernel memory, `cudaMemcpyToSymbol`, occupancy API)
-  with direct HIP equivalents, so `hipify` keeps the code in-dialect,
-  and the Track-A namespace seam accommodates a `HipBackend::` branch without redesign.
-  SYCL/Kokkos would mean rewriting the entire kernel layer and adopting a heavy dependency —
-  unjustified for a solo-maintained library whose non-GPU users already have the CPU backend.
-  Trigger to act: demonstrated user demand plus access to AMD test hardware. Effort if triggered: L-XL.
-
-### Phase 3 — Filter pipelining (XL; depends on the device-apply refactor)
-
-**Recommendation: a pipeline API ("declare the chain, execute once"), not exposed device handles.**
-
-- Rationale: an opaque GPU-array handle crossing the Python/MATLAB boundary drags in cross-language lifetime management,
+- **A pipeline API ("declare the chain, execute once"), not exposed device handles.**
+  An opaque GPU-array handle crossing the Python/MATLAB boundary drags in cross-language lifetime management,
   multi-GPU placement, and error-state surface —
   and is fundamentally incompatible with chunking (a chunked image cannot stay resident).
   The pipeline generalizes what Closure/Gaussian/LoG already do internally:
   per chunk, upload once, run every op in the chain via `CudaDeviceImages` ping-pong, download once.
   It works whether or not the image fits in vRAM — residency handles do not.
-- Backend: a `PipelineExecutor` consuming a list of op descriptors and calling the Phase-2 `deviceApply` entry points.
+- **Intermediate outputs (host taps)**: each stage descriptor carries an `emit` flag;
+  the executor retrieves that stage's ROI to a caller-provided host buffer in addition to feeding the next stage.
+  Tapped stages cost one extra device-to-host copy — data still never makes a round trip back up.
+  This satisfies "send intermediate results out to host memory" without breaking residency for the rest of the chain.
+- **Prerequisite refactor — device-apply split** (L, mechanical, protected by Step 3's parity tests):
+  split each CUDA driver into `deviceApply(residentBuffers, params, chunk)` plus the existing transfer shell.
+  No behavior change; it is the enabling refactor for the executor and improves code health regardless.
+- **Backend**: a `PipelineExecutor` consuming a list of op descriptors and calling the `deviceApply` entry points.
   The chunk halo becomes the **sum** of per-op kernel halos across the chain (extend `ImageChunk.cpp`),
   so interior pixels never see window clipping mid-chain
   and boundary semantics are identical to running the ops as separate calls.
-  The CPU backend runs the same descriptor list trivially, keeping parity testable.
-- Frontend: one new `SCR_CMD_NOPROC` command (e.g. `RunPipeline`)
+  The CPU backend runs the same descriptor list trivially (taps are just pointer copies), keeping parity testable.
+- **Frontend**: one new `SCR_CMD_NOPROC` command (e.g. `RunPipeline`)
   taking the descriptor list through the existing struct/deferred-type machinery,
   plus thin fluent builders in Python and MATLAB.
 - Later, if profiling shows transfer-bound single-op workloads on fits-in-vRAM images,
   a residency handle can be added *on top of* the executor — do not lead with it.
-- Risks: halo-sum shrinks usable chunk size for long chains of large kernels
-  (document; mid-chain re-tiling is research-grade — defer);
-  descriptors must carry intermediate pixel-type promotion (the `OutMap` machinery).
+- **Open questions for the design doc**: descriptor schema and intermediate pixel-type promotion (the `OutMap` machinery);
+  halo-sum growth for long chains of large kernels (mid-chain re-tiling is research-grade — likely document the limit);
+  multi-GPU chunk striping interaction with taps (output ordering); error semantics mid-chain;
+  how strict mode (`HYDRA_REQUIRE_GPU`) applies to whole-pipeline fallback.
 
-### Phase 4 — FFT filters (L for convolution/bandpass; + L for deconvolution, which wants Phase 3)
+## Step 5 — Operation backlog (seeded now; groomed continuously)
 
-- Ops that earn their keep: frequency-domain convolution for large kernels (direct cost explodes above roughly 15^3),
-  difference-of-Gaussians/bandpass, and **Richardson-Lucy deconvolution** —
-  the marquee microscopy feature, and iterative (convolve, divide, convolve, multiply per iteration),
-  which is exactly the shape the pipeline executor accelerates. Sequence R-L after Phase 3.
-- Libraries: cuFFT on GPU (ships with the toolkit — no new dependency, but see the NuGet size cross-check above).
-  CPU: **pocketfft** (BSD-3, header-only, powers NumPy/SciPy).
-  FFTW is rejected on license (GPL); kissfft is BSD but slower.
-- Chunking: overlap-add/overlap-save with kernel-sized padding per chunk — fits the existing `ImageChunk` margin model.
-  FFT plan and scratch memory must join the chunk-size budget calculation.
-- Boundary story (be explicit in docs): circular convolution has no native equivalent of clipped-window renormalization.
-  Default to **normalized convolution** — divide the zero-padded convolution by the convolution of a ones-mask —
-  which reproduces the energy-insulated boundary exactly for one extra cacheable transform.
-  Offer plain pad modes as documented alternatives.
-  Parity tests against spatial MultiplySum validate the path
-  (tolerance-based, not bitwise — cuFFT and pocketfft round differently).
+The explicit, priority-ordered list of operations to implement lives in **[BACKLOG.md](BACKLOG.md)** —
+one row per operation with priority, effort, chunking compatibility, dependencies, and status.
+Reordering rows is reprioritizing; rows are mirrored to GitHub issues as they are picked up.
+It includes the FFT work (frequency-domain convolution, bandpass/DoG, Richardson-Lucy deconvolution),
+the cheap morphological compositions, new local kernels,
+and the **global operations (connected components, watershed, distance transform)** —
+which are listed with an explicit architecture caveat:
+they require global propagation passes that conflict with the streaming-chunk design,
+so each needs either a fits-on-one-GPU gate or a border-merge design before implementation.
 
-### Phase 5 — GPU-direct disk I/O (assess-only; recommendation: defer)
+Key technical notes that constrain backlog items:
 
-Honest assessment of the NVIDIA decoder/storage stack against this project's users
-(1-5D microscopy volumes on lab workstations):
+- **FFT stack**: cuFFT on GPU (ships with the toolkit); **pocketfft** on CPU (BSD-3, header-only, powers NumPy/SciPy —
+  FFTW rejected on GPL license). Chunking via overlap-add/overlap-save fits the existing `ImageChunk` margin model;
+  FFT plan and scratch memory must join the chunk-size budget.
+  Boundary story: default to **normalized convolution** (divide the zero-padded convolution by the convolution
+  of a ones-mask), which reproduces the energy-insulated boundary exactly for one extra cacheable transform.
+  cuFFT is a large *dynamic* redistributable — adding it breaks the "cudart_static-only, small packages" assumption
+  that the conda and (future) NuGet packaging rely on; check before landing.
+- **Global ops**: correct chunked versions are research-grade border-merging problems.
+  The supported near-term posture is documented interop — Hydra for filtering, scikit-image/ITK for global
+  segmentation — unless/until a fits-on-one-GPU mode is added.
 
-- nvTIFF covers baseline TIFF and a subset of compressions —
-  OME-TIFF/BigTIFF multi-page hyperstacks with varied bit depths routinely exceed it.
-- GPUDirect Storage (cuFile) requires supported filesystems and the `nvidia-fs` driver stack —
-  DGX-class deployments, not typical lab machines, and Linux-only.
-- nvImageCodec targets JPEG-family codecs, not microscopy formats.
+## Later phases (after the five steps; kept on the map, no dates)
 
-The pragmatic 80% win needs none of that: **pinned-host-memory double-buffered prefetch** (M) —
-e.g. Python-side `tifffile`/`zarr` readers filling `cudaHostRegister`-ed buffers that feed the Phase-3 pipeline executor,
-overlapping disk I/O with compute using only existing dependencies.
-If an I/O layer is ever built, it belongs in the Python package or a `hydra-io` companion —
-never in `src/c/Cuda` (the core's zero-I/O design is a feature).
-Revisit only after Phase 3 ships and profiling shows I/O-bound pipelines.
-
-### Ongoing — filter catalog (prioritized for microscopy)
-
-Current inventory (19 compute commands): Closure, ElementWiseDifference, EntropyFilter, Gaussian, GetMinMax,
-HighPassFilter, IdentityFilter, LoG, MaxFilter, MeanFilter, MedianFilter, MinFilter, MultiplySum, NLMeans,
-Opener, StdFilter, Sum, VarFilter, WienerFilter (plus 5 meta-commands).
-
-- **Tier 1 — nearly free compositions, chunking-compatible (S each, any time after Track A's waves land)**:
-  top-hat/bottom-hat (Opener/Closure + ElementWiseDifference), morphological gradient (Max − Min),
-  unsharp mask (HighPassFilter exists), difference-of-Gaussians.
-- **Tier 2 — new local kernels, chunking-compatible (S-M each)**:
-  Niblack/Sauvola adaptive thresholding (Mean and Std already exist), Sobel/gradient magnitude, bilateral filter,
-  anisotropic diffusion (iterative-local — a natural pipeline citizen),
-  Otsu global threshold (a histogram is a mergeable reduction like GetMinMax, so it is chunk-safe despite being "global-valued").
-- **Tier 3 — fundamentally global: architecture warning.**
-  Watershed, connected components, distance transform, and morphological reconstruction
-  require global propagation passes that **conflict with the streaming-chunk architecture**;
-  correct chunked versions are research-grade border-merging problems.
-  Declare them out of scope for the chunked engine (or gate behind an explicit fits-on-one-GPU mode),
-  and document the intended workflow: Hydra for filtering, scikit-image/ITK for global segmentation steps.
-  Do not let these creep in without that decision.
+- **C ABI + shared library** (L; design written during Step 2, implemented here):
+  `src/c/CApi/` with `HydraC.h` (pure C header), one exported function per operation (~24 total),
+  pixel type as an enum in a caller-owned descriptor struct, 8-way type dispatch inside the shim,
+  generated from the same `GenCommands.h` X-macros so new ops get C entry points automatically.
+  Error codes + thread-local `hydra_last_error_message()`; nothing throws across the ABI.
+  Built as `hydra_c` SHARED, statically linking the backend, `CXX_VISIBILITY_PRESET hidden` —
+  the templated C++ surface never crosses a DLL boundary. Serves C#, Rust, Julia, Java, and ctypes alike.
+  Testable without a GPU thanks to Step 3.
+- **C# + NuGet** (M + M, after the C ABI): `bindings/csharp/` netstandard2.0 P/Invoke layer over `HydraC.h`
+  with an ergonomic `Span<T>` API; NuGet with `runtimes/{win-x64,linux-x64}/native` layout from release artifacts;
+  `dotnet test` runs on the CPU backend.
+- **Non-NVIDIA GPU support** (assessment of record): **hipify/ROCm over SYCL/Kokkos** when the time comes.
+  The kernels are idiomatic CUDA with direct HIP equivalents, and the Step 3 namespace seam accommodates
+  a `HipBackend::` branch without redesign. SYCL/Kokkos would mean rewriting the kernel layer for a heavy dependency —
+  unjustified while the CPU backend covers non-NVIDIA users.
+  Trigger to act: demonstrated user demand plus access to AMD test hardware. Effort if triggered: L-XL.
+- **GPU-direct disk I/O** (recommendation: defer): nvTIFF doesn't cover OME-TIFF/BigTIFF hyperstacks;
+  GPUDirect Storage needs `nvidia-fs`/DGX-class deployments (Linux-only); nvImageCodec targets JPEG-family codecs.
+  The pragmatic 80% win is **pinned-host-memory double-buffered prefetch** (M) feeding the Step 4 executor
+  (e.g. `tifffile`/`zarr` readers filling `cudaHostRegister`-ed buffers), overlapping disk I/O with compute.
+  Any I/O layer belongs in the Python package or a `hydra-io` companion — never in `src/c/Cuda`.
+  Revisit only after Step 4 ships and profiling shows I/O-bound pipelines.
 
 ## Top risks
 
-1. **LFS bandwidth exhaustion** — 435 MB of test data multiplied by a growing CI matrix; address in Track B before adding jobs.
+1. **LFS bandwidth exhaustion** — 435 MB of test data multiplied by a growing CI matrix; address in Step 1 before adding jobs.
 2. **conda-forge review latency for CUDA recipes** (weeks) — the anaconda.org channel is the hedge;
-   the CPU variant strengthens the submission.
-3. **X-macro edits break all 24 commands at once** — mitigate with staged landing and preprocessor-output diffing (Track A).
-4. **cuFFT vs the "cudart_static-only, small redistributables" assumption** that the conda and NuGet packaging rely on —
-   a standing cross-track check when Phase 4 starts.
+   the Step 3 CPU variant strengthens the submission.
+3. **X-macro edits break all 24 commands at once** — mitigate with staged landing and preprocessor-output diffing (Step 3).
+4. **cuFFT vs the "cudart_static-only, small redistributables" assumption** that conda and NuGet packaging rely on —
+   a standing cross-check whenever FFT backlog items start.
 5. **Version-drift regression** — the tag == `VERSION` CI guard is the enforcement;
    without it the five-version chaos returns.
 6. **CPU performance expectations** — document CPU mode as a correctness and accessibility path, not a performance claim.
