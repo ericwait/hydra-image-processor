@@ -38,25 +38,34 @@
 
 bool test_gaussian()
 {
-    Vec<std::size_t> dims = {64, 64, 10};
+    // Keep the impulse's Gaussian support (~3*sigma) away from every face:
+    // the filter renormalizes truncated kernels at the borders, so energy is
+    // only preserved while the smoothed impulse stays interior.
+    Vec<std::size_t> dims = {64, 64, 32};
     ImageOwner<float> imIn(0, dims, 1, 1);
     ImageOwner<float> imOut(0, dims, 1, 1);
-    
+
     // Fill with a impulse in the middle
     std::fill(imIn.getPtr(), imIn.getPtr() + imIn.getNumElements(), 0.0f);
-    imIn.getPtr()[imIn.getLinearAddress({32, 32, 5, 0, 0})] = 100.0f;
-    
-    float sigmas[3] = {2.0f, 2.0f, 2.0f};
-    CudaCall_Gaussian::run(imIn, imOut, sigmas, 1, 0);
-    
+    ImageDimensions midCoord(Vec<std::size_t>(32, 32, 16), 0, 0);
+    imIn.getPtr()[imIn.getDims().linearAddressAt(midCoord)] = 100.0f;
+
+    Vec<double> sigmas(2.0, 2.0, 2.0);
+    ImageView<float> imOutView(imOut);
+    CudaCall_Gaussian::run(imIn, imOutView, sigmas, 1, 0);
+
     // Check if it smoothed (sum should be preserved approximately)
     double sumIn = 0;
     double sumOut = 0;
     for(size_t i=0; i<imIn.getNumElements(); ++i) sumIn += imIn.getPtr()[i];
     for(size_t i=0; i<imOut.getNumElements(); ++i) sumOut += imOut.getPtr()[i];
-    
+
     TEST_ASSERT_MSG(std::abs(sumIn - sumOut) <= 1.0f, "Gaussian filter should preserve total energy (approx)");
-    
+
+    // The impulse must actually have been spread out
+    float peakOut = imOut.getPtr()[imOut.getDims().linearAddressAt(midCoord)];
+    TEST_ASSERT_MSG(peakOut > 0.0f && peakOut < 100.0f, "Gaussian filter should smooth the impulse peak");
+
     return true;
 }
 

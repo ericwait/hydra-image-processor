@@ -17,6 +17,12 @@ set(HYDRA_MODULE_NAME "Hydra")
 # -DHYDRA_BUILD_TESTS=OFF to skip the standalone C++ accuracy executable.
 option(HYDRA_BUILD_TESTS "Build the C++ accuracy tests" ON)
 
+# enable_testing() must run at the top level for ctest to see tests
+# registered in subdirectories.
+if (HYDRA_BUILD_TESTS)
+    enable_testing()
+endif()
+
 # Use CMake's modern FindCUDAToolkit module
 find_package(CUDAToolkit REQUIRED)
 
