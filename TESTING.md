@@ -26,7 +26,8 @@ flow this feeds into.
       LFS pointers, not the binaries).
 - [ ] Build and run the C++ accuracy test (`-DHYDRA_BUILD_TESTS=ON`, target `test_accuracy`)
       → `Test Summary: PASSED`.
-- [ ] Run the Python TIFF accuracy suite in `src/Python/Test` against `test_data/` → all pass.
+- [ ] Run the Python TIFF accuracy suite (needs `tifffile`):
+      `python src/Python/Test/test_accuracy.py` → `Test Summary: PASSED`.
       **This is the gate for tagging.**
 - [ ] Spot-check one op end-to-end (e.g. `gaussian` on a small array) and `device_count() >= 1`.
 
