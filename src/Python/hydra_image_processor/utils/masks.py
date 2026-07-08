@@ -131,10 +131,11 @@ def make_ellipsoid_mask(
     # Create coordinate grids
     x, y, z = np.mgrid[0:vol_size[0], 0:vol_size[1], 0:vol_size[2]]
 
-    # Shift origin to center
-    x = x - vol_size[0] / 2 - 0.5
-    y = y - vol_size[1] / 2 - 0.5
-    z = z - vol_size[2] / 2 - 0.5
+    # Shift origin to the center voxel, matching the C++ createEllipsoidKernel
+    # (for odd sizes the center lands on an integer index)
+    x = x - (vol_size[0] - 1) / 2
+    y = y - (vol_size[1] - 1) / 2
+    z = z - (vol_size[2] - 1) / 2
 
     # Avoid division by zero for zero radii
     axes_radius = np.maximum(axes_radius, 1e-10)
