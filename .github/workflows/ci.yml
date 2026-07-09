@@ -57,8 +57,11 @@ jobs:
       # CUDA comes from conda-forge (compiler only; runners have no GPU) —
       # the same channel the feedstock builds against, and one less
       # third-party action that breaks when runner images move.
+      # CUDA 13.x: nvcc 12.x rejects the MSVC that windows-latest ships
+      # (VS 2026); the 12.x pairing is covered by the feedstock's own CI,
+      # which pins VS 2022.
       - name: Install build dependencies
-        run: conda install -y -c conda-forge python=${{ matrix.python }} cmake ninja "scikit-build-core>=0.10" numpy pip cuda-nvcc cuda-cudart-dev cuda-cudart-static "cuda-version=12.9"
+        run: conda install -y -c conda-forge python=${{ matrix.python }} cmake ninja "scikit-build-core>=0.10" numpy pip cuda-nvcc cuda-cudart-dev cuda-cudart-static "cuda-version=13.*"
 
       - name: Install host compiler for nvcc (Linux)
         if: runner.os == 'Linux'
