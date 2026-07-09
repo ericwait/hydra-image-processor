@@ -11,7 +11,9 @@ endif()
 
 project(HydraImageProcessor LANGUAGES C CXX CUDA)
 
-set(HYDRA_MODULE_NAME "Hydra")
+# CACHE so -DHYDRA_MODULE_NAME=HIP (used by the MATLAB CI) can override it;
+# a plain set() would silently shadow the command-line value.
+set(HYDRA_MODULE_NAME "Hydra" CACHE STRING "Name of the built extension module")
 
 # Tests build by default for local development; wheel/feedstock builds pass
 # -DHYDRA_BUILD_TESTS=OFF to skip the standalone C++ accuracy executable.
