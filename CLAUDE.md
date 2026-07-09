@@ -11,7 +11,11 @@ An NVIDIA GPU + CUDA Toolkit (12.x in CI) are required to build; tests skip grac
 ## Build Commands
 
 ```bash
-# Configure + build (Linux/macOS-style; CUDA toolkit must be on PATH)
+# Canonical Python build (scikit-build-core drives CMake + nvcc and installs
+# the package; run from the repository root in an env with cmake/ninja/numpy)
+pip install . --no-build-isolation -v
+
+# Raw CMake targets (Linux/macOS-style; CUDA toolkit must be on PATH)
 cmake -S . -B build
 cmake --build build --config Release --target HydraPy        # Python extension
 cmake --build build --config Release --target HydraMex       # MATLAB MEX (needs MATLAB)
@@ -23,9 +27,10 @@ cmake --build --preset VS64-debug
 ```
 
 - `-DHYDRA_MODULE_NAME=HIP` renames the output module (default `Hydra`; CI uses `HIP` for MATLAB builds).
-- The `HydraPy` target writes `Hydra.pyd`/`Hydra.so` directly into `src/Python/hydra_image_processor/`; then install the Python package with `pip install .` from `src/Python/`.
+- The `HydraPy` target writes `Hydra.pyd`/`Hydra.so` directly into `src/Python/hydra_image_processor/`.
 - Building `HydraMex` triggers a post-build MATLAB step (`src/c/Mex/autoBuildMex.cmake`) that regenerates the `.m` wrapper files — never hand-edit generated wrappers in `src/MATLAB/+Hydra/@Cuda/`.
-- Conda package: `conda build recipe --python 3.12` (recipe in `recipe/`; `bld.bat` for Windows, `build.sh` for Linux/macOS).
+- `-DCMAKE_CUDA_ARCHITECTURES` defaults to `all-major`; use `86`/`native` for fast local iteration.
+- End-user distribution is via **conda-forge** (`conda install -c conda-forge hydra-image-processor`); the recipe lives in the separate `hydra-image-processor-feedstock` repository and must stay a patch-free `pip install .` wrapper.
 - `-DUSE_PROCESS_MUTEX=ON` enables a cross-process GPU mutex (boost interprocess, vendored in `src/c/external/`).
 
 ## Tests
@@ -38,6 +43,9 @@ ctest --test-dir build                 # runs CppAccuracyTest
 
 # Python smoke tests (plain scripts, no pytest)
 cd src/Python && python test_package.py
+
+# Python TIFF accuracy suite (needs a GPU + tifffile; THE release gate, see TESTING.md)
+python src/Python/Test/test_accuracy.py
 
 # MATLAB accuracy tests (matlab.unittest; compares against test_data/*.tif)
 matlab -batch "results = runtests('src/MATLAB/+Test/AccuracyTest.m')"
@@ -80,6 +88,12 @@ Python and MATLAB compile the same `HydraCudaStatic` backend and command framewo
 
 Type dispatch, Python method registration, and MATLAB wrappers are all generated from that. Only the pretty-named Python wrappers in `src/Python/hydra_image_processor/` (`cuda/core.py`, `core.py`) are added by hand.
 
+## Branching & releases
+
+- `main` is protected (PR + green CI required); `develop` is the integration branch.
+- Work on `feature/<name>` branches cut from `develop`, merge them into `develop`, and open a PR `develop` → `main` when a release-worthy state is reached.
+- Releases are tag-driven: bump `pyproject.toml` + `CHANGELOG.md`, work through TESTING.md (the GPU accuracy suites cannot run in CI), merge to `main`, then `git tag vX.Y.Z && git push origin vX.Y.Z`. `release.yml` enforces tag == version and publishes the GitHub Release; conda-forge's autotick bot then opens a feedstock version-bump PR.
+
 ## CI
 
-`.github/workflows/conda-build.yml` builds the conda package on Windows for Python 3.10–3.12 (CUDA 12.4.1). `.github/workflows/matlab-multibuild.yml` builds `HIP` MEX binaries on Windows + Linux and packages the MATLAB toolbox from `src/MATLAB/HydraImageProcessor.prj`.
+`.github/workflows/ci.yml` is the build-gate: on Windows + Linux it installs CUDA/compilers from conda-forge, builds via the same `pip install .` path the feedstock uses, and runs an import smoke test (runners have no GPU — accuracy suites run locally, see TESTING.md). `.github/workflows/release.yml` runs on `v*` tags. `.github/workflows/matlab-multibuild.yml` builds `HIP` MEX binaries on Windows + Linux and packages the MATLAB toolbox from `src/MATLAB/HydraImageProcessor.prj`.

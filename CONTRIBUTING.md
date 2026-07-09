@@ -2,7 +2,20 @@
 Hydra Image Processor (Hydra) has been written to expedite the addition of functionality. All of the machinery needed to distribute data and iterate over neighborhoods is included. Adding a new function is as easy as copying a template file and replacing the requisite lines of code. This paradigm is intended to encourage research and development of operations that would otherwise be intractable without hardware acceleration. 
 
 # How to contribute
-Contribution is as easy as a pull request on GitHub. Following the guidelines will ensure requests are not rejected for minor issues. Once your code conforms to the guidelines, please submit your requests [here](https://github.com/ericwait/hydra-image-processor/pulls). 
+Contribution is as easy as a pull request on GitHub. Following the guidelines will ensure requests are not rejected for minor issues. Once your code conforms to the guidelines, please submit your requests [here](https://github.com/ericwait/hydra-image-processor/pulls).
+
+## Branching model
+
+```text
+feature/<name>  ──►  develop  ──►  (PR)  ──►  main  ──►  tag vX.Y.Z  ──►  release
+```
+
+- **`main`** is protected and always releasable: changes land only through a pull
+  request with a green CI gate, and every release is a tag on `main`.
+- **`develop`** is the integration branch. Cut `feature/<name>` (or `fix/<name>`)
+  branches from it and target your pull requests at **`develop`**, not `main`.
+- When `develop` reaches a release-worthy state, a maintainer opens the
+  `develop` → `main` PR and follows the release checklist below.
 
 Alternatively, you can contribute by detailing your needs on this [forum](https://www.hydraimageprocessor.com/forum/request-functionality). Hydra was also designed to be a practical library that meets the needs of microscopist. I really enjoy when theory and application meet. By explaining in detail (examples are always helpful as well) what your needs are, the community will be able to find novel ways accomplish your goals. 
 
@@ -47,9 +60,11 @@ GPU box before tagging a release.**
 Releases are tag-driven. conda-forge's autotick bot watches for new GitHub releases and opens
 a feedstock version-bump PR automatically.
 
-1. Run the full accuracy suite locally on a GPU and confirm it passes.
-2. Bump `[project].version` in `pyproject.toml` and add a section to `CHANGELOG.md`.
-3. Merge to `main` with a green CI gate.
+1. Run the full accuracy suite locally on a GPU and confirm it passes (work through
+   [TESTING.md](TESTING.md) top to bottom).
+2. Bump `[project].version` in `pyproject.toml` and add a section to `CHANGELOG.md`
+   (on `develop`).
+3. Open a PR from `develop` to `main` and merge it with a green CI gate.
 4. Tag and push: `git tag vX.Y.Z && git push origin vX.Y.Z` (the tag **must** match the
    `pyproject.toml` version — the release workflow enforces this).
 5. The `Release` workflow creates the GitHub Release. Merge the resulting feedstock autotick
