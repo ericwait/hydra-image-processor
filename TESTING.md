@@ -30,17 +30,34 @@ flow this feeds into.
       `python src/Python/Test/test_accuracy.py` → `Test Summary: PASSED`.
       **This is the gate for tagging.**
 - [ ] Spot-check one op end-to-end (e.g. `gaussian` on a small array) and `device_count() >= 1`.
+- [ ] Build the MEX with the `HIP` module name (the wrappers hard-code `HIP.Cuda`, so the
+      default `Hydra` name would silently fall back to the CPU path):
+      `cmake -S . -B build -DHYDRA_MODULE_NAME=HIP` then
+      `cmake --build build --config Release --target HydraMex`
+      (the post-build MATLAB step installs into `src/MATLAB/+HIP`).
+- [ ] MATLAB smoke test (also run by CI, no GPU needed):
+      `matlab -batch "addpath('src/MATLAB'); assertSuccess(runtests('Test.SmokeTest'))"`.
+- [ ] MATLAB accuracy suite (needs a GPU, the LFS test images, and the
+      MicroscopeData/ImUtils utilities on the MATLAB path):
+      `matlab -batch "addpath('src/MATLAB'); assertSuccess(runtests('Test.AccuracyTest'))"`.
+      **Check the summary for `Incomplete` results** — an assumption failure (no GPU
+      detected, missing test data or utilities) skips tests without failing them, which
+      looks green but verified nothing.
 
 ## D. Working-tree hygiene
 - [ ] After building, `git status` is still clean — the in-source `Hydra.pyd` is ignored:
       `git check-ignore src/Python/hydra_image_processor/Hydra.pyd` prints the path.
-- [ ] `git log --oneline` shows the build/ci/docs commits; the `Hydra.mexw64` change remains
-      separate (commit or discard it intentionally).
+- [ ] After building `HydraMex`, the MEX binary is ignored
+      (`git check-ignore src/MATLAB/+HIP/@Cuda/HIP.mexw64` prints the path); regenerated
+      `.m` wrappers may show a diff — commit or discard that intentionally.
 
 ## E. CI workflows (GitHub)
 - [ ] Push the working branch → `ci.yml` runs and **both** `ubuntu-latest` and `windows-latest`
       jobs build and pass the import smoke test (`__version__ == 4.0.0`, `HIP is Hydra`).
 - [ ] Open a PR to `main` → the gate runs on the PR.
+- [ ] `matlab-multibuild.yml` is green when the PR touches `src/c/**`, `src/MATLAB/**`, or
+      the build files: MEX builds on both platforms, the no-GPU MATLAB smoke test passes,
+      and the `HydraImageProcessor.mltbx` artifact is produced.
 - [ ] `release.yml` version guard sanity: the tag (minus `v`) must equal the `pyproject.toml`
       version. (An `rc` tag won't match unless `pyproject` is set to that rc.)
 

@@ -47,8 +47,12 @@ cd src/Python && python test_package.py
 # Python TIFF accuracy suite (needs a GPU + tifffile; THE release gate, see TESTING.md)
 python src/Python/Test/test_accuracy.py
 
-# MATLAB accuracy tests (matlab.unittest; compares against test_data/*.tif)
-matlab -batch "results = runtests('src/MATLAB/+Test/AccuracyTest.m')"
+# MATLAB smoke test (no GPU needed; CI runs this after building the MEX)
+matlab -batch "addpath('src/MATLAB'); assertSuccess(runtests('Test.SmokeTest'))"
+
+# MATLAB accuracy tests (matlab.unittest; needs a GPU + MicroscopeData/ImUtils utilities;
+# build HydraMex with -DHYDRA_MODULE_NAME=HIP first - the wrappers hard-code HIP.Cuda)
+matlab -batch "addpath('src/MATLAB'); assertSuccess(runtests('Test.AccuracyTest'))"
 ```
 
 - C++ tests use a minimal custom framework (`TEST_ASSERT`/`RUN_TEST` in `src/c/test_back/test_accuracy.cpp`) and call the generated `CudaCall_<Name>::run(...)` entry points directly. To run a single test, comment out other `RUN_TEST` lines or add a new `RUN_TEST` — there is no filter flag.
@@ -96,4 +100,4 @@ Type dispatch, Python method registration, and MATLAB wrappers are all generated
 
 ## CI
 
-`.github/workflows/ci.yml` is the build-gate: on Windows + Linux it installs CUDA/compilers from conda-forge, builds via the same `pip install .` path the feedstock uses, and runs an import smoke test (runners have no GPU — accuracy suites run locally, see TESTING.md). `.github/workflows/release.yml` runs on `v*` tags. `.github/workflows/matlab-multibuild.yml` builds `HIP` MEX binaries on Windows + Linux and packages the MATLAB toolbox from `src/MATLAB/HydraImageProcessor.prj`.
+`.github/workflows/ci.yml` is the build-gate: on Windows + Linux it installs CUDA/compilers from conda-forge, builds via the same `pip install .` path the feedstock uses, and runs an import smoke test (runners have no GPU — accuracy suites run locally, see TESTING.md). `.github/workflows/release.yml` runs on `v*` tags. `.github/workflows/matlab-multibuild.yml` builds `HIP` MEX binaries on Windows + Linux (same conda-forge CUDA toolchain as ci.yml, plus `matlab-actions/setup-matlab`), packages the MATLAB toolbox via `src/MATLAB/build-scripts/packageToolboxCI.m` (version single-sourced from `pyproject.toml`; `HydraImageProcessor.prj` is only for interactive packaging), and attaches the `.mltbx` to published GitHub Releases.

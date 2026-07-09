@@ -1,105 +1,197 @@
-name: Multi-Platform Toolbox Build
+name: MATLAB Toolbox
+
+# Build the HIP MEX extension on the platforms the toolbox supports
+# (Windows + Linux) and package the MATLAB toolbox (.mltbx).
+#
+# Toolchain mirrors ci.yml: CUDA comes from conda-forge (compiler only —
+# runners have no GPU), builds run in the conda base env with the Ninja
+# generator, and CUDA 13.x is required because nvcc 12.x rejects the
+# VS 2026 MSVC that windows-latest ships. MATLAB comes from
+# matlab-actions/setup-matlab, which self-licenses on public-repo hosted
+# runners. Runners have no GPU, so this verifies build + packaging only;
+# the MATLAB accuracy suite runs locally on a GPU box (see TESTING.md).
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [main]
+  pull_request:
+    paths:
+      - ".github/workflows/matlab-multibuild.yml"
+      - "src/c/**"
+      - "src/MATLAB/**"
+      - "CMakeLists.txt"
+      - "pyproject.toml"
+  # Attach the packaged toolbox to the GitHub Release. Triggering on the
+  # published release (rather than the tag push) avoids racing release.yml,
+  # which is what creates the release.
+  release:
+    types: [published]
   workflow_dispatch:
 
+concurrency:
+  group: matlab-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # R2024b is the release the toolbox .prj was authored with; it is also the
+  # floor recorded in the packaged toolbox metadata (packageToolboxCI.m).
+  # MEX binaries are only guaranteed to load on the release they were built
+  # with or newer, so keep these in sync.
+  MATLAB_RELEASE: R2024b
+
 jobs:
-  build-mex-windows:
-    name: Build MEX (Windows)
-    runs-on: windows-latest
+  build-mex:
+    name: Build MEX (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    env:
+      # Distribution artifacts target every major architecture; PR builds
+      # use a single architecture so the gate stays fast.
+      CUDA_ARCHS: ${{ github.event_name == 'pull_request' && '75' || 'all-major' }}
+
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Install CUDA Toolkit
-        uses: Jimver/cuda-toolkit@v0.2.14
         with:
-          cuda: '12.4.1'
+          lfs: false   # the MEX binaries are rebuilt here; no LFS assets needed
 
-      - name: Setup MATLAB
+      - name: Set up MSVC (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          channels: conda-forge
+          conda-remove-defaults: "true"
+          # Build in base: activating a named env intermittently fails on
+          # the Windows runners (EnvironmentNameNotFound).
+          activate-environment: ""
+
+      - name: Install build dependencies
+        run: conda install -y -c conda-forge cmake ninja cuda-nvcc cuda-cudart-dev cuda-cudart-static "cuda-version=13.*"
+
+      # GCC is pinned to 12: MATLAB loads MEX files against its own bundled
+      # libstdc++, and R2024b's rejects binaries built with newer GCC ABIs
+      # (CXXABI_1.3.15 from GCC 14 is not found). GCC 12 keeps the MEX
+      # loadable on R2024b+ everywhere, not just on this runner.
+      - name: Install host compiler for nvcc (Linux)
+        if: runner.os == 'Linux'
+        run: conda install -y -c conda-forge "gcc_linux-64=12" "gxx_linux-64=12"
+
+      - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v2
+        with:
+          release: ${{ env.MATLAB_RELEASE }}
 
-      - name: Configure CMake
+      # FindMatlab cannot discover the hosted-toolcache install location on
+      # its own, so ask MATLAB where it lives and pass that to CMake.
+      - name: Locate MATLAB root
+        uses: matlab-actions/run-command@v2
+        with:
+          command: fid = fopen(fullfile(getenv('GITHUB_WORKSPACE'), 'matlabroot.txt'), 'w'); fprintf(fid, '%s', matlabroot); fclose(fid);
+
+      - name: Configure
         run: |
-           cmake -S . -B build -G "Visual Studio 17 2022" -DHYDRA_MODULE_NAME=HIP
-           # Matlab_ROOT is set by setup-matlab and detected by FindMatlab module usually
-           # If not, we might need -DMatlab_ROOT_DIR=$env:MATLAB_ROOT
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DHYDRA_MODULE_NAME=HIP \
+            -DHYDRA_BUILD_TESTS=OFF \
+            -DHYDRA_MEX_AUTOINSTALL=OFF \
+            -DCMAKE_CUDA_ARCHITECTURES="${CUDA_ARCHS}" \
+            -DMatlab_ROOT_DIR="$(tr -d '\r' < matlabroot.txt)"
 
       - name: Build MEX
         run: |
-           cmake --build build --config Release --target HydraMex
+          set -o pipefail
+          if ! cmake --build build --target HydraMex 2>&1 | tee build.log; then
+            echo "::error::cl=$(command -v cl 2>/dev/null || echo MISSING) nvcc=$(command -v nvcc 2>/dev/null || echo MISSING) cmake=$(cmake --version | head -1)"
+            grep -iE "error|fatal" build.log | head -n 8 | while IFS= read -r line; do echo "::error::${line}"; done
+            exit 1
+          fi
 
-      - name: Verify Output
-        shell: powershell
-        run: |
-           # Verify the mex file exists in the source tree (copied by autoInstallMex)
-           if (Test-Path "src/MATLAB/+HIP/@Cuda/HIP.mexw64") {
-               Write-Host "MEX file found."
-           } else {
-               Write-Error "MEX file not found in src/MATLAB/+HIP/@Cuda/HIP.mexw64"
-               # Check build dir if autoInstall failed
-               Get-ChildItem -Recurse -Filter HIP.mexw64
-               exit 1
-           }
-
-      - uses: actions/upload-artifact@v4
+      # Copy the MEX into src/MATLAB/+HIP/@Cuda and regenerate the .m
+      # wrappers. This must go through run-command: a MATLAB launched
+      # directly (e.g. by the CMake post-build step, disabled above) is not
+      # licensed on hosted runners.
+      - name: Install MEX and regenerate wrappers
+        uses: matlab-actions/run-command@v2
         with:
-           name: mex-windows
-           path: src/MATLAB/+HIP/@Cuda/HIP.mexw64
+          command: >-
+            cd(fullfile(getenv('GITHUB_WORKSPACE'), 'src', 'MATLAB', 'build-scripts'));
+            autoInstallMex('HIP', fullfile(getenv('GITHUB_WORKSPACE'), 'build', 'src', 'c', 'Mex', ['HIP.' mexext]));
 
-  build-mex-linux:
-    name: Build MEX (Linux)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Install CUDA Toolkit
-        uses: Jimver/cuda-toolkit@v0.2.14
+      # Structural tests that need no GPU: the MEX must load, DeviceCount
+      # must return 0 gracefully, and the regenerated wrappers must agree
+      # with the MEX's command table.
+      - name: MATLAB smoke test (no GPU required)
+        uses: matlab-actions/run-command@v2
         with:
-          cuda: '12.4.1'
+          command: >-
+            addpath(fullfile(getenv('GITHUB_WORKSPACE'), 'src', 'MATLAB'));
+            assertSuccess(runtests('Test.SmokeTest'));
 
-      - name: Setup MATLAB
-        uses: matlab-actions/setup-matlab@v2
-
-      - name: Configure CMake
+      - name: Verify output
         run: |
-           cmake -S . -B build -DHYDRA_MODULE_NAME=HIP
+          MEXT=$([ "$RUNNER_OS" = "Windows" ] && echo mexw64 || echo mexa64)
+          MEXFILE="src/MATLAB/+HIP/@Cuda/HIP.${MEXT}"
+          if [ ! -f "$MEXFILE" ]; then
+            echo "::error::${MEXFILE} not found after build"
+            find . -name "HIP.mex*" -not -path "./build/*"
+            exit 1
+          fi
+          ls -l "$MEXFILE"
+          # Wrapper drift is informational: the generated .m files are
+          # tracked in git and should be re-committed when help text changes.
+          if ! git -c core.safecrlf=false diff --quiet -- 'src/MATLAB/+HIP/**/*.m'; then
+            echo "::warning::Generated .m wrappers differ from the checked-in ones; consider re-committing src/MATLAB/+HIP"
+          fi
 
-      - name: Build MEX
-        run: |
-           cmake --build build --config Release --target HydraMex
-
-      - name: Verify Output
-        run: |
-           if [ -f "src/MATLAB/+HIP/@Cuda/HIP.mexa64" ]; then
-               echo "MEX file found."
-           else
-               echo "MEX file not found in src/MATLAB/+HIP/@Cuda/HIP.mexa64"
-               find . -name "HIP.mexa64"
-               exit 1
-           fi
-
-      - uses: actions/upload-artifact@v4
+      # Windows contributes the whole package directory (fresh wrappers +
+      # HIP.mexw64); the Linux job supplies HIP.mexa64.
+      - name: Upload package directory (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
         with:
-           name: mex-linux
-           path: src/MATLAB/+HIP/@Cuda/HIP.mexa64
+          name: hip-package-windows
+          path: src/MATLAB/+HIP
+          if-no-files-found: error
+
+      - name: Upload MEX (Linux)
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: mex-linux
+          path: src/MATLAB/+HIP/@Cuda/HIP.mexa64
+          if-no-files-found: error
 
   package-toolbox:
     name: Package Toolbox
-    needs: [build-mex-windows, build-mex-linux]
+    needs: build-mex
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: false
 
-      - name: Setup MATLAB
-        uses: matlab-actions/setup-matlab@v2
+      # logo.png (the toolbox image) is LFS-tracked; fetch just that one
+      # file rather than every LFS asset (the test images are large).
+      - name: Fetch the toolbox image from LFS
+        shell: bash
+        run: git lfs pull --include=logo.png
 
-      - name: Download Windows MEX
+      - name: Download Windows package directory
         uses: actions/download-artifact@v4
         with:
-          name: mex-windows
-          path: src/MATLAB/+HIP/@Cuda
+          name: hip-package-windows
+          path: src/MATLAB/+HIP
 
       - name: Download Linux MEX
         uses: actions/download-artifact@v4
@@ -107,49 +199,48 @@ jobs:
           name: mex-linux
           path: src/MATLAB/+HIP/@Cuda
 
-      - name: Patch PRJ File
-        shell: python
+      # Guard against packaging Git LFS pointer files if an artifact path
+      # ever drifts: real MEX binaries are megabytes, pointers ~130 bytes.
+      - name: Verify MEX binaries are real
+        shell: bash
         run: |
-          import os
-          
-          prj_path = r'src/MATLAB/HydraImageProcessor.prj'
-          with open(prj_path, 'r') as f:
-              content = f.read()
-          
-          # Replace absolute paths with ${PROJECT_ROOT} if they look like the user's local path
-          # The user's path was D:\Users\ewait\git\programming\hydra-image-processor
-          # We'll just genericize any absolute path pattern if possible, or just the specific one.
-          # Easier: Update the <build-deliverables> section to use ${PROJECT_ROOT}
-          
-          # Since we don't know the exact string that might be in the repo vs what was pasted,
-          # we will try to be smart.
-          # But actually, verify if the repo version has absolute paths.
-          # If it uses ${PROJECT_ROOT} mostly, we are good.
-          # The snippet showed absolute path in <build-deliverables>.
-          
-          import re
-          # Regex to find <file ...>ANYTHING\Hydra Image Processor.mltbx</file> inside <build-deliverables>
-          # and replace it with <file ...>${PROJECT_ROOT}\Hydra Image Processor.mltbx</file>
-          
-          new_content = re.sub(
-              r'(<build-deliverables>\s*<file[^>]*>).*?(\Hydra Image Processor\.mltbx</file>)',
-              r'\1${PROJECT_ROOT}\2',
-              content,
-              flags=re.DOTALL
-          )
-          
-          with open(prj_path, 'w') as f:
-              f.write(new_content)
-          
-          print("Patched .prj file.")
+          for f in src/MATLAB/+HIP/@Cuda/HIP.mexw64 src/MATLAB/+HIP/@Cuda/HIP.mexa64; do
+            size=$(stat -c%s "$f")
+            if [ "$size" -lt 100000 ]; then
+              echo "::error::$f is only ${size} bytes - looks like a Git LFS pointer, not a built MEX binary"
+              exit 1
+            fi
+            echo "$f: ${size} bytes"
+          done
 
-      - name: Package Toolbox
+      - name: Read toolbox version from pyproject.toml
+        shell: bash
+        run: |
+          VERSION=$(grep -m1 '^version' pyproject.toml | sed -E 's/version *= *"([^"]+)".*/\1/')
+          echo "TOOLBOX_VERSION=${VERSION}" >> "$GITHUB_ENV"
+          echo "Toolbox version: ${VERSION}"
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v2
+        with:
+          release: ${{ env.MATLAB_RELEASE }}
+
+      - name: Package toolbox
         uses: matlab-actions/run-command@v2
         with:
-          command: |
-             matlab.addons.toolbox.packageToolbox('src/MATLAB/HydraImageProcessor.prj');
+          command: >-
+            addpath(fullfile(getenv('GITHUB_WORKSPACE'), 'src', 'MATLAB', 'build-scripts'));
+            packageToolboxCI(getenv('TOOLBOX_VERSION'));
 
       - uses: actions/upload-artifact@v4
         with:
-           name: HydraImageProcessor.mltbx
-           path: src/MATLAB/Hydra Image Processor.mltbx
+          name: HydraImageProcessor.mltbx
+          path: src/MATLAB/Hydra Image Processor.mltbx
+          if-no-files-found: error
+
+      - name: Attach toolbox to the GitHub Release
+        if: github.event_name == 'release'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" "src/MATLAB/Hydra Image Processor.mltbx" --clobber

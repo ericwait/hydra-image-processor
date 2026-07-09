@@ -63,3 +63,11 @@ conda-build-dir/
 /dist/
 *.egg-info/
 *.whl
+
+# MEX binaries dropped into the MATLAB packages by local HydraMex builds
+# (users get them from the CI-built toolbox, not from git)
+/src/MATLAB/+HIP/@Cuda/*.mex*
+/src/MATLAB/+Hydra/@Cuda/*.mex*
+
+# Packaged toolbox (built by packageToolboxCI.m or the .prj)
+/src/MATLAB/Hydra Image Processor.mltbx
