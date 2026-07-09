@@ -1,6 +1,7 @@
 #include "CWrappers.h"
 #include "ImageView.h"
 
+#include <cstdint>
 #include <cstdio>
 #include <random>
 

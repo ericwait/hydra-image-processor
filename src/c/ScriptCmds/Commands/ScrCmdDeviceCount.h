@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "ScriptCommandImpl.h"
 #include "ScriptCommandDefines.h"
 

@@ -2,6 +2,7 @@
 #include "ImageView.h"
 #include "Vec.h"
 
+#include <cstdint>
 #include <cstdio>
 #include <vector>
 #include <numeric>
