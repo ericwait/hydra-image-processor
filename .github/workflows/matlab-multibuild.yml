@@ -78,9 +78,13 @@ jobs:
       - name: Install build dependencies
         run: conda install -y -c conda-forge cmake ninja cuda-nvcc cuda-cudart-dev cuda-cudart-static "cuda-version=13.*"
 
+      # GCC is pinned to 12: MATLAB loads MEX files against its own bundled
+      # libstdc++, and R2024b's rejects binaries built with newer GCC ABIs
+      # (CXXABI_1.3.15 from GCC 14 is not found). GCC 12 keeps the MEX
+      # loadable on R2024b+ everywhere, not just on this runner.
       - name: Install host compiler for nvcc (Linux)
         if: runner.os == 'Linux'
-        run: conda install -y -c conda-forge c-compiler cxx-compiler
+        run: conda install -y -c conda-forge "gcc_linux-64=12" "gxx_linux-64=12"
 
       - name: Set up MATLAB
         uses: matlab-actions/setup-matlab@v2
