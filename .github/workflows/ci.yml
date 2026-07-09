@@ -69,6 +69,10 @@ jobs:
           # A single architecture keeps the gate fast; we only need it to
           # compile + import, not to run on a specific GPU.
           CMAKE_ARGS: "-DCMAKE_CUDA_ARCHITECTURES=75"
+          # Force Ninja: on Windows CMake would otherwise pick the Visual
+          # Studio generator, which needs the CUDA VS-integration files that
+          # the conda-forge nvcc package does not ship.
+          CMAKE_GENERATOR: Ninja
         run: python -m pip install . --no-build-isolation -v
 
       - name: Import smoke test (no GPU required to import)
