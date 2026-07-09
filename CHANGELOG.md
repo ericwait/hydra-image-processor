@@ -4,7 +4,7 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
-## [4.0.0] - Unreleased
+## [4.0.0] - 2026-07-08
 
 ### Changed
 - **Repackaged the Python distribution.** The library is imported as the
@@ -25,6 +25,14 @@ All notable changes to this project are documented here. The format is based on
   code keeps working.
 - Windows + Linux CI build-gate (`.github/workflows/ci.yml`) and a tag-driven release
   workflow with a version guard (`.github/workflows/release.yml`).
+- Python TIFF accuracy suite (`src/Python/Test/test_accuracy.py`) mirroring the MATLAB
+  `AccuracyTest.m`; it is the GPU-correctness gate for releases (see TESTING.md).
+
+### Fixed
+- `make_ellipsoid_mask` produced an off-center, asymmetric structuring element (shifted one
+  voxel), so morphological ops using it diverged from the MATLAB/C++ results.
+- The command-framework headers now include `<cstdint>` explicitly instead of relying on
+  transitive includes, fixing the build with newer gcc/libstdc++ toolchains.
 
 ### Removed
 - The in-repo conda-build recipe (`recipe/`) and the anaconda.org upload workflow.
