@@ -100,11 +100,10 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release \
             -DHYDRA_MODULE_NAME=HIP \
             -DHYDRA_BUILD_TESTS=OFF \
+            -DHYDRA_MEX_AUTOINSTALL=OFF \
             -DCMAKE_CUDA_ARCHITECTURES="${CUDA_ARCHS}" \
             -DMatlab_ROOT_DIR="$(tr -d '\r' < matlabroot.txt)"
 
-      # The post-build step (autoBuildMex.cmake) launches MATLAB to copy the
-      # MEX binary into src/MATLAB/+HIP/@Cuda and regenerate the .m wrappers.
       - name: Build MEX
         run: |
           set -o pipefail
@@ -113,6 +112,17 @@ jobs:
             grep -iE "error|fatal" build.log | head -n 8 | while IFS= read -r line; do echo "::error::${line}"; done
             exit 1
           fi
+
+      # Copy the MEX into src/MATLAB/+HIP/@Cuda and regenerate the .m
+      # wrappers. This must go through run-command: a MATLAB launched
+      # directly (e.g. by the CMake post-build step, disabled above) is not
+      # licensed on hosted runners.
+      - name: Install MEX and regenerate wrappers
+        uses: matlab-actions/run-command@v2
+        with:
+          command: >-
+            cd(fullfile(getenv('GITHUB_WORKSPACE'), 'src', 'MATLAB', 'build-scripts'));
+            autoInstallMex('HIP', fullfile(getenv('GITHUB_WORKSPACE'), 'build', 'src', 'c', 'Mex', ['HIP.' mexext]));
 
       - name: Verify output
         run: |
