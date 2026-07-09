@@ -1,9 +1,21 @@
 name: hydra
 channels:
   - conda-forge
-  - defaults
 dependencies:
-  - python=3.9
-  - scikit-image
-  - matplotlib
-  - numpy
+  - cmake=4.1.2
+  - ipython=9.6.0
+  - libpython=2.3
+  - matplotlib=3.10.6
+  - ninja=1.13.1
+  - numpy=2.3.3
+  - pip=25.2
+  - pkg-config=0.29.2
+  - python=3.12
+  - python-devtools=0.12.2
+  - scikit-image=0.25.2
+  - pip:
+    - e==1.4.5
+    - hydra-image-processor==0.1.0
+    - pefile==2024.8.26
+
+prefix: "D:\\mamba_envs\\hydra"

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "ScriptCommandDefines.h"
 
 #define GENERATE_DEFAULT_IO_MAPPERS

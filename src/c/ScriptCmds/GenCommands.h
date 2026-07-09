@@ -3,6 +3,7 @@
 #include "mph/preproc_helper.h"
 
 #include <cstddef>
+#include <cstdint>
 
 // Script parameters
 #define SCR_PARAMS(...) __VA_ARGS__

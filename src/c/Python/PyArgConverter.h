@@ -84,7 +84,7 @@ namespace Script
 		template <typename... ScrOuts>
 		static Script::ObjectType* store_out(const std::tuple<ScrOuts...>& outputs)
 		{
-			static_assert(sizeof... (ScrOuts) == N, "HIP_COMPILE: Output argument selector size mismatch");
+			static_assert(sizeof... (ScrOuts) == N, "Hydra_COMPILE: Output argument selector size mismatch");
 
 			Script::ObjectType* scriptOut = PyTuple_New(N);
 			store_out_impl(scriptOut, outputs, mph::make_index_sequence<sizeof... (ScrOuts)>{});
@@ -99,7 +99,7 @@ namespace Script
 		template <typename... ScrOuts>
 		static Script::ObjectType* store_out(const std::tuple<ScrOuts...>& outputs)
 		{
-			static_assert(sizeof... (ScrOuts) == 1, "HIP_COMPILE: Output argument selector size mismatch");
+			static_assert(sizeof... (ScrOuts) == 1, "Hydra_COMPILE: Output argument selector size mismatch");
 			return reinterpret_cast<Script::ObjectType*>(Script::unwrap_script_out(std::get<0>(outputs)));
 		}
 	};
@@ -110,7 +110,7 @@ namespace Script
 		template <typename... ScrOuts>
 		static Script::ObjectType* store_out(const std::tuple<ScrOuts...>& outputs)
 		{
-			static_assert(sizeof... (ScrOuts) == 0, "HIP_COMPILE: Output argument selector size mismatch");
+			static_assert(sizeof... (ScrOuts) == 0, "Hydra_COMPILE: Output argument selector size mismatch");
 			Py_RETURN_NONE;
 		}
 	};

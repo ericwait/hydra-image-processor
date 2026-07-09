@@ -1,4 +1,4 @@
-# Setup MEX interface if Matlab was found
+# Setup pyd interface if Python was found
 add_library(HydraPy MODULE "")
 
 # Require c++11 and set build definition to PY_BUILD
@@ -11,7 +11,7 @@ if ( USE_PROCESS_MUTEX )
 endif()
 
 # Link against Python and NumPy libraries
-target_link_libraries(HydraPy PRIVATE HydraCudaStatic Python::Python Python::NumPy)
+target_link_libraries(HydraPy PRIVATE HydraCudaStatic Python3::Python Python3::NumPy)
 
 # Change output library name to Hydra.<dll/so/dylib>
 set_target_properties(HydraPy
@@ -19,7 +19,7 @@ set_target_properties(HydraPy
         OUTPUT_NAME ${HYDRA_MODULE_NAME}
         PREFIX ""
         POSITION_INDEPENDENT_CODE ON
-        LIBRARY_OUTPUT_DIRECTORY $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/Python>
+        LIBRARY_OUTPUT_DIRECTORY $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/Python/hydra_image_processor>
 )
 
 # On windows specifically set the suffix to .pyd
@@ -28,7 +28,7 @@ if ( WIN32 )
 endif()
 
 # Setup Python/NumPy include directories
-target_include_directories(HydraPy PRIVATE Python::Python Python::NumPy)
+target_include_directories(HydraPy PRIVATE Python3::Python Python3::NumPy)
 
 # Setup src include directories
 target_include_directories(HydraPy
@@ -95,4 +95,17 @@ target_sources(HydraPy
         ../ScriptCmds/ScopedProcessMutex.cpp
         HydraPyModule.cpp
         PyCommandModule.cpp
+)
+
+# --- Installation (used by scikit-build-core to assemble the wheel) ---
+# Place the compiled extension module inside the hydra_image_processor package.
+# (MODULE libraries are always treated as LIBRARY targets, on Windows too.)
+install(TARGETS HydraPy LIBRARY DESTINATION hydra_image_processor)
+
+# Backwards-compatibility shims so legacy `import HIP` / `import Hydra` keep
+# working. Preferred form going forward is `import hydra_image_processor as HIP`.
+install(FILES
+        "${PROJECT_SOURCE_DIR}/src/Python/HIP.py"
+        "${PROJECT_SOURCE_DIR}/src/Python/Hydra.py"
+    DESTINATION "."
 )

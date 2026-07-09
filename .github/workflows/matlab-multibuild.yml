@@ -1,0 +1,155 @@
+name: Multi-Platform Toolbox Build
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build-mex-windows:
+    name: Build MEX (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install CUDA Toolkit
+        uses: Jimver/cuda-toolkit@v0.2.14
+        with:
+          cuda: '12.4.1'
+
+      - name: Setup MATLAB
+        uses: matlab-actions/setup-matlab@v2
+
+      - name: Configure CMake
+        run: |
+           cmake -S . -B build -G "Visual Studio 17 2022" -DHYDRA_MODULE_NAME=HIP
+           # Matlab_ROOT is set by setup-matlab and detected by FindMatlab module usually
+           # If not, we might need -DMatlab_ROOT_DIR=$env:MATLAB_ROOT
+
+      - name: Build MEX
+        run: |
+           cmake --build build --config Release --target HydraMex
+
+      - name: Verify Output
+        shell: powershell
+        run: |
+           # Verify the mex file exists in the source tree (copied by autoInstallMex)
+           if (Test-Path "src/MATLAB/+HIP/@Cuda/HIP.mexw64") {
+               Write-Host "MEX file found."
+           } else {
+               Write-Error "MEX file not found in src/MATLAB/+HIP/@Cuda/HIP.mexw64"
+               # Check build dir if autoInstall failed
+               Get-ChildItem -Recurse -Filter HIP.mexw64
+               exit 1
+           }
+
+      - uses: actions/upload-artifact@v4
+        with:
+           name: mex-windows
+           path: src/MATLAB/+HIP/@Cuda/HIP.mexw64
+
+  build-mex-linux:
+    name: Build MEX (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install CUDA Toolkit
+        uses: Jimver/cuda-toolkit@v0.2.14
+        with:
+          cuda: '12.4.1'
+
+      - name: Setup MATLAB
+        uses: matlab-actions/setup-matlab@v2
+
+      - name: Configure CMake
+        run: |
+           cmake -S . -B build -DHYDRA_MODULE_NAME=HIP
+
+      - name: Build MEX
+        run: |
+           cmake --build build --config Release --target HydraMex
+
+      - name: Verify Output
+        run: |
+           if [ -f "src/MATLAB/+HIP/@Cuda/HIP.mexa64" ]; then
+               echo "MEX file found."
+           else
+               echo "MEX file not found in src/MATLAB/+HIP/@Cuda/HIP.mexa64"
+               find . -name "HIP.mexa64"
+               exit 1
+           fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+           name: mex-linux
+           path: src/MATLAB/+HIP/@Cuda/HIP.mexa64
+
+  package-toolbox:
+    name: Package Toolbox
+    needs: [build-mex-windows, build-mex-linux]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup MATLAB
+        uses: matlab-actions/setup-matlab@v2
+
+      - name: Download Windows MEX
+        uses: actions/download-artifact@v4
+        with:
+          name: mex-windows
+          path: src/MATLAB/+HIP/@Cuda
+
+      - name: Download Linux MEX
+        uses: actions/download-artifact@v4
+        with:
+          name: mex-linux
+          path: src/MATLAB/+HIP/@Cuda
+
+      - name: Patch PRJ File
+        shell: python
+        run: |
+          import os
+          
+          prj_path = r'src/MATLAB/HydraImageProcessor.prj'
+          with open(prj_path, 'r') as f:
+              content = f.read()
+          
+          # Replace absolute paths with ${PROJECT_ROOT} if they look like the user's local path
+          # The user's path was D:\Users\ewait\git\programming\hydra-image-processor
+          # We'll just genericize any absolute path pattern if possible, or just the specific one.
+          # Easier: Update the <build-deliverables> section to use ${PROJECT_ROOT}
+          
+          # Since we don't know the exact string that might be in the repo vs what was pasted,
+          # we will try to be smart.
+          # But actually, verify if the repo version has absolute paths.
+          # If it uses ${PROJECT_ROOT} mostly, we are good.
+          # The snippet showed absolute path in <build-deliverables>.
+          
+          import re
+          # Regex to find <file ...>ANYTHING\Hydra Image Processor.mltbx</file> inside <build-deliverables>
+          # and replace it with <file ...>${PROJECT_ROOT}\Hydra Image Processor.mltbx</file>
+          
+          new_content = re.sub(
+              r'(<build-deliverables>\s*<file[^>]*>).*?(\Hydra Image Processor\.mltbx</file>)',
+              r'\1${PROJECT_ROOT}\2',
+              content,
+              flags=re.DOTALL
+          )
+          
+          with open(prj_path, 'w') as f:
+              f.write(new_content)
+          
+          print("Patched .prj file.")
+
+      - name: Package Toolbox
+        uses: matlab-actions/run-command@v2
+        with:
+          command: |
+             matlab.addons.toolbox.packageToolbox('src/MATLAB/HydraImageProcessor.prj');
+
+      - uses: actions/upload-artifact@v4
+        with:
+           name: HydraImageProcessor.mltbx
+           path: src/MATLAB/Hydra Image Processor.mltbx

@@ -1,0 +1,46 @@
+[build-system]
+requires = ["scikit-build-core>=0.10", "numpy"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "hydra-image-processor"
+version = "4.0.0"
+description = "A high-performance, GPU-accelerated (CUDA) image processing library with Python bindings."
+readme = "src/Python/README.md"
+requires-python = ">=3.10"
+license = "BSD-3-Clause"
+license-files = ["license.txt"]
+authors = [
+    { name = "Eric Wait", email = "info@ericwait.com" },
+]
+keywords = ["image processing", "python bindings", "high performance", "C++", "CUDA", "GPU"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: C++",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+]
+dependencies = ["numpy"]
+
+[project.urls]
+Homepage = "https://hydraimageprocessor.com/"
+Repository = "https://github.com/ericwait/hydra-image-processor"
+Documentation = "https://hydraimageprocessor.com/"
+
+[tool.scikit-build]
+# Pin behaviour to the minimum scikit-build-core in build-system.requires.
+minimum-version = "0.10"
+# The CMake project lives at the repository root alongside this file.
+cmake.source-dir = "."
+cmake.build-type = "Release"
+# Only the Python extension is needed for the wheel; skip the C++ test exe.
+build.targets = ["HydraPy"]
+# Pure-Python package contents (the compiled extension and the top-level
+# HIP/Hydra shims are added by CMake `install()` rules).
+wheel.packages = ["src/Python/hydra_image_processor"]
+
+[tool.scikit-build.cmake.define]
+HYDRA_BUILD_TESTS = "OFF"

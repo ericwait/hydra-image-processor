@@ -1,0 +1,7 @@
+build/
+out/
+.vscode/
+.claude/
+*.mltbx
+nul
+*.reg

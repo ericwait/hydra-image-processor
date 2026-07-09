@@ -1,8 +1,10 @@
 # Set a variable to turn on/off PROCESS_MUTEX support
 option(USE_PROCESS_MUTEX "Use process-level mutex to guard GPU calls" OFF)
 
-# Common settings for both libraries
-set(CUDA_ARCHITECTURES "52;61;70;75;86;89")
+# Common settings for both libraries.
+# GPU architectures are controlled by CMAKE_CUDA_ARCHITECTURES (defaulted in
+# the top-level CMakeLists.txt and overridable by conda-forge / developers),
+# so we intentionally do NOT hardcode an architecture list here.
 set(COMMON_INCLUDES
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
@@ -78,12 +80,13 @@ set(COMMON_CPP_SOURCES
 # Determine the OpenMP flag based on the compiler
 if(MSVC)
     message(STATUS "MSVC compiler detected")
-    set(OPENMP_FLAG "/openmp")
-    # set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler=/openmp")
+    # Use LLVM OpenMP (/openmp:llvm) so the runtime matches conda-forge's llvm-openmp package.
+    # /openmp (vcomp) would conflict with libomp.dll loaded by other conda packages.
+    set(OPENMP_FLAG "/openmp:llvm")
+    message(STATUS "Using LLVM OpenMP (/openmp:llvm)")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     message(STATUS "GCC/Clang compiler detected")
     set(OPENMP_FLAG "-fopenmp")
-    # set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler=-fopenmp")
 else()
     message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
 endif()
@@ -97,21 +100,23 @@ function(setup_cuda_library LIB_NAME STATIC_OR_SHARED)
         PUBLIC ${COMMON_INCLUDES}
     )
     
+    # Link CUDA static runtime
+    target_link_libraries(${LIB_NAME} PRIVATE CUDA::cudart_static)
+
     # Link OpenMP libraries
-    target_link_libraries(${LIB_NAME} PRIVATE CUDA::cudart_static PRIVATE OpenMP::OpenMP_CXX)
-    
-    # Set CUDA-specific compile options
-    # Pass the OpenMP flag to the host compiler via nvcc
-    target_compile_options(${LIB_NAME} PRIVATE
-        # $<$<COMPILE_LANGUAGE:CUDA>:${CUDA_NVCC_FLAGS}>
-        $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OPENMP_FLAG}>
-    )
+    if(OpenMP_CXX_FOUND)
+        target_link_libraries(${LIB_NAME} PRIVATE OpenMP::OpenMP_CXX)
+        # Set CUDA-specific compile options
+        target_compile_options(${LIB_NAME} PRIVATE
+            $<$<COMPILE_LANGUAGE:CXX>:${OPENMP_FLAG}>
+            $<$<COMPILE_LANGUAGE:CUDA>:-Xcompiler=${OPENMP_FLAG}>
+        )
+    endif()
 
     set_target_properties(${LIB_NAME} PROPERTIES
-        CUDA_STANDARD 11
+        CUDA_STANDARD 17
         CUDA_SEPARABLE_COMPILATION ON
         CUDA_RESOLVE_DEVICE_SYMBOLS ON
-        CUDA_ARCHITECTURES "${CUDA_ARCHITECTURES}"
         POSITION_INDEPENDENT_CODE ON
     )
 

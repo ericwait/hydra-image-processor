@@ -59,10 +59,10 @@ void cAddTwoImages(ImageView<PixelTypeIn1> imageIn1, ImageView<PixelTypeIn2> ima
 		for (int i = CUDA_IDX; i < chunks.size(); i += N_THREADS)
 		{
 			if (!chunks[i].sendROI(imageIn1, deviceIn1.getCurBuffer()))
-				std::runtime_error("Error sending ROI to device!");
+				throw std::runtime_error("Error sending ROI to device!");
 
 			if (!chunks[i].sendROI(imageIn2, deviceIn2.getCurBuffer()))
-				std::runtime_error("Error sending ROI to device!");
+				throw std::runtime_error("Error sending ROI to device!");
 
 			deviceIn1.setAllDims(chunks[i].getFullChunkSize());
 			deviceIn2.setAllDims(chunks[i].getFullChunkSize());

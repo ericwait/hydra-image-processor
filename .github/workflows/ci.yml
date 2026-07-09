@@ -1,0 +1,98 @@
+name: CI
+
+# Build-gate: compile the CUDA extension and import the package on the same
+# platforms conda-forge ships (Windows + Linux). This catches source/recipe
+# drift *before* a release reaches the feedstock. Runners have no GPU, so we
+# only verify the package builds and imports; the full TIFF accuracy suite is
+# run locally on a GPU box before tagging a release.
+
+on:
+  push:
+    branches: [main, develop, conda-forge]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      python-matrix:
+        description: "Comma-separated Python versions to build"
+        default: "3.12"
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-gate:
+    name: Build & import (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.12"]
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false   # source build does not need the LFS test images
+
+      - name: Set up MSVC (Windows)
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          channels: conda-forge
+          conda-remove-defaults: "true"
+          # Use base rather than a named env: activating the auto-created
+          # 'test' env intermittently fails on the Windows runners
+          # (EnvironmentNameNotFound), and base always exists.
+          activate-environment: ""
+
+      # CUDA comes from conda-forge (compiler only; runners have no GPU) —
+      # the same channel the feedstock builds against, and one less
+      # third-party action that breaks when runner images move.
+      # CUDA 13.x: nvcc 12.x rejects the MSVC that windows-latest ships
+      # (VS 2026); the 12.x pairing is covered by the feedstock's own CI,
+      # which pins VS 2022.
+      - name: Install build dependencies
+        run: conda install -y -c conda-forge python=${{ matrix.python }} cmake ninja "scikit-build-core>=0.10" numpy pip cuda-nvcc cuda-cudart-dev cuda-cudart-static "cuda-version=13.*"
+
+      - name: Install host compiler for nvcc (Linux)
+        if: runner.os == 'Linux'
+        run: conda install -y -c conda-forge c-compiler cxx-compiler
+
+      - name: Build & install (mirrors the feedstock pip path)
+        env:
+          # A single architecture keeps the gate fast; we only need it to
+          # compile + import, not to run on a specific GPU.
+          CMAKE_ARGS: "-DCMAKE_CUDA_ARCHITECTURES=75"
+          # Force Ninja: on Windows CMake would otherwise pick the Visual
+          # Studio generator, which needs the CUDA VS-integration files that
+          # the conda-forge nvcc package does not ship.
+          CMAKE_GENERATOR: Ninja
+        # On failure, surface the toolchain and first error lines as
+        # annotations so the failure is diagnosable from the run summary.
+        run: |
+          set -o pipefail
+          if ! python -m pip install . --no-build-isolation -v 2>&1 | tee build.log; then
+            echo "::error::cl=$(command -v cl 2>/dev/null || echo MISSING) nvcc=$(command -v nvcc 2>/dev/null || echo MISSING) cmake=$(cmake --version | head -1)"
+            grep -iE "error|fatal" build.log | head -n 8 | while IFS= read -r line; do echo "::error::${line}"; done
+            exit 1
+          fi
+
+      - name: Import smoke test (no GPU required to import)
+        run: |
+          python - <<'PY'
+          import hydra_image_processor as hip
+          import HIP, Hydra            # legacy back-compat shims
+          print("hydra_image_processor", hip.__version__)
+          assert hip.__version__ == "4.0.0", hip.__version__
+          assert HIP is Hydra, "shims should both alias the compiled extension"
+          print("device_count:", hip.device_count())   # 0 on a GPU-less runner
+          PY
