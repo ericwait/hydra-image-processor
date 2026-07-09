@@ -175,6 +175,12 @@ jobs:
         with:
           lfs: false
 
+      # logo.png (the toolbox image) is LFS-tracked; fetch just that one
+      # file rather than every LFS asset (the test images are large).
+      - name: Fetch the toolbox image from LFS
+        shell: bash
+        run: git lfs pull --include=logo.png
+
       - name: Download Windows package directory
         uses: actions/download-artifact@v4
         with:
