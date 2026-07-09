@@ -47,8 +47,12 @@ cd src/Python && python test_package.py
 # Python TIFF accuracy suite (needs a GPU + tifffile; THE release gate, see TESTING.md)
 python src/Python/Test/test_accuracy.py
 
-# MATLAB accuracy tests (matlab.unittest; compares against test_data/*.tif)
-matlab -batch "results = runtests('src/MATLAB/+Test/AccuracyTest.m')"
+# MATLAB smoke test (no GPU needed; CI runs this after building the MEX)
+matlab -batch "addpath('src/MATLAB'); assertSuccess(runtests('Test.SmokeTest'))"
+
+# MATLAB accuracy tests (matlab.unittest; needs a GPU + MicroscopeData/ImUtils utilities;
+# build HydraMex with -DHYDRA_MODULE_NAME=HIP first - the wrappers hard-code HIP.Cuda)
+matlab -batch "addpath('src/MATLAB'); assertSuccess(runtests('Test.AccuracyTest'))"
 ```
 
 - C++ tests use a minimal custom framework (`TEST_ASSERT`/`RUN_TEST` in `src/c/test_back/test_accuracy.cpp`) and call the generated `CudaCall_<Name>::run(...)` entry points directly. To run a single test, comment out other `RUN_TEST` lines or add a new `RUN_TEST` — there is no filter flag.

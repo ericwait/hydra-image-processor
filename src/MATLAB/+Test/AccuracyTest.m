@@ -10,25 +10,15 @@ classdef AccuracyTest < matlab.unittest.TestCase
     
     methods(TestClassSetup)
         function setupData(testCase)
-            % Check for GPU availability
+            % Check for GPU availability. DeviceCount exists only on the
+            % class (autoInstallMex generates no package-level wrapper for
+            % it), and even the +Hydra wrappers delegate to HIP.Cuda.
             try
-                devCount = Hydra.DeviceCount();
-                if isstruct(devCount) || iscell(devCount)
-                    % Sometimes it returns stats or tuple, handle loosely
-                     % In Python wrapper it returns (count, stats) or count
-                     % Let's assume if it runs, we check count
-                     if iscell(devCount)
-                        devCount = devCount{1};
-                     end
-                end
-                
-                % If devCount is struct/stats, maybe count is length?
-                % Let's rely on documentation/header: SCR_CMD_NOPROC(DeviceCount, SCR_PARAMS(SCR_OUTPUT(SCR_SCALAR(int32_t), numCudaDevices), SCR_OUTPUT(SCR_STRUCT, memStats)))
-                % Mex returns [num, stats].
+                devCount = HIP.Cuda.DeviceCount();
             catch
                 devCount = 0;
             end
-            
+
             testCase.assumeTrue(isnumeric(devCount) && devCount > 0, ...
                 'No CUDA devices found. Skipping accuracy tests.');
 
