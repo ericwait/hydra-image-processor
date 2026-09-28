@@ -31,7 +31,7 @@ find_package(OpenMP)
 
 # Find optional dependencies
 find_package(Matlab COMPONENTS MAIN_PROGRAM OPTIONAL_COMPONENTS MEX_COMPILER)
-find_package(Python3 COMPONENTS Development NumPy OPTIONAL)
+find_package(Python3 COMPONENTS Development.Module NumPy OPTIONAL)
 
 
 # Setup backend Hydra CUDA library (static) for CUDA building
